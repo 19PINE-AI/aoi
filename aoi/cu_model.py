@@ -63,7 +63,7 @@ RULES:
 1. Output EXACTLY one action. Do NOT describe what you plan to do.
 2. If you hear audio content (podcasts, meetings, voicemails), LISTEN and USE that information.
 3. If [PAGE ELEMENTS] shows an input with id="X", use fill(#X, "value") to fill it.
-4. If no PAGE ELEMENTS, click the input field first, then type("text").
+4. To type into a text area or editable region: click it first, then type("text") on the next step.
 5. For tasks that require listening to audio: use wait() to let more audio play before acting.
 6. For tasks that require spoken responses: type your answer into the text input field.
 

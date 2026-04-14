@@ -346,46 +346,32 @@ class ContinuousAudioCapture:
 
 
 # ---------------------------------------------------------------------------
-# Whisper ASR (local, via faster-whisper)
+# Whisper ASR — HTTP client for persistent Whisper service
 # ---------------------------------------------------------------------------
+
+WHISPER_SERVICE_URL = "http://localhost:8786"
+
 
 class WhisperTranscriber:
     """
-    Local speech-to-text using faster-whisper (CTranslate2 backend).
-    Singleton model loading to avoid per-task overhead.
+    Whisper ASR client that calls a persistent GPU-based Whisper service.
+
+    The service (aoi/whisper_service.py) keeps Whisper large-v3 loaded on GPU
+    permanently. This avoids model loading delays and VRAM duplication.
     """
 
-    _shared_model = None
-    _shared_model_size = None
-    _lock = threading.Lock()
+    def __init__(self, service_url: str = WHISPER_SERVICE_URL):
+        self.service_url = service_url.rstrip("/")
+        import requests
+        self._session = requests.Session()
 
-    def __init__(self, model_size: str = "large-v3", device: str = "cuda"):
-        self.model_size = model_size
-        self.device = device
-        self._model = None
-
-    def _ensure_model(self):
-        """Load model (shared singleton across instances)."""
-        with WhisperTranscriber._lock:
-            if (WhisperTranscriber._shared_model is not None
-                    and WhisperTranscriber._shared_model_size == self.model_size):
-                self._model = WhisperTranscriber._shared_model
-                return
-
-            from faster_whisper import WhisperModel
-            logger.info("Loading faster-whisper model: %s (device=%s)", self.model_size, self.device)
-            t0 = time.time()
-            model = WhisperModel(
-                self.model_size,
-                device=self.device,
-                compute_type="int8" if self.device == "cpu" else "float16",
-            )
-            elapsed = time.time() - t0
-            logger.info("Whisper model loaded in %.1fs", elapsed)
-
-            WhisperTranscriber._shared_model = model
-            WhisperTranscriber._shared_model_size = self.model_size
-            self._model = model
+    def _check_service(self) -> bool:
+        """Check if the Whisper service is running."""
+        try:
+            r = self._session.get(f"{self.service_url}/health", timeout=2)
+            return r.status_code == 200
+        except Exception:
+            return False
 
     def transcribe(
         self,
@@ -393,61 +379,71 @@ class WhisperTranscriber:
         sample_rate: int = SAMPLE_RATE,
     ) -> list[TimestampedSegment]:
         """
-        Transcribe audio to timestamped segments.
+        Transcribe audio via the Whisper service.
 
         Args:
             audio: float32 numpy array
             sample_rate: sample rate of audio
 
         Returns:
-            List of TimestampedSegment with word-level or segment-level timestamps.
+            List of TimestampedSegment with timestamps.
         """
         if len(audio) == 0:
             return []
 
-        # Silence gate: skip if RMS is very low
+        # Client-side silence gate to avoid unnecessary HTTP calls
         rms = float(np.sqrt(np.mean(audio ** 2)))
         if rms < 0.005:
             return []
 
-        self._ensure_model()
+        try:
+            raw_bytes = audio.astype(np.float32).tobytes()
+            r = self._session.post(
+                f"{self.service_url}/transcribe",
+                files={"audio": ("audio.raw", raw_bytes, "application/octet-stream")},
+                data={"sample_rate": sample_rate, "text_only": False},
+                timeout=30,
+            )
+            r.raise_for_status()
+            data = r.json()
 
-        # faster-whisper expects float32 at 16kHz
-        if sample_rate != 16000:
-            # Resample
-            import scipy.signal
-            audio = scipy.signal.resample(
-                audio, int(len(audio) * 16000 / sample_rate)
-            ).astype(np.float32)
+            results = []
+            for seg in data.get("segments", []):
+                text = seg["text"].strip()
+                if text:
+                    results.append(TimestampedSegment(
+                        text=text,
+                        start_s=seg["start_s"],
+                        end_s=seg["end_s"],
+                    ))
+            return results
 
-        segments, info = self._model.transcribe(
-            audio,
-            beam_size=1,          # Fast greedy decoding
-            best_of=1,
-            language="en",
-            vad_filter=True,      # Skip silence
-            vad_parameters=dict(
-                min_silence_duration_ms=300,
-                speech_pad_ms=200,
-            ),
-        )
-
-        results = []
-        for seg in segments:
-            text = seg.text.strip()
-            if text:
-                results.append(TimestampedSegment(
-                    text=text,
-                    start_s=seg.start,
-                    end_s=seg.end,
-                ))
-
-        return results
+        except Exception as e:
+            logger.warning("Whisper service call failed: %s", e)
+            return []
 
     def transcribe_text_only(self, audio: np.ndarray, sample_rate: int = SAMPLE_RATE) -> str:
         """Transcribe and return plain text (no timestamps)."""
-        segments = self.transcribe(audio, sample_rate)
-        return " ".join(seg.text for seg in segments)
+        if len(audio) == 0:
+            return ""
+
+        rms = float(np.sqrt(np.mean(audio ** 2)))
+        if rms < 0.005:
+            return ""
+
+        try:
+            raw_bytes = audio.astype(np.float32).tobytes()
+            r = self._session.post(
+                f"{self.service_url}/transcribe",
+                files={"audio": ("audio.raw", raw_bytes, "application/octet-stream")},
+                data={"sample_rate": sample_rate, "text_only": True},
+                timeout=30,
+            )
+            r.raise_for_status()
+            return r.json().get("text", "")
+        except Exception as e:
+            logger.warning("Whisper service call failed: %s", e)
+            return ""
 
 
 # ---------------------------------------------------------------------------
@@ -630,9 +626,9 @@ class AudioProcessor:
         self,
         layer1_duration_s: float = 5.0,
         layer2_duration_s: float = 60.0,
-        whisper_model_size: str = "small",
+        whisper_service_url: str = WHISPER_SERVICE_URL,
         tts_voice: str = "en-US-GuyNeural",
-        silence_threshold: float = 0.005,
+        silence_threshold: float = 0.01,
     ):
         self.layer1_duration_s = layer1_duration_s
         self.layer2_duration_s = layer2_duration_s
@@ -642,7 +638,7 @@ class AudioProcessor:
         self.capture = ContinuousAudioCapture(
             buffer_duration_s=layer2_duration_s + 10,  # slight headroom
         )
-        self.transcriber = WhisperTranscriber(model_size=whisper_model_size)
+        self.transcriber = WhisperTranscriber(service_url=whisper_service_url)
         self.tts = TTSEngine(voice=tts_voice)
         self.mic_injector = MicInjector()
 
@@ -650,6 +646,11 @@ class AudioProcessor:
         self._layer2_cache: list[TimestampedSegment] = []
         self._last_l2_transcribe_time: float = 0.0
         self._l2_min_interval_s: float = 5.0  # Don't re-transcribe L2 more than every 5s
+
+        # Whisper hallucination detection — if the same text appears 3+ times
+        # consecutively, it's likely Whisper hallucinating on silence/noise
+        self._last_l1_text: str = ""
+        self._l1_repeat_count: int = 0
 
         # Stats
         self.stats = {
@@ -672,14 +673,27 @@ class AudioProcessor:
     def reset(self):
         """Reset audio state for a new task (prevents cross-task audio leaking).
 
-        Stops and restarts the capture process to fully flush any residual
-        audio from the previous task's audio injection (pacat → virtual_speaker).
+        Stops capture, kills any lingering audio injection processes,
+        zeros the ring buffer, and restarts with a clean state.
         """
-        # Stop capture to kill parecord (drains any pending audio)
+        # Stop capture to kill parecord
         self.capture.stop()
-        # Clear all cached transcriptions
+        # Kill any lingering pacat processes injecting audio from prior task
+        try:
+            subprocess.run(["pkill", "-f", "pacat.*virtual_speaker"],
+                           capture_output=True, timeout=2)
+        except Exception:
+            pass
+        # Brief pause for PulseAudio to drain
+        time.sleep(0.3)
+        # Zero out the ring buffer — critical to prevent old audio data
+        # from being read by the new task's capture
+        self.capture.reset()
+        # Clear all cached transcriptions and hallucination detection state
         self._layer2_cache.clear()
         self._last_l2_transcribe_time = 0.0
+        self._last_l1_text = ""
+        self._l1_repeat_count = 0
         # Restart with a fresh capture process and empty buffer
         self.capture.start()
         logger.info("AudioProcessor fully reset for new task")
@@ -698,6 +712,7 @@ class AudioProcessor:
         l1_rms = float(np.sqrt(np.mean(l1_audio ** 2))) if len(l1_audio) > 0 else 0.0
 
         l1_text = ""
+        logger.debug("L1 rms=%.6f thresh=%.4f n=%d", l1_rms, self.silence_threshold, len(l1_audio))
         if l1_rms >= self.silence_threshold and len(l1_audio) > 0:
             t0 = time.time()
             l1_text = self.transcriber.transcribe_text_only(l1_audio)
@@ -706,12 +721,26 @@ class AudioProcessor:
             self.stats["l1_calls"] += 1
             logger.debug("Layer 1 ASR: %.0fms, text='%s'", asr_ms, l1_text[:80])
 
+            # Whisper hallucination detection: if the exact same text appears
+            # 3+ times in a row, it's Whisper hallucinating on silence/noise
+            if l1_text and l1_text == self._last_l1_text:
+                self._l1_repeat_count += 1
+                if self._l1_repeat_count >= 2:
+                    logger.debug("Whisper hallucination detected (repeat=%d), suppressing: '%s'",
+                                 self._l1_repeat_count, l1_text[:60])
+                    l1_text = ""
+            else:
+                self._l1_repeat_count = 0
+            self._last_l1_text = l1_text if l1_text else self._last_l1_text
+
         # --- Layer 2: Rolling context ---
         # Re-transcribe Layer 2 if enough time has passed
         if now - self._last_l2_transcribe_time >= self._l2_min_interval_s:
             l2_audio, l2_start, l2_end = self.capture.get_audio(self.layer2_duration_s)
             l2_rms = float(np.sqrt(np.mean(l2_audio ** 2))) if len(l2_audio) > 0 else 0.0
 
+            logger.debug("L2 rms=%.6f thresh=%.4f n=%d elapsed=%.1fs",
+                         l2_rms, self.silence_threshold, len(l2_audio), self.capture.elapsed_s)
             if l2_rms >= self.silence_threshold and len(l2_audio) > 0:
                 t0 = time.time()
                 segments = self.transcriber.transcribe(l2_audio)
@@ -725,7 +754,9 @@ class AudioProcessor:
                 asr_ms = (time.time() - t0) * 1000
                 self.stats["total_asr_ms"] += asr_ms
                 self.stats["l2_calls"] += 1
-                logger.debug("Layer 2 ASR: %.0fms, %d segments", asr_ms, len(segments))
+                logger.debug("L2 ASR: %.0fms, %d segs, text='%s'",
+                             asr_ms, len(segments),
+                             ' '.join(s.text for s in segments)[:120])
 
             self._last_l2_transcribe_time = now
 

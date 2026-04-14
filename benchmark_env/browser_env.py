@@ -360,6 +360,15 @@ class BrowserEnvironment:
                 m = re.match(r'(?:type|enter|input)\s+["\']([^"\']+)["\']', action, re.IGNORECASE)
             if m:
                 text = m.group(1).strip()
+                # If a contenteditable element is focused (agent clicked it), type there
+                try:
+                    focused_ce = self._page.evaluate(
+                        "document.activeElement?.getAttribute('contenteditable') === 'true'")
+                    if focused_ce:
+                        self._page.keyboard.type(text)
+                        return ActionResult(True, f"typed into focused contenteditable: '{text}'")
+                except:
+                    pass
                 # Find the first visible text input and fill it
                 for sel in ['input[type="text"]:visible', 'input:not([type]):visible',
                             'textarea:visible', 'input[type="text"]', 'textarea', 'input']:
@@ -393,6 +402,15 @@ class BrowserEnvironment:
             if m:
                 text = m.group(1).strip().strip("'\"")
                 if text and len(text) < 200:
+                    # If a contenteditable element is focused, type there
+                    try:
+                        focused_ce = self._page.evaluate(
+                            "document.activeElement?.getAttribute('contenteditable') === 'true'")
+                        if focused_ce:
+                            self._page.keyboard.type(text)
+                            return ActionResult(True, f"typed into focused contenteditable: '{text}'")
+                    except:
+                        pass
                     # Try to fill the first visible input
                     try:
                         inp = self._page.locator('input[type="text"]:visible, textarea:visible').first
@@ -403,7 +421,7 @@ class BrowserEnvironment:
                         return ActionResult(True, action_text)
 
             # --- key combo ---
-            m = re.match(r'key\s+(.+)', action, re.IGNORECASE)
+            m = re.match(r'key[\s(]+(.+?)[\s)]*$', action, re.IGNORECASE)
             if m:
                 combo = m.group(1).strip()
                 self._page.keyboard.press(combo)

@@ -1,0 +1,187 @@
+[
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "text_incorrect",
+    "steps_taken": 15,
+    "total_time_s": 92.36810731887817,
+    "total_model_latency_ms": 38997.75695800781,
+    "total_obs_overhead_ms": 40162.259101867676,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 413)",
+        "narration": "The document shows \"Meeting Notes\" with a cursor ready for input in the editor area.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 4874.157905578613,
+        "model_latency_ms": 1867.600440979004,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 2,
+        "action": "click(640, 413)",
+        "narration": "The document shows \"Meeting Notes\" with existing text, and the editor area has been clicked and is ready for input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2370.544672012329,
+        "model_latency_ms": 2700.0749111175537,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 413)",
+        "narration": "The editor shows a cursor ready for input below the \"Meeting Notes\" heading with Alex's cursor indicator visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2552.6230335235596,
+        "model_latency_ms": 2342.311382293701,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 4,
+        "action": "click(640, 413)",
+        "narration": "The editor shows a cursor ready for input below the \"Meeting Notes\" heading with Alex's cursor indicator visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2587.460994720459,
+        "model_latency_ms": 2270.2620029449463,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 5,
+        "action": "click(640, 413)",
+        "narration": "The document shows \"Meeting Notes\" with existing text and Alex's cursor indicator visible in the editor area.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2507.6301097869873,
+        "model_latency_ms": 2619.455099105835,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 6,
+        "action": "click(640, 413)",
+        "narration": "The editor shows \"Meeting Notes\" with Alex's cursor positioned and ready for input in the document body.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2668.020248413086,
+        "model_latency_ms": 2567.1167373657227,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 7,
+        "action": "click(640, 413)",
+        "narration": "The document shows \"Meeting Notes\" with existing text and Alex's cursor indicator, ready for input after multiple clicks on the editor area.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2574.6538639068604,
+        "model_latency_ms": 2080.9547901153564,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 8,
+        "action": "click(640, 320)",
+        "narration": "The cursor is positioned in the document editor below the existing text, ready for input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2448.1661319732666,
+        "model_latency_ms": 2162.4865531921387,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 9,
+        "action": "click(640, 413)",
+        "narration": "The document shows \"Meeting Notes\" with existing text and Alex's cursor positioned in the editor area.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2665.219306945801,
+        "model_latency_ms": 2139.4999027252197,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 10,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with existing text, and the cursor needs to be clicked to position it for typing.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2600.0068187713623,
+        "model_latency_ms": 3045.3014373779297,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 11,
+        "action": "click(640, 413)",
+        "narration": "The document shows \"Meeting Notes\" with existing text and the cursor positioned in the editor area, ready for input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2616.912603378296,
+        "model_latency_ms": 2428.434133529663,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 12,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with existing text, and the cursor appears positioned in the editor area ready for typing.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2440.774440765381,
+        "model_latency_ms": 2471.141576766968,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 13,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with existing text, and the cursor appears to be in the editor area after multiple clicks.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2378.5829544067383,
+        "model_latency_ms": 2100.6462574005127,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 14,
+        "action": "click(640, 350)",
+        "narration": "The document shows \"Meeting Notes\" with existing text, and the cursor appears positioned in the editor area after multiple clicks without visible text entry.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2413.752794265747,
+        "model_latency_ms": 2297.2402572631836,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 15,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with existing text, and the cursor needs to be clicked in the editor area to enable typing.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2463.7532234191895,
+        "model_latency_ms": 5905.231475830078,
+        "success": false,
+        "result_val": "text_incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  }
+]

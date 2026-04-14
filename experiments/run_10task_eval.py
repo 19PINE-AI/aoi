@@ -1,7 +1,18 @@
-"""Run 10-task evaluation: one easy task per category, standard vs aoi_full."""
+"""
+Run DynaCU-Bench evaluation: 10 easy tasks (one per category).
+
+Supports running all 10 tasks or a filtered subset. Each task runs with
+a fresh evaluator state to prevent cross-task interference.
+
+Prerequisites:
+  - Whisper service running: python -m aoi.whisper_service --model large-v3
+  - PulseAudio virtual devices configured
+  - API keys set: ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY
+"""
 import sys
 import json
 import logging
+import subprocess
 import time
 from pathlib import Path
 
@@ -17,19 +28,34 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-def run_eval(model_name: str, mode: str, task_ids: list[str], max_steps: int = 10):
+
+def _cleanup_audio():
+    """Thorough audio cleanup between tasks to prevent leaking."""
+    # Kill any pacat processes injecting audio
+    subprocess.run(["pkill", "-f", "pacat.*virtual_speaker"],
+                   capture_output=True, timeout=2)
+    # Kill any parecord capture processes
+    subprocess.run(["pkill", "-f", "parecord.*virtual_speaker"],
+                   capture_output=True, timeout=2)
+    # Brief pause for PulseAudio to drain
+    time.sleep(0.5)
+
+
+def run_eval(model_name: str, mode: str, task_ids: list[str], max_steps: int = 15):
     bench = DynaCUBenchV3(html_tasks_dir=Path("benchmark_env/html_tasks"))
     tasks = [bench.get_task(tid) for tid in task_ids]
 
-    evaluator = BrowserEvaluator(
-        model_name=model_name,
-        observation_mode=mode,
-        max_steps=max_steps,
-        step_interval_s=2.0,
-    )
-
     results = []
     for task in tasks:
+        # Create a FRESH evaluator per task to prevent any state leaking
+        _cleanup_audio()
+        evaluator = BrowserEvaluator(
+            model_name=model_name,
+            observation_mode=mode,
+            max_steps=max_steps,
+            step_interval_s=2.0,
+        )
+
         logger.info("═══ %s + %s: %s ═══", model_name, mode, task.task_id)
         result = evaluator.run_task(task)
         results.append(result)
@@ -42,15 +68,39 @@ def run_eval(model_name: str, mode: str, task_ids: list[str], max_steps: int = 1
 
 def main():
     import argparse
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--model", default="gemini-2.0-flash")
-    parser.add_argument("--mode", default="standard")
-    parser.add_argument("--max-steps", type=int, default=15)
-    parser.add_argument("--output", default=None)
+    parser = argparse.ArgumentParser(description="DynaCU-Bench 10-task evaluation")
+    parser.add_argument("--model", default="gemini-2.0-flash",
+                        help="CU model to evaluate")
+    parser.add_argument("--mode", default="standard",
+                        help="Observation mode (standard, aoi_full, aoi_visual, aoi_audio)")
+    parser.add_argument("--max-steps", type=int, default=15,
+                        help="Maximum steps per task")
+    parser.add_argument("--tasks", nargs="+", default=None,
+                        help="Specific task IDs to run (e.g. A-E1 G-E1)")
+    parser.add_argument("--output", default=None,
+                        help="Output JSON file path")
     args = parser.parse_args()
 
-    task_ids = ["A-E1", "B-E1", "C-E1", "D-E1", "E-E1",
-                "F-E1", "G-E1", "H-E1", "I-E1", "J-E1"]
+    if args.tasks:
+        task_ids = args.tasks
+    else:
+        task_ids = ["A-E1", "B-E1", "C-E1", "D-E1", "E-E1",
+                    "F-E1", "G-E1", "H-E1", "I-E1", "J-E1"]
+
+    # Check Whisper service is running for audio modes
+    if args.mode in ("aoi_full", "aoi_audio", "aoi_interactive", "aoi_visual_asr"):
+        import requests
+        try:
+            r = requests.get("http://localhost:8786/health", timeout=2)
+            if r.status_code != 200:
+                print("ERROR: Whisper service not healthy. Start it with:")
+                print("  python -m aoi.whisper_service --model large-v3")
+                sys.exit(1)
+            logger.info("Whisper service: %s", r.json())
+        except Exception:
+            print("ERROR: Whisper service not running. Start it with:")
+            print("  python -m aoi.whisper_service --model large-v3")
+            sys.exit(1)
 
     results = run_eval(args.model, args.mode, task_ids, args.max_steps)
 

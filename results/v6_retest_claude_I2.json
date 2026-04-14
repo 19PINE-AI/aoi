@@ -1,0 +1,154 @@
+[
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "text_correct",
+    "steps_taken": 12,
+    "total_time_s": 73.72539162635803,
+    "total_model_latency_ms": 28930.251121520996,
+    "total_obs_overhead_ms": 32540.398836135864,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 413)",
+        "narration": "A shared document titled \"Meeting Notes\" is open with a cursor visible in the editing area, ready for input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 4898.679733276367,
+        "model_latency_ms": 2536.304235458374,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 2,
+        "action": "click(640, 413)",
+        "narration": "The shared \"Meeting Notes\" document is open with the editor ready for input after the previous click action.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2644.3352699279785,
+        "model_latency_ms": 2225.1601219177246,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 413)",
+        "narration": "The Meeting Notes document is open with the editor area visible and ready for input, showing \"Alex is viewing\" in the top right.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2498.4798431396484,
+        "model_latency_ms": 2603.5659313201904,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 4,
+        "action": "click(640, 413)",
+        "narration": "The Meeting Notes document is open with the editor area visible, showing \"Alex is viewing\" and the document subtitle \"Shared document \u2014 last edited by Alex.\"",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2537.945508956909,
+        "model_latency_ms": 3624.743700027466,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 5,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows a cursor ready for input with Alex's collaborator cursor visible near the subtitle area.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2544.7306632995605,
+        "model_latency_ms": 1834.907054901123,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 6,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with Alex's cursor visible, and the audio has dictated the sentence to type.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2415.9159660339355,
+        "model_latency_ms": 2595.158815383911,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 7,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with Alex's cursor visible, and the audio has dictated the sentence to type.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2553.5852909088135,
+        "model_latency_ms": 2148.0886936187744,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 8,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with Alex's cursor visible, and the audio has dictated the sentence to type.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2537.2703075408936,
+        "model_latency_ms": 2368.791341781616,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 9,
+        "action": "click(640, 413)",
+        "narration": "The document editor shows \"Meeting Notes\" with the subtitle and Alex's cursor visible, but no text has been typed yet despite multiple clicks.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2543.1814193725586,
+        "model_latency_ms": 2133.324384689331,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 10,
+        "action": "click(640, 350)",
+        "narration": "The document editor shows \"Meeting Notes\" with Alex's cursor visible, and no text has been typed yet despite multiple clicks on the editor area.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2381.7646503448486,
+        "model_latency_ms": 2288.717746734619,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 11,
+        "action": "click(640, 350)",
+        "narration": "The editor shows \"Meeting Notes\" with Alex's cursor visible but no typed text yet despite multiple clicks.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2552.3149967193604,
+        "model_latency_ms": 1969.362497329712,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 12,
+        "action": "type(\"The deadline for the proposal is next Friday.\")",
+        "narration": "Alex's cursor is now visible and active in the document editor area, ready for text input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2432.1951866149902,
+        "model_latency_ms": 2602.1265983581543,
+        "success": true,
+        "result_val": "text_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  }
+]

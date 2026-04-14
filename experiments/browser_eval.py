@@ -149,7 +149,11 @@ class BrowserEvaluator:
         self._llm_evaluator = LLMEvaluator()
 
     def _init_aoi(self):
-        """Initialize AOI components for a new task."""
+        """Initialize AOI components for a new task.
+
+        Creates fresh audio and keyframe pipelines. Audio uses the persistent
+        Whisper service (aoi/whisper_service.py) — no in-process model loading.
+        """
         import subprocess
 
         # Kill any lingering audio injection from prior task
@@ -177,18 +181,17 @@ class BrowserEvaluator:
         else:
             self._keyframe_extractor = None
 
-        # Audio pipeline: real PulseAudio capture → Whisper ASR
+        # Audio pipeline: PulseAudio capture → Whisper service (HTTP)
         use_audio = self.observation_mode in ("aoi_visual_asr", "aoi_full", "aoi_audio", "aoi_interactive")
         if use_audio:
             if self._audio_processor is None:
                 self._audio_processor = AudioProcessor(
                     layer1_duration_s=5.0,
                     layer2_duration_s=60.0,
-                    whisper_model_size="large-v3",
                     silence_threshold=self.silence_threshold,
                 )
             else:
-                # Reset ring buffer to prevent audio leaking from prior task
+                # Full reset: stop capture, clear buffer, kill pacat, restart
                 self._audio_processor.reset()
             # Start capture (idempotent)
             self._audio_processor.start()
@@ -277,34 +280,40 @@ class BrowserEvaluator:
 
             # Combine all audio texts
             full_text = " ... ".join(audio_texts)
-            # Estimate audio duration (~150 words/min for TTS, ~5 chars/word)
-            self._audio_duration_s = len(full_text) / (150 * 5 / 60)
-            logger.info("Injecting page audio (%d chars, ~%.1fs): %s",
-                        len(full_text), self._audio_duration_s, full_text[:80])
+            logger.info("Injecting page audio (%d chars): %s",
+                        len(full_text), full_text[:80])
 
-            # Synthesize and play in background thread
+            # Synthesize audio SYNCHRONOUSLY so it's ready before playback
+            tts = TTSEngine(voice="en-US-GuyNeural")
+            audio_data, sr = tts.synthesize(full_text)
+
+            if len(audio_data) == 0:
+                logger.warning("TTS produced empty audio")
+                return
+
+            self._audio_duration_s = len(audio_data) / sr
+            logger.info("TTS synthesis complete: %.1fs audio, starting playback",
+                        self._audio_duration_s)
+
+            # Play through virtual_speaker in background thread
+            # (only the playback is async — synthesis is already done)
             import threading
             def _play_audio():
                 try:
-                    import subprocess
-                    tts = TTSEngine(voice="en-US-GuyNeural")
-                    audio_data, sr = tts.synthesize(full_text)
-                    if len(audio_data) > 0:
-                        # Play through virtual_speaker sink
-                        raw_bytes = audio_data.astype(np.float32).tobytes()
-                        subprocess.run(
-                            ["pacat", "--format=float32le", f"--rate={sr}",
-                             "--channels=1", "--device=virtual_speaker", "--raw"],
-                            input=raw_bytes, capture_output=True,
-                            timeout=len(audio_data) / sr + 10,
-                        )
-                        logger.info("Page audio injection complete (%.1fs)", len(audio_data) / sr)
+                    import subprocess as sp
+                    raw_bytes = audio_data.astype(np.float32).tobytes()
+                    sp.run(
+                        ["pacat", "--format=float32le", f"--rate={sr}",
+                         "--channels=1", "--device=virtual_speaker", "--raw"],
+                        input=raw_bytes, capture_output=True,
+                        timeout=len(audio_data) / sr + 10,
+                    )
+                    logger.info("Page audio injection complete (%.1fs)", len(audio_data) / sr)
                 except Exception as e:
-                    logger.warning("Audio injection failed: %s", e)
+                    logger.warning("Audio playback failed: %s", e)
 
             thread = threading.Thread(target=_play_audio, daemon=True)
             thread.start()
-            # Store thread reference so we know audio is playing
             self._audio_inject_thread = thread
 
         except Exception as e:
@@ -381,12 +390,16 @@ class BrowserEvaluator:
             if self.observation_mode in ("aoi_audio", "aoi_full", "aoi_interactive",
                                          "aoi_visual_asr"):
                 self._inject_page_audio(env)
-                # Wait proportionally to audio length so agent hears content
-                # before its first step. Short audio (< 5s) → 2s wait,
-                # long audio (podcast/meeting) → up to 5s head start.
-                # Keep this moderate — longer waits eat the step budget.
+                # Wait for enough audio to buffer so the agent hears content
+                # on its first step. For short clips (< 15s), wait for the
+                # full clip to play. For longer audio, wait up to 12s.
                 audio_wait = getattr(self, '_audio_duration_s', 0.0)
-                pre_step_wait = min(max(2.0, audio_wait * 0.3), 5.0)
+                if audio_wait <= 15.0:
+                    # Short audio: wait for the full clip + 1s buffer
+                    pre_step_wait = audio_wait + 1.0
+                else:
+                    # Long audio (meetings, podcasts): wait 12s head start
+                    pre_step_wait = 12.0
                 logger.info("Pre-step audio buffer: %.1fs wait (audio=%.1fs)",
                             pre_step_wait, audio_wait)
                 time.sleep(pre_step_wait)
@@ -451,7 +464,7 @@ class BrowserEvaluator:
                 if self.observation_mode in ("aoi_full", "aoi_audio",
                                               "aoi_interactive", "aoi_visual_asr"):
                     full_transcript = self._trajectory.get_full_transcript()
-                    if full_transcript and step_num > 1:
+                    if full_transcript:
                         context_text += (
                             f"\n\n[FULL AUDIO HISTORY — all audio heard so far]\n"
                             f"  {full_transcript}"
