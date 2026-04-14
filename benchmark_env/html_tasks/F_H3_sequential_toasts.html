@@ -41,7 +41,7 @@
   .toast .toast-label { font-size: 12px; color: #8892b0; }
 
   /* Answer section */
-  .answer-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; margin-top: 20px; text-align: center; display: none; }
+  .answer-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; margin-top: 20px; text-align: center; }
   .answer-card h3 { color: #00d4ff; margin-bottom: 15px; }
   .answer-card input { padding: 10px 15px; font-size: 16px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 200px; text-align: center; font-family: monospace; }
   .answer-card input:focus { outline: none; border-color: #00d4ff; }
@@ -166,22 +166,19 @@
     addLogEntry(bg.level, bg.msg);
   }
 
-  // Schedule: each error toast visible 3s, then 2s gap before next
-  // Total per error cycle: 5s
-  // Error 1: t=2s, Error 2: t=7s, Error 3: t=12s, Error 4: t=17s, Error 5: t=22s
+  // Schedule: each error toast visible 3s, then 1s gap before next
+  // Total per error cycle: 3s
+  // Error 1: t=2s, Error 2: t=5s, Error 3: t=8s, Error 4: t=11s, Error 5: t=14s
+  // Answer card is always visible — agent can submit once it reads the sidebar
 
   function scheduleErrors() {
     if (errIdx >= errorCodes.length) {
-      // All errors shown, show answer card after a delay
-      setTimeout(function() {
-        document.getElementById('answerCard').style.display = 'block';
-      }, 4000);
       return;
     }
     showErrorToast(errorCodes[errIdx], errorMsgs[errIdx]);
     errIdx++;
-    // Schedule next error: 3s visible + 2s gap = 5s
-    setTimeout(scheduleErrors, 5000);
+    // Schedule next error: 3s cycle
+    setTimeout(scheduleErrors, 3000);
   }
 
   // Add background logs periodically

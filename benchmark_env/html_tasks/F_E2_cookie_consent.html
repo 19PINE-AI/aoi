@@ -85,7 +85,7 @@
   setTimeout(function() {
     banner.classList.add('show');
 
-    // Auto-dismiss after 5 seconds
+    // Auto-dismiss after 20 seconds
     setTimeout(function() {
       if (!cookiesAccepted && !bannerDismissed) {
         bannerDismissed = true;
@@ -95,7 +95,7 @@
           document.getElementById('dismissedMsg').style.display = 'none';
         }, 3000);
       }
-    }, 5000);
+    }, 20000);
   }, 2000);
 
   document.getElementById('acceptBtn').addEventListener('click', function() {

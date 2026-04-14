@@ -183,15 +183,15 @@
     }
   }
 
-  // Timeline:
+  // Timeline (compressed for agent latency):
   // t=2s: Build starts
-  // t=2-8s: Build runs (progress)
-  // t=8s: Build SUCCESS toast
-  // t=9s: Test starts
-  // t=9-16s: Test runs
-  // t=16s: Test FAILED toast
-  // t=17s: Deploy starts
-  // t=22s: Deploy SKIPPED toast
+  // t=2-5s: Build runs (progress)
+  // t=5s: Build SUCCESS toast
+  // t=5.5s: Test starts
+  // t=5.5-8.5s: Test runs
+  // t=8.5s: Test FAILED toast
+  // t=10.5s: Deploy SKIPPED toast
+  // t=12.5s: Answer card appears
 
   setTimeout(function() {
     // Build starts
@@ -201,12 +201,12 @@
 
     let buildProg = 0;
     const buildInterval = setInterval(function() {
-      buildProg += 17;
+      buildProg += 34;
       if (buildProg > 100) buildProg = 100;
       setStageState('build', 'running', buildProg);
     }, 1000);
 
-    // Build completes at t=8s
+    // Build completes at t=5s
     setTimeout(function() {
       clearInterval(buildInterval);
       setStageState('build', 'success', 100);
@@ -214,7 +214,7 @@
       addLog('Artifacts: app-1.2.3.tar.gz (24 MB)', '');
       showToast('Build: SUCCESS \u2713', 'success');
 
-      // Test starts at t=9s
+      // Test starts at t=5.5s
       setTimeout(function() {
         setStageState('test', 'running', 0);
         addLog('Test stage started...', 'log-info');
@@ -222,14 +222,14 @@
 
         let testProg = 0;
         const testInterval = setInterval(function() {
-          testProg += 15;
+          testProg += 34;
           if (testProg > 100) testProg = 100;
           setStageState('test', 'running', testProg);
-          if (testProg === 45) addLog('Unit tests: 180/247 passed', '');
-          if (testProg === 75) addLog('Integration tests running...', '');
+          if (testProg >= 34 && testProg < 68) addLog('Unit tests: 180/247 passed', '');
+          if (testProg >= 68 && testProg < 100) addLog('Integration tests running...', '');
         }, 1000);
 
-        // Test fails at t=16s
+        // Test fails at t=8.5s
         setTimeout(function() {
           clearInterval(testInterval);
           setStageState('test', 'failed', 85);
@@ -239,7 +239,7 @@
           addLog('  - test_cache_invalidation: KeyError', 'log-error');
           showToast('Test: FAILED \u2717', 'failed');
 
-          // Deploy skipped at t=22s
+          // Deploy skipped at t=10.5s
           setTimeout(function() {
             setStageState('deploy', 'skipped', 0);
             addLog('Deploy stage SKIPPED: Test stage failed', '');
@@ -249,10 +249,10 @@
             setTimeout(function() {
               document.getElementById('answerCard').style.display = 'block';
             }, 2000);
-          }, 6000);
-        }, 7000);
-      }, 1000);
-    }, 6000);
+          }, 2000);
+        }, 3000);
+      }, 500);
+    }, 3000);
   }, 2000);
 
   document.getElementById('submitBtn').addEventListener('click', function() {
