@@ -77,7 +77,6 @@
     },
     {
       lines: [
-        { type: 'instant', text: '$ git clone https://github.com/example/repo.git', cls: 'prompt' },
         { type: 'instant', text: 'Cloning into \'repo\'...', cls: 'output' },
         { type: 'instant', text: 'remote: Enumerating objects: 247, done.', cls: 'output' },
         { type: 'instant', text: 'remote: Counting objects: 100% (247/247), done.', cls: 'output' },
@@ -142,7 +141,7 @@
   }
 
   function renderFrame(frameIndex) {
-    clearTerminal();
+    if (frameIndex === 0) clearTerminal();
     const frame = frames[frameIndex];
     const container = document.getElementById('terminalBody');
     document.getElementById('frameLabel').textContent = `Frame ${frameIndex + 1} / ${frames.length}`;

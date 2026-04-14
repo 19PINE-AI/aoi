@@ -14,9 +14,9 @@
   .video-panel { flex: 1; }
   .form-panel { width: 340px; flex-shrink: 0; }
   .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-  .video-screen { width: 100%; aspect-ratio: 4/3; background: #111; position: relative; overflow: hidden; }
-  .config-frame { position: absolute; inset: 0; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
-  .config-frame.active { opacity: 1; }
+  .video-screen { width: 100%; min-height: 200px; background: #111; position: relative; overflow-y: auto; }
+  .config-frame { display: none; flex-direction: column; border-bottom: 1px solid #222; }
+  .config-frame.active { display: flex; }
   .config-header { background: #2d2d44; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
   .config-header .title { font-size: 14px; color: #ccc; }
   .step-badge { background: #6c63ff; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
@@ -170,7 +170,7 @@
   let startTime;
 
   function showStep(index) {
-    stepIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index === 0) stepIds.forEach(id => document.getElementById(id).classList.remove('active'));
     if (index < stepIds.length) {
       document.getElementById(stepIds[index]).classList.add('active');
     }

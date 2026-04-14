@@ -12,9 +12,9 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .container { width: 700px; }
   .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
-  .video-screen { width: 100%; aspect-ratio: 16/9; background: #111; position: relative; overflow: hidden; }
-  .step-slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.5s ease; padding: 40px; }
-  .step-slide.active { opacity: 1; }
+  .video-screen { width: 100%; min-height: 200px; background: #111; position: relative; overflow-y: auto; }
+  .step-slide { display: none; flex-direction: column; align-items: center; justify-content: center; padding: 30px; border-bottom: 1px solid #222; }
+  .step-slide.active { display: flex; }
   .step-badge { background: #ff4444; color: #fff; padding: 8px 20px; border-radius: 20px; font-size: 14px; font-weight: 600; margin-bottom: 24px; }
   .step-title { font-size: 32px; font-weight: 700; color: #fff; margin-bottom: 12px; text-align: center; }
   .step-desc { font-size: 16px; color: #999; text-align: center; max-width: 420px; line-height: 1.5; }
@@ -101,7 +101,9 @@
   let progressInterval;
 
   function showStep(index) {
-    stepIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index === 0) {
+      stepIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    }
     if (index < stepIds.length) {
       document.getElementById(stepIds[index]).classList.add('active');
     }

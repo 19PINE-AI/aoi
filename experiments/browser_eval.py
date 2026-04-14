@@ -268,6 +268,9 @@ class BrowserEvaluator:
                     captured = env._page.evaluate(
                         'window.__capturedUtterances ? window.__capturedUtterances.slice() : []')
                     cur_count = len(captured) if captured else 0
+                    # If no utterances found after 5s, page has no audio
+                    if cur_count == 0 and _poll >= 10:
+                        break
                     if cur_count > 0 and cur_count == prev_count:
                         stable_ticks += 1
                         if stable_ticks >= 24:  # 12s with no new utterances

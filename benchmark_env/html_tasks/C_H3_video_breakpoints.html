@@ -244,8 +244,10 @@
   let startTime;
 
   function showFile(index) {
-    document.querySelectorAll('.debug-frame').forEach(f => f.classList.remove('active'));
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    if (index === 0) {
+      document.querySelectorAll('.debug-frame').forEach(f => f.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    }
     if (index < files.length) {
       document.getElementById('frame' + index).classList.add('active');
       tabBar.children[index].classList.add('active');

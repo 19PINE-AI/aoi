@@ -12,9 +12,9 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .container { width: 780px; }
   .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
-  .video-screen { width: 100%; min-height: 360px; background: #1e1e1e; position: relative; overflow: hidden; }
-  .review-frame { position: absolute; inset: 0; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
-  .review-frame.active { opacity: 1; }
+  .video-screen { width: 100%; min-height: 200px; background: #1e1e1e; position: relative; overflow-y: auto; }
+  .review-frame { display: none; flex-direction: column; border-bottom: 1px solid #333; }
+  .review-frame.active { display: flex; }
   .review-header { background: #2d2d44; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
   .file-path { font-family: monospace; font-size: 13px; color: #ccc; }
   .bug-badge { background: #ff4444; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
@@ -176,7 +176,7 @@
   let startTime;
 
   function showBug(index) {
-    bugIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index === 0) bugIds.forEach(id => document.getElementById(id).classList.remove('active'));
     if (index < bugIds.length) {
       document.getElementById(bugIds[index]).classList.add('active');
       document.getElementById('frameLabel').textContent = `File ${index + 1} / ${bugIds.length}`;

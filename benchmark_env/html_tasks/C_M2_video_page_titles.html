@@ -12,9 +12,9 @@
   @keyframes spin { to { transform: rotate(360deg); } }
   .container { width: 700px; }
   .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
-  .video-screen { width: 100%; aspect-ratio: 16/9; background: #111; position: relative; overflow: hidden; }
-  .settings-frame { position: absolute; inset: 0; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
-  .settings-frame.active { opacity: 1; }
+  .video-screen { width: 100%; min-height: 200px; background: #111; position: relative; overflow-y: auto; }
+  .settings-frame { display: none; flex-direction: column; border-bottom: 1px solid #222; }
+  .settings-frame.active { display: flex; }
   .app-bar { background: #2d2d44; padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
   .back-arrow { color: #888; font-size: 18px; }
   .app-title { font-size: 14px; color: #aaa; }
@@ -120,7 +120,9 @@
   let progressInterval;
 
   function showPage(index) {
-    pageIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index === 0) {
+      pageIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    }
     if (index < pageIds.length) {
       document.getElementById(pageIds[index]).classList.add('active');
     }
