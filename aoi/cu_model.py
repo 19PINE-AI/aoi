@@ -354,6 +354,7 @@ SOTA_MODELS = {
     "claude-opus-4-6":    ("anthropic", "claude-opus-4-6"),
     "claude-sonnet-4-6":  ("anthropic", "claude-sonnet-4-6"),
     # OpenAI
+    "gpt-5.4":            ("openai",    "gpt-5.4"),
     "gpt-5":              ("openai",    "gpt-5"),
     "gpt-4o":             ("openai",    "gpt-4o"),
     # Google — use dedicated CU preview model where available

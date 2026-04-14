@@ -359,7 +359,7 @@ class WhisperTranscriber:
     _shared_model_size = None
     _lock = threading.Lock()
 
-    def __init__(self, model_size: str = "base", device: str = "cpu"):
+    def __init__(self, model_size: str = "large-v3", device: str = "cuda"):
         self.model_size = model_size
         self.device = device
         self._model = None
@@ -630,7 +630,7 @@ class AudioProcessor:
         self,
         layer1_duration_s: float = 5.0,
         layer2_duration_s: float = 60.0,
-        whisper_model_size: str = "base",
+        whisper_model_size: str = "small",
         tts_voice: str = "en-US-GuyNeural",
         silence_threshold: float = 0.005,
     ):

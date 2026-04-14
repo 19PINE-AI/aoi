@@ -184,7 +184,7 @@ class BrowserEvaluator:
                 self._audio_processor = AudioProcessor(
                     layer1_duration_s=5.0,
                     layer2_duration_s=60.0,
-                    whisper_model_size="base",
+                    whisper_model_size="large-v3",
                     silence_threshold=self.silence_threshold,
                 )
             else:
