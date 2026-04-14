@@ -150,6 +150,15 @@ class BrowserEvaluator:
 
     def _init_aoi(self):
         """Initialize AOI components for a new task."""
+        # Kill any lingering audio injection from prior task
+        if hasattr(self, '_audio_inject_thread') and self._audio_inject_thread is not None:
+            self._audio_inject_thread.join(timeout=1)
+            self._audio_inject_thread = None
+        # Kill any lingering pacat processes from prior audio injection
+        import subprocess
+        subprocess.run(["pkill", "-f", "pacat.*virtual_speaker"],
+                       capture_output=True, timeout=2)
+
         use_keyframes = self.observation_mode in (
             "aoi_visual", "aoi_visual_only", "aoi_visual_asr", "aoi_full",
             "aoi_interactive", "pixel_diff", "uniform_1fps", "uniform_3fps",
@@ -331,10 +340,13 @@ class BrowserEvaluator:
         # Gemini 3 Flash uses 0-1000 normalized coordinates
         uses_normalized = "gemini-3" in self.model_name
 
+        # AOI modes need extra time for audio injection, CLIP processing,
+        # Whisper ASR, and pre-step buffering (~30s overhead)
+        aoi_overhead = 30.0 if self.observation_mode != "standard" else 0.0
         env = BrowserEnvironment(
             html_file=task.html_file,
             width=1280, height=720,
-            task_timeout_s=task.duration_s + 10,
+            task_timeout_s=task.duration_s + 10 + aoi_overhead,
             coord_scale_1000=uses_normalized,
         )
         # Attach audio processor to env for speak action support
@@ -362,9 +374,10 @@ class BrowserEvaluator:
                 self._inject_page_audio(env)
                 # Wait proportionally to audio length so agent hears content
                 # before its first step. Short audio (< 5s) → 2s wait,
-                # long audio (podcast/meeting) → up to 8s head start.
+                # long audio (podcast/meeting) → up to 5s head start.
+                # Keep this moderate — longer waits eat the step budget.
                 audio_wait = getattr(self, '_audio_duration_s', 0.0)
-                pre_step_wait = min(max(2.0, audio_wait * 0.4), 8.0)
+                pre_step_wait = min(max(2.0, audio_wait * 0.3), 5.0)
                 logger.info("Pre-step audio buffer: %.1fs wait (audio=%.1fs)",
                             pre_step_wait, audio_wait)
                 time.sleep(pre_step_wait)
