@@ -46,7 +46,7 @@
 <body>
 <div class="header">
   <h1>NOC Dashboard - Server Triage</h1>
-  <div class="info"><div class="dot"></div> Incident Response &bull; Auto-escalation: 5s</div>
+  <div class="info"><div class="dot"></div> Incident Response &bull; Auto-escalation: 15s</div>
 </div>
 <div class="alert-banner">
   <div class="msg" id="bannerMsg">Monitoring 6 servers &mdash; 0 incidents</div>
@@ -91,7 +91,7 @@
       '<div class="server-name">' + s.name + '</div>' +
       '<div class="server-status status-ok" id="status-' + s.id + '">Operational</div><br>' +
       '<button class="ack-btn" id="ack-' + s.id + '">ACK</button>' +
-      '<div class="countdown" id="cd-' + s.id + '">5s remaining</div>';
+      '<div class="countdown" id="cd-' + s.id + '">15s remaining</div>';
     grid.appendChild(tile);
   });
 
@@ -121,9 +121,9 @@
 
     addLog('ALERT: ' + servers[idx].name + ' - ' + inc.reason, 'fail');
 
-    // 5 second countdown
-    ackTimers[idx] = 5;
-    cdEl.textContent = '5s remaining';
+    // 15 second countdown
+    ackTimers[idx] = 15;
+    cdEl.textContent = '15s remaining';
 
     ackIntervals[idx] = setInterval(function() {
       ackTimers[idx]--;

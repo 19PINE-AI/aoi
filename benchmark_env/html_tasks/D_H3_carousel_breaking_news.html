@@ -157,8 +157,8 @@
       rotationCount++;
       updateFeed();
 
-      // Show breaking banner on the 7th rotation when landing on story index 6
-      if (cur === 6 && !breakingShown) {
+      // Show breaking banner each time we land on story index 6
+      if (cur === 6 && !breakingClicked) {
         breakingShown = true;
         document.getElementById('breakingBanner').classList.add('show');
         setTimeout(() => {
