@@ -82,10 +82,11 @@ class ObservationRecord:
             lines.append(self.current_audio_context)
 
         if self.keyframes:
-            for kf in self.keyframes:
-                lines.append(f"  [{kf.timestamp:.1f}s] <keyframe image>")
+            lines.append(f"  [KEYFRAMES — {len(self.keyframes)} visual change(s) detected]")
+            for i, kf in enumerate(self.keyframes):
+                lines.append(f"    Image {i+1}: captured at t={kf.timestamp:.1f}s (shows a visual change)")
 
-        lines.append(f"  <post-action screenshot>")
+        lines.append(f"  [CURRENT SCREENSHOT — what the screen looks like right now]")
         lines.append("")
         lines.append(f"[TASK] {self.task_instruction}")
 

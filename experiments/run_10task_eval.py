@@ -45,7 +45,7 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--model", default="gemini-2.0-flash")
     parser.add_argument("--mode", default="standard")
-    parser.add_argument("--max-steps", type=int, default=10)
+    parser.add_argument("--max-steps", type=int, default=15)
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 

@@ -160,6 +160,73 @@ class BrowserEnvironment:
         except Exception as e:
             return {"result": "error", "error": str(e)}
 
+    def get_interactive_elements(self) -> str:
+        """
+        Extract visible interactive elements from the page with their IDs,
+        types, labels, and bounding boxes. This provides DOM context to help
+        the agent know what inputs/buttons exist and how to target them.
+        """
+        try:
+            elements = self._page.evaluate('''() => {
+                const results = [];
+                const selectors = 'input, textarea, button, select, [contenteditable="true"], a[href]';
+                const els = document.querySelectorAll(selectors);
+                for (const el of els) {
+                    const rect = el.getBoundingClientRect();
+                    if (rect.width === 0 || rect.height === 0) continue;
+                    if (window.getComputedStyle(el).display === 'none') continue;
+                    if (window.getComputedStyle(el).visibility === 'hidden') continue;
+
+                    const info = {
+                        tag: el.tagName.toLowerCase(),
+                        type: el.type || '',
+                        id: el.id || '',
+                        name: el.name || '',
+                        placeholder: el.placeholder || '',
+                        value: (el.value || '').substring(0, 50),
+                        text: (el.textContent || '').trim().substring(0, 50),
+                        x: Math.round(rect.x + rect.width / 2),
+                        y: Math.round(rect.y + rect.height / 2),
+                    };
+
+                    // Get associated label
+                    if (el.id) {
+                        const label = document.querySelector('label[for="' + el.id + '"]');
+                        if (label) info.label = label.textContent.trim().substring(0, 50);
+                    }
+
+                    results.push(info);
+                }
+                return results;
+            }''')
+
+            if not elements:
+                return ""
+
+            lines = ["[PAGE ELEMENTS — interactive]"]
+            for el in elements:
+                parts = [el['tag']]
+                if el.get('type'):
+                    parts.append(f"type={el['type']}")
+                if el.get('id'):
+                    parts.append(f"id=\"{el['id']}\"")
+                if el.get('label'):
+                    parts.append(f"label=\"{el['label']}\"")
+                elif el.get('placeholder'):
+                    parts.append(f"placeholder=\"{el['placeholder']}\"")
+                elif el.get('text') and el['tag'] == 'button':
+                    parts.append(f"text=\"{el['text']}\"")
+                if el.get('value'):
+                    parts.append(f"value=\"{el['value']}\"")
+                pos = f"at ({el['x']},{el['y']})"
+                lines.append(f"  {' '.join(parts)} {pos}")
+
+            return "\n".join(lines)
+
+        except Exception as e:
+            logger.debug("get_interactive_elements failed: %s", e)
+            return ""
+
     def execute_action(self, action_text: str) -> ActionResult:
         """
         Execute a CU model action string.
@@ -209,8 +276,10 @@ class BrowserEnvironment:
                     f"{first_part} → {second_part}",
                 )
 
-            # --- speak "text" — TTS → virtual microphone injection ---
-            m = re.match(r'speak\s+["\'](.+?)["\']', action, re.IGNORECASE)
+            # --- speak "text" / speak("text") — TTS → virtual microphone injection ---
+            m = re.match(r'speak\s*\(\s*["\'](.+?)["\']\s*\)', action, re.IGNORECASE)
+            if not m:
+                m = re.match(r'speak\s+["\'](.+?)["\']', action, re.IGNORECASE)
             if not m:
                 m = re.match(r'speak\s+(.+)', action, re.IGNORECASE)
             if m and 'speak' in action_lower[:10]:
@@ -234,6 +303,17 @@ class BrowserEnvironment:
                 time.sleep(0.2)
                 self._page.keyboard.type(text)
                 return ActionResult(True, f"type_text_at({x},{y},'{text}')")
+
+            # --- triple_click / double_click at x, y ---
+            m = re.match(r'(triple|double)_?click\s*\(?x?(\d+)[,\s]+y?(\d+)\)?', action_lower)
+            if m:
+                click_type, x, y = m.group(1), int(m.group(2)), int(m.group(3))
+                if self.coord_scale_1000:
+                    x = int(x * self.width / 1000)
+                    y = int(y * self.height / 1000)
+                count = 3 if click_type == 'triple' else 2
+                self._page.mouse.click(x, y, click_count=count)
+                return ActionResult(True, action_text)
 
             # --- click x y / click(x, y) / click(x,y) / click x500 y610 ---
             # Also handles Gemini 3 format: click(point=[611, 452])
@@ -264,16 +344,20 @@ class BrowserEnvironment:
                 self._page.click(sel, timeout=3000)
                 return ActionResult(True, action_text)
 
-            # --- fill selector text ---
-            m = re.match(r'fill\s+(\S+)\s+(.+)', action, re.IGNORECASE)
+            # --- fill selector text / fill(selector, "text") ---
+            m = re.match(r'fill\s*\(\s*(\S+?)\s*,\s*(.+?)\s*\)', action, re.IGNORECASE)
+            if not m:
+                m = re.match(r'fill\s+(\S+)\s+(.+)', action, re.IGNORECASE)
             if m:
                 sel, text = m.group(1), m.group(2).strip().strip("'\"")
                 self._page.fill(sel, text)
                 return ActionResult(True, action_text)
 
-            # --- type "X" into Y / type "X" in the input / enter "X" ---
-            # Natural language: Type "Configuration" into the text input
-            m = re.match(r'(?:type|enter|input)\s+["\']([^"\']+)["\']', action, re.IGNORECASE)
+            # --- type "X" into Y / type("X") / enter "X" ---
+            # Handles both: type "text" and type("text")
+            m = re.match(r'(?:type|enter|input)\s*\(\s*["\']([^"\']+)["\']\s*(?:,\s*[^)]+)?\s*\)', action, re.IGNORECASE)
+            if not m:
+                m = re.match(r'(?:type|enter|input)\s+["\']([^"\']+)["\']', action, re.IGNORECASE)
             if m:
                 text = m.group(1).strip()
                 # Find the first visible text input and fill it
@@ -286,6 +370,16 @@ class BrowserEnvironment:
                             return ActionResult(True, f"filled input with '{text}'")
                     except:
                         continue
+                # Try contenteditable elements (e.g. Google Docs-like editors)
+                try:
+                    ce = self._page.locator('[contenteditable="true"]:visible').first
+                    if ce.is_visible():
+                        ce.click()
+                        time.sleep(0.1)
+                        self._page.keyboard.type(text)
+                        return ActionResult(True, f"typed into contenteditable: '{text}'")
+                except:
+                    pass
                 # Fallback: focus first input, then type
                 try:
                     self._page.locator('input').first.focus()
@@ -298,7 +392,7 @@ class BrowserEnvironment:
             m = re.match(r'type\s+(.+?)(?:\s+(?:into|in|on)\s+.+)?$', action, re.IGNORECASE)
             if m:
                 text = m.group(1).strip().strip("'\"")
-                if text and len(text) < 100:
+                if text and len(text) < 200:
                     # Try to fill the first visible input
                     try:
                         inp = self._page.locator('input[type="text"]:visible, textarea:visible').first

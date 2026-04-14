@@ -670,11 +670,19 @@ class AudioProcessor:
         self.capture.stop()
 
     def reset(self):
-        """Reset audio state for a new task (prevents cross-task audio leaking)."""
-        self.capture.reset()
+        """Reset audio state for a new task (prevents cross-task audio leaking).
+
+        Stops and restarts the capture process to fully flush any residual
+        audio from the previous task's audio injection (pacat → virtual_speaker).
+        """
+        # Stop capture to kill parecord (drains any pending audio)
+        self.capture.stop()
+        # Clear all cached transcriptions
         self._layer2_cache.clear()
         self._last_l2_transcribe_time = 0.0
-        logger.info("AudioProcessor reset for new task")
+        # Restart with a fresh capture process and empty buffer
+        self.capture.start()
+        logger.info("AudioProcessor fully reset for new task")
 
     def get_two_layer_audio(self) -> TwoLayerAudio:
         """

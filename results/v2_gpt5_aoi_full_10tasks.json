@@ -1,0 +1,422 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 1,
+    "total_time_s": 28.26234745979309,
+    "total_model_latency_ms": 17584.49959754944,
+    "total_obs_overhead_ms": 6146.353483200073,
+    "steps": [
+      {
+        "step": 1,
+        "action": "",
+        "narration": "No visual change.",
+        "audio_text": "talk. Today were joined by Dr. Sarah Chen, Professor of Artificial Intelligence",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 6146.353483200073,
+        "model_latency_ms": 17584.49959754944,
+        "success": false,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 2,
+    "total_time_s": 35.74347925186157,
+    "total_model_latency_ms": 22003.6404132843,
+    "total_obs_overhead_ms": 5879.901170730591,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "narration": "A slide titled \"Meeting Agenda\" is shown with a prompt below asking for the new launch date with an empty input field and a Submit button.",
+        "audio_text": "Welcome everyone. Let's go through the agenda for today's product launch planning",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2707.115650177002,
+        "model_latency_ms": 11044.17085647583,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3172.785520553589,
+        "model_latency_ms": 10959.469556808472,
+        "success": false,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "C-E1",
+    "category": "C_video",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 2,
+    "total_time_s": 42.22929501533508,
+    "total_model_latency_ms": 30845.71146965027,
+    "total_obs_overhead_ms": 4529.092788696289,
+    "steps": [
+      {
+        "step": 1,
+        "action": "type(\"git clone https://github.com/example/repo.git\")",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2081.2010765075684,
+        "model_latency_ms": 10945.685625076294,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2447.8917121887207,
+        "model_latency_ms": 19900.025844573975,
+        "success": false,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "D-E1",
+    "category": "D_carousel",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 2,
+    "total_time_s": 31.528436183929443,
+    "total_model_latency_ms": 18960.442781448364,
+    "total_obs_overhead_ms": 4696.789741516113,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "narration": "A featured Smart Watch priced at $149.99 is shown in the carousel with a prominent Buy Now button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2162.0147228240967,
+        "model_latency_ms": 9530.431985855103,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "narration": "The carousel has rotated to show a Leather Wallet priced at $39.99 with a prominent orange \"Buy Now\" button.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2534.7750186920166,
+        "model_latency_ms": 9430.010795593262,
+        "success": false,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_dashboard",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "alert_wrong_time",
+    "steps_taken": 3,
+    "total_time_s": 36.929519176483154,
+    "total_model_latency_ms": 22113.855361938477,
+    "total_obs_overhead_ms": 6659.996509552002,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "narration": "The server dashboard shows CPU usage at 54% with Status: Normal and a prominent \"TRIGGER ALERT\" button below.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2102.3502349853516,
+        "model_latency_ms": 5320.23549079895,
+        "success": false,
+        "result_val": "no_alert"
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "narration": "CPU usage has risen to 66% with Status: Normal; the TRIGGER ALERT button is visible but CPU is below the 90% threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2289.792060852051,
+        "model_latency_ms": 6809.957265853882,
+        "success": false,
+        "result_val": "no_alert"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 590)",
+        "narration": "CPU usage has jumped to 93% with Status: CRITICAL, and the \"TRIGGER ALERT\" button is prominently shown.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2267.8542137145996,
+        "model_latency_ms": 9983.662605285645,
+        "success": false,
+        "result_val": "alert_wrong_time"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "form_not_accepted",
+    "steps_taken": 2,
+    "total_time_s": 41.32979369163513,
+    "total_model_latency_ms": 30136.302947998047,
+    "total_obs_overhead_ms": 4348.815441131592,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 435)",
+        "narration": "A contact form is visible with the email field showing \"user@\" in red and a cyan Submit button at the bottom.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2089.1973972320557,
+        "model_latency_ms": 11892.223119735718,
+        "success": false,
+        "result_val": "form_not_accepted"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2259.618043899536,
+        "model_latency_ms": 18244.07982826233,
+        "success": false,
+        "result_val": "form_not_accepted"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 2,
+    "total_time_s": 38.60988473892212,
+    "total_model_latency_ms": 28229.225158691406,
+    "total_obs_overhead_ms": 5368.492603302002,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "narration": "No visual change.",
+        "audio_text": "Hi, this is Janet from W-",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2608.313798904419,
+        "model_latency_ms": 10323.894023895264,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2760.178804397583,
+        "model_latency_ms": 17905.331134796143,
+        "success": false,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 2,
+    "total_time_s": 24.1731059551239,
+    "total_model_latency_ms": 15229.391098022461,
+    "total_obs_overhead_ms": 4437.957763671875,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Paris\")",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2096.2841510772705,
+        "model_latency_ms": 7613.6744022369385,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "speak(\"Paris\")",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2341.6736125946045,
+        "model_latency_ms": 7615.7166957855225,
+        "success": false,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "text_incorrect",
+    "steps_taken": 2,
+    "total_time_s": 44.46318531036377,
+    "total_model_latency_ms": 35224.18546676636,
+    "total_obs_overhead_ms": 5190.65260887146,
+    "steps": [
+      {
+        "step": 1,
+        "action": "type(\"Welcome to Tech the following into the document.\")",
+        "narration": "No visual change.",
+        "audio_text": "Welcome to Tech the following into the document.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2623.539447784424,
+        "model_latency_ms": 18169.74401473999,
+        "success": false,
+        "result_val": "text_incorrect"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2567.113161087036,
+        "model_latency_ms": 17054.441452026367,
+        "success": false,
+        "result_val": "text_incorrect"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "J-E1",
+    "category": "J_game",
+    "difficulty": "easy",
+    "model_name": "gpt-5",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "score_0",
+    "steps_taken": 2,
+    "total_time_s": 50.91336941719055,
+    "total_model_latency_ms": 42547.60146141052,
+    "total_obs_overhead_ms": 4328.60541343689,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 620)",
+        "narration": "A whack-a-mole grid appears with several moles visible, including a clear one in the bottom center hole.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2081.3496112823486,
+        "model_latency_ms": 11398.759841918945,
+        "success": false,
+        "result_val": "score_0"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "No visual change.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2247.255802154541,
+        "model_latency_ms": 31148.841619491577,
+        "success": false,
+        "result_val": "score_0"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  }
+]

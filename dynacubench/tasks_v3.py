@@ -138,7 +138,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="guest_name_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "A-E2", TaskCategory.A_PODCAST, TaskDifficulty.EASY,
@@ -148,7 +148,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="price_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         Task(
             "A-E3", TaskCategory.A_PODCAST, TaskDifficulty.EASY,
@@ -158,7 +158,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="city_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -169,7 +169,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="both_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "A-M2", TaskCategory.A_PODCAST, TaskDifficulty.MEDIUM,
@@ -179,7 +179,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="both_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "A-M3", TaskCategory.A_PODCAST, TaskDifficulty.MEDIUM,
@@ -189,7 +189,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="all_three_correct",
-            duration_s=40.0,
+            duration_s=150.0,
         ),
         Task(
             "A-M4", TaskCategory.A_PODCAST, TaskDifficulty.MEDIUM,
@@ -199,7 +199,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="both_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -214,7 +214,7 @@ def _cat_a() -> list[Task]:
                 key_facts=["renewable energy costs", "grid reliability", "job transition"],
                 scoring="partial",
             ),
-            duration_s=60.0,
+            duration_s=240.0,
         ),
         Task(
             "A-H2", TaskCategory.A_PODCAST, TaskDifficulty.HARD,
@@ -224,7 +224,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="all_revenues_correct",
-            duration_s=55.0,
+            duration_s=240.0,
         ),
         Task(
             "A-H3", TaskCategory.A_PODCAST, TaskDifficulty.HARD,
@@ -234,7 +234,7 @@ def _cat_a() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="all_ingredients_correct",
-            duration_s=60.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -251,7 +251,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="date_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "B-E2", TaskCategory.B_MEETING, TaskDifficulty.EASY,
@@ -261,7 +261,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="room_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         Task(
             "B-E3", TaskCategory.B_MEETING, TaskDifficulty.EASY,
@@ -271,7 +271,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL],
             dom_success_value="label_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -282,7 +282,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL],
             dom_success_value="value_correct",
-            duration_s=40.0,
+            duration_s=150.0,
         ),
         Task(
             "B-M2", TaskCategory.B_MEETING, TaskDifficulty.MEDIUM,
@@ -292,7 +292,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="count_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "B-M3", TaskCategory.B_MEETING, TaskDifficulty.MEDIUM,
@@ -302,7 +302,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL],
             dom_success_value="all_assigned",
-            duration_s=45.0,
+            duration_s=150.0,
         ),
         Task(
             "B-M4", TaskCategory.B_MEETING, TaskDifficulty.MEDIUM,
@@ -312,7 +312,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL],
             dom_success_value="correction_correct",
-            duration_s=45.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -323,7 +323,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="answer_correct",
-            duration_s=40.0,
+            duration_s=240.0,
         ),
         Task(
             "B-H2", TaskCategory.B_MEETING, TaskDifficulty.HARD,
@@ -338,7 +338,7 @@ def _cat_b() -> list[Task]:
                 key_facts=["migrate to v3 API", "Alice owns design review", "launch date April 28", "budget approved at $1.4M"],
                 scoring="partial",
             ),
-            duration_s=75.0,
+            duration_s=240.0,
         ),
         Task(
             "B-H3", TaskCategory.B_MEETING, TaskDifficulty.HARD,
@@ -348,7 +348,7 @@ def _cat_b() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="both_answered_in_time",
-            duration_s=60.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -365,7 +365,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="command_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         Task(
             "C-E2", TaskCategory.C_VIDEO, TaskDifficulty.EASY,
@@ -375,7 +375,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="name_correct",
-            duration_s=15.0,
+            duration_s=90.0,
         ),
         Task(
             "C-E3", TaskCategory.C_VIDEO, TaskDifficulty.EASY,
@@ -385,7 +385,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="count_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -396,7 +396,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="function_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "C-M2", TaskCategory.C_VIDEO, TaskDifficulty.MEDIUM,
@@ -406,7 +406,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="all_titles_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "C-M3", TaskCategory.C_VIDEO, TaskDifficulty.MEDIUM,
@@ -416,7 +416,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="ports_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "C-M4", TaskCategory.C_VIDEO, TaskDifficulty.MEDIUM,
@@ -426,7 +426,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.AUDIO],
             dom_success_value="shortcut_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -437,7 +437,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="all_5_steps_correct",
-            duration_s=90.0,
+            duration_s=240.0,
         ),
         Task(
             "C-H2", TaskCategory.C_VIDEO, TaskDifficulty.HARD,
@@ -452,7 +452,7 @@ def _cat_c() -> list[Task]:
                 key_facts=["off-by-one in loop index", "null pointer dereference", "SQL injection in query builder"],
                 scoring="partial",
             ),
-            duration_s=75.0,
+            duration_s=240.0,
         ),
         Task(
             "C-H3", TaskCategory.C_VIDEO, TaskDifficulty.HARD,
@@ -462,7 +462,7 @@ def _cat_c() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="all_breakpoints_correct",
-            duration_s=65.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -479,7 +479,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="cheapest_bought",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "D-E2", TaskCategory.D_CAROUSEL, TaskDifficulty.EASY,
@@ -489,7 +489,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="count_correct",
-            duration_s=30.0,
+            duration_s=90.0,
         ),
         Task(
             "D-E3", TaskCategory.D_CAROUSEL, TaskDifficulty.EASY,
@@ -499,7 +499,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="tech_headline_clicked",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -510,7 +510,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="code_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "D-M2", TaskCategory.D_CAROUSEL, TaskDifficulty.MEDIUM,
@@ -520,7 +520,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="count_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "D-M3", TaskCategory.D_CAROUSEL, TaskDifficulty.MEDIUM,
@@ -530,7 +530,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="product_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "D-M4", TaskCategory.D_CAROUSEL, TaskDifficulty.MEDIUM,
@@ -540,7 +540,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="name_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -551,7 +551,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="total_correct",
-            duration_s=45.0,
+            duration_s=240.0,
         ),
         Task(
             "D-H2", TaskCategory.D_CAROUSEL, TaskDifficulty.HARD,
@@ -561,7 +561,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="all_matched",
-            duration_s=50.0,
+            duration_s=240.0,
         ),
         Task(
             "D-H3", TaskCategory.D_CAROUSEL, TaskDifficulty.HARD,
@@ -571,7 +571,7 @@ def _cat_d() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="breaking_clicked",
-            duration_s=40.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -588,7 +588,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="alert_triggered",
-            duration_s=30.0,
+            duration_s=90.0,
         ),
         Task(
             "E-E2", TaskCategory.E_DASHBOARD, TaskDifficulty.EASY,
@@ -598,7 +598,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="peak_correct",
-            duration_s=30.0,
+            duration_s=90.0,
         ),
         Task(
             "E-E3", TaskCategory.E_DASHBOARD, TaskDifficulty.EASY,
@@ -608,7 +608,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="warning_correct",
-            duration_s=30.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -619,7 +619,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="server_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "E-M2", TaskCategory.E_DASHBOARD, TaskDifficulty.MEDIUM,
@@ -629,7 +629,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="count_correct",
-            duration_s=40.0,
+            duration_s=150.0,
         ),
         Task(
             "E-M3", TaskCategory.E_DASHBOARD, TaskDifficulty.MEDIUM,
@@ -639,7 +639,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="flip_detected",
-            duration_s=40.0,
+            duration_s=150.0,
         ),
         Task(
             "E-M4", TaskCategory.E_DASHBOARD, TaskDifficulty.MEDIUM,
@@ -649,7 +649,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="critical_acknowledged",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -660,7 +660,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="all_3_acknowledged",
-            duration_s=50.0,
+            duration_s=240.0,
         ),
         Task(
             "E-H2", TaskCategory.E_DASHBOARD, TaskDifficulty.HARD,
@@ -675,7 +675,7 @@ def _cat_e() -> list[Task]:
                 key_facts=["CPU spiked above 80%", "memory usage stable around 60%", "disk I/O increasing", "network latency normal"],
                 scoring="partial",
             ),
-            duration_s=50.0,
+            duration_s=240.0,
         ),
         Task(
             "E-H3", TaskCategory.E_DASHBOARD, TaskDifficulty.HARD,
@@ -685,7 +685,7 @@ def _cat_e() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="all_3_alerts_correct",
-            duration_s=55.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -702,7 +702,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="form_accepted",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "F-E2", TaskCategory.F_TRANSIENT, TaskDifficulty.EASY,
@@ -712,7 +712,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="cookies_accepted",
-            duration_s=15.0,
+            duration_s=90.0,
         ),
         Task(
             "F-E3", TaskCategory.F_TRANSIENT, TaskDifficulty.EASY,
@@ -722,7 +722,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="filename_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -733,7 +733,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="session_extended",
-            duration_s=20.0,
+            duration_s=150.0,
         ),
         Task(
             "F-M2", TaskCategory.F_TRANSIENT, TaskDifficulty.MEDIUM,
@@ -743,7 +743,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="form_valid",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "F-M3", TaskCategory.F_TRANSIENT, TaskDifficulty.MEDIUM,
@@ -753,7 +753,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="count_correct",
-            duration_s=40.0,
+            duration_s=150.0,
         ),
         Task(
             "F-M4", TaskCategory.F_TRANSIENT, TaskDifficulty.MEDIUM,
@@ -763,7 +763,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="code_applied",
-            duration_s=25.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -774,7 +774,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="confirmation_correct",
-            duration_s=35.0,
+            duration_s=240.0,
         ),
         Task(
             "F-H2", TaskCategory.F_TRANSIENT, TaskDifficulty.HARD,
@@ -784,7 +784,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="all_statuses_correct",
-            duration_s=45.0,
+            duration_s=240.0,
         ),
         Task(
             "F-H3", TaskCategory.F_TRANSIENT, TaskDifficulty.HARD,
@@ -794,7 +794,7 @@ def _cat_f() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="third_code_correct",
-            duration_s=35.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -811,7 +811,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="number_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "G-E2", TaskCategory.G_PHONE, TaskDifficulty.EASY,
@@ -821,7 +821,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="name_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         Task(
             "G-E3", TaskCategory.G_PHONE, TaskDifficulty.EASY,
@@ -831,7 +831,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="time_correct",
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -842,7 +842,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="support_selected",
-            duration_s=20.0,
+            duration_s=150.0,
         ),
         Task(
             "G-M2", TaskCategory.G_PHONE, TaskDifficulty.MEDIUM,
@@ -852,7 +852,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="address_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "G-M3", TaskCategory.G_PHONE, TaskDifficulty.MEDIUM,
@@ -862,7 +862,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="both_fields_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "G-M4", TaskCategory.G_PHONE, TaskDifficulty.MEDIUM,
@@ -872,7 +872,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="code_correct",
-            duration_s=25.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -883,7 +883,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="both_responded_in_time",
-            duration_s=45.0,
+            duration_s=240.0,
         ),
         Task(
             "G-H2", TaskCategory.G_PHONE, TaskDifficulty.HARD,
@@ -893,7 +893,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="both_attributed_correct",
-            duration_s=45.0,
+            duration_s=240.0,
         ),
         Task(
             "G-H3", TaskCategory.G_PHONE, TaskDifficulty.HARD,
@@ -903,7 +903,7 @@ def _cat_g() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="all_5_correct",
-            duration_s=55.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -921,7 +921,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="answer_heard_correct",
             requires_audio_out=True,
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         Task(
             "H-E2", TaskCategory.H_INTERVIEW, TaskDifficulty.EASY,
@@ -932,7 +932,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="name_spoken_correct",
             requires_audio_out=True,
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "H-E3", TaskCategory.H_INTERVIEW, TaskDifficulty.EASY,
@@ -943,7 +943,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="pin_verified",
             requires_audio_out=True,
-            duration_s=20.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -955,7 +955,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="revenue_spoken_correct",
             requires_audio_out=True,
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "H-M2", TaskCategory.H_INTERVIEW, TaskDifficulty.MEDIUM,
@@ -966,7 +966,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="both_answers_correct",
             requires_audio_out=True,
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "H-M3", TaskCategory.H_INTERVIEW, TaskDifficulty.MEDIUM,
@@ -977,7 +977,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="order_verified",
             requires_audio_out=True,
-            duration_s=25.0,
+            duration_s=150.0,
         ),
         Task(
             "H-M4", TaskCategory.H_INTERVIEW, TaskDifficulty.MEDIUM,
@@ -988,7 +988,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="sentence_matched",
             requires_audio_out=True,
-            duration_s=25.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -1005,7 +1005,7 @@ def _cat_h() -> list[Task]:
                 scoring="partial",
             ),
             requires_audio_out=True,
-            duration_s=40.0,
+            duration_s=240.0,
         ),
         Task(
             "H-H2", TaskCategory.H_INTERVIEW, TaskDifficulty.HARD,
@@ -1016,7 +1016,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="answer_correct",
             requires_audio_out=True,
-            duration_s=30.0,
+            duration_s=240.0,
         ),
         Task(
             "H-H3", TaskCategory.H_INTERVIEW, TaskDifficulty.HARD,
@@ -1027,7 +1027,7 @@ def _cat_h() -> list[Task]:
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="all_3_correct",
             requires_audio_out=True,
-            duration_s=60.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -1044,7 +1044,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO],
             dom_success_value="text_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "I-E2", TaskCategory.I_COLLAB, TaskDifficulty.EASY,
@@ -1054,7 +1054,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL],
             dom_success_value="heading_correct",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         Task(
             "I-E3", TaskCategory.I_COLLAB, TaskDifficulty.EASY,
@@ -1064,7 +1064,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.INTERACT],
             dom_success_value="last_paragraph_deleted",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -1075,7 +1075,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="correct_value_in_section2",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "I-M2", TaskCategory.I_COLLAB, TaskDifficulty.MEDIUM,
@@ -1085,7 +1085,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="section3_updated",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "I-M3", TaskCategory.I_COLLAB, TaskDifficulty.MEDIUM,
@@ -1095,7 +1095,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="total_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "I-M4", TaskCategory.I_COLLAB, TaskDifficulty.MEDIUM,
@@ -1110,7 +1110,7 @@ def _cat_i() -> list[Task]:
                 key_facts=["changed title from 'Draft' to 'Final Report'", "updated the date"],
                 scoring="partial",
             ),
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -1121,7 +1121,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="all_3_bullets_correct",
-            duration_s=50.0,
+            duration_s=240.0,
         ),
         Task(
             "I-H2", TaskCategory.I_COLLAB, TaskDifficulty.HARD,
@@ -1131,7 +1131,7 @@ def _cat_i() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.AUDIO, CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="all_4_changes_correct",
-            duration_s=60.0,
+            duration_s=240.0,
         ),
         Task(
             "I-H3", TaskCategory.I_COLLAB, TaskDifficulty.HARD,
@@ -1147,7 +1147,7 @@ def _cat_i() -> list[Task]:
                 scoring="binary",
             ),
             requires_audio_out=True,
-            duration_s=55.0,
+            duration_s=240.0,
         ),
     ]
 
@@ -1164,7 +1164,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="score_3_or_more",
-            duration_s=35.0,
+            duration_s=90.0,
         ),
         Task(
             "J-E2", TaskCategory.J_GAME, TaskDifficulty.EASY,
@@ -1174,7 +1174,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="3_rounds_complete",
-            duration_s=30.0,
+            duration_s=90.0,
         ),
         Task(
             "J-E3", TaskCategory.J_GAME, TaskDifficulty.EASY,
@@ -1184,7 +1184,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="correct_color_clicked",
-            duration_s=25.0,
+            duration_s=90.0,
         ),
         # ── MEDIUM (4) ─────────────────────────────────────────────
         Task(
@@ -1195,7 +1195,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="pattern_correct",
-            duration_s=30.0,
+            duration_s=150.0,
         ),
         Task(
             "J-M2", TaskCategory.J_GAME, TaskDifficulty.MEDIUM,
@@ -1205,7 +1205,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="3_pairs_matched",
-            duration_s=45.0,
+            duration_s=150.0,
         ),
         Task(
             "J-M3", TaskCategory.J_GAME, TaskDifficulty.MEDIUM,
@@ -1215,7 +1215,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="ascending_correct",
-            duration_s=35.0,
+            duration_s=150.0,
         ),
         Task(
             "J-M4", TaskCategory.J_GAME, TaskDifficulty.MEDIUM,
@@ -1225,7 +1225,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="5_words_correct",
-            duration_s=40.0,
+            duration_s=150.0,
         ),
         # ── HARD (3) ────────────────────────────────────────────────
         Task(
@@ -1236,7 +1236,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="survived_30s",
-            duration_s=45.0,
+            duration_s=240.0,
         ),
         Task(
             "J-H2", TaskCategory.J_GAME, TaskDifficulty.HARD,
@@ -1246,7 +1246,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="pattern_correct",
-            duration_s=40.0,
+            duration_s=240.0,
         ),
         Task(
             "J-H3", TaskCategory.J_GAME, TaskDifficulty.HARD,
@@ -1256,7 +1256,7 @@ def _cat_j() -> list[Task]:
             eval_type=EvalType.DOM,
             axes=[CapabilityAxis.VISUAL, CapabilityAxis.INTERACT],
             dom_success_value="hits_5_numbers_3",
-            duration_s=50.0,
+            duration_s=240.0,
         ),
     ]
 

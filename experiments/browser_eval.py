@@ -150,14 +150,17 @@ class BrowserEvaluator:
 
     def _init_aoi(self):
         """Initialize AOI components for a new task."""
+        import subprocess
+
         # Kill any lingering audio injection from prior task
         if hasattr(self, '_audio_inject_thread') and self._audio_inject_thread is not None:
-            self._audio_inject_thread.join(timeout=1)
+            self._audio_inject_thread.join(timeout=2)
             self._audio_inject_thread = None
         # Kill any lingering pacat processes from prior audio injection
-        import subprocess
         subprocess.run(["pkill", "-f", "pacat.*virtual_speaker"],
                        capture_output=True, timeout=2)
+        # Brief pause to let PulseAudio drain residual audio
+        time.sleep(0.5)
 
         use_keyframes = self.observation_mode in (
             "aoi_visual", "aoi_visual_only", "aoi_visual_asr", "aoi_full",
@@ -192,7 +195,7 @@ class BrowserEvaluator:
         else:
             self._audio_processor = None
 
-        self._trajectory = TrajectoryStore(context_depth=3, screenshot_history=5)
+        self._trajectory = TrajectoryStore(context_depth=5, screenshot_history=5)
 
     def _feed_intermediate_frames(self, env: BrowserEnvironment, duration_s: float):
         """
@@ -251,9 +254,15 @@ class BrowserEvaluator:
                     const scripts = document.querySelectorAll('script');
                     for (const s of scripts) {
                         const src = s.textContent;
-                        // Match SpeechSynthesisUtterance("...")
-                        const matches = src.matchAll(/SpeechSynthesisUtterance\\(["\']([^"\']+)["\']\\)/g);
-                        for (const m of matches) {
+                        // Match SpeechSynthesisUtterance("...") or ('...')
+                        // Use separate patterns for double and single quotes
+                        // to handle apostrophes inside text correctly
+                        const dqMatches = src.matchAll(/SpeechSynthesisUtterance\("([^"]+)"\)/g);
+                        for (const m of dqMatches) {
+                            if (m[1] && m[1].length > 5) texts.push(m[1]);
+                        }
+                        const sqMatches = src.matchAll(/SpeechSynthesisUtterance\('([^']+)'\)/g);
+                        for (const m of sqMatches) {
                             if (m[1] && m[1].length > 5) texts.push(m[1]);
                         }
                     }
@@ -430,13 +439,33 @@ class BrowserEvaluator:
                 # 6. CU model inference
                 context_text = obs.to_prompt_text()
 
+                # Add interactive page elements for AOI modes
+                # This gives the model DOM context about available inputs/buttons
+                if self.observation_mode != "standard":
+                    page_elements = env.get_interactive_elements()
+                    if page_elements:
+                        context_text += f"\n\n{page_elements}"
+
+                # Add accumulated audio transcript for audio-enabled modes
+                # This ensures no spoken information is lost from earlier steps
+                if self.observation_mode in ("aoi_full", "aoi_audio",
+                                              "aoi_interactive", "aoi_visual_asr"):
+                    full_transcript = self._trajectory.get_full_transcript()
+                    if full_transcript and step_num > 1:
+                        context_text += (
+                            f"\n\n[FULL AUDIO HISTORY — all audio heard so far]\n"
+                            f"  {full_transcript}"
+                        )
+
                 # Inject action error feedback so the model can self-correct
                 if last_action_error:
                     context_text += (
                         f"\n\n[ACTION ERROR — previous action failed]\n"
                         f"  Error: {last_action_error}\n"
-                        f"  Try a different action format. Use click(x, y) with "
-                        f"pixel coordinates, or fill(#selector, \"value\")."
+                        f"  Try a different action. Use click(x, y) with pixel "
+                        f"coordinates. To type text, use type(\"text\") or "
+                        f"click the input first then type(\"text\"). "
+                        f"See [PAGE ELEMENTS] above for valid element IDs."
                     )
                     last_action_error = None
 
