@@ -1,0 +1,261 @@
+{
+  "standard": {
+    "mode": "standard",
+    "success_rate": 0.15384615384615385,
+    "n_successful": 4,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "C_transient_ui": {
+        "success_rate": 0.4,
+        "total": 5,
+        "success": 2
+      },
+      "D_audio_alert": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.0,
+    "avg_audio_activation_ratio": 0.0,
+    "avg_steps": 13.384615384615385,
+    "avg_tokens": 501.61538461538464
+  },
+  "uniform_1fps": {
+    "mode": "uniform_1fps",
+    "success_rate": 0.23076923076923078,
+    "n_successful": 6,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.3333333333333333,
+        "total": 6,
+        "success": 2
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.4,
+        "total": 5,
+        "success": 2
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.5828220858895705,
+    "avg_audio_activation_ratio": 0.018404907975460124,
+    "avg_steps": 12.538461538461538,
+    "avg_tokens": 916.0384615384615
+  },
+  "uniform_3fps": {
+    "mode": "uniform_3fps",
+    "success_rate": 0.23076923076923078,
+    "n_successful": 6,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.3333333333333333,
+        "total": 6,
+        "success": 2
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.4,
+        "total": 5,
+        "success": 2
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 1.70846394984326,
+    "avg_audio_activation_ratio": 0.018808777429467086,
+    "avg_steps": 12.26923076923077,
+    "avg_tokens": 938.3076923076923
+  },
+  "pixel_diff": {
+    "mode": "pixel_diff",
+    "success_rate": 0.19230769230769232,
+    "n_successful": 5,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.4,
+        "total": 5,
+        "success": 2
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.006006006006006006,
+    "avg_audio_activation_ratio": 0.018018018018018018,
+    "avg_steps": 12.807692307692308,
+    "avg_tokens": 872.8461538461538
+  },
+  "aoi_visual_only": {
+    "mode": "aoi_visual_only",
+    "success_rate": 0.07692307692307693,
+    "n_successful": 2,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.005449591280653951,
+    "avg_audio_activation_ratio": 0.0,
+    "avg_steps": 14.115384615384615,
+    "avg_tokens": 963.0769230769231
+  },
+  "aoi_visual_asr": {
+    "mode": "aoi_visual_asr",
+    "success_rate": 0.19230769230769232,
+    "n_successful": 5,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.4,
+        "total": 5,
+        "success": 2
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.006006006006006006,
+    "avg_audio_activation_ratio": 0.018018018018018018,
+    "avg_steps": 12.807692307692308,
+    "avg_tokens": 872.8461538461538
+  },
+  "aoi_full": {
+    "mode": "aoi_full",
+    "success_rate": 0.19230769230769232,
+    "n_successful": 5,
+    "total_tasks": 26,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.4,
+        "total": 5,
+        "success": 2
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.006006006006006006,
+    "avg_audio_activation_ratio": 0.018018018018018018,
+    "avg_steps": 12.807692307692308,
+    "avg_tokens": 872.8461538461538
+  }
+}

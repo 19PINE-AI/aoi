@@ -1,0 +1,167 @@
+{
+  "standard": {
+    "model": "mock",
+    "mode": "standard",
+    "total_tasks": 26,
+    "success_rate": 0.11538461538461539,
+    "n_successful": 3,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "C_transient_ui": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      },
+      "D_audio_alert": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "success_rate": 0.2,
+        "total": 10,
+        "success": 2
+      },
+      "medium": {
+        "success_rate": 0.0,
+        "total": 10,
+        "success": 0
+      },
+      "hard": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.0,
+    "avg_audio_activation_ratio": 0.0,
+    "avg_steps_per_task": 13.807692307692308,
+    "avg_tokens_per_task": 4205.692307692308
+  },
+  "aoi_visual_only": {
+    "model": "mock",
+    "mode": "aoi_visual_only",
+    "total_tasks": 26,
+    "success_rate": 0.07692307692307693,
+    "n_successful": 2,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "success_rate": 0.1,
+        "total": 10,
+        "success": 1
+      },
+      "medium": {
+        "success_rate": 0.0,
+        "total": 10,
+        "success": 0
+      },
+      "hard": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.0,
+    "avg_audio_activation_ratio": 0.0,
+    "avg_steps_per_task": 14.115384615384615,
+    "avg_tokens_per_task": 4867.846153846154
+  },
+  "aoi_full": {
+    "model": "mock",
+    "mode": "aoi_full",
+    "total_tasks": 26,
+    "success_rate": 0.07692307692307693,
+    "n_successful": 2,
+    "by_category": {
+      "A_video_comprehension": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      },
+      "B_meeting_audio": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "C_transient_ui": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "D_audio_alert": {
+        "success_rate": 0.0,
+        "total": 5,
+        "success": 0
+      },
+      "E_combined_multimodal": {
+        "success_rate": 0.2,
+        "total": 5,
+        "success": 1
+      }
+    },
+    "by_difficulty": {
+      "easy": {
+        "success_rate": 0.1,
+        "total": 10,
+        "success": 1
+      },
+      "medium": {
+        "success_rate": 0.0,
+        "total": 10,
+        "success": 0
+      },
+      "hard": {
+        "success_rate": 0.16666666666666666,
+        "total": 6,
+        "success": 1
+      }
+    },
+    "avg_keyframes_per_step": 0.0,
+    "avg_audio_activation_ratio": 0.0,
+    "avg_steps_per_task": 14.115384615384615,
+    "avg_tokens_per_task": 4867.846153846154
+  }
+}

@@ -1,0 +1,524 @@
+[
+  {
+    "task_id": "D-E1",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "timeout",
+    "steps_taken": 2,
+    "total_time_s": 16.69230031967163,
+    "total_model_latency_ms": 7932.833909988403,
+    "total_obs_overhead_ms": 6916.811943054199,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click 296 292",
+        "narration": "The cookie consent banner has already auto-dismissed, and the main content of the news website, including three news headlines, is visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 4729.164123535156,
+        "model_latency_ms": 2627.3553371429443,
+        "success": false,
+        "result_val": "timeout"
+      },
+      {
+        "step": 2,
+        "action": "Click 300 200",
+        "narration": "The screenshot explicitly states \"TIMEOUT: banner auto-dismissed\" below the list of news headlines.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2187.647819519043,
+        "model_latency_ms": 5305.478572845459,
+        "success": false,
+        "result_val": "timeout"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E2",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "file_opened",
+    "steps_taken": 2,
+    "total_time_s": 10.458910942077637,
+    "total_model_latency_ms": 2853.1477451324463,
+    "total_obs_overhead_ms": 5634.444713592529,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click element 'Download quarterly_report.pdf button'",
+        "narration": "The screen displays a \"File Manager\" heading with instructions to click a button to start downloading 'quarterly_report.pdf'.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3357.2990894317627,
+        "model_latency_ms": 1479.6206951141357,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click element 'Open file button'",
+        "narration": "A \"Download Complete\" toast with an \"Open file\" button has appeared in the bottom right corner of the screen.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2277.1456241607666,
+        "model_latency_ms": 1373.5270500183105,
+        "success": true,
+        "result_val": "file_opened"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E3",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "session_extended",
+    "steps_taken": 1,
+    "total_time_s": 6.50241231918335,
+    "total_model_latency_ms": 1576.4334201812744,
+    "total_obs_overhead_ms": 3313.225507736206,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click \"Stay Logged In\"",
+        "narration": "A \"Session Expiring Soon\" warning pop-up has appeared in the center of the screen, offering \"Stay Logged In\" and \"Log Out\" buttons.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3313.225507736206,
+        "model_latency_ms": 1576.4334201812744,
+        "success": true,
+        "result_val": "session_extended"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-M4",
+    "category": "D_transient_ui",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 2,
+    "total_time_s": 16.44570541381836,
+    "total_model_latency_ms": 8663.593530654907,
+    "total_obs_overhead_ms": 5890.579462051392,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"FLASH25\" into the \"ENTER CODE\" field and click the \"Apply\" button.",
+        "narration": "A red banner at the top of the page announces a flash sale with a discount code \"FLASH25\" and a countdown expiring in 2 seconds.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3327.833414077759,
+        "model_latency_ms": 1831.1653137207031,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "No",
+        "narration": "A new banner at the top of the page announces \"Offer expired \u2014 flash sale has ended,\" and the \"Promo Code\" field displays \"FLASH25\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2562.746047973633,
+        "model_latency_ms": 6832.428216934204,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_audio_alert",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "correct_event",
+    "steps_taken": 4,
+    "total_time_s": 22.141469478607178,
+    "total_model_latency_ms": 9205.99627494812,
+    "total_obs_overhead_ms": 10352.81229019165,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"Customer satisfaction increased to 85%\"",
+        "narration": "The document editor now displays \"Customer satisfaction increased to 85%\" as a new key highlight.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3402.174711227417,
+        "model_latency_ms": 2701.7009258270264,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click \"Open Calendar\"",
+        "narration": "A \"Calendar Reminder\" popup has appeared in the top right, indicating \"Your meeting starts in 5 minutes\" and presenting an \"Open Calendar\" button.",
+        "audio_text": "",
+        "n_keyframes": 2,
+        "obs_overhead_ms": 2362.438201904297,
+        "model_latency_ms": 2060.8999729156494,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "Type \"Team Standup\" into the \"Enter event title...\" text field.",
+        "narration": "The calendar application is open, showing a \"Team Standup\" event from 10:00 AM to 10:15 AM daily in Meeting Room 48, and prompts for the event title to be entered into a text field.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2325.826406478882,
+        "model_latency_ms": 2005.8331489562988,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "Click \"Submit\"",
+        "narration": "The calendar application is still open, displaying \"Team Standup\" in the event title text field, next to a \"Submit\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2262.3729705810547,
+        "model_latency_ms": 2437.5622272491455,
+        "success": true,
+        "result_val": "correct_event"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "summer_clicked",
+    "steps_taken": 4,
+    "total_time_s": 24.51590347290039,
+    "total_model_latency_ms": 9662.477970123291,
+    "total_obs_overhead_ms": 10880.887269973755,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click button \"Shop Now\"",
+        "narration": "The current slide in the image carousel displays \"Winter Sale\" and \"Up to 60% off everything\" text with a \"Shop Now\" button on a pink and orange gradient background.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3399.739980697632,
+        "model_latency_ms": 1802.710771560669,
+        "success": false,
+        "result_val": "summer_clicked"
+      },
+      {
+        "step": 2,
+        "action": "No Action",
+        "narration": "The current slide in the image carousel displays \"Summer Essentials\" text with a \"Shop Now\" button on a blue gradient background.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2466.7420387268066,
+        "model_latency_ms": 2090.6338691711426,
+        "success": false,
+        "result_val": "summer_clicked"
+      },
+      {
+        "step": 3,
+        "action": "No Action",
+        "narration": "The current slide in the image carousel displays \"Spring Collection\" text with a \"Shop Now\" button on a blue and purple gradient background.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2611.9024753570557,
+        "model_latency_ms": 2995.1298236846924,
+        "success": false,
+        "result_val": "summer_clicked"
+      },
+      {
+        "step": 4,
+        "action": "No Action",
+        "narration": "The current slide in the image carousel displays \"Summer Essentials\" text with a \"Shop Now\" button on a blue gradient background.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2402.5027751922607,
+        "model_latency_ms": 2774.003505706787,
+        "success": false,
+        "result_val": "summer_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 3,
+    "total_time_s": 20.609330415725708,
+    "total_model_latency_ms": 10328.616380691528,
+    "total_obs_overhead_ms": 8106.230735778809,
+    "steps": [
+      {
+        "step": 1,
+        "action": "PAUSE",
+        "narration": "The NexusOS Launcher is currently connecting and preparing the environment, showing 53% completion on a green progress bar.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3342.7093029022217,
+        "model_latency_ms": 1798.9473342895508,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "CLICK x500 y610",
+        "narration": "The NexusOS Launcher progress bar is now at 100% and displays \"Ready!\", with a green \"Launch\" button visible below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2391.0555839538574,
+        "model_latency_ms": 2562.718629837036,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "CLICK x500 y610",
+        "narration": "The NexusOS Launcher is still displaying \"Ready!\" at 100% completion, with the \"Launch\" button clearly visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2372.4658489227295,
+        "model_latency_ms": 5966.950416564941,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_web_game",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 3,
+    "total_time_s": 18.473225116729736,
+    "total_model_latency_ms": 8199.82385635376,
+    "total_obs_overhead_ms": 8078.0510902404785,
+    "steps": [
+      {
+        "step": 1,
+        "action": "CLICK 601 645",
+        "narration": "The screen displays the title \"Reaction Time Test\" and instructions to \"Click Start to begin\" within a central dark blue box, with a \"Start Test\" button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3314.128875732422,
+        "model_latency_ms": 1232.5329780578613,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "CLICK 601 645",
+        "narration": "The screen remains unchanged, still displaying the \"Reaction Time Test\" title, instructions, and the \"Start Test\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2398.0886936187744,
+        "model_latency_ms": 4916.093826293945,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "CLICK 601 645",
+        "narration": "The screen remains unchanged, displaying the \"Reaction Time Test\" title, instructions, and the \"Start Test\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2365.833520889282,
+        "model_latency_ms": 2051.197052001953,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 2,
+    "total_time_s": 17.015533685684204,
+    "total_model_latency_ms": 9311.74111366272,
+    "total_obs_overhead_ms": 5780.244588851929,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"Configuration\" into the text field.",
+        "narration": "The system setup wizard shows Step 1 \"Installation\" as currently running, with Step 2 labeled \"Configuration\" and Step 3 labeled \"Activation.\"",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3313.9090538024902,
+        "model_latency_ms": 3467.4246311187744,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "NARRATION: The system setup wizard shows Step 1 \"Installation\" and Step 2 \"Configuration\" as complete, while Step 3 \"Activation\" is currently running, displaying \"Activating",
+        "narration": "The system setup wizard shows Step 1 \"Installation\" and Step 2 \"Configuration\" as complete, while Step 3 \"Activation\" is currently running, displaying \"Activating",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2466.3355350494385,
+        "model_latency_ms": 5844.316482543945,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 6.721830368041992,
+    "total_model_latency_ms": 1801.534652709961,
+    "total_obs_overhead_ms": 3322.3464488983154,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"Deploy\" into the text field with current value \"Name the last item to complete...\".",
+        "narration": "The deployment checklist displays five items, with \"Lint code\" completed and \"Run tests\" in progress.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3322.3464488983154,
+        "model_latency_ms": 1801.534652709961,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 3,
+    "total_time_s": 18.28709578514099,
+    "total_model_latency_ms": 5804.8412799835205,
+    "total_obs_overhead_ms": 8821.77209854126,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WAIT",
+        "narration": "The live counter displays the number 8, and the instruction indicates to click 'Capture' when it reaches 42.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3384.1733932495117,
+        "model_latency_ms": 1759.3357563018799,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "WAIT",
+        "narration": "The live counter now displays 19.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2720.954418182373,
+        "model_latency_ms": 1748.0583190917969,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "WAIT",
+        "narration": "The live counter now displays 29.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2716.644287109375,
+        "model_latency_ms": 2297.4472045898438,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E2",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 3,
+    "total_time_s": 17.978782176971436,
+    "total_model_latency_ms": 6526.880741119385,
+    "total_obs_overhead_ms": 8165.2820110321045,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait",
+        "narration": "The current temperature is 35.4\u00b0C, which is below the alert threshold of 37.0\u00b0C.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3294.7819232940674,
+        "model_latency_ms": 1962.8410339355469,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Wait",
+        "narration": "The current temperature is 36.8\u00b0C, which is very close to the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2398.6427783966064,
+        "model_latency_ms": 2183.9311122894287,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "Click button 'Trigger Alert'",
+        "narration": "The main temperature reading is 38.6\u00b0C, exceeding the 37.0\u00b0C alert threshold, and a prominent red \"Trigger Alert\" button is visible at the bottom of the screen.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2471.8573093414307,
+        "model_latency_ms": 2380.108594894409,
+        "success": true,
+        "result_val": "alert_triggered"
+      }
+    ],
+    "error": null
+  }
+]

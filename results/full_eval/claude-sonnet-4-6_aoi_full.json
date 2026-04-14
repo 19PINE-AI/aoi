@@ -1,0 +1,425 @@
+[
+  {
+    "task_id": "D-E1",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "timeout",
+    "steps_taken": 1,
+    "total_time_s": 36.91479992866516,
+    "total_model_latency_ms": 2023.84352684021,
+    "total_obs_overhead_ms": 3295.3100204467773,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the \"Accept All\" button to accept the cookie consent dialog.",
+        "narration": "A cookie consent dialog has appeared at the bottom of the News Website page, showing a message about cookies with \"Accept All\" and \"Decline\" buttons.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3295.3100204467773,
+        "model_latency_ms": 2023.84352684021,
+        "success": false,
+        "result_val": "timeout"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E2",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "file_opened",
+    "steps_taken": 2,
+    "total_time_s": 11.608103275299072,
+    "total_model_latency_ms": 4006.959915161133,
+    "total_obs_overhead_ms": 5711.90881729126,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(330, 187)",
+        "narration": "The File Manager page shows a \"Download quarterly_report.pdf\" button that hasn't been clicked yet, so I need to first initiate the download.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3277.313232421875,
+        "model_latency_ms": 1837.0351791381836,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "click(1184, 657)",
+        "narration": "The download is complete at 100% and a green \"Download Complete\" toast notification has appeared in the bottom-right corner with an \"Open file\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2434.5955848693848,
+        "model_latency_ms": 2169.924736022949,
+        "success": true,
+        "result_val": "file_opened"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E3",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "session_expired",
+    "steps_taken": 2,
+    "total_time_s": 44.02375769615173,
+    "total_model_latency_ms": 6465.253829956055,
+    "total_obs_overhead_ms": 5652.16851234436,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(578, 441)",
+        "narration": "A modal dialog titled \"Session Expiring Soon\" has appeared with a warning triangle icon, informing the user their session will expire in 60 seconds due to inactivity, with a green progress bar at the ",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3277.4670124053955,
+        "model_latency_ms": 2994.42458152771,
+        "success": false,
+        "result_val": "session_expired"
+      },
+      {
+        "step": 2,
+        "action": "None \u2014 the session has already expired; the 'Stay logged in' button was not clicked in time and the task could not be completed successfully.",
+        "narration": "The session has already expired and a red banner reading \"Session expired \u2014 you have been logged out.\" is now displayed at the top of the page, indicating the modal was not clicked in time.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2374.701499938965,
+        "model_latency_ms": 3470.8292484283447,
+        "success": false,
+        "result_val": "session_expired"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-M4",
+    "category": "D_transient_ui",
+    "difficulty": "medium",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 37.889044523239136,
+    "total_model_latency_ms": 2895.9782123565674,
+    "total_obs_overhead_ms": 3381.5572261810303,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click on the promo code input field and type \"FLASH25\", then click Apply.",
+        "narration": "The flash sale banner at the top shows the discount code \"FLASH25\" with a 25% off promotion and a countdown timer showing 2 seconds remaining.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3381.5572261810303,
+        "model_latency_ms": 2895.9782123565674,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_audio_alert",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "alarm_missed",
+    "steps_taken": 4,
+    "total_time_s": 25.310762882232666,
+    "total_model_latency_ms": 11782.293796539307,
+    "total_obs_overhead_ms": 10483.765125274658,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I will work on the document and wait for a calendar alarm. Currently, I can see the Document Editor with the Q3 Financial Summary. Let me click on the document to start working on it, and I'll monitor",
+        "narration": "The Document Editor shows a Q3 Financial Summary with revenue, operating costs, net profit figures, and key highlights including European expansion, Q4 product launch, and 94% customer retention.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3342.925548553467,
+        "model_latency_ms": 3258.364677429199,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "I can see the calendar alarm has triggered. I'll click the \"Open Calendar\" button to open the calendar and note the event title.",
+        "narration": "A red \"Calendar Reminder\" popup has appeared in the top-right corner, displaying \"Your meeting starts in 5 minutes\" with an \"Open Calendar\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2369.630813598633,
+        "model_latency_ms": 2913.9630794525146,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 3,
+        "action": "I'll click on the Calendar tab in the taskbar to open the calendar and find the event title that triggered the alarm.",
+        "narration": "The calendar reminder popup has dismissed and we're back to the Document Editor view, with the Calendar tab now visible in the taskbar at the bottom, suggesting the calendar was opened but we're now s",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2343.2281017303467,
+        "model_latency_ms": 2666.494846343994,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 4,
+        "action": "I'll click directly on the \"Calendar\" tab in the taskbar to switch to the calendar view and find the event title.",
+        "narration": "The screenshot shows we're back at the Document Editor view with the Calendar tab visible in the taskbar, but the calendar has not been opened yet despite the previous click attempt.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2427.980661392212,
+        "model_latency_ms": 2943.4711933135986,
+        "success": false,
+        "result_val": "alarm_missed"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "summer_clicked",
+    "steps_taken": 1,
+    "total_time_s": 8.13154125213623,
+    "total_model_latency_ms": 3170.393466949463,
+    "total_obs_overhead_ms": 3328.282117843628,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the 'Shop Now' button at coordinates (640, 311)",
+        "narration": "The carousel is currently showing the 'Winter Sale' slide with a pink-purple gradient background, displaying \"Up to 60% off everything\" and a 'Shop Now' button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3328.282117843628,
+        "model_latency_ms": 3170.393466949463,
+        "success": true,
+        "result_val": "summer_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "launch_clicked",
+    "steps_taken": 2,
+    "total_time_s": 13.22179365158081,
+    "total_model_latency_ms": 5589.18309211731,
+    "total_obs_overhead_ms": 5605.100631713867,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the progress bar to reach 100% before clicking 'Launch'.",
+        "narration": "The NexusOS Launcher loading screen shows a progress bar at 52% with the status \"Connecting...\" indicating the loading process is still underway.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3227.1103858947754,
+        "model_latency_ms": 3267.5721645355225,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click the \"Launch\" button at coordinates (640, 473).",
+        "narration": "The progress bar has reached 100% and now displays \"Ready!\" on the left side, with the green \"Launch\" button now active and prominent.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2377.990245819092,
+        "model_latency_ms": 2321.610927581787,
+        "success": true,
+        "result_val": "launch_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_web_game",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "reaction_recorded_3893",
+    "steps_taken": 3,
+    "total_time_s": 17.46711778640747,
+    "total_model_latency_ms": 6868.231534957886,
+    "total_obs_overhead_ms": 7890.515565872192,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 565)",
+        "narration": "The Reaction Time Test page is displayed with a dark background, showing a \"Click Start to begin\" message in the center panel and a purple \"Start Test\" button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3221.6293811798096,
+        "model_latency_ms": 2195.970058441162,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "wait(2)",
+        "narration": "The test has started and is showing a countdown with the number \"1\" in orange, indicating the green button will appear very soon.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2335.9200954437256,
+        "model_latency_ms": 1952.3868560791016,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 390)",
+        "narration": "The green \"CLICK!\" button has appeared on screen, displaying a dark green panel with bright green text and border.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2332.966089248657,
+        "model_latency_ms": 2719.874620437622,
+        "success": true,
+        "result_val": "reaction_recorded_3893"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 9.102153539657593,
+    "total_model_latency_ms": 4251.802682876587,
+    "total_obs_overhead_ms": 3218.48201751709,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the wizard to complete all steps, then click the input field and type \"Configuration\".\n\nI'll wait for the wizard to complete, then type the answer. Based on what's visible, Step 2 is clearly ",
+        "narration": "The wizard is currently on Step 1: Installation (Running), with Step 2 labeled \"Configuration\" and Step 3 labeled \"Activation\" visible in the step indicators.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3218.48201751709,
+        "model_latency_ms": 4251.802682876587,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "incorrect",
+    "steps_taken": 1,
+    "total_time_s": 8.509713411331177,
+    "total_model_latency_ms": 3618.5922622680664,
+    "total_obs_overhead_ms": 3226.0546684265137,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Since the checklist processes items sequentially one by one, the last item to complete will be \"Deploy\" (the final item in the list). I'll type \"Deploy\" in the input field and submit.",
+        "narration": "The deployment checklist shows \"Lint code\" completed (green checkmark, 1.2s), \"Run tests\" currently in progress (spinning blue icon), and three remaining items (Build Docker image, Push to registry, D",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3226.0546684265137,
+        "model_latency_ms": 3618.5922622680664,
+        "success": true,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "captured_at_19",
+    "steps_taken": 1,
+    "total_time_s": 10.550414800643921,
+    "total_model_latency_ms": 5623.583078384399,
+    "total_obs_overhead_ms": 3308.1562519073486,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the counter to reach 42, then click the Capture button. Since the counter is at 8 and increments every 500ms, I need to wait approximately 17 seconds (34 \u00d7 500ms) before clicking.\n\nI'll click",
+        "narration": "The live counter displays the number 8 in large cyan text, updating every 500ms, with a blue \"Capture\" button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3308.1562519073486,
+        "model_latency_ms": 5623.583078384399,
+        "success": true,
+        "result_val": "captured_at_19"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E2",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 2,
+    "total_time_s": 14.745766162872314,
+    "total_model_latency_ms": 6536.885738372803,
+    "total_obs_overhead_ms": 5706.767797470093,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait and monitor - temperature is 35.4\u00b0C, below the 37\u00b0C threshold. I will wait for the next update.",
+        "narration": "The environmental monitor shows a current temperature of 35.4\u00b0C with a \"Normal\" status indicator, and the temperature history graph shows an upward trend approaching but not yet exceeding the 37\u00b0C das",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3244.302272796631,
+        "model_latency_ms": 4168.306589126587,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click the \"Trigger Alert\" button.",
+        "narration": "The temperature has risen to 37.5\u00b0C, exceeding the 37\u00b0C threshold, with the graph line now above the dashed threshold marker and a red \"Trigger Alert\" button prominently displayed.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2462.465524673462,
+        "model_latency_ms": 2368.579149246216,
+        "success": true,
+        "result_val": "alert_triggered"
+      }
+    ],
+    "error": null
+  }
+]

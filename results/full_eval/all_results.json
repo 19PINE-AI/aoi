@@ -1,0 +1,1958 @@
+[
+  {
+    "task_id": "D-E1",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "accepted",
+    "steps_taken": 1,
+    "total_time_s": 5.324116230010986,
+    "total_model_latency_ms": 1632.446527481079,
+    "total_obs_overhead_ms": 2064.714193344116,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click \"Accept All\"",
+        "narration": "A cookie consent banner is displayed at the bottom of the page, prompting the user to accept or decline cookies.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2064.714193344116,
+        "model_latency_ms": 1632.446527481079,
+        "success": true,
+        "result_val": "accepted"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E2",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "file_opened",
+    "steps_taken": 3,
+    "total_time_s": 10.220475912094116,
+    "total_model_latency_ms": 5301.674842834473,
+    "total_obs_overhead_ms": 2140.927314758301,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click button \"Download quarterly_report.pdf\"",
+        "narration": "The screen displays a \"File Manager\" heading and a blue button prompting to download \"quarterly_report.pdf\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2055.6435585021973,
+        "model_latency_ms": 1655.4808616638184,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Wait.",
+        "narration": "A download progress bar shows \"Downloading... 0%\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 56.07962608337402,
+        "model_latency_ms": 1839.0681743621826,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "Click button \"Open file\"",
+        "narration": "A green \"Download Complete\" toast has appeared at the bottom right of the screen, indicating that \"quarterly_report.pdf\" has finished downloading, and it includes an \"Open file\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 29.204130172729492,
+        "model_latency_ms": 1807.1258068084717,
+        "success": true,
+        "result_val": "file_opened"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E3",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "session_extended",
+    "steps_taken": 1,
+    "total_time_s": 5.2144904136657715,
+    "total_model_latency_ms": 1480.4329872131348,
+    "total_obs_overhead_ms": 2080.152750015259,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click 'Stay Logged In'",
+        "narration": "A modal dialog with the title \"Session Expiring Soon\" has appeared in the center of the screen, containing \"Stay Logged In\" and \"Log Out\" buttons.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2080.152750015259,
+        "model_latency_ms": 1480.4329872131348,
+        "success": true,
+        "result_val": "session_extended"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-M4",
+    "category": "D_transient_ui",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 2,
+    "total_time_s": 16.546364068984985,
+    "total_model_latency_ms": 12502.118349075317,
+    "total_obs_overhead_ms": 2172.642469406128,
+    "steps": [
+      {
+        "step": 1,
+        "action": "NARRATION: The current page displays a product listing for SoundPeak Pro X1 Wireless Headphones, featuring pricing, color options, product details, and an empty \"Promo Code\" input field",
+        "narration": "The current page displays a product listing for SoundPeak Pro X1 Wireless Headphones, featuring pricing, color options, product details, and an empty \"Promo Code\" input field",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2087.6920223236084,
+        "model_latency_ms": 6564.316272735596,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "A banner at the top of the page indicates that the \"Offer expired \u2014 flash sale has ended,\" and the product page displays an empty \"Promo Code\" input field.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 84.95044708251953,
+        "model_latency_ms": 5937.802076339722,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_audio_alert",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "wrong_event",
+    "steps_taken": 6,
+    "total_time_s": 20.930030345916748,
+    "total_model_latency_ms": 14294.870853424072,
+    "total_obs_overhead_ms": 2347.8405475616455,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I will wait for a calendar alarm.",
+        "narration": "The document editor is currently displaying a \"Q3 Financial Summary\" containing financial figures and key highlights.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2072.9904174804688,
+        "model_latency_ms": 2282.6900482177734,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "I will wait for a calendar alarm.",
+        "narration": "The document editor is still displaying the \"Q3 Financial Summary\" with financial figures and key highlights.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 52.62017250061035,
+        "model_latency_ms": 1523.1473445892334,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "I will click \"Open Calendar\" to view the event title.",
+        "narration": "A \"Calendar Reminder\" pop-up has appeared, indicating \"Your meeting starts in 5 minutes\" and presenting an \"Open Calendar\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 51.859140396118164,
+        "model_latency_ms": 2202.2740840911865,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "I will type \"Team Standup\" into the text field labeled \"Enter event title...\" and then click the \"Submit\" button.",
+        "narration": "The screen displays a calendar view showing an event titled \"Team Standup\" scheduled from 10:00 AM to 10:15 AM daily in \"Meeting Room 4B\", along with an input field to \"Note the event title\" and a \"Su",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 51.26166343688965,
+        "model_latency_ms": 3324.2404460906982,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 5,
+        "action": "I will click the \"Submit\" button.",
+        "narration": "The \"Enter event title...\" text field is now populated with \"Team Standup\", and the \"Submit\" button appears enabled.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 51.517486572265625,
+        "model_latency_ms": 1702.9213905334473,
+        "success": false,
+        "result_val": "wrong_event"
+      },
+      {
+        "step": 6,
+        "action": "I will type \"Team Standup\" into the text field labeled \"Enter event title...\" and then click the \"Submit\" button.",
+        "narration": "The calendar view displays a red error message stating \"Wrong: \"\" \u2014 expected \"Team Standup\"\", and the \"Enter event title...\" input field is empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 67.59166717529297,
+        "model_latency_ms": 3259.5975399017334,
+        "success": false,
+        "result_val": "wrong_event"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "winter_clicked",
+    "steps_taken": 1,
+    "total_time_s": 5.513356447219849,
+    "total_model_latency_ms": 1727.0894050598145,
+    "total_obs_overhead_ms": 2108.0615520477295,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click 'Shop Now'",
+        "narration": "The image carousel is currently displaying a pink and red gradient slide with the text 'Winter Sale' and a 'Shop Now' button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2108.0615520477295,
+        "model_latency_ms": 1727.0894050598145,
+        "success": true,
+        "result_val": "winter_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 5,
+    "total_time_s": 20.532734394073486,
+    "total_model_latency_ms": 14002.888441085815,
+    "total_obs_overhead_ms": 2251.1563301086426,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WAIT",
+        "narration": "The NexusOS Launcher is currently loading assets, with a progress bar showing 37%.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2063.8256072998047,
+        "model_latency_ms": 1131.5696239471436,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "WAIT",
+        "narration": "The NexusOS Launcher loading screen now shows \"Connecting...\" and a progress bar at 62%.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 37.70303726196289,
+        "model_latency_ms": 1769.6115970611572,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "WAIT",
+        "narration": "The NexusOS Launcher loading screen now shows \"Preparing your environment...\" and a progress bar at 95%, with \"Ready!\" displayed to the left of the bar.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 48.84839057922363,
+        "model_latency_ms": 3083.904504776001,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "CLICK 500 560",
+        "narration": "The NexusOS Launcher loading screen now shows the progress bar at 100%, with \"Ready!\" displayed, and a \"Launch\" button is now visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 47.81484603881836,
+        "model_latency_ms": 1892.2088146209717,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 5,
+        "action": "",
+        "narration": "The NexusOS Launcher continues to display the progress bar at 100% with a \"Launch\" button, indicating no immediate change after the previous click.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 52.96444892883301,
+        "model_latency_ms": 6125.593900680542,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_web_game",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 4,
+    "total_time_s": 19.26300358772278,
+    "total_model_latency_ms": 14526.1971950531,
+    "total_obs_overhead_ms": 2205.953598022461,
+    "steps": [
+      {
+        "step": 1,
+        "action": "CLICK 631 499",
+        "narration": "The screen displays the title \"Reaction Time Test\" and instructions to \"Click Start to begin,\" with a prominent \"Start Test\" button at the bottom.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2055.487871170044,
+        "model_latency_ms": 2372.3888397216797,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "CLICK 631 499",
+        "narration": "The screen remains in the initial state, displaying \"Reaction Time Test\" and the \"Start Test\" button, unchanged after the previous click.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 55.19700050354004,
+        "model_latency_ms": 3990.9398555755615,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "CLICK 631 499",
+        "narration": "The screen remains in the initial state, displaying \"Reaction Time Test,\" instructions to \"Wait for green, then click as fast as possible!\", and the \"Start Test\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 47.86491394042969,
+        "model_latency_ms": 2083.4243297576904,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "NARRATION: The screen remains in the initial state, displaying \"Reaction Time Test,\" instructions to \"Wait for green, then click as fast as possible!\", and the \"Start Test\" button.",
+        "narration": "The screen remains in the initial state, displaying \"Reaction Time Test,\" instructions to \"Wait for green, then click as fast as possible!\", and the \"Start Test\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 47.403812408447266,
+        "model_latency_ms": 6079.444169998169,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "step_2_correct",
+    "steps_taken": 2,
+    "total_time_s": 9.435060739517212,
+    "total_model_latency_ms": 5368.215322494507,
+    "total_obs_overhead_ms": 2113.5876178741455,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"Configuration\" into the text input with current value \"Type the name of Step 2...\".",
+        "narration": "The system setup wizard displays three steps: Installation, Configuration, and Activation, with Step 1 currently running.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2064.0649795532227,
+        "model_latency_ms": 2684.1745376586914,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click button \"Submit\"",
+        "narration": "The System Setup Wizard is currently on Step 2: Configuration, which is running, and the text input field has been pre-filled with \"Configuration\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 49.52263832092285,
+        "model_latency_ms": 2684.0407848358154,
+        "success": true,
+        "result_val": "step_2_correct"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 5.778208255767822,
+    "total_model_latency_ms": 2128.359079360962,
+    "total_obs_overhead_ms": 2061.0997676849365,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"Deploy\" into the text field with current value \"Name the last item to complete...\"",
+        "narration": "The checklist shows \"Lint code\" as completed, \"Run tests\" as in progress, and \"Build Docker image\", \"Push to registry\", and \"Deploy\" as pending.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2061.0997676849365,
+        "model_latency_ms": 2128.359079360962,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 4,
+    "total_time_s": 15.365503549575806,
+    "total_model_latency_ms": 10508.567810058594,
+    "total_obs_overhead_ms": 2393.373489379883,
+    "steps": [
+      {
+        "step": 1,
+        "action": "PAUSE",
+        "narration": "The live counter displays the number 6, and a message instructs to click 'Capture' when it reaches 42.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2098.7892150878906,
+        "model_latency_ms": 3199.6166706085205,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "PAUSE",
+        "narration": "The live counter now displays the number 13.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 98.21653366088867,
+        "model_latency_ms": 1939.5802021026611,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "PAUSE",
+        "narration": "The live counter displays the number 17.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 91.3994312286377,
+        "model_latency_ms": 2715.2655124664307,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "PAUSE",
+        "narration": "The live counter displays 24.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 104.96830940246582,
+        "model_latency_ms": 2654.1054248809814,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E2",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 4,
+    "total_time_s": 14.729507207870483,
+    "total_model_latency_ms": 8383.7890625,
+    "total_obs_overhead_ms": 2265.587329864502,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait",
+        "narration": "The current temperature displayed is 34.7\u00b0C, which is below the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2069.182872772217,
+        "model_latency_ms": 1645.4896926879883,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "wait",
+        "narration": "The current temperature has increased to 35.4\u00b0C, which is still below the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 40.50183296203613,
+        "model_latency_ms": 1682.295799255371,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "wait",
+        "narration": "The current temperature is 36.8\u00b0C, which is still below the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 76.65848731994629,
+        "model_latency_ms": 1988.3501529693604,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "click 'Trigger Alert'",
+        "narration": "The current temperature displayed is 37.5\u00b0C, which is now above the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 79.24413681030273,
+        "model_latency_ms": 3067.6534175872803,
+        "success": true,
+        "result_val": "alert_triggered"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E1",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "timeout",
+    "steps_taken": 2,
+    "total_time_s": 15.319233655929565,
+    "total_model_latency_ms": 4974.103689193726,
+    "total_obs_overhead_ms": 8386.938095092773,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click \"Tech giants report record quarterly earnings\"",
+        "narration": "The page displays a news website with a title and three bulleted news headlines after the cookie banner has auto-dismissed.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 6032.002210617065,
+        "model_latency_ms": 1742.163896560669,
+        "success": false,
+        "result_val": "timeout"
+      },
+      {
+        "step": 2,
+        "action": "Click \"Climate summit reaches new agreement\"",
+        "narration": "The news website's homepage is displayed, featuring a list of three news headlines, and a message indicates that a banner has auto-dismissed.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2354.935884475708,
+        "model_latency_ms": 3231.9397926330566,
+        "success": false,
+        "result_val": "timeout"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E2",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "file_opened",
+    "steps_taken": 2,
+    "total_time_s": 10.711851835250854,
+    "total_model_latency_ms": 2961.8191719055176,
+    "total_obs_overhead_ms": 5757.61866569519,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click button \"Download quarterly_report.pdf\"",
+        "narration": "The page displays a \"File Manager\" heading, a prompt to click a button to download \"quarterly_report.pdf\", and a blue button labeled \"Download quarterly_report.pdf\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3408.0915451049805,
+        "model_latency_ms": 1410.6056690216064,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click button \"Open file\"",
+        "narration": "A green \"Download Complete\" toast for \"quarterly_report.pdf\" is visible in the bottom right corner, next to an \"Open file\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2349.52712059021,
+        "model_latency_ms": 1551.2135028839111,
+        "success": true,
+        "result_val": "file_opened"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E3",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "session_extended",
+    "steps_taken": 1,
+    "total_time_s": 6.495969772338867,
+    "total_model_latency_ms": 1581.9389820098877,
+    "total_obs_overhead_ms": 3264.5483016967773,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click \"Stay Logged In\"",
+        "narration": "A \"Session Expiring Soon\" modal window has appeared in the center of the screen, displaying a warning message, a countdown bar, and two buttons: \"Stay Logged In\" and \"Log Out\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3264.5483016967773,
+        "model_latency_ms": 1581.9389820098877,
+        "success": true,
+        "result_val": "session_extended"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-M4",
+    "category": "D_transient_ui",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 2,
+    "total_time_s": 15.891193628311157,
+    "total_model_latency_ms": 8116.953611373901,
+    "total_obs_overhead_ms": 5868.043422698975,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"FLASH25\" into the \"ENTER CODE\" field and click \"Apply\".",
+        "narration": "A red banner at the top announces a \"FLASH SALE - 25% OFF!\" with the code \"FLASH25\" and a 2-second expiration countdown.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3307.481527328491,
+        "model_latency_ms": 1873.6259937286377,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "",
+        "narration": "A dark banner at the top of the page indicates \"Offer expired \u2014 flash sale has ended.\", and the \"Promo Code\" field now contains \"FLASH25\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2560.5618953704834,
+        "model_latency_ms": 6243.327617645264,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_audio_alert",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "alarm_missed",
+    "steps_taken": 3,
+    "total_time_s": 22.016398906707764,
+    "total_model_latency_ms": 11587.166786193848,
+    "total_obs_overhead_ms": 8267.116785049438,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I",
+        "narration": "The document displays a Q3 financial summary with revenue, operating costs, net profit, and key highlights regarding European expansion, new product launch, and customer retention.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3332.4365615844727,
+        "model_latency_ms": 6111.297130584717,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "I",
+        "narration": "The document editor displays the Q3 financial summary, which includes revenue, operating costs, net profit, and key highlights, and there are no new visual changes.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2476.4668941497803,
+        "model_latency_ms": 3099.067449569702,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 3,
+        "action": "I",
+        "narration": "The screen continues to display the Q3 financial summary within the Document Editor, with no new visual changes.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2458.2133293151855,
+        "model_latency_ms": 2376.8022060394287,
+        "success": false,
+        "result_val": "alarm_missed"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 4,
+    "total_time_s": 24.53352451324463,
+    "total_model_latency_ms": 9858.670234680176,
+    "total_obs_overhead_ms": 11181.269407272339,
+    "steps": [
+      {
+        "step": 1,
+        "action": "CLICK 405 500",
+        "narration": "The image carousel is currently displaying the 'Winter Sale' slide with a snowflake icon, text \"Winter Sale\" and \"Up to 60% off everything\", and a \"Shop Now\" button on a pink and red gradient backgrou",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3348.2320308685303,
+        "model_latency_ms": 1626.7304420471191,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "WAIT",
+        "narration": "The image carousel now displays a 'Summer Essentials' slide with a sun icon, \"Beat the heat in style\" text, and a \"Shop Now\" button on a blue gradient background.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2556.5121173858643,
+        "model_latency_ms": 3113.868474960327,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "CLICK 405 500",
+        "narration": "The carousel first displays a 'Spring Collection' slide, then transitions to the 'Winter Sale' slide.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2703.664779663086,
+        "model_latency_ms": 2736.816644668579,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "WAIT",
+        "narration": "The carousel displays the 'Summer Essentials' slide, then transitions to the 'Autumn Picks' slide, which features a phone icon and \"Warm tones for cool days\" text.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2572.8604793548584,
+        "model_latency_ms": 2381.2546730041504,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "launch_clicked",
+    "steps_taken": 2,
+    "total_time_s": 12.40038013458252,
+    "total_model_latency_ms": 4226.647853851318,
+    "total_obs_overhead_ms": 5695.067405700684,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WAIT",
+        "narration": "The NexusOS Launcher shows \"Connecting...\" with a progress bar at 52%.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3265.995740890503,
+        "model_latency_ms": 1943.983793258667,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "CLICK gui:291,472,335,516 \"Launch button\"",
+        "narration": "The NexusOS Launcher now shows \"Preparing your environment...\", the progress bar is at 100% and displays \"Ready!\", and a \"Launch\" button is present.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2429.0716648101807,
+        "model_latency_ms": 2282.6640605926514,
+        "success": true,
+        "result_val": "launch_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_web_game",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 2,
+    "total_time_s": 15.71976613998413,
+    "total_model_latency_ms": 8209.558010101318,
+    "total_obs_overhead_ms": 5613.328456878662,
+    "steps": [
+      {
+        "step": 1,
+        "action": "CLICK 621 499",
+        "narration": "The screen shows a \"Reaction Time Test\" interface with a large central box containing \"Click Start to begin\" and a \"Start Test\" button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3237.095594406128,
+        "model_latency_ms": 1948.1534957885742,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "CLICK 621 499",
+        "narration": "The screen remains in the \"Click Start to begin\" state with the \"Start Test\" button visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2376.232862472534,
+        "model_latency_ms": 6261.404514312744,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 7.244303226470947,
+    "total_model_latency_ms": 1916.9628620147705,
+    "total_obs_overhead_ms": 3264.2319202423096,
+    "steps": [
+      {
+        "step": 1,
+        "action": "None (waiting for the wizard to complete)",
+        "narration": "The \"System Setup Wizard\" is currently on Step 1: \"Installation\", which is indicated as \"Running\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3264.2319202423096,
+        "model_latency_ms": 1916.9628620147705,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 7.170313358306885,
+    "total_model_latency_ms": 2295.1014041900635,
+    "total_obs_overhead_ms": 3270.106554031372,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Type \"Deploy\" into the text field with the placeholder \"Name the last item to complete...\"",
+        "narration": "The screenshot displays a deployment checklist with five items. \"Lint code\" is complete, \"Run tests\" is in progress, and the remaining three items are pending.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3270.106554031372,
+        "model_latency_ms": 2295.1014041900635,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 3,
+    "total_time_s": 17.93769073486328,
+    "total_model_latency_ms": 5474.944829940796,
+    "total_obs_overhead_ms": 8790.455102920532,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I will wait for the counter to reach 42 before taking any action.",
+        "narration": "The live counter displays the number 8, and a 'Capture' button is visible below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3369.9886798858643,
+        "model_latency_ms": 1759.1888904571533,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "I will wait for the counter to reach 42 before taking any action.",
+        "narration": "The live counter displays the number 19.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2706.4404487609863,
+        "model_latency_ms": 1916.9182777404785,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "I will wait for the counter to reach 42 before taking any action.",
+        "narration": "The live counter now displays the number 29.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2714.0259742736816,
+        "model_latency_ms": 1798.837661743164,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E2",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 3,
+    "total_time_s": 18.153282642364502,
+    "total_model_latency_ms": 6698.786020278931,
+    "total_obs_overhead_ms": 8174.324035644531,
+    "steps": [
+      {
+        "step": 1,
+        "action": "WAIT",
+        "narration": "The current temperature is 35.4\u00b0C, which is below the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3262.369155883789,
+        "model_latency_ms": 1784.527063369751,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "WAIT",
+        "narration": "The current temperature is 36.8\u00b0C, which is still below the 37.0\u00b0C alert threshold.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2505.4705142974854,
+        "model_latency_ms": 1717.1764373779297,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "CLICK Button 'Trigger Alert'",
+        "narration": "The current temperature is 38.6\u00b0C, which exceeds the 37.0\u00b0C alert threshold, and a large red \"Trigger Alert\" button is visible at the bottom of the monitor.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2406.484365463257,
+        "model_latency_ms": 3197.08251953125,
+        "success": true,
+        "result_val": "alert_triggered"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E1",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "timeout",
+    "steps_taken": 1,
+    "total_time_s": 35.743311166763306,
+    "total_model_latency_ms": 2124.1135597229004,
+    "total_obs_overhead_ms": 2057.368278503418,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the \"Accept All\" button to accept the cookie consent dialog.",
+        "narration": "A cookie consent banner has appeared at the bottom of the News Website page with \"Accept All\" and \"Decline\" buttons.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2057.368278503418,
+        "model_latency_ms": 2124.1135597229004,
+        "success": false,
+        "result_val": "timeout"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E2",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "timeout",
+    "steps_taken": 4,
+    "total_time_s": 14.069080114364624,
+    "total_model_latency_ms": 8848.935842514038,
+    "total_obs_overhead_ms": 2233.243942260742,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(330, 187)",
+        "narration": "The File Manager page shows a \"Download quarterly_report.pdf\" button that hasn't been clicked yet, so the download hasn't started.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2061.150074005127,
+        "model_latency_ms": 1944.7259902954102,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "wait(5)",
+        "narration": "The download has started and is currently showing \"Downloading... 0%\" with a progress bar visible below the button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 58.48836898803711,
+        "model_latency_ms": 2395.0538635253906,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "click(1184, 657)",
+        "narration": "The download is now at 100% complete, and a green \"Download Complete\" toast notification has appeared in the bottom-right corner with an \"Open file\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 61.55991554260254,
+        "model_latency_ms": 1925.178050994873,
+        "success": false,
+        "result_val": "timeout"
+      },
+      {
+        "step": 4,
+        "action": "done()",
+        "narration": "The page now shows \"TIMEOUT: Toast dismissed without action\" in bold, indicating the toast notification disappeared before the click registered successfully.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 52.045583724975586,
+        "model_latency_ms": 2583.9779376983643,
+        "success": false,
+        "result_val": "timeout"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E3",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "session_extended",
+    "steps_taken": 1,
+    "total_time_s": 6.053547620773315,
+    "total_model_latency_ms": 2330.197811126709,
+    "total_obs_overhead_ms": 2064.880132675171,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the \"Stay Logged In\" button at coordinates (578, 441)",
+        "narration": "A \"Session Expiring Soon\" modal dialog has appeared with a progress bar at the bottom and two buttons: \"Stay Logged In\" (green) and \"Log Out\" (gray).",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2064.880132675171,
+        "model_latency_ms": 2330.197811126709,
+        "success": true,
+        "result_val": "session_extended"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-M4",
+    "category": "D_transient_ui",
+    "difficulty": "medium",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 3,
+    "total_time_s": 17.267601251602173,
+    "total_model_latency_ms": 12284.011840820312,
+    "total_obs_overhead_ms": 2250.983476638794,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I need to wait and watch for the flash sale countdown popup to appear. Let me take a screenshot to check if the popup has appeared or will appear.",
+        "narration": "The SoundPeak Pro X1 product page shows a promo code entry field with an \"ENTER CODE\" placeholder, along with Add to Cart and Buy Now buttons, but no flash sale popup is currently visible.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2094.684600830078,
+        "model_latency_ms": 4099.034547805786,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Since the flash sale has already ended and I missed the discount code during the brief 3-second window, I need to check if there's any way to retrieve the code. Let me scroll up or refresh the page to",
+        "narration": "The page now shows a banner at the top reading \"Offer expired \u2014 flash sale has ended,\" indicating the flash sale popup with the discount code has already appeared and disappeared before it could be ca",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 72.46518135070801,
+        "model_latency_ms": 4004.6474933624268,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "The flash sale popup appeared and disappeared before I could capture the discount code, and the offer is now expired. Since I never saw the actual discount code displayed in the 3-second window, I can",
+        "narration": "The page continues to show the \"Offer expired \u2014 flash sale has ended\" banner at the top, with the promo code field still empty and awaiting input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 83.83369445800781,
+        "model_latency_ms": 4180.3297996521,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_audio_alert",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "alarm_missed",
+    "steps_taken": 6,
+    "total_time_s": 22.660866022109985,
+    "total_model_latency_ms": 17058.319568634033,
+    "total_obs_overhead_ms": 2361.7725372314453,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I'll work on the document by clicking on the text area and adding some content, while staying alert for any calendar alarm.",
+        "narration": "The Document Editor shows a Q3 Financial Summary with revenue, operating costs, net profit figures, and key highlights including European expansion, Q4 product launch, and 94% customer retention.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2082.1962356567383,
+        "model_latency_ms": 3757.885217666626,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "I'll continue working on the document by clicking in the text area and adding additional analysis content to the Q3 Financial Summary, while remaining alert for any calendar alarm sound.",
+        "narration": "The Document Editor shows the same Q3 Financial Summary content as before, with no new visual changes or calendar alarm indicators visible.\\n",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 53.11441421508789,
+        "model_latency_ms": 3007.354497909546,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "I'll click the \"Open Calendar\" button to open the calendar and note the event title.",
+        "narration": "A red \"Calendar Reminder\" popup has appeared in the top-right corner, indicating \"Your meeting starts in 5 minutes\" with an \"Open Calendar\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 70.17636299133301,
+        "model_latency_ms": 2373.849630355835,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 4,
+        "action": "I'll click the \"Calendar\" button in the taskbar to open the calendar and find the event title, as instructed when the alarm triggered.",
+        "narration": "The calendar popup has dismissed and we're back to the Document Editor view, with a \"Calendar\" button now visible in the taskbar at the bottom.\\n",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 34.864187240600586,
+        "model_latency_ms": 3047.1601486206055,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 5,
+        "action": "I'll click the \"Calendar\" button in the taskbar to open the calendar application and find the event title.",
+        "narration": "The screen still shows the Document Editor with the Q3 Financial Summary content, and the Calendar button is visible in the taskbar but the calendar has not yet opened despite the previous click attem",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 62.02888488769531,
+        "model_latency_ms": 2420.9747314453125,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 6,
+        "action": "I'll click directly on the \"Calendar\" button in the taskbar at the bottom of the screen to open the calendar application.",
+        "narration": "The screen still shows the Document Editor with the Calendar button visible in the taskbar, but the calendar application has not opened despite multiple click attempts.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 59.392452239990234,
+        "model_latency_ms": 2451.0953426361084,
+        "success": false,
+        "result_val": "alarm_missed"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "summer_clicked",
+    "steps_taken": 1,
+    "total_time_s": 6.899760723114014,
+    "total_model_latency_ms": 3147.829532623291,
+    "total_obs_overhead_ms": 2118.3419227600098,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the 'Shop Now' button at coordinates (640, 311)",
+        "narration": "The carousel is currently displaying the 'Winter Sale' slide with a pink-to-purple gradient background, showing \"Up to 60% off everything\" and a 'Shop Now' button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2118.3419227600098,
+        "model_latency_ms": 3147.829532623291,
+        "success": true,
+        "result_val": "summer_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "launch_clicked",
+    "steps_taken": 2,
+    "total_time_s": 9.510124444961548,
+    "total_model_latency_ms": 5371.163129806519,
+    "total_obs_overhead_ms": 2121.0739612579346,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the progress bar to reach 100% before clicking 'Launch'.",
+        "narration": "The NexusOS Launcher loading screen shows a progress bar at 37% with the status \"Loading assets...\" indicating the loading process is still in progress.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2054.831027984619,
+        "model_latency_ms": 2524.381399154663,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Continue waiting for the progress bar to reach 100% before clicking 'Launch'.",
+        "narration": "The progress bar has advanced to 74% with the status now showing \"Connecting...\" and \"Preparing your environment...\" indicating the loading process has progressed significantly since the previous 37% ",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 66.24293327331543,
+        "model_latency_ms": 2846.7817306518555,
+        "success": true,
+        "result_val": "launch_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_web_game",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "reaction_recorded_4816",
+    "steps_taken": 4,
+    "total_time_s": 16.315893411636353,
+    "total_model_latency_ms": 10581.271648406982,
+    "total_obs_overhead_ms": 2227.5643348693848,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 565)",
+        "narration": "The Reaction Time Test page is displayed with a dark background, showing a \"Click Start to begin\" message in the center panel and a purple \"Start Test\" button at the bottom.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2065.490961074829,
+        "model_latency_ms": 2287.5537872314453,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "wait(3000)",
+        "narration": "A countdown timer showing \"3\" in orange/yellow text has appeared in the center panel with \"Get ready...\" text below it, indicating the test is about to begin.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 67.4893856048584,
+        "model_latency_ms": 2740.53955078125,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "wait(2000)",
+        "narration": "The panel now shows \"Waiting...\" with \"Don't click yet!\" text, indicating the test is in the random delay phase before the green button appears.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 35.875558853149414,
+        "model_latency_ms": 2472.53155708313,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 4,
+        "action": "click(640, 390)",
+        "narration": "The green \"CLICK!\" button has appeared in the center panel, signaling it's time to react.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 58.70842933654785,
+        "model_latency_ms": 3080.646753311157,
+        "success": true,
+        "result_val": "reaction_recorded_4816"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 8.430906295776367,
+    "total_model_latency_ms": 4723.596572875977,
+    "total_obs_overhead_ms": 2060.529947280884,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the wizard to complete all steps, then type \"Configuration\" in the input field and click Submit.\n\nLet me wait for the wizard to complete, then type the answer.\n\nNARRATION: The wizard shows St",
+        "narration": "The wizard is currently on Step 1 \"Installation\" which is running, and the step indicators show Step 2 is \"Configuration\" and Step 3 is \"Activation\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2060.529947280884,
+        "model_latency_ms": 4723.596572875977,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 9.074179887771606,
+    "total_model_latency_ms": 5348.824024200439,
+    "total_obs_overhead_ms": 2069.976329803467,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I need to wait and observe the checklist to see which item completes last. Based on the sequential processing visible, the items complete in order: Lint code \u2192 Run tests \u2192 Build Docker image \u2192 Push to",
+        "narration": "The deployment checklist shows \"Lint code\" completed (green checkmark, 1.2s), \"Run tests\" currently in progress (spinning blue icon), and three remaining items (Build Docker image, Push to registry, D",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2069.976329803467,
+        "model_latency_ms": 5348.824024200439,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "captured_at_17",
+    "steps_taken": 1,
+    "total_time_s": 9.315730810165405,
+    "total_model_latency_ms": 5627.433776855469,
+    "total_obs_overhead_ms": 2097.6715087890625,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait for the counter to reach 42, then click the Capture button at the right moment.\n\nI'll wait for the counter to reach 42. Given the counter is at 6 and increments every 500ms, I need to wait about ",
+        "narration": "The live counter displays the number 6, updating every 500ms, with a blue \"Capture\" button and instruction to click when it reaches exactly 42.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2097.6715087890625,
+        "model_latency_ms": 5627.433776855469,
+        "success": true,
+        "result_val": "captured_at_17"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E2",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "standard",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 2,
+    "total_time_s": 11.03639817237854,
+    "total_model_latency_ms": 6454.82873916626,
+    "total_obs_overhead_ms": 2121.5624809265137,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait and monitor the temperature feed - current reading is 34.7\u00b0C, which does not yet exceed 37\u00b0C, so no action is taken at this time.",
+        "narration": "The environmental monitor shows a current temperature of 34.7\u00b0C, which is below the 37\u00b0C alert threshold, with the status indicator showing \"Normal\" and the temperature history graph trending upward.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2067.342758178711,
+        "model_latency_ms": 3579.521656036377,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Wait and continue monitoring - the current temperature of 36.1\u00b0C has not yet exceeded the 37\u00b0C alert threshold, so no action is taken at this time.",
+        "narration": "The temperature has risen to 36.1\u00b0C, still below the 37\u00b0C threshold, with the history graph showing a clear upward trend approaching the dashed red threshold line.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 54.219722747802734,
+        "model_latency_ms": 2875.307083129883,
+        "success": true,
+        "result_val": "alert_triggered"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E1",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "timeout",
+    "steps_taken": 1,
+    "total_time_s": 36.91479992866516,
+    "total_model_latency_ms": 2023.84352684021,
+    "total_obs_overhead_ms": 3295.3100204467773,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the \"Accept All\" button to accept the cookie consent dialog.",
+        "narration": "A cookie consent dialog has appeared at the bottom of the News Website page, showing a message about cookies with \"Accept All\" and \"Decline\" buttons.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3295.3100204467773,
+        "model_latency_ms": 2023.84352684021,
+        "success": false,
+        "result_val": "timeout"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E2",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "file_opened",
+    "steps_taken": 2,
+    "total_time_s": 11.608103275299072,
+    "total_model_latency_ms": 4006.959915161133,
+    "total_obs_overhead_ms": 5711.90881729126,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(330, 187)",
+        "narration": "The File Manager page shows a \"Download quarterly_report.pdf\" button that hasn't been clicked yet, so I need to first initiate the download.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3277.313232421875,
+        "model_latency_ms": 1837.0351791381836,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "click(1184, 657)",
+        "narration": "The download is complete at 100% and a green \"Download Complete\" toast notification has appeared in the bottom-right corner with an \"Open file\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2434.5955848693848,
+        "model_latency_ms": 2169.924736022949,
+        "success": true,
+        "result_val": "file_opened"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-E3",
+    "category": "D_transient_ui",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "session_expired",
+    "steps_taken": 2,
+    "total_time_s": 44.02375769615173,
+    "total_model_latency_ms": 6465.253829956055,
+    "total_obs_overhead_ms": 5652.16851234436,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(578, 441)",
+        "narration": "A modal dialog titled \"Session Expiring Soon\" has appeared with a warning triangle icon, informing the user their session will expire in 60 seconds due to inactivity, with a green progress bar at the ",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3277.4670124053955,
+        "model_latency_ms": 2994.42458152771,
+        "success": false,
+        "result_val": "session_expired"
+      },
+      {
+        "step": 2,
+        "action": "None \u2014 the session has already expired; the 'Stay logged in' button was not clicked in time and the task could not be completed successfully.",
+        "narration": "The session has already expired and a red banner reading \"Session expired \u2014 you have been logged out.\" is now displayed at the top of the page, indicating the modal was not clicked in time.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2374.701499938965,
+        "model_latency_ms": 3470.8292484283447,
+        "success": false,
+        "result_val": "session_expired"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "D-M4",
+    "category": "D_transient_ui",
+    "difficulty": "medium",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 37.889044523239136,
+    "total_model_latency_ms": 2895.9782123565674,
+    "total_obs_overhead_ms": 3381.5572261810303,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click on the promo code input field and type \"FLASH25\", then click Apply.",
+        "narration": "The flash sale banner at the top shows the discount code \"FLASH25\" with a 25% off promotion and a countdown timer showing 2 seconds remaining.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3381.5572261810303,
+        "model_latency_ms": 2895.9782123565674,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_audio_alert",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "alarm_missed",
+    "steps_taken": 4,
+    "total_time_s": 25.310762882232666,
+    "total_model_latency_ms": 11782.293796539307,
+    "total_obs_overhead_ms": 10483.765125274658,
+    "steps": [
+      {
+        "step": 1,
+        "action": "I will work on the document and wait for a calendar alarm. Currently, I can see the Document Editor with the Q3 Financial Summary. Let me click on the document to start working on it, and I'll monitor",
+        "narration": "The Document Editor shows a Q3 Financial Summary with revenue, operating costs, net profit figures, and key highlights including European expansion, Q4 product launch, and 94% customer retention.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3342.925548553467,
+        "model_latency_ms": 3258.364677429199,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "I can see the calendar alarm has triggered. I'll click the \"Open Calendar\" button to open the calendar and note the event title.",
+        "narration": "A red \"Calendar Reminder\" popup has appeared in the top-right corner, displaying \"Your meeting starts in 5 minutes\" with an \"Open Calendar\" button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2369.630813598633,
+        "model_latency_ms": 2913.9630794525146,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 3,
+        "action": "I'll click on the Calendar tab in the taskbar to open the calendar and find the event title that triggered the alarm.",
+        "narration": "The calendar reminder popup has dismissed and we're back to the Document Editor view, with the Calendar tab now visible in the taskbar at the bottom, suggesting the calendar was opened but we're now s",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2343.2281017303467,
+        "model_latency_ms": 2666.494846343994,
+        "success": false,
+        "result_val": "alarm_missed"
+      },
+      {
+        "step": 4,
+        "action": "I'll click directly on the \"Calendar\" tab in the taskbar to switch to the calendar view and find the event title.",
+        "narration": "The screenshot shows we're back at the Document Editor view with the Calendar tab visible in the taskbar, but the calendar has not been opened yet despite the previous click attempt.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2427.980661392212,
+        "model_latency_ms": 2943.4711933135986,
+        "success": false,
+        "result_val": "alarm_missed"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "summer_clicked",
+    "steps_taken": 1,
+    "total_time_s": 8.13154125213623,
+    "total_model_latency_ms": 3170.393466949463,
+    "total_obs_overhead_ms": 3328.282117843628,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Click the 'Shop Now' button at coordinates (640, 311)",
+        "narration": "The carousel is currently showing the 'Winter Sale' slide with a pink-purple gradient background, displaying \"Up to 60% off everything\" and a 'Shop Now' button.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3328.282117843628,
+        "model_latency_ms": 3170.393466949463,
+        "success": true,
+        "result_val": "summer_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_continuous_animation",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "launch_clicked",
+    "steps_taken": 2,
+    "total_time_s": 13.22179365158081,
+    "total_model_latency_ms": 5589.18309211731,
+    "total_obs_overhead_ms": 5605.100631713867,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the progress bar to reach 100% before clicking 'Launch'.",
+        "narration": "The NexusOS Launcher loading screen shows a progress bar at 52% with the status \"Connecting...\" indicating the loading process is still underway.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3227.1103858947754,
+        "model_latency_ms": 3267.5721645355225,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click the \"Launch\" button at coordinates (640, 473).",
+        "narration": "The progress bar has reached 100% and now displays \"Ready!\" on the left side, with the green \"Launch\" button now active and prominent.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2377.990245819092,
+        "model_latency_ms": 2321.610927581787,
+        "success": true,
+        "result_val": "launch_clicked"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_web_game",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "reaction_recorded_3893",
+    "steps_taken": 3,
+    "total_time_s": 17.46711778640747,
+    "total_model_latency_ms": 6868.231534957886,
+    "total_obs_overhead_ms": 7890.515565872192,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 565)",
+        "narration": "The Reaction Time Test page is displayed with a dark background, showing a \"Click Start to begin\" message in the center panel and a purple \"Start Test\" button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3221.6293811798096,
+        "model_latency_ms": 2195.970058441162,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "wait(2)",
+        "narration": "The test has started and is showing a countdown with the number \"1\" in orange, indicating the green button will appear very soon.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2335.9200954437256,
+        "model_latency_ms": 1952.3868560791016,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 390)",
+        "narration": "The green \"CLICK!\" button has appeared on screen, displaying a dark green panel with bright green text and border.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2332.966089248657,
+        "model_latency_ms": 2719.874620437622,
+        "success": true,
+        "result_val": "reaction_recorded_3893"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "pending",
+    "steps_taken": 1,
+    "total_time_s": 9.102153539657593,
+    "total_model_latency_ms": 4251.802682876587,
+    "total_obs_overhead_ms": 3218.48201751709,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the wizard to complete all steps, then click the input field and type \"Configuration\".\n\nI'll wait for the wizard to complete, then type the answer. Based on what's visible, Step 2 is clearly ",
+        "narration": "The wizard is currently on Step 1: Installation (Running), with Step 2 labeled \"Configuration\" and Step 3 labeled \"Activation\" visible in the step indicators.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3218.48201751709,
+        "model_latency_ms": 4251.802682876587,
+        "success": false,
+        "result_val": "pending"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_sequential_transitions",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "incorrect",
+    "steps_taken": 1,
+    "total_time_s": 8.509713411331177,
+    "total_model_latency_ms": 3618.5922622680664,
+    "total_obs_overhead_ms": 3226.0546684265137,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Since the checklist processes items sequentially one by one, the last item to complete will be \"Deploy\" (the final item in the list). I'll type \"Deploy\" in the input field and submit.",
+        "narration": "The deployment checklist shows \"Lint code\" completed (green checkmark, 1.2s), \"Run tests\" currently in progress (spinning blue icon), and three remaining items (Build Docker image, Push to registry, D",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3226.0546684265137,
+        "model_latency_ms": 3618.5922622680664,
+        "success": true,
+        "result_val": "incorrect"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "captured_at_19",
+    "steps_taken": 1,
+    "total_time_s": 10.550414800643921,
+    "total_model_latency_ms": 5623.583078384399,
+    "total_obs_overhead_ms": 3308.1562519073486,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait for the counter to reach 42, then click the Capture button. Since the counter is at 8 and increments every 500ms, I need to wait approximately 17 seconds (34 \u00d7 500ms) before clicking.\n\nI'll click",
+        "narration": "The live counter displays the number 8 in large cyan text, updating every 500ms, with a blue \"Capture\" button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3308.1562519073486,
+        "model_latency_ms": 5623.583078384399,
+        "success": true,
+        "result_val": "captured_at_19"
+      }
+    ],
+    "error": null
+  },
+  {
+    "task_id": "I-E2",
+    "category": "I_live_data_stream",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 2,
+    "total_time_s": 14.745766162872314,
+    "total_model_latency_ms": 6536.885738372803,
+    "total_obs_overhead_ms": 5706.767797470093,
+    "steps": [
+      {
+        "step": 1,
+        "action": "Wait and monitor - temperature is 35.4\u00b0C, below the 37\u00b0C threshold. I will wait for the next update.",
+        "narration": "The environmental monitor shows a current temperature of 35.4\u00b0C with a \"Normal\" status indicator, and the temperature history graph shows an upward trend approaching but not yet exceeding the 37\u00b0C das",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3244.302272796631,
+        "model_latency_ms": 4168.306589126587,
+        "success": false,
+        "result_val": "pending"
+      },
+      {
+        "step": 2,
+        "action": "Click the \"Trigger Alert\" button.",
+        "narration": "The temperature has risen to 37.5\u00b0C, exceeding the 37\u00b0C threshold, with the graph line now above the dashed threshold marker and a red \"Trigger Alert\" button prominently displayed.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2462.465524673462,
+        "model_latency_ms": 2368.579149246216,
+        "success": true,
+        "result_val": "alert_triggered"
+      }
+    ],
+    "error": null
+  }
+]
