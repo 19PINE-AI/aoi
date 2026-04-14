@@ -245,6 +245,21 @@ function startGame() {
     if (gameActive) spawnPlatform();
   }, 3000);
 
+  // Reliable win-check via setInterval (requestAnimationFrame may stall in headless)
+  setInterval(() => {
+    if (!gameActive || survived) return;
+    const elapsed = (Date.now() - startTime) / 1000;
+    if (elapsed >= 30) {
+      gameActive = false;
+      survived = true;
+      document.getElementById('timer').textContent = '0s';
+      document.getElementById('end-title').textContent = 'You Win!';
+      document.getElementById('end-title').style.color = '#00ff88';
+      document.getElementById('end-msg').textContent = 'You survived 30 seconds!';
+      document.getElementById('game-over').style.display = 'flex';
+    }
+  }, 500);
+
   requestAnimationFrame(updateGame);
 }
 
