@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopNow - Featured Products</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff6b35; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 600px; }
+  .store-header { background: #1a1a2e; border-radius: 12px 12px 0 0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .store-logo { font-size: 22px; font-weight: 700; color: #ff6b35; }
+  .store-nav { display: flex; gap: 16px; font-size: 14px; color: #888; }
+  .carousel-wrapper { background: #1a1a2e; border-radius: 0 0 12px 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; padding: 24px; }
+  .carousel-title { font-size: 18px; font-weight: 600; margin-bottom: 16px; color: #ccc; }
+  .carousel-viewport { overflow: hidden; border-radius: 12px; }
+  .carousel-track { display: flex; transition: transform 0.5s ease; }
+  .product-card { min-width: 100%; padding: 20px; }
+  .product-image { width: 100%; aspect-ratio: 16/10; border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 16px; font-size: 48px; }
+  .product-name { font-size: 22px; font-weight: 600; margin-bottom: 8px; }
+  .product-price { font-size: 28px; font-weight: 700; color: #ff6b35; margin-bottom: 4px; }
+  .product-rating { font-size: 14px; color: #ffd700; margin-bottom: 16px; }
+  .product-desc { font-size: 14px; color: #888; margin-bottom: 16px; line-height: 1.5; }
+  .buy-btn { width: 100%; padding: 12px; background: #ff6b35; border: none; border-radius: 8px; color: #fff; font-size: 16px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .buy-btn:hover { background: #ff7f50; }
+  .buy-btn.bought { background: #27ca40; }
+  .carousel-dots { display: flex; justify-content: center; gap: 8px; margin-top: 16px; }
+  .carousel-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; cursor: pointer; transition: background 0.3s; }
+  .carousel-dot.active { background: #ff6b35; }
+  .carousel-arrows { display: flex; justify-content: space-between; margin-top: 12px; }
+  .arrow-btn { background: #16213e; border: 1px solid #333; color: #ccc; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 16px; transition: background 0.2s; }
+  .arrow-btn:hover { background: #1f2b45; }
+  .result-section { background: #1a1a2e; border-radius: 12px; padding: 20px; text-align: center; }
+  .result-section h3 { font-size: 16px; color: #ccc; margin-bottom: 8px; }
+  .status { font-size: 14px; color: #666; min-height: 24px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="store-header">
+    <div class="store-logo">ShopNow</div>
+    <div class="store-nav"><span>Home</span><span>Deals</span><span>Cart (0)</span></div>
+  </div>
+  <div class="carousel-wrapper">
+    <div class="carousel-title">Featured Products</div>
+    <div class="carousel-viewport">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="product-card" data-product="earbuds">
+          <div class="product-image" style="background: linear-gradient(135deg, #667eea, #764ba2);">&#127911;</div>
+          <div class="product-name">Wireless Earbuds</div>
+          <div class="product-price">$29.99</div>
+          <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9734; (234 reviews)</div>
+          <div class="product-desc">Premium wireless earbuds with active noise cancellation, 24h battery life, and crystal-clear audio.</div>
+          <button class="buy-btn" onclick="buyProduct('earbuds', this)">Buy Now</button>
+        </div>
+        <div class="product-card" data-product="watch">
+          <div class="product-image" style="background: linear-gradient(135deg, #f093fb, #f5576c);">&#9201;</div>
+          <div class="product-name">Smart Watch</div>
+          <div class="product-price">$149.99</div>
+          <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9733; (512 reviews)</div>
+          <div class="product-desc">Advanced smartwatch with health monitoring, GPS tracking, and 7-day battery life.</div>
+          <button class="buy-btn" onclick="buyProduct('watch', this)">Buy Now</button>
+        </div>
+        <div class="product-card" data-product="speaker">
+          <div class="product-image" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">&#128266;</div>
+          <div class="product-name">Bluetooth Speaker</div>
+          <div class="product-price">$64.99</div>
+          <div class="product-rating">&#9733;&#9733;&#9733;&#9733;&#9734; (189 reviews)</div>
+          <div class="product-desc">Waterproof portable speaker with 360-degree surround sound and 20h playtime.</div>
+          <button class="buy-btn" onclick="buyProduct('speaker', this)">Buy Now</button>
+        </div>
+        <div class="product-card" data-product="wallet">
+          <div class="product-image" style="background: linear-gradient(135deg, #a18cd1, #fbc2eb);">&#128091;</div>
+          <div class="product-name">Leather Wallet</div>
+          <div class="product-price">$39.99</div>
+          <div class="product-rating">&#9733;&#9733;&#9733;&#9734;&#9734; (98 reviews)</div>
+          <div class="product-desc">Genuine leather bifold wallet with RFID blocking technology and slim design.</div>
+          <button class="buy-btn" onclick="buyProduct('wallet', this)">Buy Now</button>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-dots" id="dots"></div>
+    <div class="carousel-arrows">
+      <button class="arrow-btn" onclick="goToSlide(currentSlide - 1)">&#8592; Previous</button>
+      <button class="arrow-btn" onclick="goToSlide(currentSlide + 1)">Next &#8594;</button>
+    </div>
+  </div>
+  <div class="result-section">
+    <h3>Find and buy the cheapest product</h3>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const totalSlides = 4;
+  let currentSlide = 0;
+  let boughtProduct = null;
+  let autoInterval;
+
+  // Build dots
+  const dotsContainer = document.getElementById('dots');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'carousel-dot';
+    dot.onclick = () => goToSlide(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function updateCarousel() {
+    document.getElementById('carouselTrack').style.transform = `translateX(-${currentSlide * 100}%)`;
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+  }
+
+  function goToSlide(index) {
+    currentSlide = ((index % totalSlides) + totalSlides) % totalSlides;
+    updateCarousel();
+  }
+
+  function buyProduct(name, btn) {
+    boughtProduct = name;
+    document.querySelectorAll('.buy-btn').forEach(b => { b.classList.remove('bought'); b.textContent = 'Buy Now'; });
+    btn.classList.add('bought');
+    btn.textContent = 'Added to Cart!';
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'cheapest_bought' ? 'Correct! Earbuds are the cheapest at $29.99.' : 'That\'s not the cheapest product. Keep looking!';
+  }
+
+  function startAutoRotate() {
+    autoInterval = setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+    }, 5000);
+  }
+
+  window.getTaskResult = function() {
+    if (boughtProduct === 'earbuds') return 'cheapest_bought';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    updateCarousel();
+    setTimeout(startAutoRotate, 500);
+  }, 2000);
+</script>
+</body>
+</html>

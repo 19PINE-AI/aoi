@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Voicemail</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #4fc3f7; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .vm-card { background: #16213e; border-radius: 16px; padding: 32px; width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .vm-header { text-align: center; margin-bottom: 24px; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #ab47bc, #7b1fa2); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; }
+  .caller-name { font-size: 18px; font-weight: 600; }
+  .caller-sub { font-size: 13px; color: #888; margin-top: 4px; }
+  .timeline { margin: 20px 0; }
+  .progress-bar { width: 100%; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #ab47bc; transition: width 0.3s linear; }
+  .time-labels { display: flex; justify-content: space-between; font-size: 12px; color: #666; margin-top: 6px; }
+  .play-btn { display: flex; align-items: center; justify-content: center; width: 56px; height: 56px; border-radius: 50%; background: #ab47bc; border: none; color: #fff; font-size: 22px; cursor: pointer; margin: 0 auto 24px; transition: transform 0.15s; }
+  .play-btn:hover { transform: scale(1.05); }
+  .divider { border: none; border-top: 1px solid #2a2a4e; margin: 20px 0; }
+  .form-section h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #ab47bc; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #ab47bc; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #ba68c8; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="vm-card">
+  <div class="vm-header">
+    <div class="avatar">&#128222;</div>
+    <div class="caller-name">Voicemail from Unknown</div>
+    <div class="caller-sub">Today, 10:15 AM &bull; 9 seconds</div>
+  </div>
+  <button class="play-btn" id="playBtn">&#9654;</button>
+  <div class="timeline">
+    <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="time-labels"><span id="elapsed">0:00</span><span>0:09</span></div>
+  </div>
+  <hr class="divider">
+  <div class="form-section">
+    <h3>Who left this voicemail?</h3>
+    <div class="input-group">
+      <label for="callerName">Caller Name</label>
+      <input type="text" id="callerName" placeholder="Enter the caller's name..." autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const audioText = "Hello, this is Jennifer Martinez calling about your appointment on Wednesday. Please confirm by calling us back.";
+  let audioPlayed = false;
+  let progressInterval;
+
+  function startAudio() {
+    if (audioPlayed) return;
+    audioPlayed = true;
+    const u = new SpeechSynthesisUtterance(audioText);
+    u.rate = 0.95; u.lang = 'en-US';
+    const start = Date.now(), dur = 9000;
+    progressInterval = setInterval(() => {
+      const pct = Math.min(100, ((Date.now() - start) / dur) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const s = Math.floor((Date.now() - start) / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(s).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    u.onend = () => { clearInterval(progressInterval); document.getElementById('progressFill').style.width = '100%'; document.getElementById('playBtn').innerHTML = '&#9654;'; };
+    document.getElementById('playBtn').innerHTML = '&#10074;&#10074;';
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('playBtn').addEventListener('click', startAudio);
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'name_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('callerName').value.toLowerCase().trim();
+    if (val.includes('jennifer') && val.includes('martinez')) return 'name_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startAudio, 500);
+  }, 2000);
+</script>
+</body>
+</html>

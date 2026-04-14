@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Network Monitoring - Packet Loss</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .info { font-size: 13px; color: #8892b0; display: flex; align-items: center; gap: 8px; }
+  .header .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .servers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+  .server-panel { background: #16213e; border-radius: 10px; padding: 18px; border: 1px solid #2a3a5e; transition: border-color 0.5s; }
+  .server-panel.alert { border-color: #e74c3c; box-shadow: 0 0 15px rgba(231,76,60,0.2); }
+  .server-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .server-name { font-size: 14px; font-weight: 600; }
+  .server-dot { width: 10px; height: 10px; border-radius: 50%; background: #00ff88; }
+  .server-dot.warn { background: #e74c3c; }
+  .metric { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(42,58,94,0.5); }
+  .metric:last-child { border: none; }
+  .metric-label { color: #8892b0; }
+  .metric-value { font-weight: 600; }
+  .packet-bar { width: 100%; height: 8px; background: #0a0f1e; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+  .packet-fill { height: 100%; border-radius: 4px; transition: width 0.5s, background 0.5s; }
+  .history-chart { background: #16213e; border-radius: 10px; padding: 18px; border: 1px solid #2a3a5e; margin-bottom: 20px; }
+  .history-chart h3 { font-size: 14px; color: #8892b0; margin-bottom: 10px; }
+  .mini-bars { display: flex; gap: 3px; align-items: flex-end; height: 60px; }
+  .mini-bar { flex: 1; background: #00d4ff; border-radius: 2px 2px 0 0; min-width: 4px; transition: height 0.3s; }
+  .mini-bar.spike { background: #e74c3c; }
+  .form-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; text-align: center; display: none; }
+  .form-card h3 { color: #00d4ff; margin-bottom: 15px; }
+  .form-card input { padding: 10px 15px; font-size: 16px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 280px; }
+  .form-card input:focus { outline: none; border-color: #00d4ff; }
+  .form-card button { padding: 10px 20px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+  .form-card button:hover { background: #00b8d9; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Network Monitoring Center</h1>
+  <div class="info"><div class="dot"></div> Real-time &bull; Packet Loss Tracking</div>
+</div>
+<div class="servers" id="serverGrid">
+  <div class="server-panel" id="panel0">
+    <div class="server-header">
+      <div class="server-name">web-server-01</div>
+      <div class="server-dot" id="dot0"></div>
+    </div>
+    <div class="metric"><span class="metric-label">Packet Loss</span><span class="metric-value" id="loss0">0.2%</span></div>
+    <div class="metric"><span class="metric-label">Latency</span><span class="metric-value" id="lat0">12ms</span></div>
+    <div class="metric"><span class="metric-label">Throughput</span><span class="metric-value" id="thr0">945 Mbps</span></div>
+    <div class="packet-bar"><div class="packet-fill" id="bar0" style="width:2%;background:#00ff88;"></div></div>
+  </div>
+  <div class="server-panel" id="panel1">
+    <div class="server-header">
+      <div class="server-name">web-server-02</div>
+      <div class="server-dot" id="dot1"></div>
+    </div>
+    <div class="metric"><span class="metric-label">Packet Loss</span><span class="metric-value" id="loss1">0.3%</span></div>
+    <div class="metric"><span class="metric-label">Latency</span><span class="metric-value" id="lat1">14ms</span></div>
+    <div class="metric"><span class="metric-label">Throughput</span><span class="metric-value" id="thr1">920 Mbps</span></div>
+    <div class="packet-bar"><div class="packet-fill" id="bar1" style="width:3%;background:#00ff88;"></div></div>
+  </div>
+  <div class="server-panel" id="panel2">
+    <div class="server-header">
+      <div class="server-name">web-server-03</div>
+      <div class="server-dot" id="dot2"></div>
+    </div>
+    <div class="metric"><span class="metric-label">Packet Loss</span><span class="metric-value" id="loss2">0.1%</span></div>
+    <div class="metric"><span class="metric-label">Latency</span><span class="metric-value" id="lat2">11ms</span></div>
+    <div class="metric"><span class="metric-label">Throughput</span><span class="metric-value" id="thr2">960 Mbps</span></div>
+    <div class="packet-bar"><div class="packet-fill" id="bar2" style="width:1%;background:#00ff88;"></div></div>
+  </div>
+  <div class="server-panel" id="panel3">
+    <div class="server-header">
+      <div class="server-name">web-server-04</div>
+      <div class="server-dot" id="dot3"></div>
+    </div>
+    <div class="metric"><span class="metric-label">Packet Loss</span><span class="metric-value" id="loss3">0.2%</span></div>
+    <div class="metric"><span class="metric-label">Latency</span><span class="metric-value" id="lat3">13ms</span></div>
+    <div class="metric"><span class="metric-label">Throughput</span><span class="metric-value" id="thr3">938 Mbps</span></div>
+    <div class="packet-bar"><div class="packet-fill" id="bar3" style="width:2%;background:#00ff88;"></div></div>
+  </div>
+</div>
+<div class="history-chart">
+  <h3>web-server-03 Packet Loss History</h3>
+  <div class="mini-bars" id="miniBars"></div>
+</div>
+<div class="form-card" id="formCard">
+  <h3>Which server experienced the highest packet loss spike?</h3>
+  <div>
+    <input type="text" id="serverInput" placeholder="e.g. web-server-01">
+    <button id="submitBtn">Submit</button>
+  </div>
+</div>
+<script>
+(function() {
+  const serverNames = ['web-server-01', 'web-server-02', 'web-server-03', 'web-server-04'];
+  // web-server-03 (index 2) spikes at tick 5 (~t=10s)
+  const lossScripts = [
+    [0.2, 0.3, 0.1, 0.4, 0.2, 0.3, 0.2, 0.1, 0.3, 0.2, 0.4, 0.2, 0.3, 0.1, 0.2, 0.3],
+    [0.3, 0.2, 0.4, 0.3, 0.5, 0.2, 0.3, 0.4, 0.2, 0.3, 0.1, 0.3, 0.2, 0.4, 0.3, 0.2],
+    [0.1, 0.2, 0.3, 0.8, 2.5, 12.0, 8.5, 1.2, 0.4, 0.2, 0.3, 0.1, 0.2, 0.3, 0.1, 0.2],
+    [0.2, 0.1, 0.3, 0.2, 0.4, 0.3, 0.2, 0.1, 0.3, 0.2, 0.4, 0.2, 0.1, 0.3, 0.2, 0.3]
+  ];
+  let tick = 0;
+  let submitted = false;
+  const s03History = [];
+
+  function updateServers() {
+    tick++;
+    for (let i = 0; i < 4; i++) {
+      const idx = Math.min(tick, lossScripts[i].length - 1);
+      let loss = lossScripts[i][idx] + (Math.random() * 0.1 - 0.05);
+      loss = Math.max(0, Math.round(loss * 100) / 100);
+
+      document.getElementById('loss' + i).textContent = loss.toFixed(1) + '%';
+      document.getElementById('lat' + i).textContent = Math.floor(10 + Math.random() * 8 + (loss > 5 ? loss * 3 : 0)) + 'ms';
+      document.getElementById('thr' + i).textContent = Math.floor(960 - loss * 20 - Math.random() * 30) + ' Mbps';
+
+      const barWidth = Math.min(100, loss * 5 + 1);
+      const barEl = document.getElementById('bar' + i);
+      barEl.style.width = barWidth + '%';
+
+      if (loss > 5) {
+        barEl.style.background = '#e74c3c';
+        document.getElementById('dot' + i).className = 'server-dot warn';
+        document.getElementById('panel' + i).classList.add('alert');
+      } else if (loss > 1) {
+        barEl.style.background = '#f39c12';
+        document.getElementById('dot' + i).className = 'server-dot';
+        document.getElementById('panel' + i).classList.remove('alert');
+      } else {
+        barEl.style.background = '#00ff88';
+        document.getElementById('dot' + i).className = 'server-dot';
+        document.getElementById('panel' + i).classList.remove('alert');
+      }
+
+      if (i === 2) {
+        s03History.push(loss);
+        renderHistory();
+      }
+    }
+
+    // Show form after 30s (tick 15)
+    if (tick >= 15) {
+      document.getElementById('formCard').style.display = 'block';
+    }
+  }
+
+  function renderHistory() {
+    const container = document.getElementById('miniBars');
+    container.innerHTML = '';
+    const maxV = Math.max(...s03History, 1);
+    s03History.forEach(function(v) {
+      const bar = document.createElement('div');
+      bar.className = 'mini-bar' + (v > 5 ? ' spike' : '');
+      bar.style.height = Math.max(3, (v / maxV) * 55) + 'px';
+      container.appendChild(bar);
+    });
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const val = document.getElementById('serverInput').value.trim().toLowerCase();
+    if (val.includes('web-server-03') || val === '03' || val === 'server 03' || val === 'server-03') return 'server_correct';
+    return 'server_incorrect';
+  };
+
+  setTimeout(function() {
+    setInterval(updateServers, 2000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

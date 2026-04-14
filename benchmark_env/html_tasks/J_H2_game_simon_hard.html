@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simon Says - Hard Mode</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+.header {
+  width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-size: 28px; font-weight: 700; color: #ffcc00; }
+.header-info { display: flex; gap: 20px; align-items: center; }
+.attempt-display { font-size: 14px; color: #aaa; }
+.status-text { font-size: 16px; color: #aaa; }
+.game-container {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; padding: 20px;
+}
+.simon-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+  margin-top: 20px;
+}
+.simon-btn {
+  width: 130px; height: 130px; border-radius: 16px; cursor: pointer;
+  border: 3px solid rgba(255,255,255,0.1); transition: all 0.15s;
+  opacity: 0.5; display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 600; color: rgba(255,255,255,0.3);
+}
+.simon-btn:hover { opacity: 0.65; }
+.simon-btn.lit {
+  opacity: 1; transform: scale(1.06);
+  box-shadow: 0 0 35px currentColor;
+}
+.simon-btn.red { background: #c62828; color: #ff5252; }
+.simon-btn.blue { background: #1565c0; color: #448aff; }
+.simon-btn.green { background: #2e7d32; color: #69f0ae; }
+.simon-btn.yellow { background: #f9a825; color: #ffd740; }
+.simon-btn.orange { background: #e65100; color: #ff9100; }
+.simon-btn.purple { background: #6a1b9a; color: #ce93d8; }
+.simon-btn.red.lit { background: #ff5252; }
+.simon-btn.blue.lit { background: #448aff; }
+.simon-btn.green.lit { background: #69f0ae; }
+.simon-btn.yellow.lit { background: #ffd740; }
+.simon-btn.orange.lit { background: #ff9100; }
+.simon-btn.purple.lit { background: #ce93d8; }
+.message {
+  margin-top: 24px; font-size: 22px; font-weight: 700; min-height: 32px;
+}
+.progress {
+  margin-top: 12px; display: flex; gap: 6px;
+}
+.progress-dot {
+  width: 14px; height: 14px; border-radius: 50%; background: #2a2a4e; border: 2px solid #3a3a5e;
+}
+.progress-dot.filled { background: #00ff88; border-color: #00ff88; }
+.progress-dot.wrong { background: #ff3366; border-color: #ff3366; }
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 44px; color: #ffcc00; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .hard-badge { color: #ff3366; font-weight: 700; }
+.instruction .countdown { font-size: 64px; color: #00ff88; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Simon Says <span class="hard-badge">HARD</span></h1>
+  <p>6 colors, 6-step sequence!</p>
+  <p>You get 2 attempts. Watch carefully!</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Simon Says - Hard</div>
+  <div class="header-info">
+    <div class="attempt-display" id="attempt-display">Attempt 1 of 2</div>
+    <div class="status-text" id="status">Watch the pattern...</div>
+  </div>
+</div>
+
+<div class="game-container">
+  <div class="simon-grid">
+    <div class="simon-btn red" data-color="red" id="btn-red">RED</div>
+    <div class="simon-btn blue" data-color="blue" id="btn-blue">BLUE</div>
+    <div class="simon-btn green" data-color="green" id="btn-green">GREEN</div>
+    <div class="simon-btn yellow" data-color="yellow" id="btn-yellow">YELLOW</div>
+    <div class="simon-btn orange" data-color="orange" id="btn-orange">ORANGE</div>
+    <div class="simon-btn purple" data-color="purple" id="btn-purple">PURPLE</div>
+  </div>
+  <div class="message" id="message"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script>
+const COLORS = ['red', 'blue', 'green', 'yellow', 'orange', 'purple'];
+const sequenceLength = 6;
+let sequence = [];
+let playerSequence = [];
+let playerTurn = false;
+let patternCorrect = false;
+let attempt = 1;
+let maxAttempts = 2;
+
+// Generate sequence
+for (let i = 0; i < sequenceLength; i++) {
+  sequence.push(COLORS[Math.floor(Math.random() * COLORS.length)]);
+}
+
+function buildProgress() {
+  const prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  for (let i = 0; i < sequenceLength; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot';
+    dot.id = 'dot-' + i;
+    prog.appendChild(dot);
+  }
+}
+
+function lightUp(color, duration) {
+  return new Promise(resolve => {
+    const btn = document.getElementById('btn-' + color);
+    btn.classList.add('lit');
+    setTimeout(() => {
+      btn.classList.remove('lit');
+      setTimeout(resolve, 400);
+    }, duration);
+  });
+}
+
+async function playSequence() {
+  document.getElementById('status').textContent = 'Watch the pattern...';
+  document.getElementById('message').textContent = '';
+  document.getElementById('message').style.color = '#e0e0e0';
+  playerTurn = false;
+  buildProgress();
+
+  await new Promise(r => setTimeout(r, 1000));
+
+  for (let i = 0; i < sequence.length; i++) {
+    await lightUp(sequence[i], 800);
+  }
+
+  playerTurn = true;
+  playerSequence = [];
+  document.getElementById('status').textContent = "Your turn!";
+  document.getElementById('message').textContent = "Repeat the " + sequenceLength + "-step sequence";
+}
+
+// Button clicks
+document.querySelectorAll('.simon-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!playerTurn) return;
+
+    const color = btn.dataset.color;
+    btn.classList.add('lit');
+    setTimeout(() => btn.classList.remove('lit'), 200);
+
+    playerSequence.push(color);
+    const idx = playerSequence.length - 1;
+
+    if (color === sequence[idx]) {
+      document.getElementById('dot-' + idx).classList.add('filled');
+      if (playerSequence.length === sequence.length) {
+        playerTurn = false;
+        patternCorrect = true;
+        document.getElementById('message').textContent = 'Perfect!';
+        document.getElementById('message').style.color = '#00ff88';
+        document.getElementById('status').textContent = 'Pattern matched!';
+      }
+    } else {
+      playerTurn = false;
+      document.getElementById('dot-' + idx).classList.add('wrong');
+      if (attempt < maxAttempts) {
+        document.getElementById('message').textContent = 'Wrong! Try again...';
+        document.getElementById('message').style.color = '#ff3366';
+        document.getElementById('status').textContent = 'Replaying sequence...';
+        attempt++;
+        document.getElementById('attempt-display').textContent = 'Attempt ' + attempt + ' of ' + maxAttempts;
+        setTimeout(() => playSequence(), 2000);
+      } else {
+        document.getElementById('message').textContent = 'Wrong! No more attempts.';
+        document.getElementById('message').style.color = '#ff3366';
+        document.getElementById('status').textContent = 'Game over';
+      }
+    }
+  });
+});
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        buildProgress();
+        playSequence();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+window.getTaskResult = function() {
+  if (patternCorrect) {
+    return 'pattern_correct';
+  }
+  return 'pattern_incorrect_attempt_' + attempt;
+};
+</script>
+</body>
+</html>

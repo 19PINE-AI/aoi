@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Document - Project Status</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Arial', sans-serif; background: #f0f0f0; height: 100vh; display: flex; flex-direction: column; }
+.toolbar {
+  background: #f9fbfd; border-bottom: 1px solid #dadce0; padding: 4px 8px;
+  display: flex; align-items: center;
+}
+.toolbar-title { padding: 4px 8px; font-size: 18px; font-weight: 400; color: #202124; border: none; outline: none; background: transparent; width: 300px; }
+.menu-bar { display: flex; gap: 2px; padding: 2px 8px; background: #f9fbfd; border-bottom: 1px solid #dadce0; }
+.menu-item { padding: 4px 8px; font-size: 13px; color: #444; cursor: pointer; border-radius: 4px; }
+.menu-item:hover { background: #e8eaed; }
+.format-bar {
+  display: flex; align-items: center; gap: 2px; padding: 4px 8px;
+  background: #edf2fa; border-bottom: 1px solid #dadce0;
+}
+.fmt-btn { padding: 4px 8px; border: none; background: transparent; cursor: pointer; border-radius: 4px; font-size: 13px; color: #444; }
+.collab-bar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 4px 12px; background: #f9fbfd; flex: 1;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: #4285f4;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: bold; font-size: 14px; position: relative;
+}
+.avatar .online-dot {
+  width: 10px; height: 10px; background: #0f9d58; border: 2px solid white;
+  border-radius: 50%; position: absolute; bottom: -2px; right: -2px;
+}
+.collab-status { font-size: 12px; color: #5f6368; }
+.doc-container { flex: 1; display: flex; justify-content: center; padding: 20px; background: #f0f0f0; overflow-y: auto; }
+.doc-page {
+  width: 816px; min-height: 1056px; background: white; padding: 72px 72px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #202124;
+}
+.doc-page h1 { font-size: 20pt; margin-bottom: 8px; }
+.doc-page h2 { font-size: 14pt; margin: 20px 0 8px; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+.doc-page p { margin-bottom: 10px; }
+table { width: 100%; border-collapse: collapse; margin: 12px 0; }
+th { background: #f1f3f4; text-align: left; padding: 8px 12px; border: 1px solid #dadce0; font-weight: 600; font-size: 10pt; }
+td { padding: 8px 12px; border: 1px solid #dadce0; font-size: 10pt; }
+.status-cell { font-weight: 500; }
+.editable { outline: none; min-width: 50px; display: inline; }
+.editable:focus { background: #e3f2fd; }
+.change-flash { transition: background 0.4s; }
+.change-flash.active { background: #e8f0fe; }
+.collab-cursor { display: inline-block; width: 2px; height: 16px; background: #4285f4; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
+@keyframes blink { 50% { opacity: 0; } }
+.collab-tag { background: #4285f4; color: white; font-size: 9px; padding: 1px 4px; border-radius: 2px; }
+.bottom-area {
+  margin-top: 24px; padding: 8px; border: 1px dashed #dadce0; border-radius: 4px;
+  min-height: 40px; outline: none;
+}
+.bottom-area:focus { border-color: #1a73e8; background: #fafbff; }
+.event-log {
+  position: fixed; top: 80px; right: 20px; width: 240px; background: white;
+  border: 1px solid #dadce0; border-radius: 8px; padding: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1); font-size: 11px; z-index: 50;
+}
+.event-log h3 { font-size: 12px; color: #5f6368; margin-bottom: 8px; }
+.event-log .event { padding: 4px 0; border-bottom: 1px solid #f0f0f0; color: #444; }
+.event-log .event .time { color: #1a73e8; font-weight: 500; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <input class="toolbar-title" value="Project Status" readonly />
+  <div class="collab-bar">
+    <span class="collab-status" id="collab-status">Alex is viewing</span>
+    <div class="avatar">A<span class="online-dot"></span></div>
+  </div>
+</div>
+<div class="menu-bar">
+  <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span>
+  <span class="menu-item">Insert</span><span class="menu-item">Format</span><span class="menu-item">Tools</span>
+</div>
+<div class="format-bar">
+  <select class="fmt-btn" style="width:120px"><option>Normal text</option></select>
+  <select class="fmt-btn" style="width:100px"><option>Arial</option></select>
+  <button class="fmt-btn"><b>B</b></button>
+  <button class="fmt-btn"><i>I</i></button>
+</div>
+<div class="doc-container">
+  <div class="doc-page">
+    <h1>Project Status Report</h1>
+    <p style="color:#5f6368;">Last updated: April 14, 2026</p>
+
+    <h2>Overview</h2>
+    <p>This document tracks the current status of Project Atlas. Current release: <span id="version-text" class="change-flash">version 1.0</span>. All team members should review and update their respective sections.</p>
+
+    <h2>Status Table</h2>
+    <table>
+      <thead>
+        <tr><th>Component</th><th>Owner</th><th>Status</th><th>Notes</th></tr>
+      </thead>
+      <tbody id="status-table-body">
+        <tr>
+          <td>Backend API</td><td>Jordan</td>
+          <td class="status-cell"><span id="project-status" class="editable" contenteditable="true">In Progress</span></td>
+          <td>On track for Q2 deadline</td>
+        </tr>
+        <tr>
+          <td>Frontend UI</td><td>Casey</td>
+          <td class="status-cell">Complete</td>
+          <td>Passed QA review</td>
+        </tr>
+        <tr>
+          <td>Documentation</td><td>Alex</td>
+          <td class="status-cell">In Progress</td>
+          <td>First draft ready</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h2>Sign-off</h2>
+    <div class="bottom-area" id="bottom-area" contenteditable="true"></div>
+  </div>
+</div>
+
+<div class="event-log" id="event-log">
+  <h3>Activity Log</h3>
+</div>
+
+<script>
+function addEvent(text) {
+  const log = document.getElementById('event-log');
+  const div = document.createElement('div');
+  div.className = 'event';
+  const now = new Date();
+  div.innerHTML = '<span class="time">' + now.toLocaleTimeString() + '</span> ' + text;
+  log.appendChild(div);
+}
+
+// Visual edit 1 (t=3s): collaborator changes version 1.0 to version 2.0
+setTimeout(() => {
+  document.getElementById('collab-status').textContent = 'Alex is editing...';
+  const versionEl = document.getElementById('version-text');
+  versionEl.classList.add('active');
+  setTimeout(() => {
+    versionEl.textContent = 'version 2.0';
+    addEvent('Alex changed version to 2.0');
+    setTimeout(() => versionEl.classList.remove('active'), 1000);
+  }, 1000);
+}, 3000);
+
+// Audio instruction 1 (t=8s): "Add 'Reviewed by: Alice' at the bottom"
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Add 'Reviewed by: Alice' at the bottom of the document.");
+  msg.rate = 0.95;
+  speechSynthesis.speak(msg);
+  addEvent('Audio: Add review signature');
+}, 8000);
+
+// Visual edit 2 (t=15s): collaborator adds a new row to the table
+setTimeout(() => {
+  const tbody = document.getElementById('status-table-body');
+  const newRow = document.createElement('tr');
+  newRow.className = 'change-flash active';
+  newRow.innerHTML = '<td>Testing</td><td>Sam</td><td class="status-cell">Not Started</td><td>Pending backend completion</td>';
+  tbody.appendChild(newRow);
+  addEvent('Alex added "Testing" row');
+  setTimeout(() => newRow.classList.remove('active'), 1500);
+}, 15000);
+
+// Audio instruction 2 (t=20s): change project status
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Change the project status from In Progress to Complete.");
+  msg.rate = 0.95;
+  speechSynthesis.speak(msg);
+  addEvent('Audio: Change status to Complete');
+  document.getElementById('collab-status').textContent = 'Alex is viewing';
+}, 20000);
+
+window.getTaskResult = function() {
+  const bottomText = document.getElementById('bottom-area').innerText.toLowerCase();
+  const statusText = document.getElementById('project-status').innerText.trim().toLowerCase();
+
+  const hasReview = bottomText.includes('reviewed by') && bottomText.includes('alice');
+  const hasStatus = statusText === 'complete' || statusText === 'completed';
+
+  if (hasReview && hasStatus) {
+    return 'all_4_changes_correct';
+  }
+  if (hasReview) return 'only_review_added';
+  if (hasStatus) return 'only_status_changed';
+  return 'no_changes_made';
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TechBlog - Understanding WebAssembly</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+  .nav { background: #16213e; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3a5e; }
+  .nav .logo { font-size: 18px; font-weight: bold; color: #00d4ff; }
+  .nav .links { display: flex; gap: 20px; font-size: 14px; color: #8892b0; }
+  .nav .links a { color: #8892b0; text-decoration: none; }
+  .nav .links a:hover { color: #e0e0e0; }
+  .article { max-width: 720px; margin: 40px auto; padding: 0 20px; }
+  .article .meta { font-size: 13px; color: #8892b0; margin-bottom: 8px; }
+  .article h1 { font-size: 32px; color: #e0e0e0; margin-bottom: 15px; line-height: 1.3; }
+  .article .author { display: flex; align-items: center; gap: 12px; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #2a3a5e; }
+  .article .author .avatar { width: 40px; height: 40px; border-radius: 50%; background: #2a3a5e; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .article .author .info { font-size: 13px; color: #8892b0; }
+  .article .author .name { color: #e0e0e0; font-weight: 600; }
+  .article p { font-size: 16px; line-height: 1.7; color: #c0c0c0; margin-bottom: 20px; }
+  .article h2 { font-size: 22px; margin-top: 30px; margin-bottom: 12px; color: #00d4ff; }
+  .article code { background: #0a0f1e; padding: 2px 6px; border-radius: 4px; font-size: 14px; color: #00ff88; }
+  .cookie-banner { position: fixed; bottom: -200px; left: 0; right: 0; background: #16213e; border-top: 2px solid #2a3a5e; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; gap: 20px; z-index: 1000; transition: bottom 0.5s ease; box-shadow: 0 -4px 20px rgba(0,0,0,0.4); }
+  .cookie-banner.show { bottom: 0; }
+  .cookie-banner .text { flex: 1; }
+  .cookie-banner .text h3 { font-size: 15px; margin-bottom: 5px; }
+  .cookie-banner .text p { font-size: 13px; color: #8892b0; margin: 0; }
+  .cookie-banner .buttons { display: flex; gap: 10px; flex-shrink: 0; }
+  .cookie-banner .buttons button { padding: 10px 22px; font-size: 14px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; transition: all 0.3s; }
+  .btn-accept { background: #00d4ff; color: #0a0f1e; }
+  .btn-accept:hover { background: #00b8d9; }
+  .btn-customize { background: transparent; border: 2px solid #2a3a5e !important; color: #8892b0; }
+  .btn-customize:hover { border-color: #00d4ff !important; color: #e0e0e0; }
+  .dismissed-overlay { display: none; position: fixed; bottom: 20px; right: 20px; background: #16213e; border: 1px solid #2a3a5e; border-radius: 8px; padding: 12px 20px; font-size: 13px; color: #8892b0; z-index: 999; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">TechBlog</div>
+  <div class="links">
+    <a href="#">Home</a>
+    <a href="#">Articles</a>
+    <a href="#">About</a>
+    <a href="#">Contact</a>
+  </div>
+</div>
+<div class="article">
+  <div class="meta">Technology &bull; 8 min read &bull; March 15, 2025</div>
+  <h1>Understanding WebAssembly: The Future of Web Performance</h1>
+  <div class="author">
+    <div class="avatar">SK</div>
+    <div>
+      <div class="name">Sarah Kim</div>
+      <div class="info">Senior Software Engineer at CloudScale</div>
+    </div>
+  </div>
+  <p>WebAssembly (often abbreviated as Wasm) represents one of the most significant advances in web technology since the introduction of JavaScript. By providing a portable binary instruction format, WebAssembly enables near-native performance for web applications.</p>
+  <h2>What Makes WebAssembly Different?</h2>
+  <p>Unlike JavaScript, which is interpreted and JIT-compiled at runtime, WebAssembly is delivered as pre-compiled bytecode. This means the browser can decode and execute it much faster than equivalent JavaScript. The format is designed to be a compilation target for languages like C, C++, and Rust.</p>
+  <p>Consider a computationally intensive task like image processing. In JavaScript, manipulating pixel data with nested loops can be painfully slow. With WebAssembly, the same algorithm can run 10-20x faster, approaching native speed.</p>
+  <h2>Getting Started</h2>
+  <p>The easiest way to start with WebAssembly is through <code>emscripten</code>, which compiles C/C++ to Wasm. For Rust developers, <code>wasm-pack</code> provides an excellent toolchain that integrates seamlessly with npm and webpack.</p>
+  <p>A typical workflow involves writing performance-critical code in a systems language, compiling it to <code>.wasm</code>, and then loading it from JavaScript using the WebAssembly API.</p>
+</div>
+<div class="cookie-banner" id="cookieBanner">
+  <div class="text">
+    <h3>&#127850; We use cookies</h3>
+    <p>We use cookies and similar technologies to provide the best experience on our website. By continuing to use this site, you agree to our use of cookies.</p>
+  </div>
+  <div class="buttons">
+    <button class="btn-customize" id="customizeBtn">Customize</button>
+    <button class="btn-accept" id="acceptBtn">Accept All</button>
+  </div>
+</div>
+<div class="dismissed-overlay" id="dismissedMsg">Cookie banner was auto-dismissed</div>
+<script>
+(function() {
+  let cookiesAccepted = false;
+  let bannerDismissed = false;
+  const banner = document.getElementById('cookieBanner');
+
+  // Show banner after 2 seconds
+  setTimeout(function() {
+    banner.classList.add('show');
+
+    // Auto-dismiss after 5 seconds
+    setTimeout(function() {
+      if (!cookiesAccepted && !bannerDismissed) {
+        bannerDismissed = true;
+        banner.classList.remove('show');
+        document.getElementById('dismissedMsg').style.display = 'block';
+        setTimeout(function() {
+          document.getElementById('dismissedMsg').style.display = 'none';
+        }, 3000);
+      }
+    }, 5000);
+  }, 2000);
+
+  document.getElementById('acceptBtn').addEventListener('click', function() {
+    cookiesAccepted = true;
+    banner.classList.remove('show');
+  });
+
+  document.getElementById('customizeBtn').addEventListener('click', function() {
+    bannerDismissed = true;
+    banner.classList.remove('show');
+  });
+
+  window.getTaskResult = function() {
+    if (cookiesAccepted) return 'cookies_accepted';
+    if (bannerDismissed) return 'cookies_dismissed';
+    return 'no_action';
+  };
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Conference Call</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #5c6bc0; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .layout { display: flex; gap: 24px; align-items: flex-start; }
+  .conf-card { background: #16213e; border-radius: 16px; padding: 28px; width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; flex-shrink: 0; }
+  .conf-title { font-size: 13px; color: #5c6bc0; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px; }
+  .participants { display: flex; justify-content: center; gap: 20px; margin-bottom: 16px; }
+  .participant { text-align: center; }
+  .participant .avatar { width: 64px; height: 64px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; transition: box-shadow 0.3s; }
+  .participant .avatar.speaking { box-shadow: 0 0 0 3px #5c6bc0, 0 0 16px rgba(92,107,192,0.4); }
+  .av-a { background: linear-gradient(135deg, #42a5f5, #1565c0); }
+  .av-b { background: linear-gradient(135deg, #ef5350, #c62828); }
+  .participant .name { font-size: 13px; color: #bbb; }
+  .call-timer { font-size: 24px; font-weight: 300; margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+  .call-actions { display: flex; justify-content: center; gap: 16px; }
+  .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+  .btn-mute { background: #333; }
+  .btn-speaker { background: #333; }
+  .btn-end { background: #e53935; }
+  .notes-panel { background: #16213e; border-radius: 16px; padding: 28px; width: 400px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .notes-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .speaker-group { margin-bottom: 18px; }
+  .speaker-group h4 { font-size: 14px; margin-bottom: 8px; }
+  .speaker-group h4.spk-a { color: #42a5f5; }
+  .speaker-group h4.spk-b { color: #ef5350; }
+  .speaker-group input { width: 100%; background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; }
+  .speaker-group input:focus { border-color: #5c6bc0; }
+  .submit-btn { width: 100%; margin-top: 8px; padding: 10px; background: #5c6bc0; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #7986cb; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="layout">
+  <div class="conf-card">
+    <div class="conf-title">Conference Call</div>
+    <div class="participants">
+      <div class="participant">
+        <div class="avatar av-a" id="avA">A</div>
+        <div class="name">Speaker A</div>
+      </div>
+      <div class="participant">
+        <div class="avatar av-b" id="avB">B</div>
+        <div class="name">Speaker B</div>
+      </div>
+    </div>
+    <div class="call-timer" id="timer">00:00</div>
+    <div class="call-actions">
+      <button class="action-btn btn-mute">&#128263;</button>
+      <button class="action-btn btn-speaker">&#128264;</button>
+      <button class="action-btn btn-end">&#128381;</button>
+    </div>
+  </div>
+  <div class="notes-panel">
+    <h3>Meeting Notes</h3>
+    <div class="speaker-group">
+      <h4 class="spk-a">Speaker A said:</h4>
+      <input type="text" id="noteA" placeholder="What did Speaker A mention?" autocomplete="off">
+    </div>
+    <div class="speaker-group">
+      <h4 class="spk-b">Speaker B said:</h4>
+      <input type="text" id="noteB" placeholder="What did Speaker B mention?" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Notes</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function speakA() {
+    document.getElementById('avA').classList.add('speaking');
+    const u = new SpeechSynthesisUtterance("The Q3 target growth is fifteen percent across all divisions.");
+    u.rate = 1.0; u.pitch = 0.8; u.lang = 'en-US';
+    u.onend = () => document.getElementById('avA').classList.remove('speaking');
+    speechSynthesis.speak(u);
+  }
+
+  function speakB() {
+    document.getElementById('avB').classList.add('speaking');
+    const u = new SpeechSynthesisUtterance("We've approved a budget of two point one million for the initiative.");
+    u.rate = 1.1; u.pitch = 1.3; u.lang = 'en-US';
+    u.onend = () => document.getElementById('avB').classList.remove('speaking');
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'both_attributed_correct' ? 'Notes confirmed!' : 'Please check your notes.';
+  });
+
+  window.getTaskResult = function() {
+    const a = document.getElementById('noteA').value.toLowerCase();
+    const b = document.getElementById('noteB').value.toLowerCase();
+    const aOk = a.includes('15') || a.includes('fifteen') || a.includes('15%');
+    const bOk = b.includes('2.1') || b.includes('two point one') || b.includes('million');
+    if (aOk && bOk) return 'both_attributed_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    // Speaker A at t=3s
+    setTimeout(speakA, 3000);
+    // Speaker B at t=12s
+    setTimeout(speakB, 12000);
+  }, 2000);
+</script>
+</body>
+</html>

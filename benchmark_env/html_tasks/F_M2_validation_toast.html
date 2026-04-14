@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shipping Information - Checkout</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: flex-start; padding-top: 40px; }
+  .toast-area { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 1000; }
+  .toast { padding: 14px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.4); opacity: 0; transform: translateY(-20px); transition: all 0.4s ease; display: flex; align-items: center; gap: 10px; white-space: nowrap; }
+  .toast.show { opacity: 1; transform: translateY(0); }
+  .toast.error { background: #e74c3c; color: white; }
+  .toast.success { background: #00cc66; color: white; }
+  .checkout-card { background: #16213e; border-radius: 12px; padding: 30px; border: 1px solid #2a3a5e; width: 500px; }
+  .checkout-card h2 { font-size: 22px; color: #00d4ff; margin-bottom: 5px; }
+  .checkout-card .subtitle { font-size: 13px; color: #8892b0; margin-bottom: 25px; }
+  .steps { display: flex; gap: 8px; margin-bottom: 25px; }
+  .step { flex: 1; height: 4px; border-radius: 2px; background: #2a3a5e; }
+  .step.done { background: #00d4ff; }
+  .step.current { background: #00d4ff; }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 13px; color: #8892b0; margin-bottom: 5px; font-weight: 600; }
+  .field input { width: 100%; padding: 10px 14px; font-size: 15px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; transition: border-color 0.3s; }
+  .field input:focus { outline: none; border-color: #00d4ff; }
+  .field input.error { border-color: #e74c3c; }
+  .row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .submit-btn { width: 100%; padding: 12px; font-size: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0a0f1e; transition: all 0.3s; margin-top: 10px; }
+  .submit-btn:hover { background: #00b8d9; }
+  .submit-btn:disabled { background: #555; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="toast-area" id="toastArea"></div>
+<div class="checkout-card">
+  <div class="steps">
+    <div class="step done"></div>
+    <div class="step current"></div>
+    <div class="step"></div>
+  </div>
+  <h2>Shipping Information</h2>
+  <div class="subtitle">Step 2 of 3 &mdash; Enter your shipping details</div>
+  <div class="field">
+    <label>Full Name</label>
+    <input type="text" id="nameInput" value="Jane Doe">
+  </div>
+  <div class="field">
+    <label>Email Address</label>
+    <input type="email" id="emailInput" value="jane.doe@example.com">
+  </div>
+  <div class="field">
+    <label>Phone Number</label>
+    <input type="tel" id="phoneInput" value="+1 (555) 987-6543">
+  </div>
+  <div class="field">
+    <label>Street Address</label>
+    <input type="text" id="addressInput" value="742 Evergreen Terrace">
+  </div>
+  <div class="row">
+    <div class="field">
+      <label>City</label>
+      <input type="text" id="cityInput" value="Springfield">
+    </div>
+    <div class="field">
+      <label>State</label>
+      <input type="text" id="stateInput" value="IL">
+    </div>
+  </div>
+  <div class="field">
+    <label>Zip Code</label>
+    <input type="text" id="zipInput" value="627OI" class="error">
+  </div>
+  <button class="submit-btn" id="submitBtn">Continue to Payment</button>
+</div>
+<script>
+(function() {
+  let formValid = false;
+
+  function showToast(msg, type) {
+    const area = document.getElementById('toastArea');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = '<span>' + (type === 'error' ? '&#9888;' : '&#10003;') + '</span> ' + msg;
+    area.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 50);
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() {
+        if (area.contains(toast)) area.removeChild(toast);
+      }, 400);
+    }, 3000);
+  }
+
+  function isValidZip(zip) {
+    return /^\d{5}(-\d{4})?$/.test(zip.trim());
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    const zip = document.getElementById('zipInput').value;
+    const zipEl = document.getElementById('zipInput');
+
+    if (!isValidZip(zip)) {
+      showToast('Error: Invalid zip code format', 'error');
+      zipEl.classList.add('error');
+      return;
+    }
+
+    zipEl.classList.remove('error');
+    formValid = true;
+    showToast('Shipping information saved!', 'success');
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = 'Saved';
+  });
+
+  document.getElementById('zipInput').addEventListener('input', function() {
+    this.classList.remove('error');
+  });
+
+  window.getTaskResult = function() {
+    if (formValid) return 'form_valid';
+    return 'form_invalid';
+  };
+})();
+</script>
+</body>
+</html>

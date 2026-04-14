@@ -3,7 +3,11 @@ Observation Record and Trajectory Store.
 
 The ObservationRecord assembles the structured input for the CU model at each step:
   [CONTEXT] — text from recent prior steps (narrations + audio + actions)
-  [NEW]     — current audio text + keyframe images + post-action screenshot
+  [NEW]     — current audio (two-layer) + keyframe images + post-action screenshot
+
+Two-Layer Audio (v3):
+  Layer 1: Recent 3-5s audio synced with current keyframes (immediate context)
+  Layer 2: Rolling 30-60s transcript with sentence-level timestamps (broad context)
 
 The TrajectoryStore maintains the full trajectory with text persistence:
   - Audio transcriptions: persist as text forever
@@ -26,7 +30,8 @@ class StepRecord:
     step_id: int
     step_start_time: float
     step_end_time: float
-    audio_text: str           # From AudioObserver (persists)
+    audio_text: str           # From AudioObserver / Layer 1 transcript (persists)
+    audio_context: str        # Layer 2 full transcript snapshot (persists)
     visual_narration: str     # From CU model's narration output (persists)
     action: str               # Action taken (persists)
     n_keyframes: int          # How many keyframes were presented (metadata only)
@@ -38,10 +43,15 @@ class ObservationRecord:
     """
     The complete input record assembled for the CU model at one step.
     Contains both text context (from trajectory) and raw images.
+
+    Audio is presented in two layers:
+      Layer 1: Recent 3-5s transcript (synced with keyframes)
+      Layer 2: Rolling 30-60s transcript with sentence timestamps
     """
     step_id: int
     context_steps: list[StepRecord]       # Prior steps as text only
-    current_audio_text: str               # New audio from this step
+    current_audio_text: str               # Layer 1: recent audio transcript
+    current_audio_context: str            # Layer 2: formatted rolling transcript
     keyframes: list                        # list of Keyframe objects (with .image, .timestamp)
     post_action_screenshot: Optional[Image.Image]
     task_instruction: str
@@ -64,8 +74,12 @@ class ObservationRecord:
                 lines.append("")
 
         lines.append("[NEW — current interval]")
+
+        # Two-layer audio
         if self.current_audio_text:
-            lines.append(f"  AUDIO: {self.current_audio_text}")
+            lines.append(f"  [AUDIO — recent] {self.current_audio_text}")
+        if self.current_audio_context:
+            lines.append(self.current_audio_context)
 
         if self.keyframes:
             for kf in self.keyframes:
@@ -124,6 +138,7 @@ class TrajectoryStore:
         action: str,
         n_keyframes: int,
         audio_model_called: bool,
+        audio_context: str = "",
         screenshot: Optional[Image.Image] = None,
     ) -> StepRecord:
         """Record a completed step."""
@@ -132,6 +147,7 @@ class TrajectoryStore:
             step_start_time=step_start_time,
             step_end_time=step_end_time,
             audio_text=audio_text,
+            audio_context=audio_context,
             visual_narration=visual_narration,
             action=action,
             n_keyframes=n_keyframes,

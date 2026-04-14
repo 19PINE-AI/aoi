@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Document - Draft</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Arial', sans-serif; background: #f0f0f0; height: 100vh; display: flex; flex-direction: column; }
+.toolbar {
+  background: #f9fbfd; border-bottom: 1px solid #dadce0; padding: 4px 8px;
+  display: flex; align-items: center;
+}
+.toolbar-title { padding: 4px 8px; font-size: 18px; font-weight: 400; color: #202124; border: none; outline: none; background: transparent; width: 300px; }
+.menu-bar { display: flex; gap: 2px; padding: 2px 8px; background: #f9fbfd; border-bottom: 1px solid #dadce0; }
+.menu-item { padding: 4px 8px; font-size: 13px; color: #444; cursor: pointer; border-radius: 4px; }
+.menu-item:hover { background: #e8eaed; }
+.format-bar {
+  display: flex; align-items: center; gap: 2px; padding: 4px 8px;
+  background: #edf2fa; border-bottom: 1px solid #dadce0;
+}
+.fmt-btn { padding: 4px 8px; border: none; background: transparent; cursor: pointer; border-radius: 4px; font-size: 13px; color: #444; }
+.collab-bar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 4px 12px; background: #f9fbfd; flex: 1;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: #7b1fa2;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: bold; font-size: 14px; position: relative;
+}
+.avatar .online-dot {
+  width: 10px; height: 10px; background: #0f9d58; border: 2px solid white;
+  border-radius: 50%; position: absolute; bottom: -2px; right: -2px;
+}
+.collab-status { font-size: 12px; color: #5f6368; }
+.doc-container { flex: 1; display: flex; justify-content: center; padding: 20px; background: #f0f0f0; overflow-y: auto; }
+.doc-page {
+  width: 816px; min-height: 800px; background: white; padding: 96px 72px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #202124;
+}
+.doc-page p { margin-bottom: 12px; }
+.doc-title { font-size: 26pt; font-weight: 400; margin-bottom: 8px; color: #202124; }
+.doc-date { font-size: 11pt; color: #5f6368; margin-bottom: 24px; }
+.change-highlight {
+  transition: background 0.5s;
+}
+.change-highlight.active {
+  background: #fce4ec;
+}
+.collab-cursor-line {
+  display: inline-block; width: 2px; height: 20px; background: #7b1fa2;
+  vertical-align: text-bottom; animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.collab-cursor-label {
+  background: #7b1fa2; color: white; font-size: 9px; padding: 1px 4px;
+  border-radius: 2px; position: relative; top: -2px;
+}
+.answer-area {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: white; border: 1px solid #dadce0; border-radius: 8px;
+  padding: 16px 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100;
+  width: 600px;
+}
+.answer-area label { font-size: 14px; color: #202124; font-weight: 500; display: block; margin-bottom: 8px; }
+.answer-area textarea {
+  width: 100%; height: 80px; padding: 8px 12px; border: 1px solid #dadce0;
+  border-radius: 4px; font-size: 14px; font-family: Arial; resize: vertical; outline: none;
+}
+.answer-area textarea:focus { border-color: #1a73e8; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <input class="toolbar-title" value="Draft" readonly id="toolbar-title-input" />
+  <div class="collab-bar">
+    <span class="collab-status" id="collab-status">Alex is viewing</span>
+    <div class="avatar">A<span class="online-dot"></span></div>
+  </div>
+</div>
+<div class="menu-bar">
+  <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span>
+  <span class="menu-item">Insert</span><span class="menu-item">Format</span><span class="menu-item">Tools</span>
+</div>
+<div class="format-bar">
+  <select class="fmt-btn" style="width:120px"><option>Normal text</option></select>
+  <select class="fmt-btn" style="width:100px"><option>Arial</option></select>
+  <button class="fmt-btn"><b>B</b></button>
+  <button class="fmt-btn"><i>I</i></button>
+  <button class="fmt-btn"><u>U</u></button>
+</div>
+<div class="doc-container">
+  <div class="doc-page">
+    <div class="doc-title change-highlight" id="doc-title">Draft</div>
+    <div class="doc-date change-highlight" id="doc-date">March 10, 2026</div>
+    <p>This document outlines the preliminary findings from our user research study conducted during Q1. The study involved 45 participants across three geographic regions and focused on understanding user preferences for the new dashboard interface.</p>
+    <p>Key findings indicate a strong preference for customizable widgets (78% of participants) and a simplified navigation structure (65%). The data suggests that our current prototype aligns well with user expectations, though several areas for improvement were identified.</p>
+    <p>Next steps include incorporating feedback into the design iteration cycle and scheduling follow-up sessions with a subset of participants for usability testing of the revised prototype.</p>
+  </div>
+</div>
+
+<div class="answer-area" id="answer-area" style="display: none;">
+  <label>What did Alex just change? Describe the changes:</label>
+  <textarea id="description-input" placeholder="Describe what was changed..."></textarea>
+</div>
+
+<script>
+const titleEl = document.getElementById('doc-title');
+const dateEl = document.getElementById('doc-date');
+
+// At t=3s: show Alex cursor near title
+setTimeout(() => {
+  document.getElementById('collab-status').textContent = 'Alex is editing...';
+}, 3000);
+
+// At t=5s: change the title
+setTimeout(() => {
+  titleEl.classList.add('active');
+  // Simulate backspace and retype
+  const newTitle = 'Final Report';
+  let i = 0;
+  titleEl.textContent = '';
+  const typeTitle = setInterval(() => {
+    if (i < newTitle.length) {
+      titleEl.textContent += newTitle[i];
+      i++;
+    } else {
+      clearInterval(typeTitle);
+      // Also update toolbar title
+      document.getElementById('toolbar-title-input').value = 'Final Report';
+      setTimeout(() => titleEl.classList.remove('active'), 1500);
+    }
+  }, 100);
+}, 5000);
+
+// At t=8s: change the date
+setTimeout(() => {
+  dateEl.classList.add('active');
+  const newDate = 'April 1, 2026';
+  let j = 0;
+  dateEl.textContent = '';
+  const typeDate = setInterval(() => {
+    if (j < newDate.length) {
+      dateEl.textContent += newDate[j];
+      j++;
+    } else {
+      clearInterval(typeDate);
+      setTimeout(() => dateEl.classList.remove('active'), 1500);
+    }
+  }, 100);
+}, 8000);
+
+// At t=10s: audio question
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Hey, what did I just change?");
+  msg.rate = 0.95;
+  speechSynthesis.speak(msg);
+  document.getElementById('answer-area').style.display = 'block';
+  document.getElementById('collab-status').textContent = 'Alex is viewing';
+}, 10000);
+
+window.getTaskResult = function() {
+  const desc = document.getElementById('description-input').value.trim();
+  if (desc.length > 0) {
+    return 'response_submitted';
+  }
+  return 'no_response';
+};
+</script>
+</body>
+</html>

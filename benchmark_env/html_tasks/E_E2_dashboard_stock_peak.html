@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stock Ticker Dashboard - ACME Corp</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .market { font-size: 13px; color: #8892b0; }
+  .ticker-bar { display: flex; gap: 20px; padding: 10px 20px; background: #0a0f1e; border-radius: 8px; margin-bottom: 20px; overflow: hidden; font-size: 13px; }
+  .ticker-item { white-space: nowrap; }
+  .ticker-item .up { color: #00ff88; }
+  .ticker-item .down { color: #e74c3c; }
+  .main-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; margin-bottom: 20px; }
+  .stock-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 20px; }
+  .stock-name { font-size: 24px; font-weight: bold; }
+  .stock-symbol { color: #8892b0; font-size: 14px; }
+  .stock-price { font-size: 42px; font-weight: bold; text-align: right; }
+  .stock-change { font-size: 16px; margin-top: 5px; text-align: right; }
+  .chart-area { width: 100%; height: 200px; background: #0a0f1e; border-radius: 8px; position: relative; overflow: hidden; margin-bottom: 15px; }
+  .chart-canvas { width: 100%; height: 100%; }
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px; }
+  .stat-card { background: #0a0f1e; padding: 12px; border-radius: 8px; text-align: center; }
+  .stat-label { font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; }
+  .stat-value { font-size: 18px; font-weight: bold; margin-top: 4px; }
+  .submit-section { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; display: none; text-align: center; }
+  .submit-section h3 { margin-bottom: 15px; color: #00d4ff; }
+  .submit-section input { padding: 10px 15px; font-size: 16px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 200px; text-align: center; }
+  .submit-section input:focus { outline: none; border-color: #00d4ff; }
+  .submit-section button { padding: 10px 25px; font-size: 14px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; margin-left: 10px; font-weight: bold; }
+  .submit-section button:hover { background: #00b8d9; }
+  .up-color { color: #00ff88; }
+  .down-color { color: #e74c3c; }
+</style>
+</head>
+<body>
+<div class="header">
+  <div>
+    <h1>Stock Ticker Dashboard</h1>
+    <div class="market">NASDAQ Composite &bull; Real-time</div>
+  </div>
+  <div class="market" id="clock"></div>
+</div>
+<div class="ticker-bar" id="tickerBar">
+  <div class="ticker-item">AAPL <span class="up">+0.45%</span></div>
+  <div class="ticker-item">MSFT <span class="down">-0.22%</span></div>
+  <div class="ticker-item">GOOGL <span class="up">+1.12%</span></div>
+  <div class="ticker-item">TSLA <span class="down">-0.67%</span></div>
+  <div class="ticker-item">AMZN <span class="up">+0.31%</span></div>
+</div>
+<div class="main-card">
+  <div class="stock-header">
+    <div>
+      <div class="stock-name">ACME Corporation</div>
+      <div class="stock-symbol">ACME &bull; Technology</div>
+    </div>
+    <div>
+      <div class="stock-price" id="priceDisplay">$130.00</div>
+      <div class="stock-change" id="changeDisplay">+$0.00 (0.00%)</div>
+    </div>
+  </div>
+  <div class="chart-area">
+    <canvas id="chartCanvas" class="chart-canvas"></canvas>
+  </div>
+  <div class="stats-row">
+    <div class="stat-card"><div class="stat-label">Open</div><div class="stat-value">$130.00</div></div>
+    <div class="stat-card"><div class="stat-label">High</div><div class="stat-value" id="highVal">$130.00</div></div>
+    <div class="stat-card"><div class="stat-label">Low</div><div class="stat-value" id="lowVal">$130.00</div></div>
+    <div class="stat-card"><div class="stat-label">Volume</div><div class="stat-value" id="volVal">1.2M</div></div>
+  </div>
+</div>
+<div class="submit-section" id="submitSection">
+  <h3>What was the highest price you observed for ACME?</h3>
+  <div>
+    <input type="text" id="peakInput" placeholder="e.g. 142.50">
+    <button id="submitBtn">Submit Peak</button>
+  </div>
+</div>
+<script>
+(function() {
+  const priceScript = [
+    130.00, 131.20, 129.80, 132.50, 134.10, 136.80, 139.25, 141.00, 142.50, 140.75,
+    138.20, 135.50, 133.00, 131.50, 130.25, 129.00, 128.50, 129.00, 129.50, 130.00
+  ];
+  let tick = 0;
+  let prices = [130.00];
+  let highestPrice = 130.00;
+  let submitted = false;
+  const startPrice = 130.00;
+  const canvas = document.getElementById('chartCanvas');
+  const ctx = canvas.getContext('2d');
+
+  function resizeCanvas() {
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+  }
+  resizeCanvas();
+  window.addEventListener('resize', resizeCanvas);
+
+  function drawChart() {
+    resizeCanvas();
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    if (prices.length < 2) return;
+    const minP = Math.min(...prices) - 2;
+    const maxP = Math.max(...prices) + 2;
+    const range = maxP - minP || 1;
+    ctx.beginPath();
+    ctx.strokeStyle = '#00d4ff';
+    ctx.lineWidth = 2;
+    for (let i = 0; i < prices.length; i++) {
+      const x = (i / (Math.max(prices.length - 1, 1))) * (w - 40) + 20;
+      const y = h - 20 - ((prices[i] - minP) / range) * (h - 40);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    // Fill area
+    ctx.lineTo((prices.length - 1) / (Math.max(prices.length - 1, 1)) * (w - 40) + 20, h - 20);
+    ctx.lineTo(20, h - 20);
+    ctx.closePath();
+    ctx.fillStyle = 'rgba(0, 212, 255, 0.1)';
+    ctx.fill();
+  }
+
+  function updatePrice() {
+    tick++;
+    let price;
+    if (tick - 1 < priceScript.length) {
+      price = priceScript[tick - 1] + (Math.random() * 0.4 - 0.2);
+    } else {
+      price = 130 + Math.random() * 3 - 1.5;
+    }
+    price = Math.round(price * 100) / 100;
+    prices.push(price);
+    if (price > highestPrice) highestPrice = Math.round(price * 100) / 100;
+
+    document.getElementById('priceDisplay').textContent = '$' + price.toFixed(2);
+    const change = price - startPrice;
+    const pct = (change / startPrice * 100);
+    const changeEl = document.getElementById('changeDisplay');
+    const sign = change >= 0 ? '+' : '';
+    changeEl.textContent = sign + '$' + change.toFixed(2) + ' (' + sign + pct.toFixed(2) + '%)';
+    changeEl.className = 'stock-change ' + (change >= 0 ? 'up-color' : 'down-color');
+
+    document.getElementById('highVal').textContent = '$' + highestPrice.toFixed(2);
+    const lowest = Math.min(...prices);
+    document.getElementById('lowVal').textContent = '$' + lowest.toFixed(2);
+    document.getElementById('volVal').textContent = (1.2 + tick * 0.15).toFixed(1) + 'M';
+
+    drawChart();
+
+    // Show submit section after 25s (tick ~12-13)
+    if (tick >= 13) {
+      document.getElementById('submitSection').style.display = 'block';
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const val = document.getElementById('peakInput').value.trim().replace('$', '');
+    if (val === '142.50' || val === '142.5') return 'peak_correct';
+    const num = parseFloat(val);
+    if (num >= 142.3 && num <= 142.7) return 'peak_correct';
+    return 'peak_incorrect';
+  };
+
+  // Update clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('clock').textContent = now.toLocaleTimeString();
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  setTimeout(function() {
+    setInterval(updatePrice, 2000);
+  }, 2000);
+
+  drawChart();
+})();
+</script>
+</body>
+</html>

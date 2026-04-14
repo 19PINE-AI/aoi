@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dual Task Challenge</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.header {
+  padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
+  background: rgba(15,15,35,0.9); z-index: 10;
+}
+.title { font-size: 24px; font-weight: 700; color: #ff3366; }
+.stats { display: flex; gap: 20px; }
+.stat-item { text-align: center; }
+.stat-label { font-size: 10px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { font-size: 22px; font-weight: 700; }
+.split-container {
+  flex: 1; display: flex; overflow: hidden;
+}
+.panel {
+  flex: 1; position: relative; display: flex; flex-direction: column;
+}
+.panel-left {
+  border-right: 2px solid #2a2a4e;
+}
+.panel-header {
+  padding: 8px 16px; background: #1a1a3e; border-bottom: 1px solid #2a2a4e;
+  font-size: 13px; font-weight: 600; color: #aaa; text-transform: uppercase; letter-spacing: 1px;
+}
+.target-area {
+  flex: 1; position: relative; overflow: hidden; cursor: crosshair;
+}
+.target {
+  position: absolute; width: 50px; height: 50px; border-radius: 50%;
+  border: 3px solid; transition: background 0.3s, border-color 0.3s;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+.target.normal { background: #33aaff; border-color: #33aaff; }
+.target.red { background: #ff3366; border-color: #ff3366; box-shadow: 0 0 20px rgba(255,51,102,0.5); }
+.target.hit { animation: hitFlash 0.3s; }
+@keyframes hitFlash {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.7); opacity: 0.5; }
+  100% { transform: scale(1); opacity: 1; }
+}
+.number-panel {
+  flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+  position: relative;
+}
+.number-display {
+  font-size: 72px; font-weight: 700; color: #ffcc00;
+  text-shadow: 0 0 20px rgba(255,204,0,0.3);
+  min-height: 90px; display: flex; align-items: center; justify-content: center;
+}
+.number-display.empty { color: #2a2a4e; }
+.number-input {
+  margin-top: 20px; padding: 10px 16px; background: #1a1a3e; border: 2px solid #2a2a5e;
+  border-radius: 8px; color: #e0e0e0; font-size: 24px; width: 120px; text-align: center;
+  outline: none; font-family: 'Segoe UI', monospace;
+}
+.number-input:focus { border-color: #ffcc00; }
+.number-timer {
+  margin-top: 8px; height: 4px; background: #2a2a4e; border-radius: 2px; width: 100px;
+  overflow: hidden;
+}
+.number-timer-fill {
+  height: 100%; background: #ffcc00; border-radius: 2px;
+  transition: width 0.1s linear;
+}
+.number-feedback {
+  margin-top: 12px; font-size: 16px; min-height: 24px;
+}
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 44px; color: #ff3366; margin-bottom: 16px; }
+.instruction p { font-size: 16px; color: #aaa; margin-bottom: 6px; max-width: 500px; text-align: center; }
+.instruction .countdown { font-size: 64px; color: #00ff88; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Dual Task Challenge</h1>
+  <p><b>Left:</b> Click the bouncing target when it turns RED</p>
+  <p><b>Right:</b> Type the flashing numbers before they disappear</p>
+  <p>Goal: 5+ target hits AND 3+ correct numbers</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Dual Task</div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-label">Hits</div>
+      <div class="stat-value" id="hits" style="color:#ff3366">0</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Numbers</div>
+      <div class="stat-value" id="numbers" style="color:#ffcc00">0</div>
+    </div>
+  </div>
+</div>
+
+<div class="split-container">
+  <div class="panel panel-left">
+    <div class="panel-header">Click when RED</div>
+    <div class="target-area" id="target-area">
+      <div class="target normal" id="target"></div>
+    </div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">Type the number</div>
+    <div class="number-panel">
+      <div class="number-display empty" id="number-display">--</div>
+      <input type="text" class="number-input" id="number-input" placeholder="?" maxlength="2" autocomplete="off" />
+      <div class="number-timer"><div class="number-timer-fill" id="number-timer-fill" style="width:100%"></div></div>
+      <div class="number-feedback" id="number-feedback"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let hitCount = 0;
+let numberCount = 0;
+let gameActive = false;
+
+// Target variables
+const target = document.getElementById('target');
+const targetArea = document.getElementById('target-area');
+let targetX = 100, targetY = 100;
+let targetVX = 2, targetVY = 1.5;
+let isRed = false;
+let colorChangeTimer = null;
+
+// Number variables
+const numberDisplay = document.getElementById('number-display');
+const numberInput = document.getElementById('number-input');
+const timerFill = document.getElementById('number-timer-fill');
+let currentNumber = null;
+let numberTimeout = null;
+let numberTimerInterval = null;
+let numberStartTime = 0;
+const NUMBER_DURATION = 2000;
+
+// Target movement
+function moveTarget() {
+  if (!gameActive) return;
+
+  const areaW = targetArea.offsetWidth;
+  const areaH = targetArea.offsetHeight;
+
+  targetX += targetVX;
+  targetY += targetVY;
+
+  if (targetX <= 0 || targetX >= areaW - 50) targetVX *= -1;
+  if (targetY <= 0 || targetY >= areaH - 50) targetVY *= -1;
+
+  targetX = Math.max(0, Math.min(areaW - 50, targetX));
+  targetY = Math.max(0, Math.min(areaH - 50, targetY));
+
+  target.style.left = targetX + 'px';
+  target.style.top = targetY + 'px';
+
+  requestAnimationFrame(moveTarget);
+}
+
+// Color changes
+function scheduleColorChange() {
+  if (!gameActive) return;
+  const delay = 2000 + Math.random() * 1000;
+  colorChangeTimer = setTimeout(() => {
+    if (!gameActive) return;
+    isRed = !isRed;
+    target.className = 'target ' + (isRed ? 'red' : 'normal');
+    scheduleColorChange();
+  }, delay);
+}
+
+// Target click
+target.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!gameActive) return;
+  if (isRed) {
+    hitCount++;
+    document.getElementById('hits').textContent = hitCount;
+    target.classList.add('hit');
+    setTimeout(() => target.classList.remove('hit'), 300);
+    // Change back to normal
+    isRed = false;
+    target.className = 'target normal';
+  }
+});
+
+// Number display
+function showNumber() {
+  if (!gameActive) return;
+
+  currentNumber = (10 + Math.floor(Math.random() * 90)).toString();
+  numberDisplay.textContent = currentNumber;
+  numberDisplay.classList.remove('empty');
+  numberInput.value = '';
+  numberInput.focus();
+  numberStartTime = Date.now();
+
+  // Timer bar
+  timerFill.style.width = '100%';
+  numberTimerInterval = setInterval(() => {
+    const elapsed = Date.now() - numberStartTime;
+    const pct = Math.max(0, 100 - (elapsed / NUMBER_DURATION) * 100);
+    timerFill.style.width = pct + '%';
+  }, 50);
+
+  numberTimeout = setTimeout(() => {
+    clearInterval(numberTimerInterval);
+    // Time up
+    numberDisplay.textContent = '--';
+    numberDisplay.classList.add('empty');
+    document.getElementById('number-feedback').textContent = 'Missed!';
+    document.getElementById('number-feedback').style.color = '#ff3366';
+    currentNumber = null;
+    setTimeout(() => {
+      document.getElementById('number-feedback').textContent = '';
+      scheduleNumber();
+    }, 1000);
+  }, NUMBER_DURATION);
+}
+
+function scheduleNumber() {
+  if (!gameActive) return;
+  const delay = 2000 + Math.random() * 2000;
+  setTimeout(() => showNumber(), delay);
+}
+
+// Number input
+numberInput.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter') {
+    if (!currentNumber) return;
+    const val = numberInput.value.trim();
+    if (val === currentNumber) {
+      clearTimeout(numberTimeout);
+      clearInterval(numberTimerInterval);
+      numberCount++;
+      document.getElementById('numbers').textContent = numberCount;
+      document.getElementById('number-feedback').textContent = 'Correct!';
+      document.getElementById('number-feedback').style.color = '#00ff88';
+      numberDisplay.textContent = '--';
+      numberDisplay.classList.add('empty');
+      currentNumber = null;
+      numberInput.value = '';
+      setTimeout(() => {
+        document.getElementById('number-feedback').textContent = '';
+        scheduleNumber();
+      }, 800);
+    } else {
+      document.getElementById('number-feedback').textContent = 'Wrong!';
+      document.getElementById('number-feedback').style.color = '#ff3366';
+      numberInput.value = '';
+    }
+  }
+});
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startGame();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startGame() {
+  gameActive = true;
+
+  // Initialize target position
+  const areaW = targetArea.offsetWidth;
+  const areaH = targetArea.offsetHeight;
+  targetX = areaW / 2 - 25;
+  targetY = areaH / 2 - 25;
+  target.style.left = targetX + 'px';
+  target.style.top = targetY + 'px';
+
+  moveTarget();
+  scheduleColorChange();
+  setTimeout(() => showNumber(), 1500);
+}
+
+window.getTaskResult = function() {
+  if (hitCount >= 5 && numberCount >= 3) {
+    return 'hits_5_numbers_3';
+  }
+  return 'hits_' + hitCount + '_numbers_' + numberCount;
+};
+</script>
+</body>
+</html>

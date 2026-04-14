@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Gallery</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #27ca40; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 620px; }
+  .gallery-header { text-align: center; margin-bottom: 20px; }
+  .gallery-header h1 { font-size: 26px; font-weight: 700; margin-bottom: 6px; }
+  .gallery-header p { color: #888; font-size: 14px; }
+  .gallery-wrapper { background: #1a1a2e; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .gallery-viewport { overflow: hidden; }
+  .gallery-track { display: flex; transition: transform 0.5s ease; }
+  .gallery-slide { min-width: 100%; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center; position: relative; }
+  .image-label { position: absolute; bottom: 16px; left: 16px; background: rgba(0,0,0,0.6); padding: 8px 16px; border-radius: 8px; font-size: 14px; font-weight: 500; backdrop-filter: blur(8px); }
+  .image-number { position: absolute; top: 16px; right: 16px; background: rgba(0,0,0,0.6); padding: 6px 12px; border-radius: 6px; font-size: 13px; color: #aaa; }
+  .gallery-controls { display: flex; justify-content: space-between; align-items: center; padding: 14px 20px; background: #16213e; }
+  .gallery-dots { display: flex; gap: 8px; }
+  .gallery-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; cursor: pointer; transition: background 0.3s; }
+  .gallery-dot.active { background: #27ca40; }
+  .gallery-arrows { display: flex; gap: 8px; }
+  .arrow { background: #2a2a3e; border: none; color: #ccc; width: 36px; height: 36px; border-radius: 50%; cursor: pointer; font-size: 16px; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .arrow:hover { background: #3a3a4e; }
+  .slide-info { font-size: 13px; color: #888; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; width: 120px; }
+  .input-group input:focus { border-color: #27ca40; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #27ca40; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #32d74b; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="gallery-header">
+    <h1>Landscape Gallery</h1>
+    <p>Auto-rotating collection of scenic photographs</p>
+  </div>
+  <div class="gallery-wrapper">
+    <div class="gallery-viewport">
+      <div class="gallery-track" id="galleryTrack">
+        <div class="gallery-slide" style="background: linear-gradient(135deg, #ff9a9e, #fecfef);">
+          <div class="image-label">Sunset over the mountains</div>
+          <div class="image-number" id="imgNum0"></div>
+        </div>
+        <div class="gallery-slide" style="background: linear-gradient(135deg, #a1c4fd, #c2e9fb);">
+          <div class="image-label">Ocean waves at dawn</div>
+          <div class="image-number" id="imgNum1"></div>
+        </div>
+        <div class="gallery-slide" style="background: linear-gradient(135deg, #d4fc79, #96e6a1);">
+          <div class="image-label">Spring meadow in bloom</div>
+          <div class="image-number" id="imgNum2"></div>
+        </div>
+        <div class="gallery-slide" style="background: linear-gradient(135deg, #fbc2eb, #a6c1ee);">
+          <div class="image-label">Cherry blossoms in Kyoto</div>
+          <div class="image-number" id="imgNum3"></div>
+        </div>
+        <div class="gallery-slide" style="background: linear-gradient(135deg, #ffecd2, #fcb69f);">
+          <div class="image-label">Desert sand dunes</div>
+          <div class="image-number" id="imgNum4"></div>
+        </div>
+        <div class="gallery-slide" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+          <div class="image-label">Northern lights display</div>
+          <div class="image-number" id="imgNum5"></div>
+        </div>
+      </div>
+    </div>
+    <div class="gallery-controls">
+      <div class="gallery-dots" id="galleryDots"></div>
+      <div class="slide-info" id="slideInfo">1 / 6</div>
+      <div class="gallery-arrows">
+        <button class="arrow" onclick="goTo(current - 1)">&#8592;</button>
+        <button class="arrow" onclick="goTo(current + 1)">&#8594;</button>
+      </div>
+    </div>
+  </div>
+  <div class="form-section">
+    <h3>How many unique images are in the gallery?</h3>
+    <div class="input-group">
+      <label for="answerInput">Total unique images</label>
+      <input type="text" id="answerInput" placeholder="Number" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const totalSlides = 6;
+  let current = 0;
+
+  const dotsContainer = document.getElementById('galleryDots');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'gallery-dot';
+    dot.onclick = () => goTo(i);
+    dotsContainer.appendChild(dot);
+  }
+
+  function update() {
+    document.getElementById('galleryTrack').style.transform = `translateX(-${current * 100}%)`;
+    document.querySelectorAll('.gallery-dot').forEach((d, i) => d.classList.toggle('active', i === current));
+    document.getElementById('slideInfo').textContent = `${current + 1} / ${totalSlides}`;
+  }
+
+  function goTo(i) {
+    current = ((i % totalSlides) + totalSlides) % totalSlides;
+    update();
+  }
+
+  function startAutoRotate() {
+    setInterval(() => {
+      current = (current + 1) % totalSlides;
+      update();
+    }, 3000);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'count_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('answerInput').value.trim();
+    if (val === '6') return 'count_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    update();
+    setTimeout(startAutoRotate, 500);
+  }, 2000);
+</script>
+</body>
+</html>

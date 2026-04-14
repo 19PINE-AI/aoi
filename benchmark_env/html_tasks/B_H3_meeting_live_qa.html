@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Review Meeting — Live Q&A</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #202124; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  #loading { position: fixed; inset: 0; background: #202124; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #8ab4f8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .meet-header { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3c4043; }
+  .meet-logo { font-size: 18px; font-weight: 500; color: #8ab4f8; }
+  .meet-title { font-size: 14px; color: #bdc1c6; }
+  .meet-time { font-size: 13px; color: #9aa0a6; }
+  .meet-body { flex: 1; display: flex; padding: 16px; gap: 16px; }
+  .slide-area { flex: 1; background: #1a1a2e; border-radius: 12px; overflow: hidden; position: relative; min-height: 380px; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; opacity: 0; transition: opacity 0.8s ease; }
+  .slide.active { opacity: 1; }
+  .slide h2 { font-size: 24px; font-weight: 600; margin-bottom: 16px; color: #fff; }
+  .slide p { font-size: 14px; color: #9aa0a6; text-align: center; max-width: 450px; margin-bottom: 12px; line-height: 1.6; }
+  .bullet-list { text-align: left; max-width: 450px; }
+  .bullet-list li { padding: 5px 0; font-size: 14px; color: #bdc1c6; list-style: disc inside; }
+  .risk-card { background: #2d1f1f; border: 1px solid #ea4335; border-radius: 10px; padding: 16px 20px; max-width: 400px; margin-top: 12px; }
+  .risk-card .risk-label { font-size: 12px; color: #ea4335; font-weight: 600; margin-bottom: 6px; text-transform: uppercase; }
+  .risk-card .risk-text { font-size: 14px; color: #f28b82; line-height: 1.5; }
+  .data-table { border-collapse: collapse; width: 90%; max-width: 460px; }
+  .data-table th { background: #16162b; padding: 8px 12px; text-align: left; font-size: 12px; color: #8ab4f8; border-bottom: 1px solid #2a2a3e; }
+  .data-table td { padding: 8px 12px; font-size: 13px; color: #bdc1c6; border-bottom: 1px solid #1e1e36; }
+  .participants { width: 180px; display: flex; flex-direction: column; gap: 6px; }
+  .participant { background: #292a2d; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; }
+  .participant .avatar-lg { width: 36px; height: 36px; border-radius: 50%; }
+  .participant .p-name { position: absolute; bottom: 4px; left: 6px; font-size: 10px; color: #bdc1c6; }
+
+  /* Q&A panel */
+  .qa-panel { background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 0 16px 16px; }
+  .qa-panel h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .qa-section { margin-bottom: 16px; padding: 12px; background: #16162b; border-radius: 8px; display: none; }
+  .qa-section.active { display: block; }
+  .qa-section .q-label { font-size: 12px; color: #fbbc05; font-weight: 600; margin-bottom: 4px; }
+  .qa-section .q-text { font-size: 14px; color: #e0e0e0; margin-bottom: 10px; }
+  .qa-section .timer-row { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .qa-section .timer-bar { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .qa-section .timer-fill { height: 100%; background: #ea4335; width: 100%; transition: width 0.2s linear; }
+  .qa-section .timer-text { font-size: 12px; color: #ea4335; white-space: nowrap; min-width: 30px; }
+  .qa-section .answer-row { display: flex; gap: 8px; }
+  .qa-section .answer-row input { flex: 1; background: #0f0f23; border: 1px solid #2a2a3e; border-radius: 6px; padding: 8px 12px; color: #e0e0e0; font-size: 13px; outline: none; }
+  .qa-section .answer-row input:focus { border-color: #8ab4f8; }
+  .qa-section .answer-row button { padding: 8px 16px; background: #8ab4f8; border: none; border-radius: 6px; color: #202124; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .qa-section .q-status { font-size: 12px; color: #666; margin-top: 6px; }
+  .overall-status { font-size: 13px; color: #666; margin-top: 8px; text-align: right; min-height: 20px; }
+  .meet-controls { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid #3c4043; }
+  .ctrl-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #3c4043; color: #e0e0e0; }
+  .ctrl-end { background: #ea4335; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; width: auto; }
+  .slide-indicator { position: absolute; bottom: 10px; right: 14px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="meet-header">
+  <div class="meet-logo">Google Meet</div>
+  <div class="meet-title">Project Review — Live Q&A</div>
+  <div class="meet-time" id="meetTime">--:--</div>
+</div>
+<div class="meet-body">
+  <div class="slide-area">
+    <div class="slide active" id="slide0">
+      <h2>Project Phoenix Review</h2>
+      <ul class="bullet-list">
+        <li>Status update</li>
+        <li>Risk assessment</li>
+        <li>Budget review</li>
+        <li>Savings projection</li>
+        <li>Next steps</li>
+      </ul>
+    </div>
+    <div class="slide" id="slide1">
+      <h2>Status & Risks</h2>
+      <p>Development is 78% complete. Testing phase begins next week.</p>
+      <div class="risk-card">
+        <div class="risk-label">Primary Risk</div>
+        <div class="risk-text">Supply chain delays may push hardware delivery by 2-3 weeks, impacting the integration timeline.</div>
+      </div>
+    </div>
+    <div class="slide" id="slide2">
+      <h2>Budget Breakdown</h2>
+      <table class="data-table">
+        <thead><tr><th>Category</th><th>Allocated</th><th>Spent</th></tr></thead>
+        <tbody>
+          <tr><td>Development</td><td>$1.8M</td><td>$1.4M</td></tr>
+          <tr><td>Infrastructure</td><td>$600K</td><td>$520K</td></tr>
+          <tr><td>Testing</td><td>$400K</td><td>$180K</td></tr>
+          <tr><td>Contingency</td><td>$200K</td><td>$0</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide" id="slide3">
+      <h2>Savings Projection</h2>
+      <p>Once deployed, the new system is projected to generate significant operational savings through automation and reduced manual processes.</p>
+    </div>
+    <div class="slide" id="slide4">
+      <h2>Next Steps</h2>
+      <ul class="bullet-list">
+        <li>Complete testing by April 30</li>
+        <li>Stakeholder demo on May 5</li>
+        <li>Go-live decision by May 12</li>
+      </ul>
+    </div>
+    <div class="slide-indicator" id="slideIndicator">Slide 1 / 5</div>
+  </div>
+  <div class="participants">
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #ea4335, #fbbc05);"></div><div class="p-name">Director</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #4285f4, #8ab4f8);"></div><div class="p-name">PM</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #34a853, #5bb974);"></div><div class="p-name">You</div></div>
+  </div>
+</div>
+<div class="qa-panel">
+  <h3>Live Q&A — Answer within the time limit</h3>
+  <div class="qa-section" id="qa1">
+    <div class="q-label">Question 1</div>
+    <div class="q-text" id="q1Text"></div>
+    <div class="timer-row">
+      <div class="timer-bar"><div class="timer-fill" id="timer1Fill"></div></div>
+      <div class="timer-text" id="timer1Text">10s</div>
+    </div>
+    <div class="answer-row">
+      <input type="text" id="answer1" placeholder="Your answer..." autocomplete="off">
+      <button id="send1">Send</button>
+    </div>
+    <div class="q-status" id="q1Status"></div>
+  </div>
+  <div class="qa-section" id="qa2">
+    <div class="q-label">Question 2</div>
+    <div class="q-text" id="q2Text"></div>
+    <div class="timer-row">
+      <div class="timer-bar"><div class="timer-fill" id="timer2Fill"></div></div>
+      <div class="timer-text" id="timer2Text">10s</div>
+    </div>
+    <div class="answer-row">
+      <input type="text" id="answer2" placeholder="Your answer..." autocomplete="off">
+      <button id="send2">Send</button>
+    </div>
+    <div class="q-status" id="q2Status"></div>
+  </div>
+  <div class="overall-status" id="overallStatus"></div>
+</div>
+<div class="meet-controls">
+  <button class="ctrl-btn">&#127908;</button>
+  <button class="ctrl-btn">&#127909;</button>
+  <button class="ctrl-btn ctrl-end">Leave</button>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let q1Answered = false, q2Answered = false;
+  let q1Expired = false, q2Expired = false;
+  let timer1Iv, timer2Iv;
+
+  const slideAudio = [
+    "Welcome to the Project Phoenix review. Let's go through the five items on our agenda.",
+    "We're at seventy-eight percent completion. The primary risk is supply chain delays which could push hardware delivery by two to three weeks.",
+    "Here's the budget. We're tracking well under budget with the contingency fund untouched.",
+    "For savings, the projected savings from this project is two point three million dollars annually once fully deployed.",
+    "Finally, next steps. Testing wraps April thirtieth, demo on May fifth, and go-live decision by May twelfth."
+  ];
+
+  function showSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('slideIndicator').textContent = `Slide ${idx + 1} / ${slides.length}`;
+  }
+
+  function startQ1Timer() {
+    const qa1 = document.getElementById('qa1');
+    qa1.classList.add('active');
+    document.getElementById('q1Text').textContent = 'What is the biggest risk mentioned?';
+    let remaining = 10;
+    timer1Iv = setInterval(() => {
+      remaining--;
+      document.getElementById('timer1Text').textContent = remaining + 's';
+      document.getElementById('timer1Fill').style.width = ((remaining / 10) * 100) + '%';
+      if (remaining <= 0) {
+        clearInterval(timer1Iv);
+        q1Expired = true;
+        document.getElementById('timer1Text').textContent = '0s';
+        if (!q1Answered) document.getElementById('q1Status').textContent = 'Time expired';
+      }
+    }, 1000);
+  }
+
+  function startQ2Timer() {
+    const qa2 = document.getElementById('qa2');
+    qa2.classList.add('active');
+    document.getElementById('q2Text').textContent = 'What is the projected savings?';
+    let remaining = 10;
+    timer2Iv = setInterval(() => {
+      remaining--;
+      document.getElementById('timer2Text').textContent = remaining + 's';
+      document.getElementById('timer2Fill').style.width = ((remaining / 10) * 100) + '%';
+      if (remaining <= 0) {
+        clearInterval(timer2Iv);
+        q2Expired = true;
+        document.getElementById('timer2Text').textContent = '0s';
+        if (!q2Answered) document.getElementById('q2Status').textContent = 'Time expired';
+      }
+    }, 1000);
+  }
+
+  function advanceSlides() {
+    showSlide(0);
+    let idx = 0;
+    function speakForSlide(i) {
+      if (i >= slideAudio.length) return;
+      const u = new SpeechSynthesisUtterance(slideAudio[i]);
+      u.rate = 0.9;
+      u.lang = 'en-US';
+      u.onend = () => {
+        if (i === 1) {
+          // After slide 2 (risk slide), ask Q1
+          const q = new SpeechSynthesisUtterance("Question: What is the biggest risk mentioned?");
+          q.rate = 0.9;
+          q.lang = 'en-US';
+          q.onend = () => { startQ1Timer(); };
+          speechSynthesis.speak(q);
+        }
+        if (i === 3) {
+          // After slide 4 (savings), ask Q2
+          const q = new SpeechSynthesisUtterance("Question: What is the projected savings?");
+          q.rate = 0.9;
+          q.lang = 'en-US';
+          q.onend = () => { startQ2Timer(); };
+          speechSynthesis.speak(q);
+        }
+        const delay = (i === 1 || i === 3) ? 14000 : 2000;
+        setTimeout(() => {
+          idx++;
+          if (idx < slides.length) {
+            showSlide(idx);
+            speakForSlide(idx);
+          }
+        }, delay);
+      };
+      speechSynthesis.speak(u);
+    }
+    speakForSlide(0);
+  }
+
+  // Q1 send
+  document.getElementById('send1').addEventListener('click', () => {
+    if (q1Expired) return;
+    const val = document.getElementById('answer1').value.toLowerCase().trim();
+    if (val.includes('supply chain') || val.includes('delay')) {
+      q1Answered = true;
+      clearInterval(timer1Iv);
+      document.getElementById('q1Status').textContent = 'Answered!';
+      document.getElementById('q1Status').style.color = '#34a853';
+    }
+  });
+
+  // Q2 send
+  document.getElementById('send2').addEventListener('click', () => {
+    if (q2Expired) return;
+    const val = document.getElementById('answer2').value.toLowerCase().trim();
+    if (val.includes('2.3') || val.includes('two point three')) {
+      q2Answered = true;
+      clearInterval(timer2Iv);
+      document.getElementById('q2Status').textContent = 'Answered!';
+      document.getElementById('q2Status').style.color = '#34a853';
+    }
+  });
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('meetTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  window.getTaskResult = function() {
+    if (q1Answered && q2Answered) return 'both_answered_in_time';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(advanceSlides, 500);
+  }, 2000);
+</script>
+</body>
+</html>

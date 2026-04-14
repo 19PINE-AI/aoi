@@ -59,12 +59,14 @@ class BrowserEnvironment:
         height: int = 720,
         task_timeout_s: float = 30.0,
         audio_enabled: bool = True,
+        coord_scale_1000: bool = False,
     ):
         self.html_file = html_file
         self.width = width
         self.height = height
         self.task_timeout_s = task_timeout_s
         self.audio_enabled = audio_enabled
+        self.coord_scale_1000 = coord_scale_1000
 
         self._playwright = None
         self._browser: Optional[Browser] = None
@@ -74,6 +76,9 @@ class BrowserEnvironment:
         # Audio capture
         self._audio_frames: list[np.ndarray] = []
         self._audio_lock = threading.Lock()
+
+        # Audio pipeline (set externally by evaluation harness)
+        self._audio_processor = None
 
         # Action history
         self._actions: list[ActionResult] = []
@@ -168,16 +173,87 @@ class BrowserEnvironment:
           navigate <url>                — navigate browser to URL
           scroll <direction> <amount>   — scroll page
           wait <seconds>                — pause
+          speak <text>                  — TTS audio output via virtual microphone
           js <code>                     — run JavaScript on page (for testing)
         """
         try:
             action = action_text.strip()
             action_lower = action.lower()
 
-            # --- click x y / click(x, y) / click(x,y) / click x500 y610 ---
-            m = re.match(r'click\s*\(?x?(\d+)[,\s]+y?(\d+)\)?', action_lower)
+            # --- Compound actions: semicolons, "and click", "then type" ---
+            # Split on ";" or " and then " / " then " / " and " + action verb
+            if ';' in action:
+                parts = [p.strip() for p in action.split(';') if p.strip()]
+                if len(parts) >= 2:
+                    results = []
+                    for p in parts:
+                        r = self.execute_action(p)
+                        results.append(r)
+                        time.sleep(0.3)
+                    return ActionResult(
+                        any(r.success for r in results),
+                        " → ".join(p.strip()[:30] for p in parts),
+                    )
+            compound_m = re.search(
+                r'(.+?)\s+(?:and\s+then|then|and)\s+((?:click|type|enter|fill|submit)\s.+)$',
+                action, re.IGNORECASE,
+            )
+            if compound_m:
+                first_part = compound_m.group(1).strip()
+                second_part = compound_m.group(2).strip()
+                r1 = self.execute_action(first_part)
+                time.sleep(0.3)
+                r2 = self.execute_action(second_part)
+                return ActionResult(
+                    r1.success or r2.success,
+                    f"{first_part} → {second_part}",
+                )
+
+            # --- speak "text" — TTS → virtual microphone injection ---
+            m = re.match(r'speak\s+["\'](.+?)["\']', action, re.IGNORECASE)
+            if not m:
+                m = re.match(r'speak\s+(.+)', action, re.IGNORECASE)
+            if m and 'speak' in action_lower[:10]:
+                text = m.group(1).strip().strip("'\"")
+                if self._audio_processor:
+                    success = self._audio_processor.speak(text)
+                    return ActionResult(success, f"speak '{text[:50]}'")
+                else:
+                    logger.warning("speak action called but no audio_processor attached")
+                    return ActionResult(False, action_text, error="No audio processor")
+
+            # --- type_text_at(x, y, "text") — click at coords, then type ---
+            m = re.match(r'type_text_at\s*\(\s*(\d+)[,\s]+(\d+)[,\s]+["\']([^"\']+)["\']', action, re.IGNORECASE)
             if m:
                 x, y = int(m.group(1)), int(m.group(2))
+                text = m.group(3)
+                if self.coord_scale_1000:
+                    x = int(x * self.width / 1000)
+                    y = int(y * self.height / 1000)
+                self._page.mouse.click(x, y)
+                time.sleep(0.2)
+                self._page.keyboard.type(text)
+                return ActionResult(True, f"type_text_at({x},{y},'{text}')")
+
+            # --- click x y / click(x, y) / click(x,y) / click x500 y610 ---
+            # Also handles Gemini 3 format: click(point=[611, 452])
+            m = re.match(r'click\s*\(?x?(\d+)[,\s]+y?(\d+)\)?', action_lower)
+            if not m:
+                m = re.search(r'click\s*\(?\s*point\s*=\s*\[(\d+)[,\s]+(\d+)\]', action_lower)
+            if not m:
+                # JSON-style: click {"point": [x, y]}
+                m = re.search(r'click\s*\{[^}]*"point"\s*:\s*\[(\d+)[,\s]+(\d+)\]', action_lower)
+            if not m:
+                # Fallback: any "click" followed by two numbers somewhere in text
+                m = re.search(r'click[^0-9]*(\d{2,4})[,\s]+(\d{2,4})', action_lower)
+            if m:
+                x, y = int(m.group(1)), int(m.group(2))
+                # Scale normalized coordinates (0-1000) to viewport pixels.
+                # Gemini 3 Flash outputs coordinates in a 1000x1000 normalized
+                # space. The flag coord_scale_1000 is set by the evaluator.
+                if self.coord_scale_1000:
+                    x = int(x * self.width / 1000)
+                    y = int(y * self.height / 1000)
                 self._page.mouse.click(x, y)
                 return ActionResult(True, action_text)
 
@@ -251,10 +327,14 @@ class BrowserEnvironment:
                 )
                 return ActionResult(True, action_text)
 
-            # --- wait (standalone only, not "wait for..." or "wait and...") ---
-            m = re.match(r'wait(?:\s+(\d+(?:\.\d+)?))?\s*$', action_lower)
+            # --- wait N / wait(N) / wait() (standalone only) ---
+            m = re.match(r'wait\s*\(?\s*(\d+(?:\.\d+)?)?\s*\)?\s*$', action_lower)
             if m:
-                secs = float(m.group(1)) if m.group(1) else 0.5
+                if m.group(1):
+                    val = float(m.group(1))
+                    secs = val / 1000.0 if val > 100 else val
+                else:
+                    secs = 0.5
                 time.sleep(min(secs, 2.0))  # Cap at 2s per wait
                 return ActionResult(True, action_text)
 
@@ -298,6 +378,20 @@ class BrowserEnvironment:
                 except:
                     pass
 
+            # --- Do nothing / wait / observe / pause / narration actions ---
+            # Must come BEFORE keyword fallback to prevent "wait for X then click Capture"
+            # from triggering the "capture" keyword.
+            if any(w in action_lower for w in ["do nothing", "observe", "no action",
+                                                "pause", "narration:"]):
+                time.sleep(0.5)
+                return ActionResult(True, action_text)
+            if re.match(r'(?:wait|i.ll wait|i need to wait|since|i can see|i will|i am|no)\s+', action_lower):
+                time.sleep(0.5)
+                return ActionResult(True, action_text)
+            if action_lower in ("wait", "wait.", "wait()", "no"):
+                time.sleep(0.5)
+                return ActionResult(True, action_text)
+
             # --- Generic keyword fallback ---
             keywords = ['accept', 'open', 'submit', 'install', 'approve',
                         'dismiss', 'close', 'launch', 'capture', 'alert',
@@ -314,12 +408,6 @@ class BrowserEnvironment:
                                 return ActionResult(True, f"clicked {role} matching '{kw}'")
                         except:
                             pass
-
-            # --- Do nothing / wait / observe / pause / narration actions ---
-            if any(w in action_lower for w in ["do nothing", "wait", "observe", "no action",
-                                                "pause", "narration:"]):
-                time.sleep(0.5)
-                return ActionResult(True, action_text)
 
             return ActionResult(False, action_text, error=f"Unrecognized action: {action[:80]}")
 

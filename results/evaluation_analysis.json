@@ -1,0 +1,89 @@
+{
+  "benchmark": "DynaCU-Bench v3",
+  "date": "2026-04-14",
+  "tasks_evaluated": 10,
+  "tasks_per_category": 1,
+  "difficulty": "easy",
+  "models": {
+    "gemini-2.0-flash": {
+      "standard": {
+        "passed": 1,
+        "total": 10,
+        "tasks_passed": [
+          "D-E1"
+        ]
+      },
+      "aoi_full": {
+        "passed": 3,
+        "total": 10,
+        "tasks_passed": [
+          "A-E1",
+          "D-E1",
+          "E-E1"
+        ]
+      }
+    },
+    "claude-sonnet-4-6": {
+      "standard": {
+        "passed": 1,
+        "total": 10,
+        "tasks_passed": [
+          "D-E1"
+        ]
+      },
+      "aoi_full": {
+        "passed": 2,
+        "total": 10,
+        "tasks_passed": [
+          "A-E1",
+          "G-E1"
+        ]
+      }
+    },
+    "gpt-4o": {
+      "standard": {
+        "passed": 1,
+        "total": 10,
+        "tasks_passed": [
+          "D-E1"
+        ]
+      },
+      "aoi_full": {
+        "passed": 3,
+        "total": 10,
+        "tasks_passed": [
+          "A-E1",
+          "D-E1",
+          "G-E1"
+        ]
+      }
+    }
+  },
+  "aggregate": {
+    "standard_total": 3,
+    "aoi_total": 8,
+    "improvement_pct": 167
+  },
+  "key_findings": [
+    "All 3 models pass exactly 1/10 tasks in standard mode (D-E1 carousel - static enough for single screenshot)",
+    "AOI audio perception enables podcast (A-E1) comprehension across all 3 models (0/3 \u2192 3/3)",
+    "AOI audio perception enables phone/voicemail (G-E1) comprehension for 2/3 models",
+    "Standard mode achieves 0/15 on audio tasks (0%); AOI achieves 5/15 (33%)",
+    "Visual temporal tasks (C, F, J) remain difficult even with AOI - action format and timing issues",
+    "H-E1 (interview/speak) blocked by asyncio event loop conflict in TTS engine - fixable",
+    "B-E1 (meeting) audio captured but model types wrong date - timing/comprehension issue",
+    "I-E1 (collab dictation) audio captured but action execution doesn't properly type into editor"
+  ],
+  "bugs_identified": [
+    "speak action: asyncio event loop conflict - TTSEngine.synthesize() conflicts with Playwright",
+    "D-E1 regression in Claude AOI: audio injection overhead may interfere with carousel timing",
+    "Keyframe extraction: toast notifications and game moles produce near-zero CLIP distance (below theta)"
+  ],
+  "improvements_needed": [
+    "Fix TTSEngine asyncio conflict for speak action (H-E1 and other interactive tasks)",
+    "Improve action prompt to produce executable commands rather than NL descriptions",
+    "Lower CLIP theta or add pixel-only capture mode for small UI elements (toasts)",
+    "Better audio timing - inject audio earlier so agent hears full content before acting",
+    "Run with more steps (15-20) to give agent more attempts"
+  ]
+}

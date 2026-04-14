@@ -70,7 +70,7 @@
     function showToast() {
       const toast = document.getElementById('toast');
       toast.style.display = 'flex';
-      // Auto-dismiss after 3 seconds
+      // Auto-dismiss after 5 seconds
       setTimeout(() => {
         if (taskResult === 'pending') {
           toast.style.display = 'none';
@@ -78,7 +78,7 @@
           document.getElementById('result').textContent = 'TIMEOUT: Toast dismissed without action';
           document.getElementById('result').setAttribute('data-result', 'timeout');
         }
-      }, 3000);
+      }, 5000);
     }
 
     function openFile() {

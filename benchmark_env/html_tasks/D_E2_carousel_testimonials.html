@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Customer Testimonials</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ffd700; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 600px; }
+  .section-header { text-align: center; margin-bottom: 24px; }
+  .section-header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  .section-header p { color: #888; font-size: 15px; }
+  .carousel-wrapper { background: #1a1a2e; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .carousel-viewport { overflow: hidden; }
+  .carousel-track { display: flex; transition: transform 0.6s ease; }
+  .testimonial-card { min-width: 100%; padding: 40px 32px; }
+  .stars { font-size: 20px; color: #ffd700; margin-bottom: 16px; }
+  .quote { font-size: 18px; line-height: 1.6; color: #ddd; margin-bottom: 24px; font-style: italic; position: relative; padding-left: 24px; }
+  .quote::before { content: '"'; position: absolute; left: 0; top: -8px; font-size: 40px; color: #444; font-style: normal; }
+  .reviewer { display: flex; align-items: center; gap: 12px; }
+  .reviewer-avatar { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; color: #fff; }
+  .reviewer-name { font-size: 15px; font-weight: 600; }
+  .reviewer-role { font-size: 13px; color: #888; }
+  .carousel-nav { display: flex; justify-content: center; align-items: center; gap: 12px; padding: 16px; background: #16213e; }
+  .carousel-dot { width: 10px; height: 10px; border-radius: 50%; background: #444; cursor: pointer; transition: background 0.3s; }
+  .carousel-dot.active { background: #ffd700; }
+  .slide-counter { font-size: 13px; color: #888; margin-left: 12px; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; width: 120px; }
+  .input-group input:focus { border-color: #ffd700; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #ffd700; border: none; border-radius: 8px; color: #1a1a2e; font-size: 15px; font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #ffe333; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="section-header">
+    <h1>What Our Customers Say</h1>
+    <p>Read reviews from verified customers</p>
+  </div>
+  <div class="carousel-wrapper">
+    <div class="carousel-viewport">
+      <div class="carousel-track" id="carouselTrack">
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="quote">Excellent customer service! They resolved my issue within minutes and went above and beyond to help.</div>
+          <div class="reviewer">
+            <div class="reviewer-avatar" style="background:linear-gradient(135deg,#667eea,#764ba2)">MJ</div>
+            <div><div class="reviewer-name">Maria Johnson</div><div class="reviewer-role">Verified Buyer</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+          <div class="quote">Great product overall. The delivery was fast and the packaging was very well done. Would recommend.</div>
+          <div class="reviewer">
+            <div class="reviewer-avatar" style="background:linear-gradient(135deg,#f093fb,#f5576c)">TL</div>
+            <div><div class="reviewer-name">Tom Lee</div><div class="reviewer-role">Verified Buyer</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="quote">The excellent build quality amazed me. This is hands down the best purchase I've made this year.</div>
+          <div class="reviewer">
+            <div class="reviewer-avatar" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">SR</div>
+            <div><div class="reviewer-name">Sarah Robinson</div><div class="reviewer-role">Verified Buyer</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+          <div class="quote">Wonderful experience from start to finish. The product exceeded all my expectations in every way.</div>
+          <div class="reviewer">
+            <div class="reviewer-avatar" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">DW</div>
+            <div><div class="reviewer-name">David Wang</div><div class="reviewer-role">Verified Buyer</div></div>
+          </div>
+        </div>
+        <div class="testimonial-card">
+          <div class="stars">&#9733;&#9733;&#9733;&#9733;&#9734;</div>
+          <div class="quote">Fantastic value for the price. The quality is surprisingly good and the design is very modern.</div>
+          <div class="reviewer">
+            <div class="reviewer-avatar" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">AP</div>
+            <div><div class="reviewer-name">Amy Patel</div><div class="reviewer-role">Verified Buyer</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-nav" id="carouselNav">
+      <span class="slide-counter" id="slideCounter">1 / 5</span>
+    </div>
+  </div>
+  <div class="form-section">
+    <h3>How many reviews mention the word "excellent"?</h3>
+    <div class="input-group">
+      <label for="answerInput">Count</label>
+      <input type="text" id="answerInput" placeholder="Number" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const totalSlides = 5;
+  let currentSlide = 0;
+
+  const nav = document.getElementById('carouselNav');
+  for (let i = 0; i < totalSlides; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'carousel-dot';
+    dot.onclick = () => goTo(i);
+    nav.insertBefore(dot, nav.firstChild);
+  }
+
+  function updateCarousel() {
+    document.getElementById('carouselTrack').style.transform = `translateX(-${currentSlide * 100}%)`;
+    document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === currentSlide));
+    document.getElementById('slideCounter').textContent = `${currentSlide + 1} / ${totalSlides}`;
+  }
+
+  function goTo(i) {
+    currentSlide = ((i % totalSlides) + totalSlides) % totalSlides;
+    updateCarousel();
+  }
+
+  function startAutoRotate() {
+    setInterval(() => {
+      currentSlide = (currentSlide + 1) % totalSlides;
+      updateCarousel();
+    }, 5000);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'count_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('answerInput').value.trim();
+    if (val === '2') return 'count_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    updateCarousel();
+    setTimeout(startAutoRotate, 500);
+  }, 2000);
+</script>
+</body>
+</html>

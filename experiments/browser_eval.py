@@ -1,8 +1,8 @@
 """
-End-to-end Browser Evaluation Harness for DynaCU-Bench.
+End-to-end Browser Evaluation Harness for DynaCU-Bench v3.
 
 Runs real CU model inference against real HTML task pages in headless Chromium.
-Supports all 7 observation modes for ablation studies.
+Supports 5 observation modes for ablation studies.
 
 Architecture:
     BrowserEnvironment (Playwright)
@@ -12,8 +12,8 @@ Architecture:
     CU Model (Claude/GPT-4o/Gemini via API)
         ↓ parsed action
     BrowserEnvironment.execute_action()
-        ↓ DOM state check
-    check_success() → pass/fail
+        ↓ DOM state + LLM judge
+    evaluate() → EvalOutcome
 """
 
 from __future__ import annotations
@@ -37,96 +37,35 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from benchmark_env.browser_env import BrowserEnvironment, ActionResult
 from aoi.keyframe_extractor import KeyframeExtractor
 from aoi.audio_observer import AudioObserver, AudioChunk
+from aoi.audio_pipeline import AudioProcessor, TwoLayerAudio, TTSEngine
 from aoi.observation_record import ObservationRecord, TrajectoryStore
 from aoi.cu_model import get_model, CUModelOutput, SOTA_MODELS
-from dynacubench.tasks_v2 import DynaCUBench, Task, TaskCategory, TaskDifficulty
+from dynacubench.tasks_v3 import (
+    DynaCUBenchV3, Task, TaskCategory, TaskDifficulty, EvalType,
+)
+from dynacubench.llm_evaluator import LLMEvaluator, EvalOutcome
 
 logger = logging.getLogger(__name__)
 
-# ── Per-task DOM result validation ──────────────────────────────────
-# Maps task_id → function that validates DOM's getTaskResult() return value.
-# Falls back to "not pending" if task not listed.
-TASK_DOM_VALIDATORS = {
-    # D: Transient UI
-    "D-E1": lambda r: r == "accepted",
-    "D-E2": lambda r: r == "file_opened",
-    "D-E3": lambda r: r == "session_extended",
-    "D-M1": lambda r: r == "system_update_clicked",
-    "D-M2": lambda r: r == "email_field_fixed",
-    "D-M3": lambda r: "database" in r.lower() or "migration" in r.lower() if r else False,
-    "D-M4": lambda r: r == "code_applied",
-    "D-H1": lambda r: r == "digits_correct",
-    "D-H2": lambda r: r == "critical_alerts_acknowledged",
-    "D-H3": lambda r: "all_5_checked" in r if r else False,
-    # E: Audio Alerts
-    "E-E1": lambda r: r == "correct_event",
-    "E-E2": lambda r: r == "messaging_opened",
-    "E-E3": lambda r: r == "downloads_opened",
-    "E-M1": lambda r: r == "correct_classification",
-    "E-M2": lambda r: r == "reaction_recorded",
-    "E-M3": lambda r: r == "first_pitch_correct",
-    "E-M4": lambda r: r == "count_correct",
-    "E-H1": lambda r: r == "all_three_correct",
-    "E-H2": lambda r: r == "morse_decoded",
-    "E-H3": lambda r: r == "machines_reported",
-    # F: Animation
-    "F-E1": lambda r: r == "winter_clicked",
-    "F-E2": lambda r: r == "launch_clicked",
-    "F-E3": lambda r: r == "correct_segment",
-    "F-M1": lambda r: r == "caption_correct",
-    "F-M2": lambda r: r == "correct_category",
-    "F-M3": lambda r: r == "step3_confirmed",
-    "F-M4": lambda r: r == "alert_set",
-    "F-H1": lambda r: r == "checkpoint_at_75",
-    "F-H2": lambda r: r == "kanban_reported",
-    "F-H3": lambda r: r == "count_correct",
-    # G: Games
-    "G-E1": lambda r: r == "pair_matched",
-    "G-E2": lambda r: r == "number_guessed",
-    "G-E3": lambda r: r is not None and r.startswith("reaction_recorded"),
-    "G-M1": lambda r: r == "puzzle_solved",
-    "G-M2": lambda r: r == "pattern_matched",
-    "G-M3": lambda r: r == "word_correct",
-    "G-M4": lambda r: r == "flag_reached",
-    "G-H1": lambda r: r == "score_above_8",
-    "G-H2": lambda r: r == "3_puzzles_solved",
-    "G-H3": lambda r: r == "round_5",
-    # H: Sequential
-    "H-E1": lambda r: r == "step_2_correct",
-    "H-E2": lambda r: r == "step_3_correct",
-    "H-E3": lambda r: r == "last_item_correct",
-    "H-M1": lambda r: r == "diff_described",
-    "H-M2": lambda r: r == "pipeline_reported",
-    "H-M3": lambda r: r == "path_correct",
-    "H-M4": lambda r: r == "correct_task",
-    "H-H1": lambda r: r == "sequence_described",
-    "H-H2": lambda r: r == "git_described",
-    "H-H3": lambda r: r == "incident_identified",
-    # I: Live Streams
-    "I-E1": lambda r: r == "42_captured",
-    "I-E2": lambda r: r == "alert_triggered",
-    "I-E3": lambda r: r == "headline_found",
-    "I-M1": lambda r: r == "stock_identified",
-    "I-M2": lambda r: r == "metrics_reported",
-    "I-M3": lambda r: r == "leader_identified",
-    "I-M4": lambda r: r == "error_found",
-    "I-H1": lambda r: r == "winner_identified",
-    "I-H2": lambda r: r == "auction_tracked",
-    "I-H3": lambda r: r == "network_reported",
-}
+# ── Task evaluation ─────────────────────────────────────────────────
+# v3 uses dom_success_value from the task registry + LLM evaluator for
+# hybrid/llm tasks.  No more hardcoded per-task validators.
+
+FAIL_VALUES = frozenset({
+    "pending", "unknown", "error", "timeout", "alarm_missed",
+    "session_expired", "incorrect",
+})
 
 
-def validate_dom_result(task_id: str, result_val: str) -> bool:
-    """Validate a DOM result value against the expected success value for a task."""
-    validator = TASK_DOM_VALIDATORS.get(task_id)
-    if validator:
-        return validator(result_val)
-    # Fallback: any non-pending/error/wrong value
-    PENDING = {"pending", "unknown", "error", "timeout", "alarm_missed",
-               "session_expired"}
-    return (result_val not in PENDING
-            and not result_val.startswith("wrong_")
-            and result_val != "incorrect")
+def validate_dom_result(task: Task, result_val: str) -> bool:
+    """Check DOM result against the task's expected success value."""
+    if task.dom_success_value:
+        return result_val == task.dom_success_value
+    # Fallback: any non-failure value
+    return (
+        result_val not in FAIL_VALUES
+        and not result_val.startswith("wrong_")
+    )
 
 
 @dataclass
@@ -157,6 +96,11 @@ class EvalResult:
     total_obs_overhead_ms: float
     steps: list[StepLog] = field(default_factory=list)
     error: Optional[str] = None
+    # LLM evaluation fields (for hybrid/llm tasks)
+    eval_type: str = "dom"
+    llm_score: Optional[float] = None
+    llm_reason: Optional[str] = None
+    final_score: float = 0.0
 
     def to_dict(self) -> dict:
         d = asdict(self)
@@ -168,14 +112,12 @@ class BrowserEvaluator:
     """
     Runs a single task against a CU model with a specified observation mode.
 
-    Observation modes:
-        standard          - Screenshot-only. No keyframes, no audio, no narration.
-        uniform_1fps      - 1 extra frame per second (no CLIP/audio gates).
-        uniform_3fps      - 3 extra frames per second.
-        pixel_diff        - Pixel-gate only (no CLIP stage).
-        aoi_visual_only   - Full two-stage keyframe extraction, no audio.
-        aoi_visual_asr    - Keyframes + ASR-only audio (speech transcription).
-        aoi_full          - Keyframes + full audio scene understanding + narration.
+    Observation modes (v3):
+        standard          - Screenshot-only. No keyframes, no audio.
+        aoi_visual         - Keyframes only (3fps CLIP extraction), no audio.
+        aoi_audio          - Audio only (PulseAudio → Whisper), no keyframes.
+        aoi_full           - Keyframes + audio (full perception, no speak).
+        aoi_interactive    - Full perception + speak action (TTS → mic).
     """
 
     def __init__(
@@ -201,12 +143,16 @@ class BrowserEvaluator:
         # AOI components (initialized per-task in run_task)
         self._keyframe_extractor: Optional[KeyframeExtractor] = None
         self._trajectory: Optional[TrajectoryStore] = None
+        self._audio_processor: Optional[AudioProcessor] = None
+
+        # LLM evaluator for hybrid/llm tasks
+        self._llm_evaluator = LLMEvaluator()
 
     def _init_aoi(self):
         """Initialize AOI components for a new task."""
         use_keyframes = self.observation_mode in (
-            "aoi_visual_only", "aoi_visual_asr", "aoi_full",
-            "pixel_diff", "uniform_1fps", "uniform_3fps",
+            "aoi_visual", "aoi_visual_only", "aoi_visual_asr", "aoi_full",
+            "aoi_interactive", "pixel_diff", "uniform_1fps", "uniform_3fps",
         )
         if use_keyframes:
             theta = 0.0 if self.observation_mode.startswith("uniform") else self.clip_theta
@@ -218,6 +164,24 @@ class BrowserEvaluator:
             )
         else:
             self._keyframe_extractor = None
+
+        # Audio pipeline: real PulseAudio capture → Whisper ASR
+        use_audio = self.observation_mode in ("aoi_visual_asr", "aoi_full", "aoi_audio", "aoi_interactive")
+        if use_audio:
+            if self._audio_processor is None:
+                self._audio_processor = AudioProcessor(
+                    layer1_duration_s=5.0,
+                    layer2_duration_s=60.0,
+                    whisper_model_size="base",
+                    silence_threshold=self.silence_threshold,
+                )
+            else:
+                # Reset ring buffer to prevent audio leaking from prior task
+                self._audio_processor.reset()
+            # Start capture (idempotent)
+            self._audio_processor.start()
+        else:
+            self._audio_processor = None
 
         self._trajectory = TrajectoryStore(context_depth=3, screenshot_history=5)
 
@@ -243,23 +207,110 @@ class BrowserEvaluator:
             ts = time.time()
             self._keyframe_extractor.on_sample(frame, ts)
 
-    def _capture_audio(self, env: BrowserEnvironment, duration_s: float) -> str:
-        """Capture audio from the browser's virtual audio sink and process it."""
-        if self.observation_mode not in ("aoi_visual_asr", "aoi_full"):
-            return ""
+    def _inject_page_audio(self, env: BrowserEnvironment):
+        """
+        Extract audio text from the HTML page and play it through PulseAudio
+        virtual_speaker so the AOI audio pipeline can capture it.
 
-        audio_data = env.capture_audio_chunk(duration_s=duration_s)
-        rms = float(np.sqrt(np.mean(audio_data ** 2)))
+        Headless Chromium has no speechSynthesis voices, so we simulate
+        browser audio output by: page JS → extract text → edge-tts → pacat → virtual_speaker.
 
-        if rms < self.silence_threshold:
-            return ""
+        This is functionally equivalent to what would happen if speechSynthesis
+        worked: audio flows through PulseAudio to the capture pipeline.
+        """
+        if self._audio_processor is None:
+            return
 
-        # For the evaluation, we read the page's spoken content via DOM
-        # since headless Chromium speech synthesis may not route to PulseAudio.
-        # This is a faithful proxy: the audio IS being generated, we just
-        # read what was spoken via the page's transcript/state.
-        page_text = env.get_page_text()
-        return page_text[:500] if page_text else ""
+        try:
+            # Extract audio content from page JavaScript
+            audio_texts = env._page.evaluate('''() => {
+                // Try common variable names used in our task pages
+                const texts = [];
+
+                // audioText variable (podcasts, voicemails)
+                if (typeof audioText !== 'undefined') {
+                    texts.push(audioText);
+                }
+
+                // slideAudio array (meetings with slides)
+                if (typeof slideAudio !== 'undefined' && Array.isArray(slideAudio)) {
+                    texts.push(...slideAudio);
+                }
+
+                // Find SpeechSynthesisUtterance text in script elements
+                if (texts.length === 0) {
+                    const scripts = document.querySelectorAll('script');
+                    for (const s of scripts) {
+                        const src = s.textContent;
+                        // Match SpeechSynthesisUtterance("...")
+                        const matches = src.matchAll(/SpeechSynthesisUtterance\\(["\']([^"\']+)["\']\\)/g);
+                        for (const m of matches) {
+                            if (m[1] && m[1].length > 5) texts.push(m[1]);
+                        }
+                    }
+                }
+
+                return texts;
+            }''')
+
+            if not audio_texts:
+                logger.debug("No audio content found in page")
+                return
+
+            # Combine all audio texts
+            full_text = " ... ".join(audio_texts)
+            # Estimate audio duration (~150 words/min for TTS, ~5 chars/word)
+            self._audio_duration_s = len(full_text) / (150 * 5 / 60)
+            logger.info("Injecting page audio (%d chars, ~%.1fs): %s",
+                        len(full_text), self._audio_duration_s, full_text[:80])
+
+            # Synthesize and play in background thread
+            import threading
+            def _play_audio():
+                try:
+                    import subprocess
+                    tts = TTSEngine(voice="en-US-GuyNeural")
+                    audio_data, sr = tts.synthesize(full_text)
+                    if len(audio_data) > 0:
+                        # Play through virtual_speaker sink
+                        raw_bytes = audio_data.astype(np.float32).tobytes()
+                        subprocess.run(
+                            ["pacat", "--format=float32le", f"--rate={sr}",
+                             "--channels=1", "--device=virtual_speaker", "--raw"],
+                            input=raw_bytes, capture_output=True,
+                            timeout=len(audio_data) / sr + 10,
+                        )
+                        logger.info("Page audio injection complete (%.1fs)", len(audio_data) / sr)
+                except Exception as e:
+                    logger.warning("Audio injection failed: %s", e)
+
+            thread = threading.Thread(target=_play_audio, daemon=True)
+            thread.start()
+            # Store thread reference so we know audio is playing
+            self._audio_inject_thread = thread
+
+        except Exception as e:
+            logger.warning("Failed to extract page audio: %s", e)
+
+    def _capture_audio(self, env: BrowserEnvironment, duration_s: float) -> TwoLayerAudio:
+        """
+        Capture audio via real PulseAudio → Whisper ASR pipeline.
+
+        Returns a TwoLayerAudio object with:
+          Layer 1: Recent 3-5s transcript (synced with keyframes)
+          Layer 2: Rolling 30-60s transcript with sentence timestamps
+
+        No DOM proxies — audio flows through the real PulseAudio virtual
+        speaker sink, exactly as a human would hear it.
+        """
+        if self._audio_processor is None:
+            return TwoLayerAudio(
+                layer1_text="", layer1_duration_s=0,
+                layer2_segments=[], layer2_duration_s=0,
+                capture_end_time=time.time(),
+            )
+
+        return self._audio_processor.get_two_layer_audio()
 
     def run_task(self, task: Task) -> EvalResult:
         """Run a single benchmark task and return the evaluation result."""
@@ -277,11 +328,18 @@ class BrowserEvaluator:
                 total_obs_overhead_ms=0, error="No HTML file for task",
             )
 
+        # Gemini 3 Flash uses 0-1000 normalized coordinates
+        uses_normalized = "gemini-3" in self.model_name
+
         env = BrowserEnvironment(
             html_file=task.html_file,
             width=1280, height=720,
             task_timeout_s=task.duration_s + 10,
+            coord_scale_1000=uses_normalized,
         )
+        # Attach audio processor to env for speak action support
+        if self._audio_processor:
+            env._audio_processor = self._audio_processor
 
         try:
             if not env.start():
@@ -297,8 +355,23 @@ class BrowserEvaluator:
             # Initial wait for page to load and dynamic content to begin
             time.sleep(1.0)
 
+            # Inject page audio through PulseAudio (since speechSynthesis
+            # doesn't work in headless Chromium)
+            if self.observation_mode in ("aoi_audio", "aoi_full", "aoi_interactive",
+                                         "aoi_visual_asr"):
+                self._inject_page_audio(env)
+                # Wait proportionally to audio length so agent hears content
+                # before its first step. Short audio (< 5s) → 2s wait,
+                # long audio (podcast/meeting) → up to 8s head start.
+                audio_wait = getattr(self, '_audio_duration_s', 0.0)
+                pre_step_wait = min(max(2.0, audio_wait * 0.4), 8.0)
+                logger.info("Pre-step audio buffer: %.1fs wait (audio=%.1fs)",
+                            pre_step_wait, audio_wait)
+                time.sleep(pre_step_wait)
+
             total_model_latency = 0.0
             total_obs_overhead = 0.0
+            last_action_error: Optional[str] = None  # For error feedback to model
 
             for step_num in range(1, self.max_steps + 1):
                 t_obs_start = time.time()
@@ -318,8 +391,10 @@ class BrowserEvaluator:
                 if self._keyframe_extractor:
                     keyframes = self._keyframe_extractor.get_and_reset()
 
-                # 3. Audio
-                audio_text = self._capture_audio(env, self.step_interval_s)
+                # 3. Audio (real PulseAudio → Whisper pipeline)
+                two_layer = self._capture_audio(env, self.step_interval_s)
+                audio_text = two_layer.layer1_text
+                audio_context = two_layer.format_for_prompt() if two_layer.has_audio else ""
 
                 # 4. Take post-action screenshot
                 screenshot = env.get_screenshot()
@@ -333,6 +408,7 @@ class BrowserEvaluator:
                     step_id=step_num,
                     context_steps=context_steps,
                     current_audio_text=audio_text,
+                    current_audio_context=audio_context,
                     keyframes=keyframes,
                     post_action_screenshot=screenshot,
                     task_instruction=task.instruction,
@@ -340,6 +416,17 @@ class BrowserEvaluator:
 
                 # 6. CU model inference
                 context_text = obs.to_prompt_text()
+
+                # Inject action error feedback so the model can self-correct
+                if last_action_error:
+                    context_text += (
+                        f"\n\n[ACTION ERROR — previous action failed]\n"
+                        f"  Error: {last_action_error}\n"
+                        f"  Try a different action format. Use click(x, y) with "
+                        f"pixel coordinates, or fill(#selector, \"value\")."
+                    )
+                    last_action_error = None
+
                 images = obs.get_images()
 
                 t_model_start = time.time()
@@ -358,6 +445,12 @@ class BrowserEvaluator:
                 # 7. Execute action
                 action_result = env.execute_action(cu_output.action)
 
+                # Track action errors for feedback on next step
+                if not action_result.success and action_result.error:
+                    last_action_error = action_result.error
+                    logger.info("[%s] Action error at step %d: %s",
+                                task.task_id, step_num, action_result.error[:100])
+
                 # 8. Store in trajectory
                 self._trajectory.append(
                     step_id=step_num,
@@ -367,14 +460,15 @@ class BrowserEvaluator:
                     visual_narration=cu_output.narration,
                     action=cu_output.action,
                     n_keyframes=len(keyframes),
-                    audio_model_called=bool(audio_text),
+                    audio_model_called=two_layer.has_audio,
+                    audio_context=audio_context,
                     screenshot=screenshot,
                 )
 
-                # 9. Check success via DOM result + per-task validation
+                # 9. Check success via DOM result + task-defined validation
                 time.sleep(0.3)  # Brief pause for DOM to update after action
                 _, result_val = env.check_success()
-                success = validate_dom_result(task.task_id, result_val)
+                success = validate_dom_result(task, result_val)
 
                 step_log = StepLog(
                     step=step_num,
@@ -398,8 +492,11 @@ class BrowserEvaluator:
                 if success:
                     break
 
-                # Check for explicit completion signals
-                if any(w in cu_output.action.lower() for w in ["done", "complete", "finish"]):
+                # Check for explicit completion signals (standalone, not embedded)
+                act_l = cu_output.action.lower().strip()
+                if act_l in ("done", "complete", "finish", "done.", "task complete",
+                             "task done", "done(success)", "done(failure)",
+                             "stop", "stop()", "stop()."):
                     break
 
                 # Check timeout
@@ -407,9 +504,19 @@ class BrowserEvaluator:
                     logger.info("[%s] Task timeout after %.1fs", task.task_id, env.get_elapsed_s())
                     break
 
-            # Final success check via per-task DOM validator
+            # Final evaluation: DOM check + optional LLM evaluation
             _, final_result = env.check_success()
-            final_success = validate_dom_result(task.task_id, final_result)
+            dom_passed = validate_dom_result(task, final_result)
+
+            # Collect agent's typed/spoken responses for LLM evaluation
+            agent_response = env.get_page_text()
+
+            # Run LLM evaluation for hybrid/llm tasks
+            eval_outcome = self._llm_evaluator.evaluate_task(
+                task,
+                dom_result=final_result,
+                agent_response=agent_response,
+            )
 
             return EvalResult(
                 task_id=task.task_id,
@@ -417,13 +524,17 @@ class BrowserEvaluator:
                 difficulty=task.difficulty.value,
                 model_name=self.model_name,
                 observation_mode=self.observation_mode,
-                success=final_success,
+                success=eval_outcome.final_passed,
                 result_val=final_result,
                 steps_taken=len(steps_log),
                 total_time_s=time.time() - task_start,
                 total_model_latency_ms=total_model_latency,
                 total_obs_overhead_ms=total_obs_overhead,
                 steps=steps_log,
+                eval_type=task.eval_type.value,
+                llm_score=eval_outcome.llm_result.score if eval_outcome.llm_result else None,
+                llm_reason=eval_outcome.llm_result.reason if eval_outcome.llm_result else None,
+                final_score=eval_outcome.final_score,
             )
 
         except Exception as e:
@@ -439,6 +550,8 @@ class BrowserEvaluator:
             )
         finally:
             env.stop()
+            if self._audio_processor:
+                self._audio_processor.stop()
 
 
 def run_ablation(
@@ -464,7 +577,7 @@ def run_ablation(
         max_steps: Max steps per task
         output_dir: Directory to write results JSON
     """
-    bench = DynaCUBench(html_tasks_dir=Path("benchmark_env/html_tasks"))
+    bench = DynaCUBenchV3(html_tasks_dir=Path("benchmark_env/html_tasks"))
     tasks = list(bench)
 
     # Apply filters

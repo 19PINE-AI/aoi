@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>File Manager - CloudDrive</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+  .sidebar { position: fixed; left: 0; top: 0; width: 220px; height: 100vh; background: #0a0f1e; border-right: 1px solid #2a3a5e; padding: 20px 0; }
+  .sidebar .brand { padding: 0 20px; font-size: 18px; font-weight: bold; color: #00d4ff; margin-bottom: 30px; }
+  .sidebar .nav-item { padding: 10px 20px; font-size: 14px; color: #8892b0; cursor: pointer; transition: all 0.2s; }
+  .sidebar .nav-item:hover { background: #16213e; color: #e0e0e0; }
+  .sidebar .nav-item.active { background: #16213e; color: #00d4ff; border-right: 3px solid #00d4ff; }
+  .sidebar .storage { padding: 20px; margin-top: 30px; }
+  .sidebar .storage-label { font-size: 12px; color: #8892b0; margin-bottom: 8px; }
+  .sidebar .storage-bar { height: 6px; background: #2a3a5e; border-radius: 3px; overflow: hidden; }
+  .sidebar .storage-fill { height: 100%; width: 67%; background: #00d4ff; border-radius: 3px; }
+  .sidebar .storage-text { font-size: 11px; color: #8892b0; margin-top: 5px; }
+  .main { margin-left: 220px; padding: 20px 30px; }
+  .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+  .header h1 { font-size: 22px; }
+  .header .actions { display: flex; gap: 10px; }
+  .header .actions button { padding: 8px 16px; font-size: 13px; border: 1px solid #2a3a5e; border-radius: 6px; background: #16213e; color: #8892b0; cursor: pointer; }
+  .breadcrumb { font-size: 13px; color: #8892b0; margin-bottom: 20px; }
+  .breadcrumb span { color: #00d4ff; }
+  .file-list { background: #16213e; border-radius: 10px; border: 1px solid #2a3a5e; overflow: hidden; }
+  .file-header { display: grid; grid-template-columns: 2fr 1fr 1fr 100px; padding: 10px 20px; font-size: 12px; color: #8892b0; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 1px solid #2a3a5e; }
+  .file-row { display: grid; grid-template-columns: 2fr 1fr 1fr 100px; padding: 12px 20px; font-size: 14px; border-bottom: 1px solid rgba(42,58,94,0.3); align-items: center; transition: background 0.2s; }
+  .file-row:hover { background: rgba(0,212,255,0.05); }
+  .file-row:last-child { border: none; }
+  .file-name { display: flex; align-items: center; gap: 10px; }
+  .file-icon { font-size: 18px; }
+  .file-size { color: #8892b0; }
+  .file-date { color: #8892b0; }
+  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+  .toast { background: #16213e; color: #e0e0e0; padding: 16px 24px; border-radius: 10px; font-size: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); border-left: 4px solid #00ff88; transform: translateX(120%); transition: transform 0.4s ease; display: flex; align-items: center; gap: 12px; max-width: 450px; }
+  .toast.show { transform: translateX(0); }
+  .toast .icon { font-size: 20px; color: #00ff88; }
+  .toast .details { flex: 1; }
+  .toast .title { font-weight: 600; margin-bottom: 3px; }
+  .toast .filename { font-size: 13px; color: #00d4ff; font-family: monospace; }
+  .progress-bar { width: 100%; height: 4px; background: #2a3a5e; border-radius: 2px; margin-top: 6px; overflow: hidden; }
+  .progress-fill { height: 100%; background: #00ff88; border-radius: 2px; transition: width 0.5s; }
+  .answer-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; margin-top: 20px; text-align: center; }
+  .answer-card h3 { color: #00d4ff; margin-bottom: 15px; font-size: 16px; }
+  .answer-card input { padding: 10px 15px; font-size: 15px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 350px; }
+  .answer-card input:focus { outline: none; border-color: #00d4ff; }
+  .answer-card button { padding: 10px 20px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+</style>
+</head>
+<body>
+<div class="sidebar">
+  <div class="brand">CloudDrive</div>
+  <div class="nav-item active">My Files</div>
+  <div class="nav-item">Shared</div>
+  <div class="nav-item">Recent</div>
+  <div class="nav-item">Starred</div>
+  <div class="nav-item">Trash</div>
+  <div class="storage">
+    <div class="storage-label">Storage</div>
+    <div class="storage-bar"><div class="storage-fill"></div></div>
+    <div class="storage-text">6.7 GB of 10 GB used</div>
+  </div>
+</div>
+<div class="main">
+  <div class="header">
+    <h1>My Files</h1>
+    <div class="actions">
+      <button>Upload</button>
+      <button>New Folder</button>
+    </div>
+  </div>
+  <div class="breadcrumb">Home / <span>Documents</span> / <span>Reports</span></div>
+  <div class="file-list">
+    <div class="file-header">
+      <span>Name</span><span>Size</span><span>Modified</span><span>Type</span>
+    </div>
+    <div class="file-row">
+      <div class="file-name"><span class="file-icon">&#128196;</span> annual_budget_2025.xlsx</div>
+      <div class="file-size">2.4 MB</div>
+      <div class="file-date">Mar 12, 2025</div>
+      <div>Spreadsheet</div>
+    </div>
+    <div class="file-row" style="background: rgba(0,212,255,0.05);">
+      <div class="file-name"><span class="file-icon">&#128196;</span> quarterly_report_Q3.pdf</div>
+      <div class="file-size">4.8 MB</div>
+      <div class="file-date">Mar 10, 2025</div>
+      <div>PDF</div>
+    </div>
+    <div class="file-row">
+      <div class="file-name"><span class="file-icon">&#128196;</span> team_roster.docx</div>
+      <div class="file-size">156 KB</div>
+      <div class="file-date">Mar 8, 2025</div>
+      <div>Document</div>
+    </div>
+    <div class="file-row">
+      <div class="file-name"><span class="file-icon">&#128196;</span> presentation_final.pptx</div>
+      <div class="file-size">8.2 MB</div>
+      <div class="file-date">Mar 5, 2025</div>
+      <div>Presentation</div>
+    </div>
+    <div class="file-row">
+      <div class="file-name"><span class="file-icon">&#128196;</span> meeting_notes_feb.txt</div>
+      <div class="file-size">12 KB</div>
+      <div class="file-date">Feb 28, 2025</div>
+      <div>Text</div>
+    </div>
+  </div>
+  <div class="answer-card">
+    <h3>What file was downloaded?</h3>
+    <div>
+      <input type="text" id="filenameInput" placeholder="Enter the downloaded filename">
+      <button id="submitBtn">Submit</button>
+    </div>
+  </div>
+</div>
+<div class="toast-container" id="toastContainer"></div>
+<script>
+(function() {
+  let submitted = false;
+
+  function showDownloadToast() {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = '<div class="icon">&#9660;</div>' +
+      '<div class="details">' +
+      '<div class="title">Download complete</div>' +
+      '<div class="filename">quarterly_report_Q3.pdf</div>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width: 100%"></div></div>' +
+      '</div>';
+    container.appendChild(toast);
+
+    setTimeout(function() { toast.classList.add('show'); }, 100);
+
+    // Auto-dismiss after 4 seconds
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() {
+        if (container.contains(toast)) container.removeChild(toast);
+      }, 400);
+    }, 4000);
+  }
+
+  // Show download progress first, then complete toast
+  setTimeout(function() {
+    // Show "downloading" progress
+    const container = document.getElementById('toastContainer');
+    const progToast = document.createElement('div');
+    progToast.className = 'toast';
+    progToast.id = 'progressToast';
+    progToast.innerHTML = '<div class="icon" style="color:#f39c12;">&#8635;</div>' +
+      '<div class="details">' +
+      '<div class="title">Downloading...</div>' +
+      '<div class="filename">quarterly_report_Q3.pdf</div>' +
+      '<div class="progress-bar"><div class="progress-fill" id="dlProgress" style="width: 0%"></div></div>' +
+      '</div>';
+    container.appendChild(progToast);
+    setTimeout(function() { progToast.classList.add('show'); }, 100);
+
+    // Animate progress
+    let prog = 0;
+    const progInterval = setInterval(function() {
+      prog += 20;
+      document.getElementById('dlProgress').style.width = prog + '%';
+      if (prog >= 100) {
+        clearInterval(progInterval);
+        // Remove progress toast, show completion toast
+        progToast.classList.remove('show');
+        setTimeout(function() {
+          if (container.contains(progToast)) container.removeChild(progToast);
+          showDownloadToast();
+        }, 400);
+      }
+    }, 300);
+  }, 3000);
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const val = document.getElementById('filenameInput').value.trim();
+    if (val.includes('quarterly_report_Q3.pdf') || val === 'quarterly_report_Q3.pdf') return 'filename_correct';
+    if (val.toLowerCase().includes('quarterly_report_q3')) return 'filename_correct';
+    return 'filename_incorrect';
+  };
+})();
+</script>
+</body>
+</html>

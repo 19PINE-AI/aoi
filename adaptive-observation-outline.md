@@ -6,7 +6,7 @@
 
 ## Core Thesis
 
-The bottleneck in computer-use agents is not reasoning --- it is observation. Current CU agents observe the world through periodic static screenshots taken every 3--5 seconds and have no audio perception at all, making them incapable of handling dynamic visual content (video playback, animations, transient UI events) or any audio-driven interaction (meetings, notifications, alerts). Just as SWE-agent (Yang et al., NeurIPS 2024) showed that the agent-computer *action* interface dramatically affects agent performance, we show that the *observation* interface is equally critical and equally underexplored. We introduce the **Agent Observation Interface (AOI)**, a lightweight, model-agnostic perception layer that sits between continuous screen/audio streams and any existing image-based CU model. The AOI has three components, all scaling to zero overhead for static, silent desktop work: (1) a two-stage adaptive keyframe extractor (pixel gate + CLIP semantic distance) that captures frames only when the screen changes semantically, (2) volume-gated multimodal audio scene understanding (Qwen3 Omni) that transcribes both speech and non-speech sounds only when audio is present, and (3) CU-model-generated visual narration that converts ephemeral keyframe images into persistent text for long-term context. With zero model retraining, the AOI enables existing CU agents to handle video meetings, YouTube content, animated web pages, audio alerts, and transient UI events they previously could not attempt. On DynaCU-Bench, a new benchmark of 200+ tasks requiring dynamic perception, five diverse CU models equipped with the AOI achieve 40--60% success where they previously score near zero, while maintaining identical performance on standard static benchmarks.
+The bottleneck in computer-use agents is not reasoning --- it is observation. Despite extraordinary progress (OSWorld scores now exceed the human baseline of 72.4%, with Claude Sonnet 5 at 88.3% and GPT-5.4 at 75.0%), every major CU agent --- closed-source (Claude, GPT-5.4, Gemini 2.5 CU, Surfer 2) and open-source (UI-TARS-2, OpenCUA, Fara-7B, CoAct-1, Agent S3) alike --- observes the world through periodic static screenshots and has zero audio perception. A comprehensive survey of 87 CU agents (arXiv 2501.16150) does not even identify this as a gap. This makes all current agents incapable of handling dynamic visual content (video playback, animations, transient UI events) or any audio-driven interaction (meetings, notifications, alerts). Just as SWE-agent (Yang et al., NeurIPS 2024) showed that the agent-computer *action* interface dramatically affects agent performance, we show that the *observation* interface is equally critical and equally underexplored. We introduce the **Agent Observation Interface (AOI)**, a lightweight, model-agnostic perception layer that sits between continuous screen/audio streams and any existing image-based CU model. The AOI has three components, all scaling to zero overhead for static, silent desktop work: (1) a two-stage adaptive keyframe extractor (pixel gate + CLIP semantic distance) that captures frames only when the screen changes semantically, (2) volume-gated multimodal audio scene understanding (Qwen3 Omni) that transcribes both speech and non-speech sounds only when audio is present, and (3) CU-model-generated visual narration that converts ephemeral keyframe images into persistent text for long-term context. With zero model retraining, the AOI enables existing CU agents to handle video meetings, YouTube content, animated web pages, audio alerts, and transient UI events they previously could not attempt. On DynaCU-Bench, a new benchmark of 100+ tasks requiring dynamic perception, five diverse CU models equipped with the AOI achieve 40--60% success where they previously score near zero, while maintaining identical performance on standard static benchmarks (OSWorld, WebArena).
 
 ---
 
@@ -14,7 +14,7 @@ The bottleneck in computer-use agents is not reasoning --- it is observation. Cu
 
 ### 1.1 The Success of Computer-Use Agents
 
-Computer-use agents have advanced remarkably. OSWorld scores have climbed from 12.24% (GPT-4V, April 2024) to 72.7% (Claude Opus 4.6), surpassing the human baseline of 72.36% within roughly two years. Models like Claude Computer Use (Anthropic), OpenAI CUA/Operator, UI-TARS (ByteDance), Surfer 2 (H Company), OpenCUA (HKU/xlang-ai), and Fara-7B (Microsoft) can operate real desktops: filling forms, navigating websites, editing documents, and using professional software.
+Computer-use agents have advanced remarkably. OSWorld scores have climbed from 12.24% (GPT-4V, April 2024) to 88.3% (Claude Sonnet 5, April 2026), far surpassing the human baseline of 72.36% within roughly two years. Multiple agents now exceed human performance: Claude Sonnet 5 (88.3%), GPT-5.4 (75.0%), Agent S3 (72.6%), Claude Opus 4.6 (72.7%). A diverse ecosystem spans closed-source systems --- Claude Computer Use (Anthropic), OpenAI CUA/Operator, Gemini 2.5 CU (Google), Surfer 2 (H Company, 60.1%) --- and open-source models --- UI-TARS-2 (ByteDance, 47.5%), OpenCUA-72B (HKU/xlang-ai, 45.0%), Fara-7B (Microsoft), GUI-Owl (Alibaba), CoAct-1 (Salesforce, 60.8%). These agents can operate real desktops: filling forms, navigating websites, editing documents, and using professional software.
 
 ### 1.2 The Blind Spot: Dynamic Content
 
@@ -443,46 +443,52 @@ def agent_step(step_n):
 - Reproducible: use recorded video/audio playback in controlled VM environments (extending OSWorld infrastructure)
 - Cover all four dynamic content categories from Section 2
 - Include human performance baselines to calibrate the ceiling
-- 200+ tasks with difficulty stratification (easy/medium/hard) within each category
-- Clearly differentiated from existing benchmarks: GUI-World evaluates video LLMs but not CU agents; VideoWebArena tests video-conditioned web tasks but not audio or transient UI events; CUA-Suite provides training data but not a CU agent evaluation protocol
+- 100 tasks across 10 categories with difficulty stratification (3 easy / 4 medium / 3 hard per category)
+- Clearly differentiated from existing benchmarks: GUI-World evaluates video LLMs but not CU agents; VideoWebArena tests video-conditioned web tasks but not audio or transient UI events; CUA-Suite/VideoCUA provides 55 hours of demonstrations but not a CU agent evaluation protocol; Gaia2 tests temporal awareness in asynchronous environments but does not specifically target audio or visual dynamic perception
 
 ### 5.2 Task Categories
 
-**Category A: Video Comprehension (50+ tasks).** The agent watches video content and must act on what it saw.
+Ten categories spanning three capability axes: audio perception (A), visual-temporal perception (V), and real-time interaction (I). Each category has 10 tasks: 3 easy, 4 medium, 3 hard.
 
-- "Watch this tutorial video, then replicate the demonstrated steps in the application"
-- "A product demo video is playing. After it ends, fill in the form with the product name and price shown"
-- Difficulty levels: Easy (single fact extraction), Medium (multi-step procedure), Hard (temporal reasoning across video segments)
+**Category A: Podcast Comprehension (A).** Agent listens to audio narration and answers questions or extracts facts.
+- Easy: single spoken fact extraction. Medium: multi-segment listening. Hard: cross-referencing spoken claims.
 
-**Category B: Meeting / Live Audio (40+ tasks).** The agent listens and acts on spoken information.
+**Category B: Meeting Participation (A+V+I).** Google Meet-style meeting with slides and spoken content. Agent must follow along and act.
+- Easy: identify meeting topic. Medium: take notes from speaker. Hard: summarize action items.
 
-- "Join this recorded video call. When the presenter mentions a URL, open it in the browser"
-- "Listen to this conference talk. When it ends, type a one-paragraph summary"
-- Difficulty levels: Easy (single spoken fact), Medium (multi-speaker dialogue), Hard (long meeting with action items)
+**Category C: Video/Screencast Understanding (V).** Terminal recordings, IDE demos, or code review screencasts with auto-advancing frames.
+- Easy: identify language shown. Medium: count operations in recording. Hard: describe full workflow.
 
-**Category C: Transient UI Events (40+ tasks).** The agent must notice and react to ephemeral visual events.
+**Category D: Carousel/Animation Perception (V).** CSS transitions, product carousels, rotating content that requires temporal attention.
+- Easy: count carousel items. Medium: find specific product across slides. Hard: compare prices across rotating cards.
 
-- "Browse this website. Accept the cookie consent dialog when it appears" (dialog auto-dismisses after 5 seconds)
-- "A file is downloading. When the download-complete notification appears, open the downloaded file"
-- Difficulty levels: Easy (single transient event), Medium (multiple events, some distractors), Hard (timed sequence of events)
+**Category E: Live Dashboard Monitoring (V).** Real-time updating dashboards with setInterval changes.
+- Easy: read current metric. Medium: detect trend over time. Hard: identify anomalies and calculate statistics.
 
-**Category D: Audio Alerts (30+ tasks).** The agent must react to non-speech sounds.
+**Category F: Transient UI Events (V).** Toast notifications, auto-dismissing banners, flash messages that appear briefly.
+- Easy: read a notification. Medium: act on a transient instruction. Hard: track multiple sequential toasts.
 
-- "Work on this document. When you hear the calendar alarm, open the calendar and report the event"
-- "Monitor this dashboard. When an alert sound plays, note the time"
-- Difficulty levels: Easy (single alert), Medium (distinguish between alert types), Hard (multiple alerts requiring different responses)
+**Category G: Phone/Voice Call (A+I).** Phone call UI with speechSynthesis. Agent must listen and respond.
+- Easy: extract caller information. Medium: follow spoken instructions. Hard: complete multi-turn conversation.
 
-**Category E: Combined Multimodal (40+ tasks).** Requires both visual and audio dynamic perception.
+**Category H: Interview/Voice Interaction (A+I).** getUserMedia + SpeechRecognition. Agent must speak to interact.
+- Easy: answer a question verbally. Medium: handle follow-up questions. Hard: complete full interview with scoring.
 
-- "Watch this narrated tutorial and follow along step by step"
-- "Join this screen-sharing session. The presenter will verbally instruct you to click specific elements"
-- Difficulty levels: Easy (audio+visual aligned), Medium (audio and visual carry different information), Hard (complex multimodal reasoning)
+**Category I: Collaborative Editing (V+I).** Google Docs-style collaborative editor with remote changes appearing.
+- Easy: accept a suggestion. Medium: resolve a conflict. Hard: merge concurrent edits while maintaining consistency.
+
+**Category J: Browser Games (V+I).** Interactive games requiring temporal attention (whack-a-mole, Simon Says, typing tests).
+- Easy: click a target. Medium: follow a timed sequence. Hard: achieve minimum score under time pressure.
 
 ### 5.3 Evaluation Protocol
 
-- Each task executes in a real VM (Ubuntu/Windows/macOS)
-- Video/audio content is pre-recorded for reproducibility
-- Success criteria are execution-based: file content matches expected output, correct element was clicked, correct text was typed, etc.
+- Each task executes in a headless browser (Playwright) with PulseAudio virtual devices for audio I/O
+- Audio content via Web Speech API (speechSynthesis); audio input via virtual microphone injection
+- Three evaluation modes:
+  - **DOM**: deterministic — `window.getTaskResult()` returns expected value (93 tasks)
+  - **LLM**: judge model scores agent response against rubric (1 task)
+  - **Hybrid**: DOM gate (did agent act?) AND LLM quality (was the answer good?) (6 tasks)
+- Success criteria are execution-based: DOM state matches expected value, correct element was clicked, correct text was typed
 - **Human baseline**: each task completed by 3 human annotators to establish ceiling performance
 - Metrics:
   - Task success rate (primary)
@@ -504,13 +510,15 @@ DynaCU-Bench will be publicly released with:
 
 ### 6.1 Setup
 
-**CU models tested** (covering open-source and closed-source, single-image and multi-image):
+**CU models tested** (covering open-source and closed-source, spanning capability spectrum):
 
-- UI-TARS-72B (open-source, multi-image up to 5)
-- OpenCUA-72B (open-source, multi-image up to 3)
-- Qwen2.5-VL-72B CU (open-source, multi-image up to 4)
-- Claude Sonnet Computer Use (closed-source, multi-image)
-- OpenAI CUA (closed-source, multi-image)
+- UI-TARS-2-72B (ByteDance, open-source, OSWorld 47.5%, multi-image up to 5)
+- OpenCUA-72B (HKU/xlang-ai, open-source, OSWorld 45.0%, multi-image up to 3, NeurIPS 2025 Spotlight)
+- Fara-7B (Microsoft, open-source, WebVoyager 73.5%, efficient 16-step avg completion)
+- Claude Sonnet 4.6 Computer Use (Anthropic, closed-source, OSWorld 72.5%, multi-image)
+- OpenAI CUA / GPT-5.4 (OpenAI, closed-source, OSWorld 75.0%, multi-image)
+
+Note: Surfer 2 (H Company, OSWorld 60.1%) and Agent S3 (Simular, OSWorld 72.6%) are strong candidates but require API/framework access verification. Qwen2.5-VL dropped in favor of Fara-7B for better open-source representation at the efficient (7B) scale.
 
 **Observation configurations:**
 
@@ -519,10 +527,11 @@ DynaCU-Bench will be publicly released with:
 3. **Uniform-3FPS**: capture at fixed 3 FPS, feed most recent N frames
 4. **Pixel-diff only**: capture when pixel change ratio exceeds threshold, no CLIP filtering
 5. **Random keyframes (matched budget)**: randomly sample the same number of frames as our method, to test whether CLIP selection provides better frames or just more frames
-6. **Gemini 3.1 Pro (native video)**: Gemini with native video input at 1 FPS, representing the brute-force video model approach
-7. **AOI (visual only)**: CLIP-based adaptive keyframes, no audio, no narration
-8. **AOI (visual + ASR)**: CLIP keyframes + Whisper speech-only transcription
-9. **AOI (full)**: CLIP keyframes + Qwen3 Omni audio scene understanding + visual narration
+6. **Gemini 2.5 CU (native multi-image)**: Google's dedicated CU model (Online-Mind2Web 69.0%, WebVoyager 88.9%), screenshot-based observation like other CU agents
+7. **Gemini 3.1 Flash Live (native streaming)**: Gemini with native real-time audio+video+text streaming, representing the monolithic multimodal approach (audio-to-audio, 128K context, 90.8% ComplexFuncBench Audio)
+8. **AOI (visual only)**: CLIP-based adaptive keyframes, no audio, no narration
+9. **AOI (visual + ASR)**: CLIP keyframes + Whisper speech-only transcription
+10. **AOI (full)**: CLIP keyframes + Qwen3 Omni audio scene understanding + visual narration
 
 ### 6.2 Main Results on DynaCU-Bench
 
@@ -534,23 +543,32 @@ Expected findings:
 - **Uniform-1FPS / Uniform-3FPS**: moderate improvement on visual tasks but wastes model input slots on redundant frames; no improvement on audio tasks.
 - **Pixel-diff only**: overcaptures due to ads, spinners, cursor blinks triggering false keyframes. Slightly better than uniform but noisier.
 - **Random keyframes (matched budget)**: demonstrates CLIP selection provides better frames, not just more frames.
-- **Gemini native video**: comparable or better on some visual tasks due to long context, but much higher token cost, no audio perception, no selective filtering.
+- **Gemini 2.5 CU**: screenshot-based like other CU agents, so similar to standard baseline on dynamic tasks. Competitive on static web tasks.
+- **Gemini 3.1 Flash Live (native streaming)**: strong on audio tasks due to native audio-to-audio capability, comparable on visual tasks due to long context, but much higher token cost and locked to one provider. Key comparison: AOI achieves similar audio capability model-agnostically.
 - **AOI (visual only)**: strong improvement on visual dynamic tasks. CLIP correctly filters periodic noise.
 - **AOI (visual + ASR)**: adds gains on meeting tasks (speech captured). Zero improvement on audio alert tasks (Whisper ignores non-speech sounds).
 - **AOI (full)**: additional gains specifically on non-speech audio tasks, isolating the contribution of multimodal audio understanding over speech-only ASR.
 
-### 6.3 Comparison with Gemini Native Video
+### 6.3 Comparison with Gemini Native Multimodal
 
-Dedicated analysis comparing AOI-equipped CU models against Gemini with native video input:
+Dedicated analysis comparing AOI-equipped CU models against Gemini's native multimodal capabilities:
 
-- **Task success rate**: AOI-equipped models vs. Gemini on each DynaCU-Bench category
-- **Token efficiency**: tokens consumed per task (Gemini processes all frames; AOI is selective)
-- **Audio perception**: Gemini 3.1 Pro standard video mode has no audio processing; Gemini 3.1 Flash Live does. Compare both.
-- **Model flexibility**: AOI works with any CU model; Gemini approach locks to one provider
+- **Gemini 2.5 CU**: Google's dedicated CU model uses screenshot-based observation. Strong on static web tasks (WebVoyager 88.9%) but same observation limitation as all other CU agents on dynamic tasks.
+- **Gemini 3.1 Flash Live**: Native real-time audio+video+text streaming model. The strongest existing comparison point for AOI:
+  - **Task success rate**: AOI-equipped models vs. Flash Live on each DynaCU-Bench category
+  - **Audio perception**: Flash Live has native audio-to-audio capability (90.8% ComplexFuncBench Audio). Compare directly with AOI's volume-gated Qwen3 Omni audio observer.
+  - **Token efficiency**: Flash Live processes continuous streams; AOI is selective (zero overhead on static/silent tasks)
+  - **Model flexibility**: AOI works with any CU model (5 tested); Flash Live locks to one provider
+  - **CU action quality**: Flash Live is a streaming multimodal model, not a CU-optimized agent. It may perceive well but act poorly on complex GUI tasks. AOI preserves the CU model's action capabilities while adding perception.
 
 ### 6.4 Static Benchmark Verification
 
 Run on OSWorld and WebArena with the AOI attached. Expected: identical performance to the standard loop. The observation layer produces zero keyframes and skips audio processing when the screen is static and silent.
+
+Current SOTA for reference (April 2026):
+- OSWorld-Verified: Claude Sonnet 5 (88.3%), GPT-5.4 (75.0%), Agent S3 (72.6%), Claude Opus 4.6 (72.7%), Human (72.4%), CoAct-1 (60.8%), Surfer 2 (60.1%), UI-TARS-2 (47.5%), OpenCUA-72B (45.0%)
+- WebArena: Surfer 2 (69.6%), IBM CUGA (61.7%), OpenAI CUA (58.1%)
+- WebVoyager: Surfer 2 (97.1%), Gemini 2.5 CU (88.9%), OpenAI CUA (87.0%), Fara-7B (73.5%)
 
 ### 6.5 Efficiency Analysis
 
@@ -628,7 +646,7 @@ Long-term visual memory depends on the CU model producing accurate text descript
 
 ### 8.4 Not a Replacement for Native Multimodal Models
 
-For applications where a single model provider is acceptable and cost is secondary to capability, native real-time multimodal models (Gemini 3.1 Flash Live) may provide a simpler and potentially more capable solution. The AOI's advantages --- model-agnosticism, zero overhead on static tasks, no retraining --- are most valuable when users need to preserve their existing CU model choice, minimize overhead for mixed static/dynamic workloads, or deploy in open-source settings.
+For applications where a single model provider is acceptable and cost is secondary to capability, native real-time multimodal models (Gemini 3.1 Flash Live, with 90.8% on ComplexFuncBench Audio and native audio-to-audio streaming) may provide a simpler and potentially more capable solution for the perception component. However, Flash Live is a streaming multimodal model, not a CU-optimized agent --- it may perceive well but lack the GUI grounding, action planning, and error recovery that dedicated CU models provide. The AOI's advantages --- model-agnosticism, zero overhead on static tasks, no retraining, preservation of CU model action quality --- are most valuable when users need to preserve their existing CU model choice, minimize overhead for mixed static/dynamic workloads, or deploy in open-source settings.
 
 ---
 
@@ -636,25 +654,25 @@ For applications where a single model provider is acceptable and cost is seconda
 
 ### 9.1 Computer-Use Agents
 
-Claude Computer Use (Anthropic), OpenAI CUA/Operator, UI-TARS v1.5/v2 (ByteDance), Surfer 2 (H Company), OpenCUA (HKU/xlang-ai), Qwen2.5-VL/Qwen3-VL (Alibaba), Fara-7B (Microsoft). All operate through the screenshot-reason-act loop described in Section 2. None addresses dynamic visual content or audio perception. Distinct from grounding-only models (ShowUI, SeeClick, OS-Atlas, UGround) that accept a single image and output coordinates.
+The CU agent landscape has expanded rapidly. Closed-source systems include Claude Computer Use (Anthropic; Sonnet 5 achieves 88.3% OSWorld, superhuman), GPT-5.4 CUA (OpenAI; 75.0% OSWorld, superhuman), Gemini 2.5 CU (Google; WebVoyager 88.9%), Surfer 2 (H Company; 60.1% OSWorld, hierarchical context management), and Amazon Nova Act (browser SDK). Open-source models include UI-TARS-2 (ByteDance; 47.5% OSWorld, multi-turn RL trained), OpenCUA-72B (HKU/xlang-ai; 45.0% OSWorld, NeurIPS 2025 Spotlight), Fara-7B (Microsoft; WebVoyager 73.5%, efficient 16-step completion), GUI-Owl/Mobile-Agent-v3 (Alibaba; ScreenSpot Pro 54.9%), and CoAct-1 (Salesforce; 60.8% OSWorld, multi-agent with programmatic actions). Agent S3 (Simular; 72.6% OSWorld) was the first open-source agent to surpass the human baseline. A comprehensive survey (arXiv 2501.16150, 2025) classifies 87 agents and 33 datasets, identifying six gaps --- but notably does not identify the observation modality limitation, leaving an opening for AOI's contribution. **All of these agents operate through the screenshot-reason-act loop described in Section 2. None addresses dynamic visual content or audio perception.** Distinct from grounding-only models (ShowUI, SeeClick, OS-Atlas, UGround) that accept a single image and output coordinates.
 
 ### 9.2 Real-Time Multimodal Models
 
-Gemini 3.1 Flash Live (Google, 2026) processes continuous audio/video/text streams in real time, achieving 90.8% on ComplexFuncBench Audio. Project Astra (Google DeepMind) extends this into a full multimodal assistant. These monolithic approaches embed continuous perception into a specific model. Our work is complementary: model-agnostic adaptive perception as an external layer.
+Gemini 3.1 Flash Live (Google, March 2026) processes continuous audio/video/text streams in real time via WebSocket full-duplex communication, achieving 90.8% on ComplexFuncBench Audio with native audio-to-audio capability and 128K context. Project Astra (Google DeepMind) extends this into a full multimodal assistant. These monolithic approaches embed continuous perception into a specific model. Our work is complementary: model-agnostic adaptive perception as an external layer. Key distinction: Flash Live is the closest existing system to AOI's audio perception capability, but it bundles perception with reasoning/action in a single model, whereas AOI decouples perception from reasoning, allowing any CU model to benefit.
 
 ### 9.3 Video Understanding for GUI
 
-GUI-World (Chen et al., ICLR 2025): 12K+ GUI video annotations; video LLMs fall short on all temporal GUI tasks. VideoWebArena (Jang et al., ICLR 2025): long-context models perform worse with video tutorials than without. VideoGUI (Lin et al., NeurIPS 2024): GPT-4o performs poorly on visual-centric GUI planning. CUA-Suite (ServiceNow, 2026): 55 hours of 30fps video across 87 applications. These benchmarks identify the problem but do not propose solutions that work with existing CU agents.
+GUI-World (Chen et al., ICLR 2025): 12K+ GUI video annotations across 6 GUI scenarios; video LLMs fall short on all temporal GUI tasks. VideoWebArena (Jang et al., ICLR 2025): long-context models perform worse with video tutorials than without. VideoGUI (Lin et al., NeurIPS 2024): GPT-4o performs poorly on visual-centric GUI planning. CUA-Suite/VideoCUA (ServiceNow, 2026): 55 hours of 30fps video across 87 applications, 6M frames --- first benchmark using continuous video demonstrations rather than sparse screenshots, with ~60% task failure rate for current models. Gaia2 (ICLR 2026): 1,120 tasks in dynamic asynchronous environments testing temporal awareness and noise robustness; GPT-5 achieves only 42%. MemGUI-Bench (Feb 2026): memory-centric benchmark revealing 4--10x capability gaps on cross-temporal retention tasks. These benchmarks identify the observation problem but do not propose solutions that work with existing CU agents.
 
 Related efforts mine video for training data: VideoAgentTrek (2025), Watch and Learn (Song et al., 2025), Liu et al. (2025). These address training/in-context learning, not runtime observation.
 
 ### 9.4 Keyframe Selection
 
-VideoTree (Wang et al., CVPR 2025): CLIP-based hierarchical frame selection. VideoAgent (Wang et al., ECCV 2024): LLM-driven iterative frame selection. SlowFast-LLaVA (Xu et al., Apple, 2024): dual-resolution without learned selection. Adaptive Keyframe Sampling (Tang et al., CVPR 2025): plug-and-play selection under fixed token budgets. Key finding: for short segments (<1 minute), simple methods (uniform sampling, CLIP distance) are near-optimal. All prior work targets offline video QA; our contribution is real-time observation filtering for CU agents, where the two-stage design is critical for <10ms latency.
+VideoTree (Wang et al., CVPR 2025): CLIP-based hierarchical frame selection. VideoAgent (Wang et al., ECCV 2024): LLM-driven iterative frame selection. SlowFast-LLaVA (Xu et al., Apple, 2024): dual-resolution without learned selection. Adaptive Keyframe Sampling (AKS; Tang et al., CVPR 2025): plug-and-play module optimizing relevance and coverage via recursive judge-and-split, achieving +5.0% on LongVideoBench and +2.3% on VideoMME with Qwen2VL. Apollo (CVPR 2025): comprehensive exploration finding FPS sampling > uniform sampling, 8--32 tokens per frame optimal, SigLIP-SO400M as best single encoder. Key finding: for short segments (<1 minute), simple methods (uniform sampling, CLIP distance) are near-optimal. All prior work targets offline video QA; our contribution is real-time observation filtering for CU agents, where the two-stage design is critical for <10ms latency.
 
 ### 9.5 Multimodal Audio Understanding
 
-Pure ASR (Whisper, wav2vec) produces nothing for non-speech audio. Multimodal audio models (Qwen2-Audio, Qwen3 Omni, Qwen3.5-Omni) understand the full audio scene. No prior work addresses audio perception in GUI agents.
+Pure ASR (Whisper, wav2vec) produces nothing for non-speech audio. Multimodal audio models (Qwen2-Audio, Qwen3 Omni, Qwen3.5-Omni) understand the full audio scene. TriSense (NeurIPS 2025) demonstrates triple-modality (visual + audio + speech) video understanding with a Query-Based Connector that adaptively reweights modality contributions, achieving SOTA on audio-visual benchmarks with 2M+ training samples. VLog (CVPR 2025) converts video into textual documents with visual + audio information for LLM chat, using hierarchical narration vocabulary. Both demonstrate the value of audio + visual integration but target video understanding, not CU agent perception. No prior work addresses audio perception in GUI agents.
 
 ### 9.6 Long-Form Video Understanding via Text
 
@@ -662,7 +680,15 @@ LLoVi (Zhang et al., EMNLP 2024): caption-then-reason pipeline competitive with 
 
 ### 9.7 Adaptive Middleware for GUI Agents
 
-Adaptive VLM Routing (AVR, 2026): lightweight routing layer reducing inference costs by 78%. Shares the "adaptive middleware" pattern with our work but operates on the action/reasoning channel rather than observation. Cradle (BAAI, ICML 2025): frame difference analysis for games, but pixel-level without semantic filtering and tightly coupled to its architecture.
+Adaptive VLM Routing (AVR, 2026): lightweight routing layer reducing inference costs by 78%. Shares the "adaptive middleware" pattern with our work but operates on the action/reasoning channel rather than observation. Cradle (BAAI, ICML 2025): Information Gathering module with frame difference analysis for games; conceptually the closest predecessor to AOI's perception layer, but pixel-level without semantic filtering and no audio processing. ScreenLLM (WWW 2025): stateful screen schema capturing key user actions/intentions over time with keyframe extraction and memory, achieving 88.3% on MiniWoB++ with 4.8x latency reduction. Complements AOI's visual narration but without audio or adaptive observation.
+
+### 9.8 Streaming and Real-Time Video Agents
+
+StreamAgent (ICLR 2026): anticipatory agents for streaming video understanding, predicting temporal intervals and spatial regions for future task-relevant information using streaming KV-cache with hierarchical memory. The adaptive temporal focus is conceptually aligned with AOI's adaptive keyframe extraction, but targets open-world video understanding rather than GUI observation. Dispider (CVPR 2025): disentangles real-time monitoring from response generation with a lightweight streaming video processing module that identifies optimal interaction moments. The disentangled perception architecture parallels AOI's separation of observation from action. Both demonstrate the value of adaptive temporal attention but neither addresses CU agent observation specifically.
+
+### 9.9 Structured Agent-Web Interfaces
+
+WebMCP (Google/Microsoft, February 2026): proposed W3C standard for structured AI agent interactions with websites via declarative + imperative APIs. Achieves near-zero error rate with structured JSON. Represents the complementary approach to AOI: where WebMCP requires website cooperation, AOI enables perception on arbitrary, unmodified web content.
 
 World models (WebDreamer, CUWM, MobileDreamer) predict future states rather than observe current dynamics --- orthogonal and potentially complementary.
 
@@ -694,34 +720,48 @@ Computer-use agents cannot perceive dynamic content because their observation is
 ## References (Key Citations)
 
 ### Computer-Use Agents
-- Anthropic. Claude Computer Use. 2024.
-- OpenAI. Computer-Using Agent (CUA). 2025.
-- ByteDance. UI-TARS: Pioneering Automated GUI Interaction with Native Agents. 2025.
-- H Company. Surfer 2. 2025.
-- HKU / xlang-ai. OpenCUA. 2025.
-- Microsoft. Fara-7B. 2025.
-- Alibaba. Qwen2.5-VL / Qwen3-VL Computer Use. 2025.
+- Anthropic. Claude Computer Use (Sonnet 4.6, Opus 4.6, Sonnet 5). 2024--2026.
+- OpenAI. Computer-Using Agent (CUA) / GPT-5.4. 2025--2026.
+- ByteDance. UI-TARS-2: Pioneering Automated GUI Interaction with Native Agents. 2025.
+- H Company. Surfer 2: The Next Generation of Cross-Platform Computer Use Agents. arXiv 2510.19949. 2025.
+- HKU / xlang-ai. OpenCUA: Open Foundations for Computer-Use Agents. arXiv 2508.09123. NeurIPS 2025 Spotlight.
+- Microsoft. Fara-7B: An Efficient Agentic Model for Computer Use. arXiv 2511.19663. 2025.
+- Alibaba. GUI-Owl / Mobile-Agent-v3: Fundamental Agents for GUI Automation. arXiv 2508.15144. 2025.
+- Salesforce. CoAct-1: Computer-using Multi-Agent System with Coding Actions. arXiv 2508.03923. 2025.
+- Simular AI. Agent S3. 2025.
+- Amazon. Nova Act. 2025.
+- Google. Gemini 2.5 Computer Use. 2025.
 
-### GUI Video Understanding
+### Surveys
+- A Comprehensive Survey of Agents for Computer Use. arXiv 2501.16150. 2025.
+
+### GUI Video Understanding and Benchmarks
 - Chen et al. GUI-World: A Dataset for GUI-Oriented Multimodal LLM-based Agents. ICLR 2025.
 - Jang et al. VideoWebArena: Evaluating Long Context Multimodal Agents with Video Tasks. ICLR 2025.
 - Lin et al. VideoGUI: A Benchmark for GUI Automation from Instructional Videos. NeurIPS 2024.
 - Zhang et al. VideoGameBench: Can LMMs Play Video Games? 2025.
-- ServiceNow. CUA-Suite. 2026.
+- ServiceNow. CUA-Suite / VideoCUA. arXiv 2603.24440. 2026.
+- Gaia2: Dynamic, Asynchronous Environments for LMM Evaluation. ICLR 2026.
+- MemGUI-Bench: Memory-Centric Benchmark for Mobile GUI Agents. arXiv 2602.06075. 2026.
+- UiPath. UI-CUBE: Enterprise GUI Agent Benchmark. arXiv 2511.17131. 2025.
 
 ### Real-Time Multimodal Models
-- Google. Gemini 3.1 Flash Live. 2026.
+- Google. Gemini 3.1 Flash Live (native audio-to-audio streaming, 90.8% ComplexFuncBench Audio). March 2026.
 - Google DeepMind. Project Astra. 2024--2026.
+- Google. Project Mariner (web browsing agent). 2025.
 
 ### Keyframe Selection
 - Wang et al. VideoTree: Adaptive Tree-based Video Representation for LLM Reasoning on Long Videos. CVPR 2025.
 - Wang et al. VideoAgent: Long-form Video Understanding with Large Language Model as Agent. ECCV 2024.
 - Xu et al. SlowFast-LLaVA: A Strong Training-Free Baseline for Video Large Language Models. Apple, 2024.
-- Tang et al. Adaptive Keyframe Sampling for Long Video Understanding. CVPR 2025.
+- Tang et al. Adaptive Keyframe Sampling (AKS) for Long Video Understanding. arXiv 2502.21271. CVPR 2025.
+- Apollo: An Exploration of Video Understanding in Large Multimodal Models. arXiv 2412.10360. CVPR 2025.
 
-### Audio Understanding
+### Audio and Multimodal Understanding
 - Alibaba. Qwen3 Omni / Qwen3.5-Omni Technical Report. 2025--2026.
 - Radford et al. Robust Speech Recognition via Large-Scale Weak Supervision (Whisper). 2023.
+- TriSense: Watch and Listen: Understanding Audio-Visual-Speech Moments with Multimodal LLM. arXiv 2505.18110. NeurIPS 2025.
+- VLog: Video-Language Models by Generative Retrieval of Narration Vocabulary. arXiv 2503.09402. CVPR 2025.
 
 ### Long-Form Video and Text
 - Zhang et al. LLoVi: A Simple LLM Framework for Long-Range Video Question-Answering. EMNLP 2024.
@@ -729,12 +769,21 @@ Computer-use agents cannot perceive dynamic content because their observation is
 
 ### Agent Interfaces and Frameworks
 - Yang et al. SWE-agent: Agent-Computer Interfaces Enable Automated Software Engineering. NeurIPS 2024.
-- BAAI. Cradle: Empowering Foundation Agents Towards General Computer Control. ICML 2025.
+- BAAI. Cradle: Empowering Foundation Agents Towards General Computer Control. arXiv 2403.03186. ICML 2025.
+- ScreenLLM: Stateful Screen Schema for Efficient Action Understanding and Prediction. arXiv 2503.20978. WWW 2025.
+- OpenHands-Versa: Coding Agents with Multimodal Browsing are Generalist Problem Solvers. arXiv 2506.03011. ICML 2025.
 
 ### World Models and Adaptive Middleware
 - Gu et al. WebDreamer: Is Your LLM Secretly a World Model of the Internet? 2024.
 - Guan et al. CUWM: Computer Use World Model. Microsoft, 2026.
 - Adaptive VLM Routing for Computer Use Agents. 2026.
+
+### Streaming and Real-Time Video Agents
+- StreamAgent: Towards Anticipatory Agents for Streaming Video Understanding. arXiv 2508.01875. ICLR 2026.
+- Dispider: Enabling Video LLMs with Active Real-Time Interaction via Disentangled Perception, Decision, and Reaction. arXiv 2501.03218. CVPR 2025.
+
+### Structured Agent Interfaces
+- WebMCP: Proposed W3C standard for structured AI agent interactions with websites. February 2026.
 
 ### Video Data Mining for CU Agents
 - VideoAgentTrek. 2025.

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shopping List Call</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #66bb6a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .layout { display: flex; gap: 24px; align-items: flex-start; }
+  .phone-card { background: #16213e; border-radius: 16px; padding: 28px; width: 280px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; flex-shrink: 0; }
+  .call-status { font-size: 13px; color: #66bb6a; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #66bb6a, #2e7d32); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; }
+  .caller-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .caller-sub { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .call-timer { font-size: 24px; font-weight: 300; margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+  .call-actions { display: flex; justify-content: center; gap: 16px; }
+  .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+  .btn-mute { background: #333; }
+  .btn-speaker { background: #333; }
+  .btn-end { background: #e53935; }
+  .cart-panel { background: #16213e; border-radius: 16px; padding: 28px; width: 440px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .cart-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #66bb6a; display: flex; align-items: center; gap: 8px; }
+  .cart-row { display: flex; gap: 10px; align-items: center; margin-bottom: 10px; }
+  .cart-row .num { width: 24px; height: 24px; border-radius: 50%; background: #2a2a4e; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #888; flex-shrink: 0; }
+  .cart-row input { flex: 1; background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 8px 12px; color: #e0e0e0; font-size: 14px; outline: none; }
+  .cart-row input:focus { border-color: #66bb6a; }
+  .cart-row .price-input { width: 90px; flex: none; }
+  .submit-btn { width: 100%; margin-top: 14px; padding: 10px; background: #66bb6a; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #81c784; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="layout">
+  <div class="phone-card">
+    <div class="call-status" id="callStatus">Calling...</div>
+    <div class="avatar">&#128722;</div>
+    <div class="caller-name">Mom</div>
+    <div class="caller-sub">Shopping list</div>
+    <div class="call-timer" id="timer">00:00</div>
+    <div class="call-actions">
+      <button class="action-btn btn-mute">&#128263;</button>
+      <button class="action-btn btn-speaker">&#128264;</button>
+      <button class="action-btn btn-end">&#128381;</button>
+    </div>
+  </div>
+  <div class="cart-panel">
+    <h3>&#128722; Shopping Cart</h3>
+    <div class="cart-row"><div class="num">1</div><input type="text" id="item1" placeholder="Item name..."><input type="text" class="price-input" id="price1" placeholder="Price"></div>
+    <div class="cart-row"><div class="num">2</div><input type="text" id="item2" placeholder="Item name..."><input type="text" class="price-input" id="price2" placeholder="Price"></div>
+    <div class="cart-row"><div class="num">3</div><input type="text" id="item3" placeholder="Item name..."><input type="text" class="price-input" id="price3" placeholder="Price"></div>
+    <div class="cart-row"><div class="num">4</div><input type="text" id="item4" placeholder="Item name..."><input type="text" class="price-input" id="price4" placeholder="Price"></div>
+    <div class="cart-row"><div class="num">5</div><input type="text" id="item5" placeholder="Item name..."><input type="text" class="price-input" id="price5" placeholder="Price"></div>
+    <button class="submit-btn" id="submitBtn">Submit List</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  const items = [
+    { text: "Organic milk, three ninety-nine.", delay: 3000 },
+    { text: "Whole wheat bread, four forty-nine.", delay: 8000 },
+    { text: "Free range eggs, five ninety-nine.", delay: 13000 },
+    { text: "Avocados, two for three dollars.", delay: 18000 },
+    { text: "Greek yogurt, six forty-nine.", delay: 23000 }
+  ];
+
+  function speakItem(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85; u.lang = 'en-US';
+    speechSynthesis.speak(u);
+  }
+
+  function startAudio() {
+    document.getElementById('callStatus').textContent = 'Connected';
+    items.forEach(item => {
+      setTimeout(() => speakItem(item.text), item.delay);
+    });
+  }
+
+  const expected = [
+    { name: ['organic milk', 'milk'], price: '3.99' },
+    { name: ['whole wheat bread', 'wheat bread', 'bread'], price: '4.49' },
+    { name: ['free range eggs', 'eggs'], price: '5.99' },
+    { name: ['avocados', 'avocado'], price: '3.00' },
+    { name: ['greek yogurt', 'yogurt'], price: '6.49' }
+  ];
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'all_5_correct' ? 'All items correct!' : 'Some items need checking.';
+  });
+
+  window.getTaskResult = function() {
+    let correct = 0;
+    for (let i = 1; i <= 5; i++) {
+      const itemVal = document.getElementById('item' + i).value.toLowerCase().trim();
+      const priceVal = document.getElementById('price' + i).value.replace(/[^0-9.]/g, '');
+      // Find which expected item matches this row
+      for (let j = 0; j < expected.length; j++) {
+        const nameMatch = expected[j].name.some(n => itemVal.includes(n));
+        const priceMatch = priceVal === expected[j].price;
+        if (nameMatch && priceMatch) { correct++; break; }
+      }
+    }
+    if (correct >= 5) return 'all_5_correct';
+    return 'partial_' + correct + '_of_5';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startAudio, 500);
+  }, 2000);
+</script>
+</body>
+</html>

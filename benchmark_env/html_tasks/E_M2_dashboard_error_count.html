@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Real-time Log Viewer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .controls { display: flex; gap: 15px; align-items: center; font-size: 13px; color: #8892b0; }
+  .header .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; display: inline-block; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .stats-bar { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+  .stat { background: #16213e; border-radius: 8px; padding: 12px 15px; border: 1px solid #2a3a5e; }
+  .stat-label { font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; }
+  .stat-value { font-size: 22px; font-weight: bold; margin-top: 4px; }
+  .stat-value.info-c { color: #00d4ff; }
+  .stat-value.warn-c { color: #f39c12; }
+  .stat-value.error-c { color: #e74c3c; }
+  .stat-value.total-c { color: #e0e0e0; }
+  .log-container { background: #0a0f1e; border-radius: 10px; padding: 15px; border: 1px solid #2a3a5e; margin-bottom: 20px; height: 360px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 13px; }
+  .log-line { padding: 4px 8px; border-radius: 3px; margin-bottom: 2px; display: flex; gap: 12px; animation: fadeIn 0.3s; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+  .log-time { color: #555; min-width: 85px; }
+  .log-level { min-width: 55px; font-weight: bold; padding: 0 6px; border-radius: 3px; text-align: center; }
+  .log-level.INFO { color: #00d4ff; background: rgba(0,212,255,0.1); }
+  .log-level.WARN { color: #f39c12; background: rgba(243,156,18,0.1); }
+  .log-level.ERROR { color: #e74c3c; background: rgba(231,76,60,0.1); }
+  .log-msg { color: #b0b0b0; }
+  .log-line.error-line { background: rgba(231,76,60,0.05); }
+  .answer-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; text-align: center; display: none; }
+  .answer-card h3 { color: #00d4ff; margin-bottom: 15px; }
+  .answer-card input { padding: 10px 15px; font-size: 18px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 120px; text-align: center; }
+  .answer-card input:focus { outline: none; border-color: #00d4ff; }
+  .answer-card button { padding: 10px 20px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Real-time Log Viewer</h1>
+  <div class="controls"><span class="dot"></span> Streaming &bull; prod-cluster-01</div>
+</div>
+<div class="stats-bar">
+  <div class="stat"><div class="stat-label">Total Lines</div><div class="stat-value total-c" id="totalCount">0</div></div>
+  <div class="stat"><div class="stat-label">Info</div><div class="stat-value info-c" id="infoCount">0</div></div>
+  <div class="stat"><div class="stat-label">Warn</div><div class="stat-value warn-c" id="warnCount">0</div></div>
+  <div class="stat"><div class="stat-label">Error</div><div class="stat-value error-c" id="errorCount">0</div></div>
+</div>
+<div class="log-container" id="logContainer"></div>
+<div class="answer-card" id="answerCard">
+  <h3>How many ERROR entries appeared in total?</h3>
+  <div>
+    <input type="text" id="errorInput" placeholder="0">
+    <button id="submitBtn">Submit</button>
+  </div>
+</div>
+<script>
+(function() {
+  // Exactly 7 ERROR entries among the log sequence
+  // Schedule: mix of INFO, WARN, ERROR over ~30 seconds at 2-4s intervals
+  const logEntries = [
+    { level: 'INFO', msg: 'Request processed: GET /api/users (200 OK)', delay: 2000 },
+    { level: 'INFO', msg: 'Database connection pool refreshed: 12 active', delay: 2500 },
+    { level: 'WARN', msg: 'Slow query detected: SELECT * FROM orders (2.3s)', delay: 3000 },
+    { level: 'ERROR', msg: 'Failed to connect to redis-cache-02: Connection refused', delay: 2000 },// 1
+    { level: 'INFO', msg: 'Health check passed: all services responsive', delay: 2500 },
+    { level: 'INFO', msg: 'Session cleanup: 45 expired sessions removed', delay: 3000 },
+    { level: 'ERROR', msg: 'NullPointerException in PaymentService.processRefund()', delay: 2000 },// 2
+    { level: 'WARN', msg: 'Memory usage at 78%: approaching threshold', delay: 3500 },
+    { level: 'INFO', msg: 'Request processed: POST /api/orders (201 Created)', delay: 2000 },
+    { level: 'ERROR', msg: 'Timeout reading from storage-node-05: 30s exceeded', delay: 2500 },// 3
+    { level: 'INFO', msg: 'SSL certificate renewal: 23 days remaining', delay: 3000 },
+    { level: 'ERROR', msg: 'Authentication failed: invalid token for user jdoe42', delay: 2000 },// 4
+    { level: 'WARN', msg: 'Disk usage on /var/log: 82% utilized', delay: 3500 },
+    { level: 'INFO', msg: 'Cron job completed: daily_report_generation (OK)', delay: 2500 },
+    { level: 'ERROR', msg: 'OutOfMemoryError: Java heap space in worker-thread-7', delay: 2000 },// 5
+    { level: 'INFO', msg: 'Request processed: GET /api/products (200 OK)', delay: 3000 },
+    { level: 'WARN', msg: 'Rate limit approaching for client IP 192.168.1.45', delay: 2500 },
+    { level: 'ERROR', msg: 'Failed to write audit log: Permission denied /var/log/audit', delay: 2000 },// 6
+    { level: 'INFO', msg: 'Load balancer health: 4/4 backends healthy', delay: 3000 },
+    { level: 'INFO', msg: 'Request processed: PUT /api/users/128 (200 OK)', delay: 2500 },
+    { level: 'ERROR', msg: 'DNS resolution failed for api.partner-service.io', delay: 2000 },// 7
+    { level: 'INFO', msg: 'Metrics flush: 1,247 data points written to InfluxDB', delay: 3000 },
+    { level: 'WARN', msg: 'Deprecated API endpoint called: /v1/legacy/auth', delay: 2500 },
+    { level: 'INFO', msg: 'Request processed: DELETE /api/cache/stale (204)', delay: 2000 },
+  ];
+
+  const logContainer = document.getElementById('logContainer');
+  let infoC = 0, warnC = 0, errorC = 0, totalC = 0;
+  let entryIdx = 0;
+  let submitted = false;
+
+  function addLogLine() {
+    if (entryIdx >= logEntries.length) {
+      document.getElementById('answerCard').style.display = 'block';
+      return;
+    }
+    const entry = logEntries[entryIdx];
+    entryIdx++;
+
+    const line = document.createElement('div');
+    line.className = 'log-line' + (entry.level === 'ERROR' ? ' error-line' : '');
+
+    const time = document.createElement('span');
+    time.className = 'log-time';
+    time.textContent = new Date().toLocaleTimeString();
+
+    const level = document.createElement('span');
+    level.className = 'log-level ' + entry.level;
+    level.textContent = entry.level;
+
+    const msg = document.createElement('span');
+    msg.className = 'log-msg';
+    msg.textContent = entry.msg;
+
+    line.appendChild(time);
+    line.appendChild(level);
+    line.appendChild(msg);
+    logContainer.appendChild(line);
+    logContainer.scrollTop = logContainer.scrollHeight;
+
+    totalC++;
+    if (entry.level === 'INFO') infoC++;
+    else if (entry.level === 'WARN') warnC++;
+    else if (entry.level === 'ERROR') errorC++;
+
+    document.getElementById('totalCount').textContent = totalC;
+    document.getElementById('infoCount').textContent = infoC;
+    document.getElementById('warnCount').textContent = warnC;
+    document.getElementById('errorCount').textContent = errorC;
+
+    // Schedule next entry
+    if (entryIdx < logEntries.length) {
+      setTimeout(addLogLine, logEntries[entryIdx].delay);
+    } else {
+      // Show answer card after a brief delay
+      setTimeout(function() {
+        document.getElementById('answerCard').style.display = 'block';
+      }, 2000);
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const val = document.getElementById('errorInput').value.trim();
+    if (val === '7') return 'count_correct';
+    return 'count_incorrect';
+  };
+
+  setTimeout(addLogLine, 2000);
+})();
+</script>
+</body>
+</html>

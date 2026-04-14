@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quarterly Review Meeting</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #202124; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  #loading { position: fixed; inset: 0; background: #202124; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #8ab4f8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .meet-header { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3c4043; }
+  .meet-logo { font-size: 18px; font-weight: 500; color: #8ab4f8; }
+  .meet-title { font-size: 14px; color: #bdc1c6; }
+  .meet-time { font-size: 13px; color: #9aa0a6; }
+  .meet-body { flex: 1; display: flex; padding: 16px; gap: 16px; }
+  .slide-area { flex: 1; background: #1a1a2e; border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; min-height: 400px; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; opacity: 0; transition: opacity 0.8s ease; }
+  .slide.active { opacity: 1; }
+  .slide h2 { font-size: 26px; font-weight: 600; margin-bottom: 24px; color: #fff; }
+
+  /* Chart styles */
+  .chart-container { position: relative; width: 400px; height: 250px; }
+  .chart-area { position: absolute; left: 40px; bottom: 30px; right: 20px; top: 0; display: flex; align-items: flex-end; gap: 24px; justify-content: center; border-left: 2px solid #3c4043; border-bottom: 2px solid #3c4043; padding: 0 20px; }
+  .bar { width: 60px; border-radius: 4px 4px 0 0; transition: height 1s ease; position: relative; }
+  .bar-q1 { height: 55%; background: linear-gradient(to top, #4285f4, #669df6); }
+  .bar-q2 { height: 70%; background: linear-gradient(to top, #34a853, #5bb974); }
+  .bar-q3 { height: 85%; background: linear-gradient(to top, #fbbc05, #fdd663); }
+  .bar-q4 { height: 95%; background: linear-gradient(to top, #ea4335, #f28b82); }
+  .bar-label { position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%); font-size: 12px; color: #9aa0a6; white-space: nowrap; }
+  .y-axis-label { position: absolute; left: 0; top: 50%; transform: rotate(-90deg) translateX(-50%); transform-origin: left center; font-size: 12px; color: #666; font-style: italic; white-space: nowrap; }
+  .x-axis-label { position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); font-size: 12px; color: #9aa0a6; }
+
+  .participants { width: 200px; display: flex; flex-direction: column; gap: 8px; }
+  .participant { background: #292a2d; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; }
+  .participant .avatar-lg { width: 40px; height: 40px; border-radius: 50%; }
+  .participant .p-name { position: absolute; bottom: 6px; left: 8px; font-size: 11px; color: #bdc1c6; }
+  .answer-panel { background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 0 16px 16px; }
+  .answer-panel h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .answer-row { display: flex; gap: 12px; align-items: center; }
+  .answer-row label { font-size: 13px; color: #888; white-space: nowrap; }
+  .answer-row input { flex: 1; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 14px; outline: none; }
+  .answer-row input:focus { border-color: #8ab4f8; }
+  .submit-btn { margin-top: 12px; padding: 10px 24px; background: #8ab4f8; border: none; border-radius: 8px; color: #202124; font-size: 14px; font-weight: 600; cursor: pointer; float: right; }
+  .status { font-size: 13px; color: #666; margin-top: 12px; clear: both; text-align: right; min-height: 20px; }
+  .meet-controls { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid #3c4043; }
+  .ctrl-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #3c4043; color: #e0e0e0; }
+  .ctrl-end { background: #ea4335; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; width: auto; }
+  .slide-indicator { position: absolute; bottom: 12px; right: 16px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="meet-header">
+  <div class="meet-logo">Google Meet</div>
+  <div class="meet-title">Q4 Quarterly Review</div>
+  <div class="meet-time" id="meetTime">--:--</div>
+</div>
+<div class="meet-body">
+  <div class="slide-area">
+    <div class="slide active" id="slide0">
+      <h2>Quarterly Revenue</h2>
+      <div class="chart-container">
+        <div class="y-axis-label">???</div>
+        <div class="x-axis-label">Quarter</div>
+        <div class="chart-area">
+          <div class="bar bar-q1"><div class="bar-label">Q1</div></div>
+          <div class="bar bar-q2"><div class="bar-label">Q2</div></div>
+          <div class="bar bar-q3"><div class="bar-label">Q3</div></div>
+          <div class="bar bar-q4"><div class="bar-label">Q4</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="slide-indicator">Slide 1 / 1</div>
+  </div>
+  <div class="participants">
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #ea4335, #fbbc05);"></div><div class="p-name">CFO</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #34a853, #0984e3);"></div><div class="p-name">You</div></div>
+  </div>
+</div>
+<div class="answer-panel">
+  <h3>The Y-axis label is not visible. What does it represent?</h3>
+  <div class="answer-row">
+    <label for="axisInput">Y-Axis Label:</label>
+    <input type="text" id="axisInput" placeholder="e.g. Units Sold" autocomplete="off">
+  </div>
+  <button class="submit-btn" id="submitBtn">Submit</button>
+  <div class="status" id="status"></div>
+</div>
+<div class="meet-controls">
+  <button class="ctrl-btn">&#127908;</button>
+  <button class="ctrl-btn">&#127909;</button>
+  <button class="ctrl-btn ctrl-end">Leave</button>
+</div>
+<script>
+  const audioText = "Looking at this chart, the quarterly revenue trend is very encouraging. Note that the Y-axis shows revenue in millions U S D. We've seen consistent growth from Q1 through Q4.";
+
+  function startAudio() {
+    const u = new SpeechSynthesisUtterance(audioText);
+    u.rate = 0.9;
+    u.lang = 'en-US';
+    speechSynthesis.speak(u);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('meetTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'label_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('axisInput').value.toLowerCase().trim();
+    const hasRevenue = val.includes('revenue');
+    const hasUnit = val.includes('million') || val.includes('usd') || val.includes('u.s.d') || val.includes('dollars');
+    if (hasRevenue && hasUnit) return 'label_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startAudio, 500);
+  }, 2000);
+</script>
+</body>
+</html>

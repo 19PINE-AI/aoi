@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reaction Time Test</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.header {
+  padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+  background: #0f0f23; z-index: 10;
+}
+.title { font-size: 24px; font-weight: 700; color: #33aaff; }
+.round-info { font-size: 16px; color: #aaa; }
+.game-area {
+  flex: 1; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; cursor: pointer; transition: background 0.1s;
+  position: relative;
+}
+.game-area.waiting { background: #8b0000; }
+.game-area.ready { background: #006400; }
+.game-area.clicked { background: #1a1a3e; }
+.game-area.too-early { background: #4a0000; }
+.game-text {
+  font-size: 48px; font-weight: 700; text-align: center; user-select: none;
+}
+.game-subtext { font-size: 18px; color: rgba(255,255,255,0.7); margin-top: 12px; }
+.results-panel {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+  background: #1a1a3e; border: 1px solid #2a2a4e; border-radius: 12px;
+  padding: 16px 24px; display: flex; gap: 24px; z-index: 20;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.result-item {
+  text-align: center; min-width: 80px;
+}
+.result-label { font-size: 11px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+.result-value { font-size: 24px; font-weight: 700; color: #00ff88; }
+.result-value.pending { color: #5f6368; }
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #33aaff; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #ff3366; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Reaction Time</h1>
+  <p>Wait for the screen to turn GREEN, then click as fast as you can!</p>
+  <p>3 rounds. Don't click too early!</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Reaction Time Test</div>
+  <div class="round-info" id="round-info">Round 1 of 3</div>
+</div>
+
+<div class="game-area" id="game-area">
+  <div class="game-text" id="game-text"></div>
+  <div class="game-subtext" id="game-subtext"></div>
+</div>
+
+<div class="results-panel">
+  <div class="result-item">
+    <div class="result-label">Round 1</div>
+    <div class="result-value pending" id="r1">--</div>
+  </div>
+  <div class="result-item">
+    <div class="result-label">Round 2</div>
+    <div class="result-value pending" id="r2">--</div>
+  </div>
+  <div class="result-item">
+    <div class="result-label">Round 3</div>
+    <div class="result-value pending" id="r3">--</div>
+  </div>
+</div>
+
+<script>
+let round = 0;
+let totalRounds = 3;
+let results = [];
+let state = 'idle'; // idle, waiting, ready, result
+let greenTime = 0;
+let waitTimeout = null;
+
+const area = document.getElementById('game-area');
+const textEl = document.getElementById('game-text');
+const subEl = document.getElementById('game-subtext');
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startRound();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startRound() {
+  round++;
+  if (round > totalRounds) return;
+
+  document.getElementById('round-info').textContent = `Round ${round} of ${totalRounds}`;
+  state = 'waiting';
+  area.className = 'game-area waiting';
+  textEl.textContent = 'Wait...';
+  subEl.textContent = 'Click when the screen turns GREEN';
+
+  // Random delay 2-5s
+  const delay = 2000 + Math.random() * 3000;
+  waitTimeout = setTimeout(() => {
+    state = 'ready';
+    area.className = 'game-area ready';
+    textEl.textContent = 'CLICK NOW!';
+    subEl.textContent = '';
+    greenTime = performance.now();
+  }, delay);
+}
+
+area.addEventListener('click', () => {
+  if (state === 'waiting') {
+    // Too early!
+    clearTimeout(waitTimeout);
+    state = 'idle';
+    area.className = 'game-area too-early';
+    textEl.textContent = 'Too early!';
+    subEl.textContent = 'Click to try this round again';
+    round--;
+    setTimeout(() => startRound(), 1500);
+    return;
+  }
+
+  if (state === 'ready') {
+    const reactionTime = Math.round(performance.now() - greenTime);
+    results.push(reactionTime);
+    state = 'result';
+    area.className = 'game-area clicked';
+    textEl.textContent = reactionTime + 'ms';
+    subEl.textContent = round < totalRounds ? 'Next round starting...' : 'All rounds complete!';
+
+    // Update result display
+    document.getElementById('r' + round).textContent = reactionTime + 'ms';
+    document.getElementById('r' + round).classList.remove('pending');
+
+    if (round < totalRounds) {
+      setTimeout(() => startRound(), 2000);
+    }
+    return;
+  }
+
+  if (state === 'idle' || state === 'result') {
+    // ignore
+  }
+});
+
+window.getTaskResult = function() {
+  if (results.length >= 3) {
+    return '3_rounds_complete';
+  }
+  return 'rounds_complete_' + results.length;
+};
+</script>
+</body>
+</html>

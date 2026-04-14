@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Dashboard - CPU Monitor</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .status { display: flex; align-items: center; gap: 8px; font-size: 14px; }
+  .header .status .dot { width: 10px; height: 10px; border-radius: 50%; background: #00ff88; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .dashboard { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .card { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .card h2 { font-size: 14px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 15px; }
+  .gauge-container { display: flex; flex-direction: column; align-items: center; gap: 15px; }
+  .gauge-bg { width: 100%; height: 30px; background: #0a0f1e; border-radius: 15px; overflow: hidden; position: relative; }
+  .gauge-fill { height: 100%; border-radius: 15px; transition: width 0.5s ease, background-color 0.5s ease; }
+  .gauge-value { font-size: 48px; font-weight: bold; }
+  .gauge-label { font-size: 14px; color: #8892b0; }
+  .metric-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #1a1a2e; }
+  .metric-row:last-child { border: none; }
+  .metric-label { color: #8892b0; }
+  .metric-value { font-weight: 600; }
+  .alert-section { grid-column: 1 / -1; text-align: center; }
+  #alertBtn { padding: 14px 40px; font-size: 18px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #e74c3c; color: white; transition: all 0.3s ease; text-transform: uppercase; letter-spacing: 2px; }
+  #alertBtn:hover { background: #c0392b; transform: scale(1.05); }
+  #alertBtn:disabled { background: #555; cursor: not-allowed; transform: none; }
+  .alert-status { margin-top: 10px; font-size: 14px; color: #8892b0; }
+  .uptime { font-size: 12px; color: #8892b0; margin-top: 5px; }
+  .critical { color: #e74c3c !important; }
+  .warning { color: #f39c12 !important; }
+  .normal { color: #00ff88 !important; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Server Dashboard</h1>
+  <div class="status"><div class="dot"></div> Live Monitoring</div>
+</div>
+<div class="dashboard">
+  <div class="card" style="grid-column: 1 / -1;">
+    <h2>CPU Usage</h2>
+    <div class="gauge-container">
+      <div class="gauge-value" id="cpuValue">50%</div>
+      <div class="gauge-bg"><div class="gauge-fill" id="cpuGauge" style="width: 50%; background: #00ff88;"></div></div>
+      <div class="gauge-label" id="cpuStatus">Status: Normal</div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>System Metrics</h2>
+    <div class="metric-row"><span class="metric-label">Memory</span><span class="metric-value" id="memVal">62%</span></div>
+    <div class="metric-row"><span class="metric-label">Disk I/O</span><span class="metric-value" id="diskVal">34 MB/s</span></div>
+    <div class="metric-row"><span class="metric-label">Network</span><span class="metric-value" id="netVal">12.4 Mbps</span></div>
+    <div class="metric-row"><span class="metric-label">Processes</span><span class="metric-value" id="procVal">247</span></div>
+  </div>
+  <div class="card">
+    <h2>Server Info</h2>
+    <div class="metric-row"><span class="metric-label">Hostname</span><span class="metric-value">prod-web-01</span></div>
+    <div class="metric-row"><span class="metric-label">OS</span><span class="metric-value">Ubuntu 22.04</span></div>
+    <div class="metric-row"><span class="metric-label">Kernel</span><span class="metric-value">5.15.0-91</span></div>
+    <div class="metric-row"><span class="metric-label">Uptime</span><span class="metric-value" id="uptimeVal">14d 6h 23m</span></div>
+  </div>
+  <div class="card alert-section">
+    <button id="alertBtn">Trigger Alert</button>
+    <div class="alert-status" id="alertStatus">Click Alert when CPU exceeds 90%</div>
+  </div>
+</div>
+<script>
+(function() {
+  let cpu = 50;
+  let tick = 0;
+  let alertClicked = false;
+  let cpuWasAbove90WhenClicked = false;
+  const cpuValue = document.getElementById('cpuValue');
+  const cpuGauge = document.getElementById('cpuGauge');
+  const cpuStatus = document.getElementById('cpuStatus');
+  const alertBtn = document.getElementById('alertBtn');
+  const alertStatusEl = document.getElementById('alertStatus');
+
+  // Predefined CPU trajectory: fluctuate around 50, spike near t=15s
+  const cpuScript = [
+    50, 53, 48, 55, 52, 58, 61, 65, 72, 78, 85, 88, 92, 95, 93, 91, 88, 82, 75, 70, 65, 60, 55, 52, 50
+  ];
+
+  function updateCPU() {
+    tick++;
+    let idx = Math.floor(tick / 1); // one step per 2s interval
+    if (idx < cpuScript.length) {
+      cpu = cpuScript[idx] + (Math.random() * 4 - 2);
+    } else {
+      cpu = 50 + Math.random() * 10;
+    }
+    cpu = Math.max(5, Math.min(99, Math.round(cpu)));
+
+    cpuValue.textContent = cpu + '%';
+    cpuGauge.style.width = cpu + '%';
+
+    if (cpu > 90) {
+      cpuGauge.style.background = '#e74c3c';
+      cpuStatus.textContent = 'Status: CRITICAL';
+      cpuStatus.className = 'gauge-label critical';
+    } else if (cpu > 70) {
+      cpuGauge.style.background = '#f39c12';
+      cpuStatus.textContent = 'Status: Warning';
+      cpuStatus.className = 'gauge-label warning';
+    } else {
+      cpuGauge.style.background = '#00ff88';
+      cpuStatus.textContent = 'Status: Normal';
+      cpuStatus.className = 'gauge-label normal';
+    }
+
+    // Update other metrics for realism
+    document.getElementById('memVal').textContent = (58 + Math.floor(Math.random() * 10)) + '%';
+    document.getElementById('diskVal').textContent = (28 + Math.floor(Math.random() * 15)) + ' MB/s';
+    document.getElementById('netVal').textContent = (10 + Math.random() * 8).toFixed(1) + ' Mbps';
+    document.getElementById('procVal').textContent = 240 + Math.floor(Math.random() * 20);
+  }
+
+  alertBtn.addEventListener('click', function() {
+    if (alertClicked) return;
+    alertClicked = true;
+    cpuWasAbove90WhenClicked = cpu > 90;
+    alertBtn.disabled = true;
+    if (cpuWasAbove90WhenClicked) {
+      alertBtn.style.background = '#00ff88';
+      alertBtn.textContent = 'Alert Sent';
+      alertStatusEl.textContent = 'Alert triggered at CPU ' + cpu + '% - Correct!';
+      alertStatusEl.style.color = '#00ff88';
+    } else {
+      alertBtn.style.background = '#f39c12';
+      alertBtn.textContent = 'Alert Sent';
+      alertStatusEl.textContent = 'Alert triggered at CPU ' + cpu + '% - CPU was not above 90%';
+      alertStatusEl.style.color = '#f39c12';
+    }
+  });
+
+  window.getTaskResult = function() {
+    if (alertClicked && cpuWasAbove90WhenClicked) return 'alert_triggered';
+    if (alertClicked) return 'alert_wrong_time';
+    return 'no_alert';
+  };
+
+  setTimeout(function() {
+    setInterval(updateCPU, 2000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

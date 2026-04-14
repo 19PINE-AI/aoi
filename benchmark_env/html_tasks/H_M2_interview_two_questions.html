@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interview — Two Questions</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #42a5f5; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .page-header { background: #1565c0; padding: 14px 24px; border-radius: 12px 12px 0 0; text-align: center; }
+  .page-header .year-display { font-size: 32px; font-weight: 700; color: #fff; }
+  .page-header .year-label { font-size: 12px; color: rgba(255,255,255,0.7); text-transform: uppercase; letter-spacing: 2px; }
+  .main-container { width: 720px; }
+  .interview-layout { display: flex; gap: 24px; background: #16213e; border-radius: 0 0 12px 12px; padding: 24px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .video-panel { flex: 1; text-align: center; }
+  .video-placeholder { width: 100%; aspect-ratio: 4/3; border-radius: 12px; background: linear-gradient(135deg, #0d47a1, #1565c0, #1976d2); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; }
+  .interviewer-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #42a5f5, #1565c0); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; margin-bottom: 6px; }
+  .interviewer-name { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .live-badge { position: absolute; top: 10px; left: 10px; background: #e53935; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+  .call-timer { font-size: 18px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .response-panel { flex: 1; }
+  .response-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .question-block { margin-bottom: 16px; padding: 12px; background: #0f1a30; border-radius: 8px; border-left: 3px solid #333; transition: border-color 0.3s; }
+  .question-block.active { border-color: #42a5f5; }
+  .question-block.done { border-color: #66bb6a; }
+  .q-label { font-size: 12px; color: #888; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 1px; }
+  .mic-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .mic-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; }
+  .mic-dot.listening { background: #e53935; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.4); } 50% { box-shadow: 0 0 0 6px rgba(229,57,53,0); } }
+  .mic-dot.done { background: #66bb6a; }
+  .mic-status { font-size: 12px; color: #888; }
+  .transcript-line { font-size: 14px; color: #aaa; min-height: 20px; }
+  .fallback-input { width: 100%; background: #0a1224; border: 1px solid #2a2a4e; border-radius: 6px; padding: 8px 10px; color: #e0e0e0; font-size: 14px; outline: none; margin-top: 6px; }
+  .fallback-input:focus { border-color: #42a5f5; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #42a5f5; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #64b5f6; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="main-container">
+  <div class="page-header">
+    <div class="year-label">Year</div>
+    <div class="year-display">2026</div>
+  </div>
+  <div class="interview-layout">
+    <div class="video-panel">
+      <div class="video-placeholder">
+        <div class="live-badge">LIVE</div>
+        <div class="interviewer-avatar">&#128100;</div>
+        <div class="interviewer-name">Interviewer</div>
+      </div>
+      <div class="call-timer" id="timer">00:00</div>
+    </div>
+    <div class="response-panel">
+      <h3>Your Responses</h3>
+      <div class="question-block" id="qb1">
+        <div class="q-label">Question 1</div>
+        <div class="mic-row">
+          <div class="mic-dot" id="mic1"></div>
+          <div class="mic-status" id="micStatus1">Waiting...</div>
+        </div>
+        <div class="transcript-line" id="transcript1"></div>
+        <input type="text" class="fallback-input" id="fallback1" placeholder="Type or speak your answer" autocomplete="off">
+      </div>
+      <div class="question-block" id="qb2">
+        <div class="q-label">Question 2</div>
+        <div class="mic-row">
+          <div class="mic-dot" id="mic2"></div>
+          <div class="mic-status" id="micStatus2">Waiting...</div>
+        </div>
+        <div class="transcript-line" id="transcript2"></div>
+        <input type="text" class="fallback-input" id="fallback2" placeholder="Type or speak your answer" autocomplete="off">
+      </div>
+      <button class="submit-btn" id="submitBtn">Submit Answers</button>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+  let response1 = '', response2 = '';
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function listenFor(num) {
+    const micEl = document.getElementById('mic' + num);
+    const statusEl = document.getElementById('micStatus' + num);
+    const transcriptEl = document.getElementById('transcript' + num);
+    const qbEl = document.getElementById('qb' + num);
+    micEl.classList.add('listening');
+    statusEl.textContent = 'Listening...';
+    qbEl.classList.add('active');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        if (num === 1) response1 = text; else response2 = text;
+        transcriptEl.textContent = text;
+        micEl.classList.remove('listening');
+        micEl.classList.add('done');
+        statusEl.textContent = 'Captured';
+        qbEl.classList.remove('active');
+        qbEl.classList.add('done');
+      };
+      recognition.onerror = () => {
+        statusEl.textContent = 'Use text input';
+        micEl.classList.remove('listening');
+      };
+      recognition.onend = () => {
+        if ((num === 1 && !response1) || (num === 2 && !response2)) {
+          micEl.classList.remove('listening');
+          statusEl.textContent = 'Use text input';
+        }
+      };
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+        recognition.start();
+      }).catch(() => {
+        statusEl.textContent = 'Mic unavailable — type answer';
+        micEl.classList.remove('listening');
+      });
+    } else {
+      statusEl.textContent = 'Type your answer below';
+      micEl.classList.remove('listening');
+    }
+  }
+
+  function askQ1() {
+    const u = new SpeechSynthesisUtterance("What year is displayed on the page?");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { listenFor(1); };
+    speechSynthesis.speak(u);
+  }
+
+  function askQ2() {
+    const u = new SpeechSynthesisUtterance("And what color is the header bar?");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { listenFor(2); };
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'both_answers_correct' ? 'Both correct!' : 'Check your answers.';
+  });
+
+  window.getTaskResult = function() {
+    const r1 = (response1 + ' ' + document.getElementById('fallback1').value).toLowerCase();
+    const r2 = (response2 + ' ' + document.getElementById('fallback2').value).toLowerCase();
+    const q1ok = r1.includes('2026');
+    const q2ok = r2.includes('blue');
+    if (q1ok && q2ok) return 'both_answers_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(askQ1, 3000);
+    setTimeout(askQ2, 15000);
+  }, 2000);
+</script>
+</body>
+</html>

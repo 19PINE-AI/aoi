@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Demo Video</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff4444; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 740px; }
+  .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .video-screen { width: 100%; aspect-ratio: 16/9; background: #000; position: relative; overflow: hidden; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.6s ease; padding: 40px; }
+  .slide.active { opacity: 1; }
+  .slide-title { background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 52px; font-weight: 800; margin-bottom: 12px; text-align: center; }
+  .slide-subtitle { color: #aaa; font-size: 18px; }
+  .feature-icon { font-size: 64px; margin-bottom: 20px; }
+  .feature-title { font-size: 28px; font-weight: 600; color: #fff; margin-bottom: 12px; }
+  .feature-desc { font-size: 16px; color: #999; text-align: center; max-width: 400px; line-height: 1.5; }
+  .video-controls { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; }
+  .play-icon { color: #fff; font-size: 18px; cursor: pointer; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #ff4444; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .channel-info { display: flex; align-items: center; gap: 12px; padding: 14px 16px; }
+  .channel-avatar { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px; }
+  .channel-name { font-size: 14px; font-weight: 600; }
+  .channel-subs { font-size: 12px; color: #888; }
+  .divider { border: none; border-top: 1px solid #2a2a3e; margin: 20px 0; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #667eea; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #667eea; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #7b8ef8; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="video-wrapper">
+    <div class="video-screen" id="videoScreen">
+      <div class="slide" id="slide0">
+        <div class="slide-title">CloudSync Pro</div>
+        <div class="slide-subtitle">Next-generation cloud synchronization</div>
+      </div>
+      <div class="slide" id="slide1">
+        <div class="feature-icon">&#9729;</div>
+        <div class="feature-title">Real-time Sync</div>
+        <div class="feature-desc">Instantly synchronize files across all your devices with zero latency and end-to-end encryption.</div>
+      </div>
+      <div class="slide" id="slide2">
+        <div class="feature-icon">&#128274;</div>
+        <div class="feature-title">Enterprise Security</div>
+        <div class="feature-desc">Military-grade AES-256 encryption ensures your data stays safe, both in transit and at rest.</div>
+      </div>
+      <div class="slide" id="slide3">
+        <div class="feature-icon">&#128101;</div>
+        <div class="feature-title">Team Collaboration</div>
+        <div class="feature-desc">Share workspaces, manage permissions, and collaborate in real-time with your entire team.</div>
+      </div>
+      <div class="slide" id="slide4">
+        <div class="feature-icon">&#128200;</div>
+        <div class="feature-title">Advanced Analytics</div>
+        <div class="feature-desc">Track file usage, storage trends, and team activity with comprehensive dashboards.</div>
+      </div>
+    </div>
+    <div class="video-controls">
+      <span class="play-icon">&#9654;</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:20</span>
+    </div>
+    <div class="channel-info">
+      <div class="channel-avatar">CS</div>
+      <div>
+        <div class="channel-name">CloudSync Official</div>
+        <div class="channel-subs">248K subscribers</div>
+      </div>
+    </div>
+  </div>
+  <div class="form-section">
+    <h3>What is the product name shown in the video?</h3>
+    <div class="input-group">
+      <label for="answerInput">Product Name</label>
+      <input type="text" id="answerInput" placeholder="Enter the product name..." autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const totalSlides = 5;
+  const slideDurations = [4000, 4000, 4000, 4000, 4000];
+  const totalDuration = slideDurations.reduce((a,b) => a+b, 0);
+  let currentSlide = 0;
+  let startTime;
+  let progressInterval;
+
+  function showSlide(index) {
+    for (let i = 0; i < totalSlides; i++) {
+      document.getElementById('slide' + i).classList.remove('active');
+    }
+    if (index < totalSlides) {
+      document.getElementById('slide' + index).classList.add('active');
+    }
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    showSlide(0);
+    progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+
+    let cumulative = 0;
+    for (let i = 1; i < totalSlides; i++) {
+      cumulative += slideDurations[i-1];
+      (function(idx, delay) {
+        setTimeout(() => showSlide(idx), delay);
+      })(i, cumulative);
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'name_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('answerInput').value.toLowerCase().trim();
+    if (val.includes('cloudsync pro')) return 'name_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

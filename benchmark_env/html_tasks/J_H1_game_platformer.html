@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Platform Jumper</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.header {
+  padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
+  background: rgba(15,15,35,0.9); z-index: 10;
+}
+.title { font-size: 24px; font-weight: 700; color: #00ff88; }
+.stats { display: flex; gap: 20px; }
+.stat-item { text-align: center; }
+.stat-label { font-size: 10px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { font-size: 24px; font-weight: 700; }
+.game-canvas {
+  flex: 1; position: relative; overflow: hidden; cursor: pointer;
+}
+.player {
+  position: absolute; width: 30px; height: 30px; background: #00ff88;
+  border-radius: 4px; z-index: 5; transition: left 0.15s;
+  box-shadow: 0 0 10px rgba(0,255,136,0.5);
+}
+.player .eye {
+  position: absolute; top: 6px; width: 6px; height: 6px; background: #0f0f23; border-radius: 50%;
+}
+.player .eye.left { left: 6px; }
+.player .eye.right { right: 6px; }
+.platform {
+  position: absolute; height: 14px; background: #33aaff; border-radius: 3px;
+  cursor: pointer; z-index: 2;
+  box-shadow: 0 2px 8px rgba(51,170,255,0.3);
+}
+.platform:hover { background: #55ccff; }
+.platform.active { background: #00ff88; box-shadow: 0 2px 8px rgba(0,255,136,0.3); }
+.game-over-overlay {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.85); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 20; display: none;
+}
+.game-over-overlay h2 { font-size: 48px; color: #ff3366; margin-bottom: 16px; }
+.game-over-overlay p { font-size: 18px; color: #aaa; }
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #00ff88; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #ff3366; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Platform Jumper</h1>
+  <p>Click platforms to jump to them!</p>
+  <p>Platforms scroll upward. Survive for 30 seconds!</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Platform Jumper</div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-label">Time</div>
+      <div class="stat-value" id="timer" style="color:#33aaff">30s</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Jumps</div>
+      <div class="stat-value" id="jumps" style="color:#00ff88">0</div>
+    </div>
+  </div>
+</div>
+
+<div class="game-canvas" id="canvas">
+  <div class="player" id="player">
+    <div class="eye left"></div>
+    <div class="eye right"></div>
+  </div>
+  <div class="game-over-overlay" id="game-over">
+    <h2 id="end-title">Game Over</h2>
+    <p id="end-msg"></p>
+  </div>
+</div>
+
+<script>
+const canvas = document.getElementById('canvas');
+const playerEl = document.getElementById('player');
+
+let platforms = [];
+let playerX = 0;
+let playerY = 0;
+let currentPlatform = null;
+let gameActive = false;
+let startTime = 0;
+let survived = false;
+let jumpCount = 0;
+let platformIdCounter = 0;
+let scrollSpeed = 0.8;
+let gameLoop;
+
+function createPlatform(x, y, w) {
+  const el = document.createElement('div');
+  el.className = 'platform';
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  el.style.width = w + 'px';
+  canvas.appendChild(el);
+
+  const plat = { id: platformIdCounter++, el, x, y, w };
+
+  el.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (!gameActive) return;
+    jumpToplatform(plat);
+  });
+
+  platforms.push(plat);
+  return plat;
+}
+
+function jumpToplatform(plat) {
+  if (currentPlatform) currentPlatform.el.classList.remove('active');
+  currentPlatform = plat;
+  plat.el.classList.add('active');
+
+  playerX = plat.x + plat.w / 2 - 15;
+  playerY = plat.y - 30;
+  playerEl.style.left = playerX + 'px';
+  playerEl.style.top = playerY + 'px';
+
+  jumpCount++;
+  document.getElementById('jumps').textContent = jumpCount;
+}
+
+function spawnPlatform() {
+  const canvasW = canvas.offsetWidth;
+  const canvasH = canvas.offsetHeight;
+  const w = 80 + Math.random() * 60;
+  const x = 20 + Math.random() * (canvasW - w - 40);
+  const y = canvasH + 20;
+  createPlatform(x, y, w);
+}
+
+function updateGame() {
+  if (!gameActive) return;
+
+  const elapsed = (Date.now() - startTime) / 1000;
+  const remaining = Math.max(0, 30 - elapsed);
+  document.getElementById('timer').textContent = Math.ceil(remaining) + 's';
+
+  // Win condition
+  if (remaining <= 0) {
+    gameActive = false;
+    survived = true;
+    document.getElementById('end-title').textContent = 'You Win!';
+    document.getElementById('end-title').style.color = '#00ff88';
+    document.getElementById('end-msg').textContent = 'You survived 30 seconds!';
+    document.getElementById('game-over').style.display = 'flex';
+    return;
+  }
+
+  // Scroll platforms up
+  platforms.forEach(p => {
+    p.y -= scrollSpeed;
+    p.el.style.top = p.y + 'px';
+  });
+
+  // Update player position if on a platform
+  if (currentPlatform) {
+    playerY = currentPlatform.y - 30;
+    playerEl.style.top = playerY + 'px';
+    playerX = currentPlatform.x + currentPlatform.w / 2 - 15;
+    playerEl.style.left = playerX + 'px';
+
+    // Check if platform scrolled off top
+    if (currentPlatform.y < -20) {
+      // Player fell!
+      gameActive = false;
+      document.getElementById('end-title').textContent = 'Game Over';
+      document.getElementById('end-title').style.color = '#ff3366';
+      document.getElementById('end-msg').textContent = 'Your platform scrolled off! Survived ' + Math.floor(elapsed) + 's';
+      document.getElementById('game-over').style.display = 'flex';
+      return;
+    }
+  }
+
+  // Remove off-screen platforms
+  platforms = platforms.filter(p => {
+    if (p.y < -20) {
+      if (p !== currentPlatform) p.el.remove();
+      return p === currentPlatform;
+    }
+    return true;
+  });
+
+  requestAnimationFrame(updateGame);
+}
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startGame();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startGame() {
+  gameActive = true;
+  startTime = Date.now();
+
+  const canvasW = canvas.offsetWidth;
+  const canvasH = canvas.offsetHeight;
+
+  // Create initial platform in the middle
+  const startPlat = createPlatform(canvasW / 2 - 60, canvasH / 2, 120);
+  jumpToplatform(startPlat);
+
+  // Create a few more platforms
+  for (let i = 0; i < 3; i++) {
+    const w = 80 + Math.random() * 60;
+    const x = 20 + Math.random() * (canvasW - w - 40);
+    const y = canvasH / 2 + 100 + i * 120;
+    createPlatform(x, y, w);
+  }
+
+  // Spawn new platforms every 3s
+  setInterval(() => {
+    if (gameActive) spawnPlatform();
+  }, 3000);
+
+  requestAnimationFrame(updateGame);
+}
+
+window.getTaskResult = function() {
+  if (survived) {
+    return 'survived_30s';
+  }
+  const elapsed = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+  return 'survived_' + elapsed + 's';
+};
+</script>
+</body>
+</html>

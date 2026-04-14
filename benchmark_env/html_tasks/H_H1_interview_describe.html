@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Project Description Interview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #00bcd4; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .interview-layout { display: flex; gap: 24px; align-items: flex-start; }
+  .left-col { width: 380px; display: flex; flex-direction: column; gap: 20px; }
+  .video-panel { background: #16213e; border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; }
+  .video-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 12px; background: linear-gradient(135deg, #006064, #00838f, #0097a7); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 12px; position: relative; }
+  .interviewer-avatar { width: 64px; height: 64px; border-radius: 50%; background: linear-gradient(135deg, #00bcd4, #006064); display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; margin-bottom: 6px; }
+  .interviewer-name { font-size: 13px; color: rgba(255,255,255,0.8); }
+  .live-badge { position: absolute; top: 10px; left: 10px; background: #e53935; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+  .call-timer { font-size: 18px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .project-card { background: #16213e; border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .project-card h4 { font-size: 14px; color: #00bcd4; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .project-name { font-size: 22px; font-weight: 700; margin-bottom: 8px; color: #fff; }
+  .project-desc { font-size: 15px; color: #bbb; line-height: 1.5; margin-bottom: 12px; }
+  .project-stat { display: inline-block; background: #0a2a3e; border: 1px solid #00bcd4; border-radius: 20px; padding: 4px 14px; font-size: 13px; color: #00bcd4; }
+  .response-panel { background: #16213e; border-radius: 16px; padding: 24px; width: 360px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .response-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .mic-indicator { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; background: #0f1a30; border-radius: 8px; }
+  .mic-icon { width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .mic-icon.listening { background: #e53935; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.4); } 50% { box-shadow: 0 0 0 8px rgba(229,57,53,0); } }
+  .mic-label { font-size: 13px; color: #888; }
+  .mic-label.active { color: #ef5350; }
+  .transcript-box { background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 12px; min-height: 80px; margin-bottom: 12px; font-size: 14px; color: #aaa; }
+  .fallback-input { width: 100%; background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; margin-bottom: 12px; }
+  .fallback-input:focus { border-color: #00bcd4; }
+  .submit-btn { width: 100%; padding: 10px; background: #00bcd4; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #26c6da; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="interview-layout">
+  <div class="left-col">
+    <div class="video-panel">
+      <div class="video-placeholder">
+        <div class="live-badge">LIVE</div>
+        <div class="interviewer-avatar">&#128100;</div>
+        <div class="interviewer-name">Technical Interviewer</div>
+      </div>
+      <div class="call-timer" id="timer">00:00</div>
+    </div>
+    <div class="project-card">
+      <h4>Project Details</h4>
+      <div class="project-name">DataPipeline v2</div>
+      <div class="project-desc">Real-time data processing with Python and Apache Kafka. Handles 50K events/sec.</div>
+      <span class="project-stat">50K events/sec</span>
+    </div>
+  </div>
+  <div class="response-panel">
+    <h3>Describe the Project</h3>
+    <div class="mic-indicator">
+      <div class="mic-icon" id="micIcon">&#127908;</div>
+      <div class="mic-label" id="micLabel">Waiting for question...</div>
+    </div>
+    <div class="transcript-box" id="transcript">Your spoken description will appear here...</div>
+    <input type="text" class="fallback-input" id="fallbackInput" placeholder="Type or speak your answer" autocomplete="off">
+    <button class="submit-btn" id="submitBtn">Submit Description</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+  let capturedResponse = '';
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function startListening() {
+    document.getElementById('micIcon').classList.add('listening');
+    document.getElementById('micLabel').textContent = 'Listening — describe the project...';
+    document.getElementById('micLabel').classList.add('active');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = true;
+      recognition.lang = 'en-US';
+      recognition.onresult = (event) => {
+        let full = '';
+        for (let i = 0; i < event.results.length; i++) {
+          full += event.results[i][0].transcript + ' ';
+        }
+        capturedResponse = full.trim();
+        document.getElementById('transcript').textContent = capturedResponse;
+      };
+      recognition.onerror = () => {
+        document.getElementById('micLabel').textContent = 'Speech recognition unavailable — type your answer';
+        document.getElementById('micIcon').classList.remove('listening');
+      };
+      recognition.onend = () => {
+        document.getElementById('micIcon').classList.remove('listening');
+        document.getElementById('micLabel').textContent = capturedResponse ? 'Response captured' : 'Use text input below';
+      };
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+        recognition.start();
+        // Stop after 15 seconds
+        setTimeout(() => { try { recognition.stop(); } catch(e) {} }, 15000);
+      }).catch(() => {
+        document.getElementById('micLabel').textContent = 'Mic unavailable — type your answer';
+        document.getElementById('micIcon').classList.remove('listening');
+      });
+    } else {
+      document.getElementById('micLabel').textContent = 'Speech recognition unavailable — type your answer';
+      document.getElementById('micIcon').classList.remove('listening');
+    }
+  }
+
+  function askQuestion() {
+    const u = new SpeechSynthesisUtterance("Please describe the project shown on your screen in your own words.");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { startListening(); };
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'response_heard' ? 'Response recorded!' : 'Please provide a description.';
+  });
+
+  window.getTaskResult = function() {
+    const spoken = capturedResponse.trim();
+    const typed = document.getElementById('fallbackInput').value.trim();
+    if (spoken.length > 5 || typed.length > 5) return 'response_heard';
+    return 'no_response';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(askQuestion, 3000);
+  }, 2000);
+</script>
+</body>
+</html>

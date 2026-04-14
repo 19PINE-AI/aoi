@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Card Game</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+.header {
+  width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-size: 28px; font-weight: 700; color: #ff3366; }
+.stats { display: flex; gap: 24px; }
+.stat-item { text-align: center; }
+.stat-label { font-size: 11px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { font-size: 28px; font-weight: 700; color: #00ff88; }
+.grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  padding: 20px; max-width: 560px; margin-top: 20px;
+}
+.card {
+  width: 120px; height: 140px; perspective: 600px; cursor: pointer;
+  justify-self: center;
+}
+.card-inner {
+  width: 100%; height: 100%; position: relative;
+  transition: transform 0.5s; transform-style: preserve-3d;
+}
+.card.flipped .card-inner { transform: rotateY(180deg); }
+.card.matched .card-inner { transform: rotateY(180deg); }
+.card-front, .card-back {
+  position: absolute; width: 100%; height: 100%; backface-visibility: hidden;
+  border-radius: 10px; display: flex; align-items: center; justify-content: center;
+}
+.card-front {
+  background: linear-gradient(135deg, #1a1a3e, #2a2a5e);
+  border: 2px solid #3a3a6e;
+  font-size: 32px;
+}
+.card-front::after {
+  content: '?'; font-size: 36px; color: #5a5a8e;
+}
+.card-back {
+  background: #1a1a3e; border: 2px solid #3a3a6e;
+  transform: rotateY(180deg); font-size: 48px;
+}
+.card.matched .card-back {
+  border-color: #00ff88; box-shadow: 0 0 15px rgba(0,255,136,0.3);
+}
+.message {
+  margin-top: 20px; font-size: 20px; color: #aaa; min-height: 30px;
+}
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #ff3366; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #00ff88; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Memory Cards</h1>
+  <p>Cards shown face-up for 3 seconds, then flipped!</p>
+  <p>Match at least 3 pairs to win.</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Memory Cards</div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-label">Pairs</div>
+      <div class="stat-value" id="pairs">0</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Moves</div>
+      <div class="stat-value" id="moves" style="color:#33aaff">0</div>
+    </div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="message" id="message">Memorize the cards!</div>
+
+<script>
+const SYMBOLS = ['🌟', '🎯', '🔥', '💎', '🚀', '🎵'];
+let cards = [];
+let flippedCards = [];
+let matchedPairs = 0;
+let moves = 0;
+let canFlip = false;
+let previewDone = false;
+
+// Build deck
+function buildDeck() {
+  let deck = [];
+  SYMBOLS.forEach((sym, idx) => {
+    deck.push({ id: idx * 2, symbol: sym, matched: false });
+    deck.push({ id: idx * 2 + 1, symbol: sym, matched: false });
+  });
+  // Shuffle
+  for (let i = deck.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [deck[i], deck[j]] = [deck[j], deck[i]];
+  }
+  return deck;
+}
+
+function renderCards(showAll) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  cards.forEach((card, idx) => {
+    const el = document.createElement('div');
+    el.className = 'card' + (showAll || card.matched ? ' flipped' : '') + (card.matched ? ' matched' : '');
+    el.dataset.index = idx;
+    el.innerHTML = `
+      <div class="card-inner">
+        <div class="card-front"></div>
+        <div class="card-back">${card.symbol}</div>
+      </div>
+    `;
+    el.addEventListener('click', () => handleCardClick(idx));
+    grid.appendChild(el);
+  });
+}
+
+function handleCardClick(idx) {
+  if (!canFlip || !previewDone) return;
+  if (cards[idx].matched) return;
+  if (flippedCards.length >= 2) return;
+  if (flippedCards.includes(idx)) return;
+
+  flippedCards.push(idx);
+  const cardEl = document.querySelectorAll('.card')[idx];
+  cardEl.classList.add('flipped');
+
+  if (flippedCards.length === 2) {
+    moves++;
+    document.getElementById('moves').textContent = moves;
+    canFlip = false;
+
+    const [a, b] = flippedCards;
+    if (cards[a].symbol === cards[b].symbol) {
+      // Match!
+      cards[a].matched = true;
+      cards[b].matched = true;
+      matchedPairs++;
+      document.getElementById('pairs').textContent = matchedPairs;
+
+      document.querySelectorAll('.card')[a].classList.add('matched');
+      document.querySelectorAll('.card')[b].classList.add('matched');
+
+      flippedCards = [];
+      canFlip = true;
+
+      if (matchedPairs >= 3) {
+        document.getElementById('message').textContent = 'You matched 3+ pairs!';
+      }
+      if (matchedPairs === 6) {
+        document.getElementById('message').textContent = 'All pairs matched! Perfect!';
+      }
+    } else {
+      // No match
+      setTimeout(() => {
+        document.querySelectorAll('.card')[a].classList.remove('flipped');
+        document.querySelectorAll('.card')[b].classList.remove('flipped');
+        flippedCards = [];
+        canFlip = true;
+      }, 1000);
+    }
+  }
+}
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startGame();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startGame() {
+  cards = buildDeck();
+  // Show all cards for 3 seconds
+  renderCards(true);
+  document.getElementById('message').textContent = 'Memorize the cards! (3 seconds)';
+
+  setTimeout(() => {
+    renderCards(false);
+    canFlip = true;
+    previewDone = true;
+    document.getElementById('message').textContent = 'Click cards to find matching pairs';
+  }, 3000);
+}
+
+window.getTaskResult = function() {
+  if (matchedPairs >= 3) {
+    return '3_pairs_matched';
+  }
+  return 'pairs_matched_' + matchedPairs;
+};
+</script>
+</body>
+</html>

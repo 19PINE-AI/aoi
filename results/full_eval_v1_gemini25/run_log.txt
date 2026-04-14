@@ -1,0 +1,579 @@
+09:34:00 [INFO] Full eval: 2 models x 2 modes x 12 tasks = 48 evaluations
+09:34:00 [INFO] --- D-E1 (easy) ---
+09:34:01 [INFO] Browser environment started: C001_cookie_consent.html
+09:34:04 [INFO] AFC is enabled with max remote calls: 10.
+09:34:06 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:34:36 [INFO] [D-E1] Step 1: action=Click button "Accept All" | keyframes=0 | audio=False | result=timeout
+09:34:36 [INFO] [D-E1] Task timeout after 35.4s
+09:34:36 [INFO] Browser environment stopped
+09:34:36 [INFO] --- D-E2 (easy) ---
+09:34:36 [INFO] Browser environment started: C002_download_toast.html
+09:34:39 [INFO] AFC is enabled with max remote calls: 10.
+09:34:41 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:34:41 [INFO] [D-E2] Step 1: action=Click button "Download quarterly_report.pdf" | keyframes=0 | audio=False | result=pending
+09:34:41 [INFO] AFC is enabled with max remote calls: 10.
+09:34:43 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:34:44 [INFO] [D-E2] Step 2: action=WAIT | keyframes=0 | audio=False | result=pending
+09:34:44 [INFO] AFC is enabled with max remote calls: 10.
+09:34:45 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:34:45 [INFO] [D-E2] Step 3: action=Click button "Open file" | keyframes=0 | audio=False | result=file_opened
+09:34:46 [INFO] Browser environment stopped
+09:34:46 [INFO] --- D-E3 (easy) ---
+09:34:46 [INFO] Browser environment started: D_transient_session_warning.html
+09:34:49 [INFO] AFC is enabled with max remote calls: 10.
+09:34:51 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:34:52 [INFO] [D-E3] Step 1: action=Click "Stay Logged In" | keyframes=0 | audio=False | result=session_extended
+09:34:52 [INFO] Browser environment stopped
+09:34:52 [INFO] --- D-M4 (medium) ---
+09:34:52 [INFO] Browser environment started: D_transient_flash_sale.html
+09:34:55 [INFO] AFC is enabled with max remote calls: 10.
+09:35:02 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:02 [INFO] [D-M4] Step 1: action=I am unable to enter a discount code as it is not  | keyframes=0 | audio=False | result=pending
+09:35:02 [INFO] AFC is enabled with max remote calls: 10.
+09:35:08 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:08 [INFO] [D-M4] Step 2: action=NARRATION: A banner at the top of the page indicat | keyframes=0 | audio=False | result=pending
+09:35:08 [INFO] [D-M4] Task timeout after 16.5s
+09:35:09 [INFO] Browser environment stopped
+09:35:09 [INFO] --- E-E1 (easy) ---
+09:35:09 [INFO] Browser environment started: D001_audio_alert.html
+09:35:12 [INFO] AFC is enabled with max remote calls: 10.
+09:35:18 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:19 [INFO] [E-E1] Step 1: action=No action needed, waiting for a calendar alarm. | keyframes=0 | audio=False | result=pending
+09:35:19 [INFO] AFC is enabled with max remote calls: 10.
+09:35:21 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:21 [INFO] [E-E1] Step 2: action=Click "Open Calendar" | keyframes=0 | audio=False | result=pending
+09:35:21 [INFO] AFC is enabled with max remote calls: 10.
+09:35:24 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:24 [INFO] [E-E1] Step 3: action=Type "Team Standup" into the text field and click  | keyframes=0 | audio=False | result=pending
+09:35:24 [INFO] AFC is enabled with max remote calls: 10.
+09:35:30 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:31 [INFO] [E-E1] Step 4: action=NARRATION: The calendar application remains open,  | keyframes=0 | audio=False | result=pending
+09:35:31 [INFO] [E-E1] Task timeout after 21.9s
+09:35:31 [INFO] Browser environment stopped
+09:35:31 [INFO] --- F-E1 (easy) ---
+09:35:31 [INFO] Browser environment started: F_anim_carousel.html
+09:35:34 [INFO] AFC is enabled with max remote calls: 10.
+09:35:44 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:45 [INFO] [F-E1] Step 1: action=Click 'Shop Now' | keyframes=0 | audio=False | result=spring_clicked
+09:35:45 [INFO] AFC is enabled with max remote calls: 10.
+09:35:52 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:52 [INFO] [F-E1] Step 2: action=Observe | keyframes=0 | audio=False | result=spring_clicked
+09:35:52 [INFO] [F-E1] Task timeout after 21.5s
+09:35:53 [INFO] Browser environment stopped
+09:35:53 [INFO] --- F-E2 (easy) ---
+09:35:53 [INFO] Browser environment started: F_anim_progress_bar.html
+09:35:56 [INFO] AFC is enabled with max remote calls: 10.
+09:35:57 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:35:58 [INFO] [F-E2] Step 1: action=WAIT | keyframes=0 | audio=False | result=pending
+09:35:58 [INFO] AFC is enabled with max remote calls: 10.
+09:36:00 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:01 [INFO] [F-E2] Step 2: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:01 [INFO] AFC is enabled with max remote calls: 10.
+09:36:03 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:04 [INFO] [F-E2] Step 3: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:04 [INFO] AFC is enabled with max remote calls: 10.
+09:36:07 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:07 [INFO] [F-E2] Step 4: action=CLICK 480 500 | keyframes=0 | audio=False | result=pending
+09:36:07 [INFO] AFC is enabled with max remote calls: 10.
+09:36:09 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:10 [INFO] [F-E2] Step 5: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:10 [INFO] [F-E2] Task timeout after 17.5s
+09:36:10 [INFO] Browser environment stopped
+09:36:10 [INFO] --- G-E3 (easy) ---
+09:36:11 [INFO] Browser environment started: G_game_reaction_test.html
+09:36:14 [INFO] AFC is enabled with max remote calls: 10.
+09:36:16 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:16 [INFO] [G-E3] Step 1: action=Click button "Start Test" | keyframes=0 | audio=False | result=pending
+09:36:16 [INFO] AFC is enabled with max remote calls: 10.
+09:36:18 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:19 [INFO] [G-E3] Step 2: action=Wait | keyframes=0 | audio=False | result=pending
+09:36:19 [INFO] AFC is enabled with max remote calls: 10.
+09:36:21 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:22 [INFO] [G-E3] Step 3: action=Wait | keyframes=0 | audio=False | result=pending
+09:36:22 [INFO] AFC is enabled with max remote calls: 10.
+09:36:24 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:24 [INFO] [G-E3] Step 4: action=Click box with text "CLICK!" | keyframes=0 | audio=False | result=reaction_recorded_2759
+09:36:24 [INFO] Browser environment stopped
+09:36:24 [INFO] --- H-E1 (easy) ---
+09:36:25 [INFO] Browser environment started: H_seq_wizard.html
+09:36:28 [INFO] AFC is enabled with max remote calls: 10.
+09:36:30 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:30 [INFO] [H-E1] Step 1: action=Type "Configuration" into the text input with curr | keyframes=0 | audio=False | result=pending
+09:36:30 [INFO] AFC is enabled with max remote calls: 10.
+09:36:37 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:37 [INFO] [H-E1] Step 2: action=NARRATION: Step 1 is complete, Step 2 ("Configurat | keyframes=0 | audio=False | result=pending
+09:36:37 [INFO] Browser environment stopped
+09:36:37 [INFO] --- H-E3 (easy) ---
+09:36:37 [INFO] Browser environment started: H_seq_checklist_order.html
+09:36:41 [INFO] AFC is enabled with max remote calls: 10.
+09:36:43 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:43 [INFO] [H-E3] Step 1: action=Type "Deploy" into the text input with current val | keyframes=0 | audio=False | result=pending
+09:36:43 [INFO] Browser environment stopped
+09:36:43 [INFO] --- I-E1 (easy) ---
+09:36:43 [INFO] Browser environment started: I_stream_counter.html
+09:36:46 [INFO] AFC is enabled with max remote calls: 10.
+09:36:48 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:49 [INFO] [I-E1] Step 1: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:49 [INFO] AFC is enabled with max remote calls: 10.
+09:36:52 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:53 [INFO] [I-E1] Step 2: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:53 [INFO] AFC is enabled with max remote calls: 10.
+09:36:55 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:56 [INFO] [I-E1] Step 3: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:56 [INFO] AFC is enabled with max remote calls: 10.
+09:36:58 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:36:59 [INFO] [I-E1] Step 4: action=WAIT | keyframes=0 | audio=False | result=pending
+09:36:59 [INFO] [I-E1] Task timeout after 16.0s
+09:36:59 [INFO] Browser environment stopped
+09:36:59 [INFO] --- I-E2 (easy) ---
+09:37:00 [INFO] Browser environment started: I_stream_temperature.html
+09:37:03 [INFO] AFC is enabled with max remote calls: 10.
+09:37:05 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:05 [INFO] [I-E2] Step 1: action=WAIT | keyframes=0 | audio=False | result=pending
+09:37:05 [INFO] AFC is enabled with max remote calls: 10.
+09:37:08 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:09 [INFO] [I-E2] Step 2: action=WAIT | keyframes=0 | audio=False | result=pending
+09:37:09 [INFO] AFC is enabled with max remote calls: 10.
+09:37:12 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:13 [INFO] [I-E2] Step 3: action=WAIT | keyframes=0 | audio=False | result=pending
+09:37:13 [INFO] AFC is enabled with max remote calls: 10.
+09:37:16 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:17 [INFO] [I-E2] Step 4: action=CLICK "Trigger Alert" | keyframes=0 | audio=False | result=alert_triggered
+09:37:17 [INFO] Browser environment stopped
+09:37:17 [INFO] --- D-E1 (easy) ---
+09:37:17 [INFO] Browser environment started: C001_cookie_consent.html
+09:37:20 [INFO] Successfully registered DSL: cutedsl
+09:37:20 [INFO] Successfully registered DSL: triton
+09:37:22 [INFO] CLIP ViT-B/16 loaded on cuda
+09:37:23 [INFO] AFC is enabled with max remote calls: 10.
+09:37:25 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:26 [INFO] [D-E1] Step 1: action=Click 296 292 | keyframes=0 | audio=False | result=timeout
+09:37:28 [INFO] AFC is enabled with max remote calls: 10.
+09:37:33 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:33 [INFO] [D-E1] Step 2: action=Click 300 200 | keyframes=1 | audio=False | result=timeout
+09:37:33 [INFO] [D-E1] Task timeout after 16.5s
+09:37:33 [INFO] Browser environment stopped
+09:37:33 [INFO] --- D-E2 (easy) ---
+09:37:34 [INFO] Browser environment started: C002_download_toast.html
+09:37:38 [INFO] CLIP ViT-B/16 loaded on cuda
+09:37:38 [INFO] AFC is enabled with max remote calls: 10.
+09:37:39 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:40 [INFO] [D-E2] Step 1: action=Click element 'Download quarterly_report.pdf butto | keyframes=0 | audio=False | result=pending
+09:37:42 [INFO] AFC is enabled with max remote calls: 10.
+09:37:44 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:44 [INFO] [D-E2] Step 2: action=Click element 'Open file button' | keyframes=1 | audio=False | result=file_opened
+09:37:44 [INFO] Browser environment stopped
+09:37:44 [INFO] --- D-E3 (easy) ---
+09:37:44 [INFO] Browser environment started: D_transient_session_warning.html
+09:37:48 [INFO] CLIP ViT-B/16 loaded on cuda
+09:37:48 [INFO] AFC is enabled with max remote calls: 10.
+09:37:50 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:50 [INFO] [D-E3] Step 1: action=Click "Stay Logged In" | keyframes=0 | audio=False | result=session_extended
+09:37:50 [INFO] Browser environment stopped
+09:37:50 [INFO] --- D-M4 (medium) ---
+09:37:51 [INFO] Browser environment started: D_transient_flash_sale.html
+09:37:55 [INFO] CLIP ViT-B/16 loaded on cuda
+09:37:55 [INFO] AFC is enabled with max remote calls: 10.
+09:37:57 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:37:57 [INFO] [D-M4] Step 1: action=Type "FLASH25" into the "ENTER CODE" field and cli | keyframes=0 | audio=False | result=pending
+09:38:00 [INFO] AFC is enabled with max remote calls: 10.
+09:38:07 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:07 [INFO] [D-M4] Step 2: action=No | keyframes=0 | audio=False | result=pending
+09:38:07 [INFO] [D-M4] Task timeout after 16.2s
+09:38:07 [INFO] Browser environment stopped
+09:38:07 [INFO] --- E-E1 (easy) ---
+09:38:07 [INFO] Browser environment started: D001_audio_alert.html
+09:38:11 [INFO] CLIP ViT-B/16 loaded on cuda
+09:38:12 [INFO] AFC is enabled with max remote calls: 10.
+09:38:14 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:15 [INFO] [E-E1] Step 1: action=Type "Customer satisfaction increased to 85%" | keyframes=0 | audio=False | result=pending
+09:38:17 [INFO] AFC is enabled with max remote calls: 10.
+09:38:19 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:19 [INFO] [E-E1] Step 2: action=Click "Open Calendar" | keyframes=2 | audio=False | result=pending
+09:38:22 [INFO] AFC is enabled with max remote calls: 10.
+09:38:24 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:24 [INFO] [E-E1] Step 3: action=Type "Team Standup" into the "Enter event title... | keyframes=1 | audio=False | result=pending
+09:38:26 [INFO] AFC is enabled with max remote calls: 10.
+09:38:29 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:29 [INFO] [E-E1] Step 4: action=Click "Submit" | keyframes=0 | audio=False | result=correct_event
+09:38:29 [INFO] Browser environment stopped
+09:38:29 [INFO] --- F-E1 (easy) ---
+09:38:29 [INFO] Browser environment started: F_anim_carousel.html
+09:38:34 [INFO] CLIP ViT-B/16 loaded on cuda
+09:38:34 [INFO] AFC is enabled with max remote calls: 10.
+09:38:35 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:36 [INFO] [F-E1] Step 1: action=Click button "Shop Now" | keyframes=0 | audio=False | result=summer_clicked
+09:38:38 [INFO] AFC is enabled with max remote calls: 10.
+09:38:40 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:41 [INFO] [F-E1] Step 2: action=No Action | keyframes=1 | audio=False | result=summer_clicked
+09:38:44 [INFO] AFC is enabled with max remote calls: 10.
+09:38:47 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:48 [INFO] [F-E1] Step 3: action=No Action | keyframes=1 | audio=False | result=summer_clicked
+09:38:50 [INFO] AFC is enabled with max remote calls: 10.
+09:38:53 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:38:54 [INFO] [F-E1] Step 4: action=No Action | keyframes=1 | audio=False | result=summer_clicked
+09:38:54 [INFO] [F-E1] Task timeout after 24.3s
+09:38:54 [INFO] Browser environment stopped
+09:38:54 [INFO] --- F-E2 (easy) ---
+09:38:54 [INFO] Browser environment started: F_anim_progress_bar.html
+09:38:58 [INFO] CLIP ViT-B/16 loaded on cuda
+09:38:58 [INFO] AFC is enabled with max remote calls: 10.
+09:39:00 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:00 [INFO] [F-E2] Step 1: action=PAUSE | keyframes=0 | audio=False | result=pending
+09:39:03 [INFO] AFC is enabled with max remote calls: 10.
+09:39:05 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:06 [INFO] [F-E2] Step 2: action=CLICK x500 y610 | keyframes=0 | audio=False | result=pending
+09:39:08 [INFO] AFC is enabled with max remote calls: 10.
+09:39:14 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:14 [INFO] [F-E2] Step 3: action=CLICK x500 y610 | keyframes=0 | audio=False | result=pending
+09:39:14 [INFO] [F-E2] Task timeout after 20.4s
+09:39:14 [INFO] Browser environment stopped
+09:39:14 [INFO] --- G-E3 (easy) ---
+09:39:15 [INFO] Browser environment started: G_game_reaction_test.html
+09:39:19 [INFO] CLIP ViT-B/16 loaded on cuda
+09:39:19 [INFO] AFC is enabled with max remote calls: 10.
+09:39:20 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:20 [INFO] [G-E3] Step 1: action=CLICK 601 645 | keyframes=0 | audio=False | result=pending
+09:39:23 [INFO] AFC is enabled with max remote calls: 10.
+09:39:28 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:28 [INFO] [G-E3] Step 2: action=CLICK 601 645 | keyframes=0 | audio=False | result=pending
+09:39:30 [INFO] AFC is enabled with max remote calls: 10.
+09:39:32 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:33 [INFO] [G-E3] Step 3: action=CLICK 601 645 | keyframes=0 | audio=False | result=pending
+09:39:33 [INFO] [G-E3] Task timeout after 18.2s
+09:39:33 [INFO] Browser environment stopped
+09:39:33 [INFO] --- H-E1 (easy) ---
+09:39:33 [INFO] Browser environment started: H_seq_wizard.html
+09:39:37 [INFO] CLIP ViT-B/16 loaded on cuda
+09:39:37 [INFO] AFC is enabled with max remote calls: 10.
+09:39:41 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:41 [INFO] [H-E1] Step 1: action=Type "Configuration" into the text field. | keyframes=0 | audio=False | result=pending
+09:39:44 [INFO] AFC is enabled with max remote calls: 10.
+09:39:49 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:50 [INFO] [H-E1] Step 2: action=NARRATION: The system setup wizard shows Step 1 "I | keyframes=0 | audio=False | result=pending
+09:39:50 [INFO] Browser environment stopped
+09:39:50 [INFO] --- H-E3 (easy) ---
+09:39:50 [INFO] Browser environment started: H_seq_checklist_order.html
+09:39:54 [INFO] CLIP ViT-B/16 loaded on cuda
+09:39:54 [INFO] AFC is enabled with max remote calls: 10.
+09:39:56 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:39:57 [INFO] [H-E3] Step 1: action=Type "Deploy" into the text field with current val | keyframes=0 | audio=False | result=pending
+09:39:57 [INFO] Browser environment stopped
+09:39:57 [INFO] --- I-E1 (easy) ---
+09:39:57 [INFO] Browser environment started: I_stream_counter.html
+09:40:01 [INFO] CLIP ViT-B/16 loaded on cuda
+09:40:01 [INFO] AFC is enabled with max remote calls: 10.
+09:40:03 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:40:04 [INFO] [I-E1] Step 1: action=WAIT | keyframes=0 | audio=False | result=pending
+09:40:07 [INFO] AFC is enabled with max remote calls: 10.
+09:40:08 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:40:09 [INFO] [I-E1] Step 2: action=WAIT | keyframes=0 | audio=False | result=pending
+09:40:12 [INFO] AFC is enabled with max remote calls: 10.
+09:40:14 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:40:15 [INFO] [I-E1] Step 3: action=WAIT | keyframes=0 | audio=False | result=pending
+09:40:15 [INFO] [I-E1] Task timeout after 18.0s
+09:40:15 [INFO] Browser environment stopped
+09:40:15 [INFO] --- I-E2 (easy) ---
+09:40:15 [INFO] Browser environment started: I_stream_temperature.html
+09:40:19 [INFO] CLIP ViT-B/16 loaded on cuda
+09:40:20 [INFO] AFC is enabled with max remote calls: 10.
+09:40:21 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:40:22 [INFO] [I-E2] Step 1: action=Wait | keyframes=0 | audio=False | result=pending
+09:40:25 [INFO] AFC is enabled with max remote calls: 10.
+09:40:27 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:40:28 [INFO] [I-E2] Step 2: action=Wait | keyframes=0 | audio=False | result=pending
+09:40:30 [INFO] AFC is enabled with max remote calls: 10.
+09:40:33 [INFO] HTTP Request: POST https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent "HTTP/1.1 200 OK"
+09:40:33 [INFO] [I-E2] Step 3: action=Click button 'Trigger Alert' | keyframes=0 | audio=False | result=alert_triggered
+09:40:33 [INFO] Browser environment stopped
+09:40:33 [INFO] --- D-E1 (easy) ---
+09:40:33 [INFO] Browser environment started: C001_cookie_consent.html
+09:40:39 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:09 [INFO] [D-E1] Step 1: action=Click the "Accept All" button to accept the cookie | keyframes=0 | audio=False | result=timeout
+09:41:09 [INFO] [D-E1] Task timeout after 36.0s
+09:41:09 [INFO] Browser environment stopped
+09:41:09 [INFO] --- D-E2 (easy) ---
+09:41:10 [INFO] Browser environment started: C002_download_toast.html
+09:41:16 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:16 [INFO] [D-E2] Step 1: action=Click the "Download quarterly_report.pdf" button t | keyframes=0 | audio=False | result=pending
+09:41:19 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:20 [INFO] [D-E2] Step 2: action=wait(5000) | keyframes=0 | audio=False | result=pending
+09:41:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:23 [INFO] [D-E2] Step 3: action=click(1184, 657) | keyframes=0 | audio=False | result=timeout
+09:41:26 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:26 [INFO] [D-E2] Step 4: action=click(330, 187) | keyframes=0 | audio=False | result=timeout
+09:41:26 [INFO] [D-E2] Task timeout after 16.3s
+09:41:26 [INFO] Browser environment stopped
+09:41:26 [INFO] --- D-E3 (easy) ---
+09:41:26 [INFO] Browser environment started: D_transient_session_warning.html
+09:41:32 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:32 [INFO] [D-E3] Step 1: action=Click 'Stay Logged In' button | keyframes=0 | audio=False | result=session_extended
+09:41:32 [INFO] Browser environment stopped
+09:41:32 [INFO] --- D-M4 (medium) ---
+09:41:33 [INFO] Browser environment started: D_transient_flash_sale.html
+09:41:39 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:40 [INFO] [D-M4] Step 1: action=wait for the flash sale countdown to appear by obs | keyframes=0 | audio=False | result=pending
+09:41:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:47 [INFO] [D-M4] Step 2: action=Since the flash sale has ended and I missed the po | keyframes=0 | audio=False | result=pending
+09:41:50 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:50 [INFO] [D-M4] Step 3: action=Click on the promo code input field and type "FLAS | keyframes=0 | audio=False | result=pending
+09:41:50 [INFO] [D-M4] Task timeout after 17.9s
+09:41:50 [INFO] Browser environment stopped
+09:41:50 [INFO] --- E-E1 (easy) ---
+09:41:51 [INFO] Browser environment started: D001_audio_alert.html
+09:41:58 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:41:58 [INFO] [E-E1] Step 1: action=Click on the document text area to begin working o | keyframes=0 | audio=False | result=pending
+09:42:02 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:42:02 [INFO] [E-E1] Step 2: action=Click on the document text area and add additional | keyframes=0 | audio=False | result=pending
+09:42:05 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:42:35 [INFO] [E-E1] Step 3: action=Click the "Open Calendar" button to open the calen | keyframes=0 | audio=False | result=alarm_missed
+09:42:35 [INFO] [E-E1] Task timeout after 44.2s
+09:42:35 [INFO] Browser environment stopped
+09:42:35 [INFO] --- F-E1 (easy) ---
+09:42:35 [INFO] Browser environment started: F_anim_carousel.html
+09:42:41 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:42:42 [INFO] [F-E1] Step 1: action=Click the 'Shop Now' button at coordinates (640, 3 | keyframes=0 | audio=False | result=summer_clicked
+09:42:46 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:42:51 [INFO] [F-E1] Step 2: action=Wait for the carousel to rotate to the 'Winter Sal | keyframes=0 | audio=False | result=summer_clicked
+09:42:53 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:42:54 [INFO] [F-E1] Step 3: action=Click the 'Shop Now' button at coordinates (640, 3 | keyframes=0 | audio=False | result=summer_clicked
+09:42:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:42:57 [INFO] [F-E1] Step 4: action=Wait for the carousel to rotate to the Winter Sale | keyframes=0 | audio=False | result=autumn_clicked
+09:42:57 [INFO] [F-E1] Task timeout after 21.5s
+09:42:57 [INFO] Browser environment stopped
+09:42:57 [INFO] --- F-E2 (easy) ---
+09:42:57 [INFO] Browser environment started: F_anim_progress_bar.html
+09:43:03 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:04 [INFO] [F-E2] Step 1: action=Wait for the progress bar to reach 100% before cli | keyframes=0 | audio=False | result=pending
+09:43:07 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:07 [INFO] [F-E2] Step 2: action=Wait for the progress bar to reach 100% before cli | keyframes=0 | audio=False | result=launch_clicked
+09:43:07 [INFO] Browser environment stopped
+09:43:07 [INFO] --- G-E3 (easy) ---
+09:43:08 [INFO] Browser environment started: G_game_reaction_test.html
+09:43:13 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:13 [INFO] [G-E3] Step 1: action=click(640, 565) | keyframes=0 | audio=False | result=pending
+09:43:15 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:16 [INFO] [G-E3] Step 2: action=wait(3000) | keyframes=0 | audio=False | result=pending
+09:43:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:19 [INFO] [G-E3] Step 3: action=wait(2000) | keyframes=0 | audio=False | result=pending
+09:43:21 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:22 [INFO] [G-E3] Step 4: action=wait(1000) | keyframes=0 | audio=False | result=pending
+09:43:23 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:24 [INFO] [G-E3] Step 5: action=click(640, 390) | keyframes=0 | audio=False | result=reaction_recorded_4353
+09:43:24 [INFO] Browser environment stopped
+09:43:24 [INFO] --- H-E1 (easy) ---
+09:43:24 [INFO] Browser environment started: H_seq_wizard.html
+09:43:31 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:31 [INFO] [H-E1] Step 1: action=Wait for the wizard to complete, then type "Config | keyframes=0 | audio=False | result=pending
+09:43:31 [INFO] Browser environment stopped
+09:43:31 [INFO] --- H-E3 (easy) ---
+09:43:31 [INFO] Browser environment started: H_seq_checklist_order.html
+09:43:40 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:41 [INFO] [H-E3] Step 1: action=I'll wait and observe the checklist complete. Base | keyframes=0 | audio=False | result=pending
+09:43:41 [INFO] Browser environment stopped
+09:43:41 [INFO] --- I-E1 (easy) ---
+09:43:41 [INFO] Browser environment started: I_stream_counter.html
+09:43:48 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:48 [INFO] [I-E1] Step 1: action=wait for the counter to reach 42, then click the C | keyframes=0 | audio=False | result=captured_at_14
+09:43:52 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:52 [INFO] [I-E1] Step 2: action=click(640, 606) | keyframes=0 | audio=False | result=pending
+09:43:56 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:43:57 [INFO] [I-E1] Step 3: action=I need to wait for the counter to reach 42 before  | keyframes=0 | audio=False | result=pending
+09:43:57 [INFO] [I-E1] Task timeout after 16.4s
+09:43:57 [INFO] Browser environment stopped
+09:43:57 [INFO] --- I-E2 (easy) ---
+09:43:58 [INFO] Browser environment started: I_stream_temperature.html
+09:44:04 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:44:05 [INFO] [I-E2] Step 1: action=Wait and monitor the temperature feed - current re | keyframes=0 | audio=False | result=pending
+09:44:08 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:44:09 [INFO] [I-E2] Step 2: action=Wait and continue monitoring - the temperature is  | keyframes=0 | audio=False | result=alert_triggered
+09:44:09 [INFO] Browser environment stopped
+09:44:09 [INFO] --- D-E1 (easy) ---
+09:44:09 [INFO] Browser environment started: C001_cookie_consent.html
+09:44:13 [INFO] CLIP ViT-B/16 loaded on cuda
+09:44:15 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:44:46 [INFO] [D-E1] Step 1: action=Click the "Accept All" button to accept the cookie | keyframes=0 | audio=False | result=timeout
+09:44:46 [INFO] [D-E1] Task timeout after 36.9s
+09:44:46 [INFO] Browser environment stopped
+09:44:46 [INFO] --- D-E2 (easy) ---
+09:44:46 [INFO] Browser environment started: C002_download_toast.html
+09:44:50 [INFO] CLIP ViT-B/16 loaded on cuda
+09:44:52 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:44:53 [INFO] [D-E2] Step 1: action=click(330, 187) | keyframes=0 | audio=False | result=pending
+09:44:58 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:44:58 [INFO] [D-E2] Step 2: action=click(1184, 657) | keyframes=1 | audio=False | result=timeout
+09:45:04 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:45:04 [INFO] [D-E2] Step 3: action=done(failure) | keyframes=1 | audio=False | result=timeout
+09:45:04 [INFO] Browser environment stopped
+09:45:04 [INFO] --- D-E3 (easy) ---
+09:45:04 [INFO] Browser environment started: D_transient_session_warning.html
+09:45:09 [INFO] CLIP ViT-B/16 loaded on cuda
+09:45:11 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:45:11 [INFO] [D-E3] Step 1: action=click(578, 441) | keyframes=0 | audio=False | result=session_extended
+09:45:11 [INFO] Browser environment stopped
+09:45:11 [INFO] --- D-M4 (medium) ---
+09:45:12 [INFO] Browser environment started: D_transient_flash_sale.html
+09:45:16 [INFO] CLIP ViT-B/16 loaded on cuda
+09:45:19 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:45:50 [INFO] [D-M4] Step 1: action=I can see the promo code "FLASH25" displayed in th | keyframes=0 | audio=False | result=pending
+09:45:50 [INFO] [D-M4] Task timeout after 38.0s
+09:45:50 [INFO] Browser environment stopped
+09:45:50 [INFO] --- E-E1 (easy) ---
+09:45:50 [INFO] Browser environment started: D001_audio_alert.html
+09:45:54 [INFO] CLIP ViT-B/16 loaded on cuda
+09:45:57 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:45:58 [INFO] [E-E1] Step 1: action=I will work on the document while waiting for a ca | keyframes=0 | audio=False | result=pending
+09:46:03 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:46:34 [INFO] [E-E1] Step 2: action=I can see the calendar alarm has triggered. I will | keyframes=1 | audio=False | result=alarm_missed
+09:46:34 [INFO] [E-E1] Task timeout after 43.6s
+09:46:34 [INFO] Browser environment stopped
+09:46:34 [INFO] --- F-E1 (easy) ---
+09:46:34 [INFO] Browser environment started: F_anim_carousel.html
+09:46:38 [INFO] CLIP ViT-B/16 loaded on cuda
+09:46:41 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:46:42 [INFO] [F-E1] Step 1: action=Click the 'Shop Now' button at coordinates (640, 3 | keyframes=0 | audio=False | result=summer_clicked
+09:46:48 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:46:50 [INFO] [F-E1] Step 2: action=Wait for the carousel to rotate back to the 'Winte | keyframes=2 | audio=False | result=summer_clicked
+09:46:57 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:46:58 [INFO] [F-E1] Step 3: action=Wait for the carousel to rotate back to the Winter | keyframes=2 | audio=False | result=autumn_clicked
+09:46:58 [INFO] [F-E1] Task timeout after 23.8s
+09:46:58 [INFO] Browser environment stopped
+09:46:58 [INFO] --- F-E2 (easy) ---
+09:46:58 [INFO] Browser environment started: F_anim_progress_bar.html
+09:47:02 [INFO] CLIP ViT-B/16 loaded on cuda
+09:47:05 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:06 [INFO] [F-E2] Step 1: action=Wait for the progress bar to reach 100% before cli | keyframes=0 | audio=False | result=pending
+09:47:10 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:11 [INFO] [F-E2] Step 2: action=Click the 'Launch' button at coordinates (640, 473 | keyframes=0 | audio=False | result=launch_clicked
+09:47:11 [INFO] Browser environment stopped
+09:47:11 [INFO] --- G-E3 (easy) ---
+09:47:11 [INFO] Browser environment started: G_game_reaction_test.html
+09:47:15 [INFO] CLIP ViT-B/16 loaded on cuda
+09:47:18 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:18 [INFO] [G-E3] Step 1: action=click(640, 565) | keyframes=0 | audio=False | result=pending
+09:47:22 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:23 [INFO] [G-E3] Step 2: action=wait(1) | keyframes=1 | audio=False | result=pending
+09:47:28 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:28 [INFO] [G-E3] Step 3: action=click(640, 390) | keyframes=1 | audio=False | result=reaction_recorded_3576
+09:47:28 [INFO] Browser environment stopped
+09:47:28 [INFO] --- H-E1 (easy) ---
+09:47:28 [INFO] Browser environment started: H_seq_wizard.html
+09:47:32 [INFO] CLIP ViT-B/16 loaded on cuda
+09:47:37 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:38 [INFO] [H-E1] Step 1: action=Wait for the wizard to complete all steps, then ty | keyframes=0 | audio=False | result=pending
+09:47:38 [INFO] Browser environment stopped
+09:47:38 [INFO] --- H-E3 (easy) ---
+09:47:38 [INFO] Browser environment started: H_seq_checklist_order.html
+09:47:42 [INFO] CLIP ViT-B/16 loaded on cuda
+09:47:47 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:47 [INFO] [H-E3] Step 1: action=Since the checklist processes items sequentially f | keyframes=0 | audio=False | result=pending
+09:47:47 [INFO] Browser environment stopped
+09:47:47 [INFO] --- I-E1 (easy) ---
+09:47:47 [INFO] Browser environment started: I_stream_counter.html
+09:47:52 [INFO] CLIP ViT-B/16 loaded on cuda
+09:47:57 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:47:57 [INFO] [I-E1] Step 1: action=Wait for the counter to reach 42 before clicking C | keyframes=0 | audio=False | result=captured_at_18
+09:48:06 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:48:06 [INFO] [I-E1] Step 2: action=I need to restart the counter and try again, this  | keyframes=1 | audio=False | result=pending
+09:48:06 [INFO] [I-E1] Task timeout after 18.6s
+09:48:06 [INFO] Browser environment stopped
+09:48:06 [INFO] --- I-E2 (easy) ---
+09:48:06 [INFO] Browser environment started: I_stream_temperature.html
+09:48:10 [INFO] CLIP ViT-B/16 loaded on cuda
+09:48:14 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:48:15 [INFO] [I-E2] Step 1: action=Wait and monitor the temperature feed — current re | keyframes=0 | audio=False | result=pending
+09:48:20 [INFO] HTTP Request: POST https://api.anthropic.com/v1/messages "HTTP/1.1 200 OK"
+09:48:21 [INFO] [I-E2] Step 2: action=Click the "Trigger Alert" button. | keyframes=0 | audio=False | result=alert_triggered
+09:48:21 [INFO] Browser environment stopped
+
+======================================================================
+  gemini-2.5-flash + standard
+======================================================================
+  FAIL | D-E1   | timeout                   | steps=1 | model_ms=2024
+  PASS | D-E2   | file_opened               | steps=3 | model_ms=4428
+  PASS | D-E3   | session_extended          | steps=1 | model_ms=2368
+  FAIL | D-M4   | pending                   | steps=2 | model_ms=12681
+  FAIL | E-E1   | pending                   | steps=4 | model_ms=16962
+  FAIL | F-E1   | spring_clicked            | steps=2 | model_ms=17116
+  FAIL | F-E2   | pending                   | steps=5 | model_ms=10665
+  PASS | G-E3   | reaction_recorded_2759    | steps=4 | model_ms=8090
+  FAIL | H-E1   | pending                   | steps=2 | model_ms=8771
+  FAIL | H-E3   | pending                   | steps=1 | model_ms=2144
+  FAIL | I-E1   | pending                   | steps=4 | model_ms=9390
+  PASS | I-E2   | alert_triggered           | steps=4 | model_ms=11065
+
+======================================================================
+  gemini-2.5-flash + aoi_full
+======================================================================
+  FAIL | D-E1   | timeout                   | steps=2 | model_ms=7933
+  PASS | D-E2   | file_opened               | steps=2 | model_ms=2853
+  PASS | D-E3   | session_extended          | steps=1 | model_ms=1576
+  FAIL | D-M4   | pending                   | steps=2 | model_ms=8664
+  PASS | E-E1   | correct_event             | steps=4 | model_ms=9206
+  FAIL | F-E1   | summer_clicked            | steps=4 | model_ms=9662
+  FAIL | F-E2   | pending                   | steps=3 | model_ms=10329
+  FAIL | G-E3   | pending                   | steps=3 | model_ms=8200
+  FAIL | H-E1   | pending                   | steps=2 | model_ms=9312
+  FAIL | H-E3   | pending                   | steps=1 | model_ms=1802
+  FAIL | I-E1   | pending                   | steps=3 | model_ms=5805
+  PASS | I-E2   | alert_triggered           | steps=3 | model_ms=6527
+
+======================================================================
+  claude-sonnet-4-6 + standard
+======================================================================
+  FAIL | D-E1   | timeout                   | steps=1 | model_ms=2606
+  FAIL | D-E2   | timeout                   | steps=4 | model_ms=11227
+  PASS | D-E3   | session_extended          | steps=1 | model_ms=2471
+  FAIL | D-M4   | pending                   | steps=3 | model_ms=13150
+  FAIL | E-E1   | alarm_missed              | steps=3 | model_ms=10059
+  FAIL | F-E1   | autumn_clicked            | steps=4 | model_ms=12337
+  PASS | F-E2   | launch_clicked            | steps=2 | model_ms=6304
+  PASS | G-E3   | reaction_recorded_4353    | steps=5 | model_ms=9803
+  FAIL | H-E1   | pending                   | steps=1 | model_ms=3737
+  FAIL | H-E3   | pending                   | steps=1 | model_ms=5212
+  FAIL | I-E1   | pending                   | steps=3 | model_ms=11648
+  PASS | I-E2   | alert_triggered           | steps=2 | model_ms=6769
+
+======================================================================
+  claude-sonnet-4-6 + aoi_full
+======================================================================
+  FAIL | D-E1   | timeout                   | steps=1 | model_ms=2264
+  FAIL | D-E2   | timeout                   | steps=3 | model_ms=7998
+  PASS | D-E3   | session_extended          | steps=1 | model_ms=2306
+  FAIL | D-M4   | pending                   | steps=1 | model_ms=3260
+  FAIL | E-E1   | alarm_missed              | steps=2 | model_ms=5775
+  FAIL | F-E1   | autumn_clicked            | steps=3 | model_ms=12315
+  PASS | F-E2   | launch_clicked            | steps=2 | model_ms=5341
+  PASS | G-E3   | reaction_recorded_3576    | steps=3 | model_ms=6311
+  FAIL | H-E1   | pending                   | steps=1 | model_ms=4760
+  FAIL | H-E3   | pending                   | steps=1 | model_ms=4356
+  FAIL | I-E1   | pending                   | steps=2 | model_ms=10789
+  PASS | I-E2   | alert_triggered           | steps=2 | model_ms=6603
+
+======================================================================
+  DynaCU-Bench Results — Main Table
+======================================================================
+
+Model                  Mode              Pass  Total     Acc  AvgSteps  AvgLatMs
+--------------------------------------------------------------------------------
+gemini-2.5-flash       standard             4     12   33.3%       2.8     8809ms
+gemini-2.5-flash       aoi_full             4     12   33.3%       2.5     6822ms <--
+
+claude-sonnet-4-6      standard             4     12   33.3%       2.5     7944ms
+claude-sonnet-4-6      aoi_full             4     12   33.3%       1.8     6007ms <--
+
+
+Category       gemini-2+sta   gemini-2+aoi   claude-s+sta   claude-s+aoi
+------------------------------------------------------------------------
+D            2/          4 2/          4 1/          4 1/          4
+E            0/          1 1/          1 0/          1 0/          1
+F            0/          2 0/          2 1/          2 1/          2
+G            1/          1 0/          1 1/          1 1/          1
+H            0/          2 0/          2 0/          2 0/          2
+I            1/          2 1/          2 1/          2 1/          2
+
+======================================================================
+  Improvement: standard → aoi_full
+======================================================================
+  gemini-2.5-flash: 4/12 → 4/12 (delta: +0)
+  claude-sonnet-4-6: 4/12 → 4/12 (delta: +0)

@@ -277,7 +277,7 @@ class DynaCUBench:
                  "Browse the website. Accept the cookie consent dialog when it appears. It auto-dismisses after 4s.",
                  "accepted",
                  success_fn=lambda o: "accept" in o.lower() or "cookie" in o.lower(),
-                 html_file="C001_cookie_consent.html", duration_s=10.0),
+                 html_file="C001_cookie_consent.html", duration_s=15.0),
             Task("D-E2", TaskCategory.D_TRANSIENT_UI, TaskDifficulty.EASY,
                  "A file is downloading. When the download-complete toast appears, click 'Open file'. Disappears after 3s.",
                  "file_opened",

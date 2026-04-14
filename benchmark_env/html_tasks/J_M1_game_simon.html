@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simon Says</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+.header {
+  width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-size: 28px; font-weight: 700; color: #ffcc00; }
+.status-text { font-size: 18px; color: #aaa; }
+.game-container {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; padding: 20px;
+}
+.simon-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;
+  margin-top: 20px;
+}
+.simon-btn {
+  width: 160px; height: 160px; border-radius: 16px; cursor: pointer;
+  border: 3px solid rgba(255,255,255,0.1); transition: all 0.15s;
+  opacity: 0.6;
+}
+.simon-btn:hover { opacity: 0.75; }
+.simon-btn.lit {
+  opacity: 1; transform: scale(1.05);
+  box-shadow: 0 0 30px currentColor;
+}
+.simon-btn.red { background: #d32f2f; color: #ff5252; }
+.simon-btn.blue { background: #1565c0; color: #448aff; }
+.simon-btn.green { background: #2e7d32; color: #69f0ae; }
+.simon-btn.yellow { background: #f9a825; color: #ffd740; }
+.simon-btn.red.lit { background: #ff5252; }
+.simon-btn.blue.lit { background: #448aff; }
+.simon-btn.green.lit { background: #69f0ae; }
+.simon-btn.yellow.lit { background: #ffd740; }
+.message {
+  margin-top: 24px; font-size: 24px; font-weight: 700; min-height: 36px;
+}
+.progress {
+  margin-top: 16px; display: flex; gap: 8px;
+}
+.progress-dot {
+  width: 16px; height: 16px; border-radius: 50%; background: #2a2a4e; border: 2px solid #3a3a5e;
+}
+.progress-dot.filled { background: #00ff88; border-color: #00ff88; }
+.progress-dot.wrong { background: #ff3366; border-color: #ff3366; }
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #ffcc00; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #00ff88; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Simon Says</h1>
+  <p>Watch the sequence, then repeat it!</p>
+  <p>4 colors, 4 steps. Good luck!</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Simon Says</div>
+  <div class="status-text" id="status">Watch the pattern...</div>
+</div>
+
+<div class="game-container">
+  <div class="simon-grid">
+    <div class="simon-btn red" data-color="red" id="btn-red"></div>
+    <div class="simon-btn blue" data-color="blue" id="btn-blue"></div>
+    <div class="simon-btn green" data-color="green" id="btn-green"></div>
+    <div class="simon-btn yellow" data-color="yellow" id="btn-yellow"></div>
+  </div>
+  <div class="message" id="message"></div>
+  <div class="progress" id="progress"></div>
+</div>
+
+<script>
+const COLORS = ['red', 'blue', 'green', 'yellow'];
+let sequence = [];
+let playerSequence = [];
+let sequenceLength = 4;
+let playerTurn = false;
+let patternCorrect = false;
+
+// Generate random sequence
+for (let i = 0; i < sequenceLength; i++) {
+  sequence.push(COLORS[Math.floor(Math.random() * COLORS.length)]);
+}
+
+// Build progress dots
+function buildProgress() {
+  const prog = document.getElementById('progress');
+  prog.innerHTML = '';
+  for (let i = 0; i < sequenceLength; i++) {
+    const dot = document.createElement('div');
+    dot.className = 'progress-dot';
+    dot.id = 'dot-' + i;
+    prog.appendChild(dot);
+  }
+}
+
+function lightUp(color, duration) {
+  return new Promise(resolve => {
+    const btn = document.getElementById('btn-' + color);
+    btn.classList.add('lit');
+    setTimeout(() => {
+      btn.classList.remove('lit');
+      setTimeout(resolve, 400);
+    }, duration);
+  });
+}
+
+async function playSequence() {
+  document.getElementById('status').textContent = 'Watch the pattern...';
+  document.getElementById('message').textContent = '';
+  playerTurn = false;
+
+  await new Promise(r => setTimeout(r, 800));
+
+  for (let i = 0; i < sequence.length; i++) {
+    await lightUp(sequence[i], 800);
+  }
+
+  playerTurn = true;
+  playerSequence = [];
+  document.getElementById('status').textContent = "Your turn!";
+  document.getElementById('message').textContent = "Click the buttons in the same order";
+}
+
+// Button clicks
+document.querySelectorAll('.simon-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    if (!playerTurn) return;
+
+    const color = btn.dataset.color;
+    btn.classList.add('lit');
+    setTimeout(() => btn.classList.remove('lit'), 200);
+
+    playerSequence.push(color);
+    const idx = playerSequence.length - 1;
+
+    if (color === sequence[idx]) {
+      // Correct
+      document.getElementById('dot-' + idx).classList.add('filled');
+      if (playerSequence.length === sequence.length) {
+        // All correct!
+        playerTurn = false;
+        patternCorrect = true;
+        document.getElementById('message').textContent = 'Perfect!';
+        document.getElementById('message').style.color = '#00ff88';
+        document.getElementById('status').textContent = 'Pattern matched!';
+      }
+    } else {
+      // Wrong
+      playerTurn = false;
+      document.getElementById('dot-' + idx).classList.add('wrong');
+      document.getElementById('message').textContent = 'Wrong! The correct next color was ' + sequence[idx].toUpperCase();
+      document.getElementById('message').style.color = '#ff3366';
+      document.getElementById('status').textContent = 'Game over';
+    }
+  });
+});
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        buildProgress();
+        playSequence();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+window.getTaskResult = function() {
+  if (patternCorrect) {
+    return 'pattern_correct';
+  }
+  return 'pattern_incorrect_got_' + playerSequence.length + '_of_' + sequenceLength;
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOC Dashboard - Server Triage</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .info { font-size: 13px; color: #8892b0; display: flex; align-items: center; gap: 8px; }
+  .header .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+  .alert-banner { background: #16213e; border: 1px solid #2a3a5e; border-radius: 8px; padding: 12px 20px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+  .alert-banner .msg { font-size: 14px; }
+  .alert-banner .timer { font-size: 13px; color: #f39c12; }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+  .server-tile { background: #16213e; border-radius: 10px; padding: 20px; border: 2px solid #2a3a5e; text-align: center; transition: all 0.5s; position: relative; }
+  .server-tile.green { border-color: #00ff88; }
+  .server-tile.red { border-color: #e74c3c; box-shadow: 0 0 25px rgba(231,76,60,0.3); animation: alertPulse 1s infinite; }
+  .server-tile.acked { border-color: #f39c12; box-shadow: none; animation: none; }
+  .server-tile.expired { border-color: #555; opacity: 0.6; animation: none; }
+  @keyframes alertPulse { 0%,100% { box-shadow: 0 0 15px rgba(231,76,60,0.3); } 50% { box-shadow: 0 0 30px rgba(231,76,60,0.5); } }
+  .server-icon { font-size: 32px; margin-bottom: 8px; }
+  .server-name { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
+  .server-status { font-size: 12px; padding: 3px 10px; border-radius: 10px; display: inline-block; margin-bottom: 10px; }
+  .status-ok { background: rgba(0,255,136,0.15); color: #00ff88; }
+  .status-alert { background: rgba(231,76,60,0.15); color: #e74c3c; }
+  .status-acked { background: rgba(243,156,18,0.15); color: #f39c12; }
+  .status-expired { background: rgba(136,146,176,0.15); color: #8892b0; }
+  .ack-btn { padding: 8px 20px; font-size: 12px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; background: #e74c3c; color: white; display: none; text-transform: uppercase; letter-spacing: 1px; transition: all 0.3s; }
+  .ack-btn:hover { background: #c0392b; }
+  .ack-btn.show { display: inline-block; }
+  .ack-btn:disabled { background: #555; cursor: default; }
+  .countdown { font-size: 11px; color: #e74c3c; margin-top: 5px; display: none; }
+  .countdown.show { display: block; }
+  .results { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .results h3 { color: #8892b0; font-size: 14px; margin-bottom: 10px; }
+  .result-log { font-family: monospace; font-size: 13px; }
+  .result-log div { padding: 3px 0; }
+  .result-log .success { color: #00ff88; }
+  .result-log .fail { color: #e74c3c; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>NOC Dashboard - Server Triage</h1>
+  <div class="info"><div class="dot"></div> Incident Response &bull; Auto-escalation: 5s</div>
+</div>
+<div class="alert-banner">
+  <div class="msg" id="bannerMsg">Monitoring 6 servers &mdash; 0 incidents</div>
+  <div class="timer" id="bannerTimer"></div>
+</div>
+<div class="grid" id="serverGrid"></div>
+<div class="results">
+  <h3>Incident Log</h3>
+  <div class="result-log" id="resultLog"></div>
+</div>
+<script>
+(function() {
+  const servers = [
+    { name: 'app-server-01', id: 0 },
+    { name: 'app-server-02', id: 1 },
+    { name: 'db-primary', id: 2 },
+    { name: 'db-replica', id: 3 },
+    { name: 'cache-node-01', id: 4 },
+    { name: 'cache-node-02', id: 5 }
+  ];
+
+  // 3 servers go red: server index 1 at t=8s, index 3 at t=16s, index 4 at t=24s
+  const incidents = [
+    { serverIdx: 1, triggerTick: 4, reason: 'High CPU utilization' },
+    { serverIdx: 3, triggerTick: 8, reason: 'Replication lag exceeded' },
+    { serverIdx: 4, triggerTick: 12, reason: 'Memory exhaustion' }
+  ];
+
+  let tick = 0;
+  const ackResults = {}; // serverIdx -> 'acked' | 'expired'
+  const ackTimers = {};  // serverIdx -> remaining seconds
+  const ackIntervals = {};
+  let incidentsTriggered = 0;
+
+  // Build server tiles
+  const grid = document.getElementById('serverGrid');
+  servers.forEach(function(s) {
+    const tile = document.createElement('div');
+    tile.className = 'server-tile green';
+    tile.id = 'tile-' + s.id;
+    tile.innerHTML = '<div class="server-icon">&#9645;</div>' +
+      '<div class="server-name">' + s.name + '</div>' +
+      '<div class="server-status status-ok" id="status-' + s.id + '">Operational</div><br>' +
+      '<button class="ack-btn" id="ack-' + s.id + '">ACK</button>' +
+      '<div class="countdown" id="cd-' + s.id + '">5s remaining</div>';
+    grid.appendChild(tile);
+  });
+
+  const logEl = document.getElementById('resultLog');
+  function addLog(msg, cls) {
+    const d = document.createElement('div');
+    d.className = cls || '';
+    d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+    logEl.appendChild(d);
+  }
+
+  function triggerIncident(inc) {
+    const idx = inc.serverIdx;
+    const tile = document.getElementById('tile-' + idx);
+    const statusEl = document.getElementById('status-' + idx);
+    const ackBtn = document.getElementById('ack-' + idx);
+    const cdEl = document.getElementById('cd-' + idx);
+
+    tile.className = 'server-tile red';
+    statusEl.textContent = inc.reason;
+    statusEl.className = 'server-status status-alert';
+    ackBtn.classList.add('show');
+    cdEl.classList.add('show');
+
+    incidentsTriggered++;
+    document.getElementById('bannerMsg').textContent = 'Monitoring 6 servers \u2014 ' + incidentsTriggered + ' incident(s)';
+
+    addLog('ALERT: ' + servers[idx].name + ' - ' + inc.reason, 'fail');
+
+    // 5 second countdown
+    ackTimers[idx] = 5;
+    cdEl.textContent = '5s remaining';
+
+    ackIntervals[idx] = setInterval(function() {
+      ackTimers[idx]--;
+      if (ackTimers[idx] <= 0) {
+        clearInterval(ackIntervals[idx]);
+        if (!ackResults[idx]) {
+          ackResults[idx] = 'expired';
+          tile.className = 'server-tile expired';
+          statusEl.textContent = 'Escalated (missed)';
+          statusEl.className = 'server-status status-expired';
+          ackBtn.classList.remove('show');
+          cdEl.textContent = 'Expired';
+          addLog('ESCALATED: ' + servers[idx].name + ' - ACK window expired', 'fail');
+        }
+      } else {
+        cdEl.textContent = ackTimers[idx] + 's remaining';
+      }
+    }, 1000);
+  }
+
+  // ACK button handlers
+  servers.forEach(function(s) {
+    document.getElementById('ack-' + s.id).addEventListener('click', function() {
+      if (ackResults[s.id]) return;
+      ackResults[s.id] = 'acked';
+      clearInterval(ackIntervals[s.id]);
+      const tile = document.getElementById('tile-' + s.id);
+      tile.className = 'server-tile acked';
+      document.getElementById('status-' + s.id).textContent = 'Acknowledged';
+      document.getElementById('status-' + s.id).className = 'server-status status-acked';
+      document.getElementById('ack-' + s.id).classList.remove('show');
+      document.getElementById('cd-' + s.id).textContent = 'ACK\'d';
+      addLog('ACKNOWLEDGED: ' + servers[s.id].name + ' - responded in time', 'success');
+    });
+  });
+
+  function updateDashboard() {
+    tick++;
+    incidents.forEach(function(inc) {
+      if (tick === inc.triggerTick && !ackResults[inc.serverIdx]) {
+        triggerIncident(inc);
+      }
+    });
+  }
+
+  window.getTaskResult = function() {
+    let ackedCount = 0;
+    incidents.forEach(function(inc) {
+      if (ackResults[inc.serverIdx] === 'acked') ackedCount++;
+    });
+    if (ackedCount === 3) return 'all_3_acknowledged';
+    if (ackedCount > 0) return 'partial_' + ackedCount + '_acknowledged';
+    return 'none_acknowledged';
+  };
+
+  setTimeout(function() {
+    setInterval(updateDashboard, 2000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analytics Review Meeting</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #202124; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  #loading { position: fixed; inset: 0; background: #202124; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #8ab4f8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .meet-header { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3c4043; }
+  .meet-logo { font-size: 18px; font-weight: 500; color: #8ab4f8; }
+  .meet-title { font-size: 14px; color: #bdc1c6; }
+  .meet-time { font-size: 13px; color: #9aa0a6; }
+  .meet-body { flex: 1; display: flex; padding: 16px; gap: 16px; }
+  .slide-area { flex: 1; background: #1a1a2e; border-radius: 12px; overflow: hidden; position: relative; min-height: 420px; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; opacity: 0; transition: opacity 0.8s ease; }
+  .slide.active { opacity: 1; }
+  .slide h2 { font-size: 24px; font-weight: 600; margin-bottom: 24px; color: #fff; }
+  .slide p { font-size: 15px; color: #9aa0a6; margin-bottom: 16px; text-align: center; max-width: 450px; }
+
+  /* Bar chart */
+  .bar-chart { display: flex; align-items: flex-end; gap: 16px; height: 180px; padding: 0 20px; border-left: 2px solid #3c4043; border-bottom: 2px solid #3c4043; }
+  .bc-bar { width: 48px; border-radius: 4px 4px 0 0; position: relative; }
+  .bc-bar .bc-label { position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%); font-size: 11px; color: #9aa0a6; white-space: nowrap; }
+
+  /* Text content */
+  .text-content { text-align: left; max-width: 450px; }
+  .text-content li { padding: 6px 0; font-size: 15px; color: #bdc1c6; list-style: disc inside; }
+
+  /* Table */
+  .data-table { border-collapse: collapse; width: 90%; max-width: 450px; }
+  .data-table th { background: #16162b; padding: 8px 14px; text-align: left; font-size: 13px; color: #8ab4f8; border-bottom: 1px solid #2a2a3e; }
+  .data-table td { padding: 8px 14px; font-size: 14px; color: #bdc1c6; border-bottom: 1px solid #1e1e36; }
+
+  .participants { width: 200px; display: flex; flex-direction: column; gap: 8px; }
+  .participant { background: #292a2d; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; }
+  .participant .avatar-lg { width: 40px; height: 40px; border-radius: 50%; }
+  .participant .p-name { position: absolute; bottom: 6px; left: 8px; font-size: 11px; color: #bdc1c6; }
+  .answer-panel { background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 0 16px 16px; }
+  .answer-panel h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .answer-row { display: flex; gap: 12px; align-items: center; }
+  .answer-row label { font-size: 13px; color: #888; white-space: nowrap; }
+  .answer-row input { flex: 1; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 14px; outline: none; width: 80px; }
+  .answer-row input:focus { border-color: #8ab4f8; }
+  .submit-btn { margin-top: 12px; padding: 10px 24px; background: #8ab4f8; border: none; border-radius: 8px; color: #202124; font-size: 14px; font-weight: 600; cursor: pointer; float: right; }
+  .status { font-size: 13px; color: #666; margin-top: 12px; clear: both; text-align: right; min-height: 20px; }
+  .meet-controls { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid #3c4043; }
+  .ctrl-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #3c4043; color: #e0e0e0; }
+  .ctrl-end { background: #ea4335; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; width: auto; }
+  .slide-indicator { position: absolute; bottom: 12px; right: 16px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="meet-header">
+  <div class="meet-logo">Google Meet</div>
+  <div class="meet-title">Analytics Review</div>
+  <div class="meet-time" id="meetTime">--:--</div>
+</div>
+<div class="meet-body">
+  <div class="slide-area">
+    <!-- Slide 1: Text only -->
+    <div class="slide active" id="slide0">
+      <h2>Key Takeaways</h2>
+      <ul class="text-content">
+        <li>User growth exceeded targets by 8%</li>
+        <li>Retention rate steady at 91%</li>
+        <li>Mobile adoption up 23% quarter over quarter</li>
+        <li>Support tickets down 15%</li>
+      </ul>
+    </div>
+    <!-- Slide 2: Bar chart -->
+    <div class="slide" id="slide1">
+      <h2>Monthly Active Users</h2>
+      <div class="bar-chart">
+        <div class="bc-bar" style="height:45%; background: linear-gradient(to top, #4285f4, #669df6);"><div class="bc-label">Jan</div></div>
+        <div class="bc-bar" style="height:52%; background: linear-gradient(to top, #4285f4, #669df6);"><div class="bc-label">Feb</div></div>
+        <div class="bc-bar" style="height:58%; background: linear-gradient(to top, #4285f4, #669df6);"><div class="bc-label">Mar</div></div>
+        <div class="bc-bar" style="height:61%; background: linear-gradient(to top, #4285f4, #669df6);"><div class="bc-label">Apr</div></div>
+        <div class="bc-bar" style="height:70%; background: linear-gradient(to top, #4285f4, #669df6);"><div class="bc-label">May</div></div>
+        <div class="bc-bar" style="height:85%; background: linear-gradient(to top, #4285f4, #669df6);"><div class="bc-label">Jun</div></div>
+      </div>
+    </div>
+    <!-- Slide 3: Table -->
+    <div class="slide" id="slide2">
+      <h2>Feature Adoption Rates</h2>
+      <table class="data-table">
+        <thead><tr><th>Feature</th><th>Adoption</th><th>Trend</th></tr></thead>
+        <tbody>
+          <tr><td>Dashboard v2</td><td>67%</td><td>Rising</td></tr>
+          <tr><td>Mobile App</td><td>54%</td><td>Rising</td></tr>
+          <tr><td>API Access</td><td>31%</td><td>Stable</td></tr>
+          <tr><td>Integrations</td><td>28%</td><td>Rising</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- Slide 4: Bar chart -->
+    <div class="slide" id="slide3">
+      <h2>Revenue by Channel</h2>
+      <div class="bar-chart">
+        <div class="bc-bar" style="height:90%; background: linear-gradient(to top, #34a853, #5bb974);"><div class="bc-label">Direct</div></div>
+        <div class="bc-bar" style="height:65%; background: linear-gradient(to top, #fbbc05, #fdd663);"><div class="bc-label">Partner</div></div>
+        <div class="bc-bar" style="height:40%; background: linear-gradient(to top, #ea4335, #f28b82);"><div class="bc-label">Reseller</div></div>
+        <div class="bc-bar" style="height:25%; background: linear-gradient(to top, #a29bfe, #6c5ce7);"><div class="bc-label">Organic</div></div>
+      </div>
+    </div>
+    <div class="slide-indicator" id="slideIndicator">Slide 1 / 4</div>
+  </div>
+  <div class="participants">
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #ea4335, #fbbc05);"></div><div class="p-name">Analytics</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #34a853, #8ab4f8);"></div><div class="p-name">You</div></div>
+  </div>
+</div>
+<div class="answer-panel">
+  <h3>How many slides contained bar charts?</h3>
+  <div class="answer-row">
+    <label for="countInput">Number of slides with bar charts:</label>
+    <input type="text" id="countInput" placeholder="e.g. 3" autocomplete="off">
+  </div>
+  <button class="submit-btn" id="submitBtn">Submit</button>
+  <div class="status" id="status"></div>
+</div>
+<div class="meet-controls">
+  <button class="ctrl-btn">&#127908;</button>
+  <button class="ctrl-btn">&#127909;</button>
+  <button class="ctrl-btn ctrl-end">Leave</button>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let currentSlide = 0;
+
+  function showSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('slideIndicator').textContent = `Slide ${idx + 1} / ${slides.length}`;
+  }
+
+  function advanceSlides() {
+    showSlide(0);
+    let idx = 0;
+    const interval = setInterval(() => {
+      idx++;
+      if (idx < slides.length) {
+        showSlide(idx);
+      } else {
+        clearInterval(interval);
+      }
+    }, 8000);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('meetTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'count_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('countInput').value.trim();
+    if (val === '2') return 'count_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(advanceSlides, 500);
+  }, 2000);
+</script>
+</body>
+</html>

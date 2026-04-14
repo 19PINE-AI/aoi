@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bank Verification Call</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #26a69a; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .layout { display: flex; gap: 24px; align-items: flex-start; }
+  .phone-card { background: #16213e; border-radius: 16px; padding: 28px; width: 300px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; flex-shrink: 0; }
+  .call-status { font-size: 13px; color: #26a69a; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; }
+  .avatar { width: 72px; height: 72px; border-radius: 50%; background: linear-gradient(135deg, #26a69a, #00695c); margin: 0 auto 12px; display: flex; align-items: center; justify-content: center; font-size: 28px; color: #fff; }
+  .caller-name { font-size: 18px; font-weight: 600; margin-bottom: 4px; }
+  .caller-sub { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .call-timer { font-size: 24px; font-weight: 300; margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+  .call-actions { display: flex; justify-content: center; gap: 16px; }
+  .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+  .btn-mute { background: #333; }
+  .btn-speaker { background: #333; }
+  .btn-end { background: #e53935; }
+  .info-panel { background: #16213e; border-radius: 16px; padding: 28px; width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .acct-info { background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 10px; padding: 16px; margin-bottom: 20px; }
+  .acct-info h4 { font-size: 14px; color: #26a69a; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .acct-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 15px; }
+  .acct-row .label { color: #888; }
+  .acct-row .value { font-weight: 600; font-family: 'Courier New', monospace; }
+  .response-area { margin-top: 16px; }
+  .response-area h4 { font-size: 14px; color: #ccc; margin-bottom: 8px; }
+  .turn-block { margin-bottom: 16px; opacity: 0.3; transition: opacity 0.3s; }
+  .turn-block.active { opacity: 1; }
+  .turn-block label { display: block; font-size: 13px; color: #888; margin-bottom: 4px; }
+  .turn-block input { width: 100%; background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; }
+  .turn-block input:focus { border-color: #26a69a; }
+  .turn-timer { font-size: 12px; color: #ef5350; margin-top: 4px; min-height: 16px; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 12px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="layout">
+  <div class="phone-card">
+    <div class="call-status" id="callStatus">Connecting...</div>
+    <div class="avatar">&#127974;</div>
+    <div class="caller-name">National Bank</div>
+    <div class="caller-sub">Account Verification</div>
+    <div class="call-timer" id="timer">00:00</div>
+    <div class="call-actions">
+      <button class="action-btn btn-mute">&#128263;</button>
+      <button class="action-btn btn-speaker">&#128264;</button>
+      <button class="action-btn btn-end">&#128381;</button>
+    </div>
+  </div>
+  <div class="info-panel">
+    <div class="acct-info">
+      <h4>Your Account Info</h4>
+      <div class="acct-row"><span class="label">Account #:</span><span class="value">4829-7753</span></div>
+      <div class="acct-row"><span class="label">Zip Code:</span><span class="value">90210</span></div>
+    </div>
+    <div class="response-area">
+      <h4>Respond to the agent</h4>
+      <div class="turn-block" id="turn1">
+        <label>Question 1: Account Number</label>
+        <input type="text" id="resp1" placeholder="Type your response..." autocomplete="off">
+        <div class="turn-timer" id="timer1"></div>
+      </div>
+      <div class="turn-block" id="turn2">
+        <label>Question 2: Zip Code</label>
+        <input type="text" id="resp2" placeholder="Type your response..." autocomplete="off">
+        <div class="turn-timer" id="timer2"></div>
+      </div>
+    </div>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+  let state = 'init';
+  let resp1Time = null, resp2Time = null;
+  let q1Asked = 0, q2Asked = 0;
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function askQuestion1() {
+    state = 'q1_asked';
+    q1Asked = Date.now();
+    document.getElementById('callStatus').textContent = 'Connected';
+    document.getElementById('turn1').classList.add('active');
+    const u = new SpeechSynthesisUtterance("Can you please provide your account number?");
+    u.rate = 0.9; u.lang = 'en-US';
+    speechSynthesis.speak(u);
+    // countdown
+    const iv = setInterval(() => {
+      const left = Math.max(0, 10 - Math.floor((Date.now() - q1Asked) / 1000));
+      document.getElementById('timer1').textContent = left > 0 ? left + 's remaining' : 'Time up';
+      if (left <= 0) clearInterval(iv);
+    }, 500);
+  }
+
+  function askQuestion2() {
+    state = 'q2_asked';
+    q2Asked = Date.now();
+    document.getElementById('turn2').classList.add('active');
+    const u = new SpeechSynthesisUtterance("And your zip code for verification?");
+    u.rate = 0.9; u.lang = 'en-US';
+    speechSynthesis.speak(u);
+    const iv = setInterval(() => {
+      const left = Math.max(0, 10 - Math.floor((Date.now() - q2Asked) / 1000));
+      document.getElementById('timer2').textContent = left > 0 ? left + 's remaining' : 'Time up';
+      if (left <= 0) clearInterval(iv);
+    }, 500);
+  }
+
+  // Monitor response 1
+  document.getElementById('resp1').addEventListener('input', () => {
+    if (state === 'q1_asked' && !resp1Time) {
+      resp1Time = Date.now();
+    }
+  });
+  document.getElementById('resp2').addEventListener('input', () => {
+    if (state === 'q2_asked' && !resp2Time) {
+      resp2Time = Date.now();
+    }
+  });
+
+  window.getTaskResult = function() {
+    const v1 = document.getElementById('resp1').value.replace(/[\s\-]/g, '');
+    const v2 = document.getElementById('resp2').value.replace(/\s/g, '');
+    const acctOk = v1.includes('48297753') || v1.includes('4829-7753');
+    const zipOk = v2.includes('90210');
+    const t1Ok = resp1Time ? (resp1Time - q1Asked < 10000) : false;
+    const t2Ok = resp2Time ? (resp2Time - q2Asked < 10000) : false;
+    if (acctOk && zipOk && t1Ok && t2Ok) return 'both_responded_in_time';
+    if (acctOk && zipOk) return 'both_correct_but_slow';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    // Question 1 at t=3s
+    setTimeout(askQuestion1, 3000);
+    // Question 2 at t=20s
+    setTimeout(askQuestion2, 20000);
+  }, 2000);
+</script>
+</body>
+</html>

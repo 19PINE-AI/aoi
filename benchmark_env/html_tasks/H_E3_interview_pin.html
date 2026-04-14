@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Verification</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ffa726; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .interview-layout { display: flex; gap: 24px; align-items: flex-start; }
+  .phone-panel { background: #16213e; border-radius: 16px; padding: 28px; width: 320px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; }
+  .shield { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ffa726, #e65100); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #fff; }
+  .call-label { font-size: 13px; color: #ffa726; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+  .caller-name { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .caller-sub { font-size: 13px; color: #888; margin-bottom: 16px; }
+  .pin-display { background: #0a1628; border: 2px solid #ffa726; border-radius: 12px; padding: 20px; margin-bottom: 20px; }
+  .pin-label { font-size: 12px; color: #ffa726; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+  .pin-value { font-size: 48px; font-weight: 700; letter-spacing: 16px; color: #fff; font-family: 'Courier New', monospace; }
+  .call-timer { font-size: 20px; font-weight: 300; margin-bottom: 12px; font-variant-numeric: tabular-nums; }
+  .call-actions { display: flex; justify-content: center; gap: 16px; }
+  .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+  .btn-mute { background: #333; }
+  .btn-speaker { background: #333; }
+  .btn-end { background: #e53935; }
+  .response-panel { background: #16213e; border-radius: 16px; padding: 24px; width: 340px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .response-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .mic-indicator { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; padding: 12px; background: #0f1a30; border-radius: 8px; }
+  .mic-icon { width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+  .mic-icon.listening { background: #e53935; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.4); } 50% { box-shadow: 0 0 0 8px rgba(229,57,53,0); } }
+  .mic-label { font-size: 13px; color: #888; }
+  .mic-label.active { color: #ef5350; }
+  .transcript-box { background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 12px; min-height: 50px; margin-bottom: 12px; font-size: 14px; color: #aaa; }
+  .fallback-input { width: 100%; background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; margin-bottom: 12px; }
+  .fallback-input:focus { border-color: #ffa726; }
+  .submit-btn { width: 100%; padding: 10px; background: #ffa726; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #ffb74d; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="interview-layout">
+  <div class="phone-panel">
+    <div class="call-label">Security Verification</div>
+    <div class="shield">&#128274;</div>
+    <div class="caller-name">Identity Check</div>
+    <div class="caller-sub">Automated system</div>
+    <div class="pin-display">
+      <div class="pin-label">Your PIN</div>
+      <div class="pin-value">7294</div>
+    </div>
+    <div class="call-timer" id="timer">00:00</div>
+    <div class="call-actions">
+      <button class="action-btn btn-mute">&#127908;</button>
+      <button class="action-btn btn-speaker">&#128264;</button>
+      <button class="action-btn btn-end">&#128381;</button>
+    </div>
+  </div>
+  <div class="response-panel">
+    <h3>Speak Your PIN</h3>
+    <div class="mic-indicator">
+      <div class="mic-icon" id="micIcon">&#127908;</div>
+      <div class="mic-label" id="micLabel">Waiting for prompt...</div>
+    </div>
+    <div class="transcript-box" id="transcript">Your spoken response will appear here...</div>
+    <input type="text" class="fallback-input" id="fallbackInput" placeholder="Type or speak your answer" autocomplete="off">
+    <button class="submit-btn" id="submitBtn">Submit</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+  let capturedResponse = '';
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function startListening() {
+    document.getElementById('micIcon').classList.add('listening');
+    document.getElementById('micLabel').textContent = 'Listening...';
+    document.getElementById('micLabel').classList.add('active');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.onresult = (event) => {
+        capturedResponse = event.results[0][0].transcript;
+        document.getElementById('transcript').textContent = capturedResponse;
+        document.getElementById('micIcon').classList.remove('listening');
+        document.getElementById('micLabel').textContent = 'Response captured';
+      };
+      recognition.onerror = () => {
+        document.getElementById('micLabel').textContent = 'Speech recognition unavailable — type your answer';
+        document.getElementById('micIcon').classList.remove('listening');
+      };
+      recognition.onend = () => {
+        if (!capturedResponse) {
+          document.getElementById('micIcon').classList.remove('listening');
+          document.getElementById('micLabel').textContent = 'Use text input below';
+        }
+      };
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+        recognition.start();
+      }).catch(() => {
+        document.getElementById('micLabel').textContent = 'Mic unavailable — type your answer';
+        document.getElementById('micIcon').classList.remove('listening');
+      });
+    } else {
+      document.getElementById('micLabel').textContent = 'Speech recognition unavailable — type your answer';
+      document.getElementById('micIcon').classList.remove('listening');
+    }
+  }
+
+  function askQuestion() {
+    const u = new SpeechSynthesisUtterance("To verify your identity, please say the four-digit PIN displayed on your screen.");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { startListening(); };
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'pin_verified' ? 'PIN Verified!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const spoken = capturedResponse.toLowerCase().replace(/\s/g, '');
+    const typed = document.getElementById('fallbackInput').value.replace(/\s/g, '');
+    const combined = spoken + ' ' + typed;
+    if (combined.includes('7294')) return 'pin_verified';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(askQuestion, 3000);
+  }, 2000);
+</script>
+</body>
+</html>

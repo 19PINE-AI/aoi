@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registration - Phone Verification</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: flex-start; padding-top: 50px; }
+  .toast-area { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 14px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.4); transform: translateX(120%); transition: transform 0.4s ease, opacity 0.4s; opacity: 0; display: flex; align-items: center; gap: 10px; max-width: 450px; }
+  .toast.show { transform: translateX(0); opacity: 1; }
+  .toast.error { background: #e74c3c; color: white; border-left: 4px solid #c0392b; }
+  .toast.success { background: #00cc66; color: white; border-left: 4px solid #00994d; }
+  .toast .code { font-family: monospace; background: rgba(0,0,0,0.2); padding: 2px 8px; border-radius: 4px; }
+  .form-card { background: #16213e; border-radius: 12px; padding: 30px; border: 1px solid #2a3a5e; width: 460px; }
+  .form-card h2 { font-size: 22px; color: #00d4ff; margin-bottom: 5px; }
+  .form-card .subtitle { font-size: 13px; color: #8892b0; margin-bottom: 25px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; color: #8892b0; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field input { width: 100%; padding: 10px 14px; font-size: 15px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; transition: border-color 0.3s; }
+  .field input:focus { outline: none; border-color: #00d4ff; }
+  .field input.error { border-color: #e74c3c; }
+  .field input.valid { border-color: #00ff88; }
+  .field .help { font-size: 11px; color: #8892b0; margin-top: 4px; }
+  .submit-btn { width: 100%; padding: 12px; font-size: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0a0f1e; transition: all 0.3s; }
+  .submit-btn:hover { background: #00b8d9; }
+  .submit-btn:disabled { background: #555; cursor: not-allowed; }
+  .divider { height: 1px; background: #2a3a5e; margin: 20px 0; }
+  .confirm-section { display: none; }
+  .confirm-section h3 { font-size: 16px; color: #00d4ff; margin-bottom: 10px; }
+  .confirm-section input { width: 100%; padding: 10px 14px; font-size: 15px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; margin-bottom: 10px; }
+  .confirm-section input:focus { outline: none; border-color: #00d4ff; }
+</style>
+</head>
+<body>
+<div class="toast-area" id="toastArea"></div>
+<div class="form-card">
+  <h2>Account Registration</h2>
+  <div class="subtitle">Complete your profile to get started</div>
+  <div class="field">
+    <label>Full Name</label>
+    <input type="text" id="nameInput" value="Michael Torres">
+  </div>
+  <div class="field">
+    <label>Email Address</label>
+    <input type="email" id="emailInput" value="m.torres@example.com">
+  </div>
+  <div class="field">
+    <label>Phone Number</label>
+    <input type="tel" id="phoneInput" value="555-CALL-ME" class="error">
+    <div class="help">Format: +1 (XXX) XXX-XXXX or XXX-XXX-XXXX</div>
+  </div>
+  <button class="submit-btn" id="submitBtn">Register</button>
+  <div class="divider"></div>
+  <div class="confirm-section" id="confirmSection">
+    <h3>Confirmation Number</h3>
+    <input type="text" id="confirmInput" placeholder="Enter confirmation number from success message">
+  </div>
+</div>
+<script>
+(function() {
+  let stage = 0; // 0 = initial, 1 = phone fixed, 2 = success shown
+  let confirmationShown = false;
+
+  function showToast(msg, type) {
+    const area = document.getElementById('toastArea');
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.innerHTML = '<span>' + (type === 'error' ? '&#9888;' : '&#10003;') + '</span> ' + msg;
+    area.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 50);
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() {
+        if (area.contains(toast)) area.removeChild(toast);
+      }, 400);
+    }, 3000);
+  }
+
+  function isValidPhone(phone) {
+    // Accept various formats: +1 (555) 234-5678, 555-234-5678, (555) 234-5678, etc.
+    const cleaned = phone.replace(/[\s\-\(\)\+]/g, '');
+    return /^\d{10,11}$/.test(cleaned);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    const phone = document.getElementById('phoneInput').value.trim();
+    const phoneEl = document.getElementById('phoneInput');
+
+    if (!isValidPhone(phone)) {
+      showToast('Error <span class="code">ERR-4021</span>: Phone format invalid', 'error');
+      phoneEl.classList.add('error');
+      phoneEl.classList.remove('valid');
+      stage = 0;
+      return;
+    }
+
+    // Phone is valid
+    phoneEl.classList.remove('error');
+    phoneEl.classList.add('valid');
+
+    if (stage === 0) {
+      stage = 1;
+    }
+
+    // Show success toast with confirmation number
+    showToast('Confirmed! Number: <span class="code">CNF-78234</span>', 'success');
+    confirmationShown = true;
+    stage = 2;
+
+    // Show confirmation section
+    document.getElementById('confirmSection').style.display = 'block';
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = 'Registered';
+  });
+
+  document.getElementById('phoneInput').addEventListener('input', function() {
+    this.classList.remove('error');
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('confirmInput').value.trim();
+    if (val.includes('CNF-78234') || val === 'CNF-78234') return 'confirmation_correct';
+    if (val.length > 0) return 'confirmation_incorrect';
+    return 'no_confirmation';
+  };
+})();
+</script>
+</body>
+</html>

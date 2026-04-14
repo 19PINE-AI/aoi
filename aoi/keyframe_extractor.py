@@ -49,11 +49,13 @@ class KeyframeExtractor:
         device: str = "cuda",
         theta: float = 0.04,  # Calibrated on DynaCU-Bench: web UI changes ~0.05-0.08
         pixel_threshold: float = 0.01,
+        pixel_capture_threshold: float = 0.03,  # Capture on pixel change alone if >= 3%
         max_keyframes: int = 5,
         sample_size: tuple[int, int] = (224, 224),  # CLIP input size
     ):
         self.theta = theta
         self.pixel_threshold = pixel_threshold
+        self.pixel_capture_threshold = pixel_capture_threshold
         self.max_keyframes = max_keyframes
         self.sample_size = sample_size
         self.device = device
@@ -77,11 +79,21 @@ class KeyframeExtractor:
             "keyframes_emitted": 0,
         }
 
+    # Class-level CLIP model cache — avoids reloading per task
+    _shared_clip_model = None
+    _shared_clip_preprocess = None
+    _shared_clip_device = None
+    _shared_clip_lock = threading.Lock()
+
     def _load_clip(self):
         if self._clip_model is not None:
             return
-        with self._clip_lock:
-            if self._clip_model is not None:
+        # Try shared cache first
+        with KeyframeExtractor._shared_clip_lock:
+            if (KeyframeExtractor._shared_clip_model is not None
+                    and KeyframeExtractor._shared_clip_device == self.device):
+                self._clip_model = KeyframeExtractor._shared_clip_model
+                self._clip_preprocess = KeyframeExtractor._shared_clip_preprocess
                 return
             import clip
             import torch
@@ -89,6 +101,9 @@ class KeyframeExtractor:
             model.eval()
             self._clip_model = model
             self._clip_preprocess = preprocess
+            KeyframeExtractor._shared_clip_model = model
+            KeyframeExtractor._shared_clip_preprocess = preprocess
+            KeyframeExtractor._shared_clip_device = self.device
             logger.info("CLIP ViT-B/16 loaded on %s", self.device)
 
     def _encode_clip(self, image: Image.Image) -> np.ndarray:
@@ -146,12 +161,21 @@ class KeyframeExtractor:
                 return
 
             dist = self._cosine_distance(emb, self._anchor_emb)
-            if dist < self.theta:
-                # Semantically similar to anchor (spinner, cursor, repeated frame)
+
+            # --- Dual-threshold capture ---
+            # Path A: CLIP detects semantic change (filters periodic noise)
+            clip_triggered = dist >= self.theta
+            # Path B: Large pixel change even if CLIP is insensitive
+            #   (catches toasts, small UI additions CLIP misses)
+            pixel_triggered = ratio >= self.pixel_capture_threshold
+
+            if not clip_triggered and not pixel_triggered:
+                # Neither gate fired — suppress
                 return
 
-            # Semantic change detected — emit keyframe, reanchor
-            self.stats["clip_gate_passed"] += 1
+            # Change detected — emit keyframe, reanchor
+            if clip_triggered:
+                self.stats["clip_gate_passed"] += 1
             self.stats["keyframes_emitted"] += 1
             self._anchor_emb = emb
             self._keyframes.append(
