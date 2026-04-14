@@ -99,7 +99,7 @@
     speechSynthesis.speak(u);
     // countdown
     const iv = setInterval(() => {
-      const left = Math.max(0, 10 - Math.floor((Date.now() - q1Asked) / 1000));
+      const left = Math.max(0, 20 - Math.floor((Date.now() - q1Asked) / 1000));
       document.getElementById('timer1').textContent = left > 0 ? left + 's remaining' : 'Time up';
       if (left <= 0) clearInterval(iv);
     }, 500);
@@ -113,7 +113,7 @@
     u.rate = 0.9; u.lang = 'en-US';
     speechSynthesis.speak(u);
     const iv = setInterval(() => {
-      const left = Math.max(0, 10 - Math.floor((Date.now() - q2Asked) / 1000));
+      const left = Math.max(0, 20 - Math.floor((Date.now() - q2Asked) / 1000));
       document.getElementById('timer2').textContent = left > 0 ? left + 's remaining' : 'Time up';
       if (left <= 0) clearInterval(iv);
     }, 500);
@@ -136,8 +136,8 @@
     const v2 = document.getElementById('resp2').value.replace(/\s/g, '');
     const acctOk = v1.includes('48297753') || v1.includes('4829-7753');
     const zipOk = v2.includes('90210');
-    const t1Ok = resp1Time ? (resp1Time - q1Asked < 10000) : false;
-    const t2Ok = resp2Time ? (resp2Time - q2Asked < 10000) : false;
+    const t1Ok = resp1Time ? (resp1Time - q1Asked < 20000) : false;
+    const t2Ok = resp2Time ? (resp2Time - q2Asked < 20000) : false;
     if (acctOk && zipOk && t1Ok && t2Ok) return 'both_responded_in_time';
     if (acctOk && zipOk) return 'both_correct_but_slow';
     return 'incorrect';
