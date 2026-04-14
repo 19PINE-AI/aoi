@@ -53,7 +53,9 @@ logger = logging.getLogger(__name__)
 
 FAIL_VALUES = frozenset({
     "pending", "unknown", "error", "timeout", "alarm_missed",
-    "session_expired", "incorrect",
+    "session_expired", "incorrect", "incomplete", "not_submitted",
+    "no_response", "no_changes_made", "no_action", "no_actions_taken",
+    "none_acknowledged", "not_acknowledged", "no_alerts_acked",
 })
 
 
