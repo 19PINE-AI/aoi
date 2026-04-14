@@ -1,0 +1,282 @@
+[
+  {
+    "task_id": "A-H1",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "incomplete",
+    "steps_taken": 1,
+    "total_time_s": 43.52828335762024,
+    "total_model_latency_ms": 3237.8830909729004,
+    "total_obs_overhead_ms": 5862.766742706299,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "narration": "The audio is at 0:10 of 0:50, playing the debate with only the first argument heard so far about renewable energy costs dropping 60 percent.",
+        "audio_text": "First, Dr. Martinez argues that renewable energy costs have dropped by 60 percent",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 5862.766742706299,
+        "model_latency_ms": 3237.8830909729004,
+        "success": true,
+        "result_val": "incomplete"
+      }
+    ],
+    "error": null,
+    "eval_type": "llm",
+    "llm_score": 0.0,
+    "llm_reason": "The agent provided an interface, not a summary of the arguments. Therefore, it contains none of the key facts.",
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-H2",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "all_revenues_correct",
+    "steps_taken": 5,
+    "total_time_s": 58.120784759521484,
+    "total_model_latency_ms": 14738.74568939209,
+    "total_obs_overhead_ms": 16757.413387298584,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "narration": "The podcast has played through ~25 seconds, revealing Acme Corp at $12.4M and Bolt Inc at $8.6M, but Cipher Ltd's revenue hasn't been mentioned yet - need to wait for more audio.",
+        "audio_text": "beating analyst expectations by 2%. Bolting came in at 8.6%.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3038.796901702881,
+        "model_latency_ms": 3053.1482696533203,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "narration": "The audio transcript shows Bolt Inc came in at $8.7M (slightly below projected $9M), and Cypher LTE is being mentioned but the revenue figure hasn't been stated yet.",
+        "audio_text": "million, which was slightly below the projected 9 million, and Cypher LTE.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3463.0560874938965,
+        "model_latency_ms": 3286.7798805236816,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 3,
+        "action": "fill(#rev1, \"12.4\")",
+        "narration": "All three company revenues have been revealed in the audio transcript: Acme Corp $12.4M, Bolt Inc $8.7M, and Cypher Ltd $21.1M.",
+        "audio_text": "showing driven by their cloud division.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3543.2989597320557,
+        "model_latency_ms": 2704.1943073272705,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 4,
+        "action": "fill(#rev2, \"8.7\")",
+        "narration": "Acme Corp field now shows \"12.4\" filled in, while Bolt Inc and Cipher Ltd fields remain empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3344.90704536438,
+        "model_latency_ms": 2727.872610092163,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 5,
+        "action": "fill(#rev3, \"21.1\")",
+        "narration": "The Bolt Inc field now shows \"8.7\" filled in, and the Cipher Ltd field remains empty with placeholder \"e.g. 21.1\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3367.354393005371,
+        "model_latency_ms": 2966.7506217956543,
+        "success": true,
+        "result_val": "all_revenues_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "A-H3",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "all_ingredients_correct",
+    "steps_taken": 14,
+    "total_time_s": 118.06659746170044,
+    "total_model_latency_ms": 38229.888916015625,
+    "total_obs_overhead_ms": 45058.435916900635,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 252)",
+        "narration": "The podcast is playing at 0:11 of 0:40, showing a Chef's Table Podcast episode about Classic Tomato Basil Soup with a shopping list form below.",
+        "audio_text": "of Roma tomatoes. Make sure they're ripe and firm. Next.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2949.887275695801,
+        "model_latency_ms": 4199.532032012939,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "narration": "The podcast is playing at around 0:11 and showing pause button (\u275a\u275a), with 3 ingredients heard so far - Roma tomatoes (2 lbs), garlic (3 cloves), and basil leaves (1 cup), with 2 more ingredients remai",
+        "audio_text": "garlic makes all the difference. You'll also need one cup of fresh basil leaves.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3466.9318199157715,
+        "model_latency_ms": 3186.119794845581,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "narration": "The podcast is still playing at around 0:11, showing the pause button active, with 4 ingredients heard so far including heavy cream, and one more ingredient remaining.",
+        "audio_text": "Don't use dried, it won't be the same. Then, half a cup of heavy cream for that.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3905.6408405303955,
+        "model_latency_ms": 2217.4625396728516,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 4,
+        "action": "click(640, 252)",
+        "narration": "All 5 ingredients have been heard from the audio transcript, so I can now pause the podcast and fill in the shopping list.",
+        "audio_text": "2 tablespoons of olive oil for sauteing.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3918.010950088501,
+        "model_latency_ms": 2591.822624206543,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 5,
+        "action": "fill(#ing1, \"Roma tomatoes\")",
+        "narration": "The podcast is paused at 0:11 and all 5 ingredients have been heard, with empty shopping list fields ready to be filled.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3718.9300060272217,
+        "model_latency_ms": 3031.3265323638916,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 6,
+        "action": "fill(#qty1, \"2 pounds\")",
+        "narration": "The shopping list now shows \"Roma tomatoes\" filled in the first ingredient field, with all other fields still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3851.6249656677246,
+        "model_latency_ms": 2923.1419563293457,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 7,
+        "action": "fill(#ing2, \"Garlic\")",
+        "narration": "The shopping list shows \"Roma tomatoes\" and \"2 pounds\" filled in the first row, with all other fields still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3810.0969791412354,
+        "model_latency_ms": 2769.575595855713,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 8,
+        "action": "fill(#qty2, \"3 cloves\")",
+        "narration": "The shopping list now shows \"Garlic\" filled in the second ingredient field, with the quantity field for row 2 still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3630.9680938720703,
+        "model_latency_ms": 2873.020887374878,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 9,
+        "action": "fill(#ing3, \"Fresh basil leaves\")",
+        "narration": "Rows 1 and 2 are filled with Roma tomatoes/2 pounds and Garlic/3 cloves; rows 3-5 remain empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2948.120355606079,
+        "model_latency_ms": 2360.55588722229,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 10,
+        "action": "fill(#qty3, \"1 cup\")",
+        "narration": "Row 3 now shows \"Fresh basil leaves\" filled in, with the quantity field still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2777.383804321289,
+        "model_latency_ms": 2536.0841751098633,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 11,
+        "action": "fill(#ing4, \"Heavy cream\")",
+        "narration": "Rows 1-3 are filled with tomatoes, garlic, and basil; rows 4-5 remain empty, and the audio has revealed ingredients 4 (heavy cream, half cup) and 5 (olive oil, 2 tablespoons).",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2676.3546466827393,
+        "model_latency_ms": 3213.569164276123,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 12,
+        "action": "fill(#qty4, \"half a cup\")",
+        "narration": "Row 4 shows \"Heavy cream\" filled in but the quantity field is still empty, and row 5 remains completely empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2615.286350250244,
+        "model_latency_ms": 2229.710817337036,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 13,
+        "action": "fill(#ing5, \"Olive oil\")",
+        "narration": "Row 5 remains empty and all other rows are filled; the audio has confirmed the 5th ingredient is olive oil at 2 tablespoons.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2392.5278186798096,
+        "model_latency_ms": 2142.1122550964355,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 14,
+        "action": "fill(#qty5, \"2 tablespoons\")",
+        "narration": "Row 5 now shows \"Olive oil\" filled in, but the quantity field remains empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2396.672010421753,
+        "model_latency_ms": 1955.8546543121338,
+        "success": true,
+        "result_val": "all_ingredients_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  }
+]

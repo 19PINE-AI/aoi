@@ -252,27 +252,28 @@ class BrowserEvaluator:
                     texts.push(...slideAudio);
                 }
 
-                // Find SpeechSynthesisUtterance text in script elements
-                if (texts.length === 0) {
-                    const scripts = document.querySelectorAll('script');
-                    for (const s of scripts) {
-                        const src = s.textContent;
-                        // Match SpeechSynthesisUtterance("...") or ('...')
-                        // Use separate patterns for double and single quotes
-                        // to handle apostrophes inside text correctly
-                        const dqMatches = src.matchAll(/SpeechSynthesisUtterance\("([^"]+)"\)/g);
-                        for (const m of dqMatches) {
-                            if (m[1] && m[1].length > 5) texts.push(m[1]);
-                        }
-                        const sqMatches = src.matchAll(/SpeechSynthesisUtterance\('([^']+)'\)/g);
-                        for (const m of sqMatches) {
-                            if (m[1] && m[1].length > 5) texts.push(m[1]);
-                        }
-                    }
-                }
-
                 return texts;
             }''')
+
+            # If no audio found from explicit variables, wait for the
+            # SpeechSynthesis monkey-patch to capture sequential utterances.
+            # Pages chain utterances via onend callbacks with 1-2s delays.
+            if not audio_texts:
+                prev_count = 0
+                stable_ticks = 0
+                for _poll in range(30):  # up to 15 seconds
+                    time.sleep(0.5)
+                    captured = env._page.evaluate(
+                        'window.__capturedUtterances ? window.__capturedUtterances.slice() : []')
+                    cur_count = len(captured) if captured else 0
+                    if cur_count > 0 and cur_count == prev_count:
+                        stable_ticks += 1
+                        if stable_ticks >= 6:  # 3s with no new utterances
+                            audio_texts = captured
+                            break
+                    else:
+                        stable_ticks = 0
+                    prev_count = cur_count
 
             if not audio_texts:
                 logger.debug("No audio content found in page")

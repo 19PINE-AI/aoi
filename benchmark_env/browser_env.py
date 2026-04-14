@@ -103,6 +103,24 @@ class BrowserEnvironment:
             )
             self._page = context.new_page()
 
+            # Monkey-patch SpeechSynthesis to capture utterance text
+            # (headless Chromium has no TTS voices, so we intercept and
+            # replay via PulseAudio in the evaluator)
+            self._page.add_init_script("""
+                window.__capturedUtterances = [];
+                const _origSpeak = speechSynthesis.speak.bind(speechSynthesis);
+                speechSynthesis.speak = function(utterance) {
+                    if (utterance && utterance.text) {
+                        window.__capturedUtterances.push(utterance.text);
+                    }
+                    // Fire onend callback quickly so sequential utterances chain
+                    // fast — we only need to capture text, not actually play audio
+                    if (utterance && utterance.onend) {
+                        setTimeout(() => utterance.onend(new Event('end')), 50);
+                    }
+                };
+            """)
+
             # Load the HTML task file
             html_path = HTML_TASKS_DIR / self.html_file
             if html_path.exists():
