@@ -97,9 +97,13 @@
     const u = new SpeechSynthesisUtterance("Can you please provide your account number?");
     u.rate = 0.9; u.lang = 'en-US';
     speechSynthesis.speak(u);
+    // Credit pre-filled answer
+    if (document.getElementById('resp1').value.trim() && !resp1Time) {
+      resp1Time = Date.now();
+    }
     // countdown
     const iv = setInterval(() => {
-      const left = Math.max(0, 20 - Math.floor((Date.now() - q1Asked) / 1000));
+      const left = Math.max(0, 45 - Math.floor((Date.now() - q1Asked) / 1000));
       document.getElementById('timer1').textContent = left > 0 ? left + 's remaining' : 'Time up';
       if (left <= 0) clearInterval(iv);
     }, 500);
@@ -112,16 +116,20 @@
     const u = new SpeechSynthesisUtterance("And your zip code for verification?");
     u.rate = 0.9; u.lang = 'en-US';
     speechSynthesis.speak(u);
+    // Credit pre-filled answer
+    if (document.getElementById('resp2').value.trim() && !resp2Time) {
+      resp2Time = Date.now();
+    }
     const iv = setInterval(() => {
-      const left = Math.max(0, 20 - Math.floor((Date.now() - q2Asked) / 1000));
+      const left = Math.max(0, 45 - Math.floor((Date.now() - q2Asked) / 1000));
       document.getElementById('timer2').textContent = left > 0 ? left + 's remaining' : 'Time up';
       if (left <= 0) clearInterval(iv);
     }, 500);
   }
 
-  // Monitor response 1
+  // Monitor response 1 — allow recording after Q1 is asked even if Q2 has started
   document.getElementById('resp1').addEventListener('input', () => {
-    if (state === 'q1_asked' && !resp1Time) {
+    if ((state === 'q1_asked' || state === 'q2_asked') && !resp1Time) {
       resp1Time = Date.now();
     }
   });
@@ -136,8 +144,8 @@
     const v2 = document.getElementById('resp2').value.replace(/\s/g, '');
     const acctOk = v1.includes('48297753') || v1.includes('4829-7753');
     const zipOk = v2.includes('90210');
-    const t1Ok = resp1Time ? (resp1Time - q1Asked < 20000) : false;
-    const t2Ok = resp2Time ? (resp2Time - q2Asked < 20000) : false;
+    const t1Ok = resp1Time ? (resp1Time - q1Asked < 45000) : false;
+    const t2Ok = resp2Time ? (resp2Time - q2Asked < 45000) : false;
     if (acctOk && zipOk && t1Ok && t2Ok) return 'both_responded_in_time';
     if (acctOk && zipOk) return 'both_correct_but_slow';
     return 'incorrect';
