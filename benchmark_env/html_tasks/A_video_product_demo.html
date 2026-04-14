@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CloudSync Pro — Official Product Demo | VideoHub</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Roboto, Arial, sans-serif; background: #0f0f0f; color: #fff; }
+
+  /* NAV */
+  #navbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: #0f0f0f; display: flex; align-items: center;
+    padding: 0 16px; z-index: 100; border-bottom: 1px solid #272727;
+  }
+  #navbar .logo { font-size: 20px; font-weight: 700; color: #ff0000; letter-spacing: -1px; }
+  #navbar .logo span { color: #fff; font-weight: 400; }
+  #navbar .search-bar {
+    flex: 1; max-width: 600px; margin: 0 40px;
+    display: flex; align-items: center;
+  }
+  #navbar .search-bar input {
+    flex: 1; padding: 8px 16px; border: 1px solid #303030;
+    background: #121212; color: #fff; border-radius: 40px 0 0 40px;
+    font-size: 14px; outline: none;
+  }
+  #navbar .search-bar button {
+    padding: 8px 18px; background: #272727; border: 1px solid #303030;
+    border-left: none; border-radius: 0 40px 40px 0; color: #aaa; cursor: pointer;
+  }
+  #navbar .nav-icons { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+  #navbar .nav-icons .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #1a73e8;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600;
+  }
+
+  /* LAYOUT */
+  #layout { display: flex; margin-top: 56px; }
+
+  /* SIDEBAR */
+  #sidebar {
+    width: 240px; min-height: calc(100vh - 56px);
+    background: #0f0f0f; padding: 12px 0; position: fixed; top: 56px;
+    border-right: 1px solid #272727;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 24px;
+    padding: 10px 24px; cursor: pointer; font-size: 14px; border-radius: 10px; margin: 0 8px;
+  }
+  .sidebar-item:hover { background: #272727; }
+  .sidebar-item.active { background: #272727; font-weight: 600; }
+  .sidebar-item .icon { font-size: 20px; width: 24px; text-align: center; }
+  .sidebar-divider { border: none; border-top: 1px solid #272727; margin: 12px 0; }
+
+  /* MAIN CONTENT */
+  #main { margin-left: 240px; padding: 24px 24px 24px 24px; max-width: 1200px; }
+  #content-row { display: flex; gap: 24px; }
+  #primary { flex: 1; min-width: 0; }
+
+  /* VIDEO PLAYER */
+  #player-wrap {
+    background: #000; border-radius: 12px; overflow: hidden;
+    width: 100%; position: relative;
+  }
+  #demoCanvas {
+    width: 100%; display: block; border-radius: 12px;
+    background: #000; cursor: pointer;
+  }
+  #replay-btn {
+    position: absolute; bottom: 12px; right: 12px;
+    background: rgba(0,0,0,0.7); color: #fff; border: none;
+    padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  #replay-btn:hover { background: rgba(255,255,255,0.2); }
+  #progress-bar-wrap {
+    width: 100%; height: 4px; background: #555; cursor: pointer; border-radius: 2px;
+  }
+  #progress-bar { height: 4px; background: #ff0000; border-radius: 2px; width: 0%; transition: width 0.2s; }
+
+  /* VIDEO META */
+  #video-title { font-size: 20px; font-weight: 600; margin-top: 12px; line-height: 1.3; }
+  #video-meta {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 12px; flex-wrap: wrap; gap: 8px;
+  }
+  #channel-info { display: flex; align-items: center; gap: 12px; }
+  #channel-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: #1a73e8;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 16px;
+  }
+  #channel-name { font-weight: 600; font-size: 15px; }
+  #channel-subs { font-size: 12px; color: #aaa; }
+  .subscribe-btn {
+    background: #fff; color: #0f0f0f; border: none; padding: 10px 20px;
+    border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 14px;
+  }
+  #action-buttons { display: flex; gap: 8px; align-items: center; }
+  .action-btn {
+    background: #272727; border: none; color: #fff; padding: 8px 16px;
+    border-radius: 20px; cursor: pointer; font-size: 14px; display: flex; align-items: center; gap: 6px;
+  }
+  .action-btn:hover { background: #3a3a3a; }
+
+  /* DESCRIPTION */
+  #description-box {
+    background: #272727; border-radius: 12px; padding: 16px; margin-top: 16px; font-size: 14px; line-height: 1.6;
+  }
+  #description-box .view-count { font-weight: 600; margin-bottom: 4px; }
+  #desc-text { color: #aaa; margin-top: 8px; }
+  #desc-text a { color: #3ea6ff; text-decoration: none; }
+
+  /* COMMENTS */
+  #comments { margin-top: 24px; }
+  #comments h3 { font-size: 16px; font-weight: 600; margin-bottom: 16px; }
+  .comment { display: flex; gap: 12px; margin-bottom: 20px; }
+  .comment-avatar {
+    width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700;
+  }
+  .comment-body .comment-author { font-size: 13px; font-weight: 600; }
+  .comment-body .comment-time { font-size: 12px; color: #aaa; margin-left: 8px; }
+  .comment-body .comment-text { font-size: 14px; margin-top: 4px; color: #e0e0e0; }
+
+  /* ANSWER FORM */
+  #answer-section {
+    background: #1a1a2e; border: 1px solid #1a73e8; border-radius: 12px;
+    padding: 24px; margin-top: 24px;
+  }
+  #answer-section h3 { font-size: 16px; margin-bottom: 6px; color: #e8f0fe; }
+  #answer-section p { font-size: 13px; color: #aaa; margin-bottom: 16px; }
+  #answer-section input {
+    width: 100%; padding: 12px 16px; border-radius: 8px;
+    border: 1px solid #3a3a5c; background: #0d0d1a; color: #fff;
+    font-size: 15px; outline: none; margin-bottom: 12px;
+  }
+  #answer-section input:focus { border-color: #1a73e8; }
+  #submit-btn {
+    background: #1a73e8; color: #fff; border: none; padding: 12px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  #submit-btn:hover { background: #1557b0; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 600; min-height: 20px; }
+  .result-ok { color: #34a853; }
+  .result-err { color: #ea4335; }
+
+  /* SIDEBAR (recommendations) */
+  #secondary { width: 360px; flex-shrink: 0; }
+  .rec-card { display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer; }
+  .rec-thumb {
+    width: 168px; height: 94px; border-radius: 8px; flex-shrink: 0;
+    background: #272727; display: flex; align-items: center; justify-content: center; color: #555; font-size: 12px;
+  }
+  .rec-info { flex: 1; }
+  .rec-title { font-size: 14px; font-weight: 500; line-height: 1.3; }
+  .rec-channel { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .rec-views { font-size: 12px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<nav id="navbar">
+  <div class="logo">▶ <span>VideoHub</span></div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search" value="cloudsync pro product demo">
+    <button>&#128269;</button>
+  </div>
+  <div class="nav-icons">
+    <span style="font-size:20px;cursor:pointer;">&#128276;</span>
+    <div class="avatar">U</div>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div id="layout">
+  <!-- SIDEBAR -->
+  <aside id="sidebar">
+    <div class="sidebar-item active"><span class="icon">&#8962;</span> Home</div>
+    <div class="sidebar-item"><span class="icon">&#128293;</span> Trending</div>
+    <div class="sidebar-item"><span class="icon">&#128250;</span> Subscriptions</div>
+    <hr class="sidebar-divider">
+    <div class="sidebar-item"><span class="icon">&#128196;</span> Library</div>
+    <div class="sidebar-item"><span class="icon">&#128336;</span> History</div>
+    <div class="sidebar-item"><span class="icon">&#9654;</span> Your videos</div>
+    <hr class="sidebar-divider">
+    <div style="padding: 10px 24px; font-size:12px; color:#aaa; font-weight:600; text-transform:uppercase;">Subscriptions</div>
+    <div class="sidebar-item"><span class="icon" style="width:24px;height:24px;border-radius:50%;background:#ea4335;font-size:12px;display:flex;align-items:center;justify-content:center;">T</span> TechWorld</div>
+    <div class="sidebar-item"><span class="icon" style="width:24px;height:24px;border-radius:50%;background:#34a853;font-size:12px;display:flex;align-items:center;justify-content:center;">D</span> DevCasts</div>
+    <div class="sidebar-item"><span class="icon" style="width:24px;height:24px;border-radius:50%;background:#fbbc04;font-size:12px;display:flex;align-items:center;justify-content:center;">C</span> CodeLab</div>
+  </aside>
+
+  <!-- MAIN -->
+  <main id="main">
+    <div id="content-row">
+      <div id="primary">
+        <!-- VIDEO PLAYER -->
+        <div id="player-wrap">
+          <canvas id="demoCanvas" width="854" height="480"></canvas>
+          <button id="replay-btn" onclick="startAnimation()">&#9654; Replay</button>
+          <div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+        </div>
+
+        <h1 id="video-title">CloudSync Pro — Official Product Demo (2024)</h1>
+        <div id="video-meta">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="channel-info">
+              <div id="channel-avatar">CS</div>
+              <div>
+                <div id="channel-name">CloudSync Official &#10003;</div>
+                <div id="channel-subs">428K subscribers</div>
+              </div>
+            </div>
+            <button class="subscribe-btn">Subscribe</button>
+          </div>
+          <div id="action-buttons">
+            <button class="action-btn">&#128077; 12K</button>
+            <button class="action-btn">&#128078;</button>
+            <button class="action-btn">&#8599; Share</button>
+            <button class="action-btn">&#8942; More</button>
+          </div>
+        </div>
+
+        <div id="description-box">
+          <div class="view-count">48,291 views &nbsp;·&nbsp; Jan 14, 2024</div>
+          <div id="desc-text">
+            Get a full overview of CloudSync Pro — the enterprise-grade file synchronization platform trusted by 10,000+ teams worldwide.
+            <br><br>
+            In this demo, we walk through the core features, pricing, and how to get started with your free trial.
+            <br><br>
+            🔗 <a href="#">https://cloudsync.io</a><br>
+            📧 sales@cloudsync.io<br><br>
+            #CloudSync #ProductDemo #SaaS #FileSync
+          </div>
+        </div>
+
+        <!-- ANSWER SECTION -->
+        <div id="answer-section">
+          <h3>&#127916; Task: Video Comprehension</h3>
+          <p>A product demo video plays. After it ends, type the product name shown.</p>
+          <input type="text" id="answer-input" placeholder="Type the product name here…" autocomplete="off">
+          <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+          <div id="result-msg"></div>
+        </div>
+
+        <!-- COMMENTS -->
+        <div id="comments">
+          <h3>247 Comments</h3>
+          <div class="comment">
+            <div class="comment-avatar" style="background:#ea4335;">J</div>
+            <div class="comment-body">
+              <span class="comment-author">@jenna_tech</span><span class="comment-time">2 weeks ago</span>
+              <div class="comment-text">Been using CloudSync Pro for 6 months — the real-time sync is genuinely impressive. Zero conflicts so far.</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-avatar" style="background:#34a853;">M</div>
+            <div class="comment-body">
+              <span class="comment-author">@markdevs</span><span class="comment-time">3 weeks ago</span>
+              <div class="comment-text">The $29/month pricing is pretty competitive for what you get. End-to-end encryption is a huge plus.</div>
+            </div>
+          </div>
+          <div class="comment">
+            <div class="comment-avatar" style="background:#fbbc04;">A</div>
+            <div class="comment-body">
+              <span class="comment-author">@alice_startup</span><span class="comment-time">1 month ago</span>
+              <div class="comment-text">Switched from a competitor last quarter. The 99.9% uptime guarantee has actually held up.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- RECOMMENDATIONS -->
+      <aside id="secondary">
+        <div class="rec-card">
+          <div class="rec-thumb">▶</div>
+          <div class="rec-info">
+            <div class="rec-title">CloudSync Pro vs Dropbox Business — Full Comparison</div>
+            <div class="rec-channel">CloudSync Official</div>
+            <div class="rec-views">24K views · 3 weeks ago</div>
+          </div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-thumb">▶</div>
+          <div class="rec-info">
+            <div class="rec-title">How to Set Up Team Workspaces in CloudSync Pro</div>
+            <div class="rec-channel">CloudSync Official</div>
+            <div class="rec-views">11K views · 1 month ago</div>
+          </div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-thumb">▶</div>
+          <div class="rec-info">
+            <div class="rec-title">Best Cloud Storage Solutions for Teams in 2024</div>
+            <div class="rec-channel">TechWorld</div>
+            <div class="rec-views">89K views · 2 months ago</div>
+          </div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-thumb">▶</div>
+          <div class="rec-info">
+            <div class="rec-title">End-to-End Encryption Explained Simply</div>
+            <div class="rec-channel">Security Now</div>
+            <div class="rec-views">145K views · 5 months ago</div>
+          </div>
+        </div>
+        <div class="rec-card">
+          <div class="rec-thumb">▶</div>
+          <div class="rec-info">
+            <div class="rec-title">SaaS Pricing Strategies — How Top Companies Do It</div>
+            <div class="rec-channel">StartupFocus</div>
+            <div class="rec-views">32K views · 4 months ago</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('demoCanvas');
+  const ctx = canvas.getContext('2d');
+  const DURATION = 14000; // 14 seconds
+  let animStart = null;
+  let animFrame = null;
+
+  function easeIn(t) { return t * t; }
+  function easeOut(t) { return 1 - (1-t)*(1-t); }
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const t = Math.min(elapsed / DURATION, 1);
+    const W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (elapsed < 3000) {
+      // Phase 1: Logo formation 0-3s
+      const p = elapsed / 3000;
+      ctx.fillStyle = '#0a0a1a';
+      ctx.fillRect(0, 0, W, H);
+
+      // Animated particles converging
+      const numParticles = 30;
+      for (let i = 0; i < numParticles; i++) {
+        const angle = (i / numParticles) * Math.PI * 2;
+        const radius = (1 - p) * 200 * easeOut(1 - p);
+        const px = W/2 + Math.cos(angle) * radius;
+        const py = H/2 + Math.sin(angle) * radius;
+        ctx.fillStyle = `rgba(26, 115, 232, ${p})`;
+        ctx.beginPath();
+        ctx.arc(px, py, 4, 0, Math.PI*2);
+        ctx.fill();
+      }
+
+      // Cloud icon
+      const alpha = Math.min(p * 2, 1);
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = '#1a73e8';
+      // Draw a simple cloud shape
+      ctx.beginPath();
+      ctx.arc(W/2 - 60, H/2 - 60, 40, 0, Math.PI*2);
+      ctx.arc(W/2, H/2 - 75, 55, 0, Math.PI*2);
+      ctx.arc(W/2 + 60, H/2 - 60, 40, 0, Math.PI*2);
+      ctx.rect(W/2 - 95, H/2 - 60, 190, 50);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Text
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = '#ffffff';
+      ctx.font = `bold ${Math.round(52 * (0.5 + p * 0.5))}px Arial`;
+      ctx.textAlign = 'center';
+      ctx.fillText('CloudSync Pro', W/2, H/2 + 40);
+      ctx.globalAlpha = 1;
+
+    } else if (elapsed < 6000) {
+      // Phase 2: Feature list 3-6s
+      const p = (elapsed - 3000) / 3000;
+      ctx.fillStyle = '#0d1b2a';
+      ctx.fillRect(0, 0, W, H);
+
+      // Logo small at top
+      ctx.fillStyle = '#1a73e8';
+      ctx.font = 'bold 28px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('CloudSync Pro', W/2, 80);
+
+      ctx.fillStyle = '#aaa';
+      ctx.font = '16px Arial';
+      ctx.fillText('Feature Overview', W/2, 108);
+
+      const features = [
+        '✓  Real-time sync',
+        '✓  End-to-end encryption',
+        '✓  99.9% uptime guarantee'
+      ];
+      features.forEach((f, i) => {
+        const delay = i * 0.3;
+        const fp = Math.max(0, Math.min((p - delay) / 0.3, 1));
+        const x = W/2 + (1 - easeOut(fp)) * 80;
+        ctx.globalAlpha = fp;
+        ctx.fillStyle = '#34a853';
+        ctx.font = 'bold 28px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(f, x, 220 + i * 80);
+        ctx.globalAlpha = 1;
+      });
+
+    } else if (elapsed < 10000) {
+      // Phase 3: Price/CTA 6-10s
+      const p = (elapsed - 6000) / 4000;
+      ctx.fillStyle = '#1a1a2e';
+      ctx.fillRect(0, 0, W, H);
+
+      // Pulsing border
+      const pulse = 0.5 + 0.5 * Math.sin(elapsed / 300);
+      ctx.strokeStyle = `rgba(26,115,232,${0.4 + pulse * 0.6})`;
+      ctx.lineWidth = 3;
+      ctx.strokeRect(60, 80, W - 120, H - 160);
+
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 22px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Special Offer', W/2, 160);
+
+      ctx.fillStyle = '#1a73e8';
+      ctx.font = 'bold 72px Arial';
+      ctx.fillText('$29/month', W/2, 270);
+
+      ctx.fillStyle = '#aaa';
+      ctx.font = '20px Arial';
+      ctx.fillText('per workspace · unlimited users', W/2, 310);
+
+      // CTA button
+      const btnAlpha = Math.min(Math.max((p - 0.5) * 4, 0), 1);
+      ctx.globalAlpha = btnAlpha;
+      ctx.fillStyle = '#1a73e8';
+      roundRect(ctx, W/2 - 140, 360, 280, 56, 28);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 22px Arial';
+      ctx.fillText('Start Free Trial →', W/2, 395);
+      ctx.globalAlpha = 1;
+
+    } else if (elapsed < 14000) {
+      // Phase 4: Fade to black with tagline 10-14s
+      const p = (elapsed - 10000) / 4000;
+      const bgAlpha = easeIn(p);
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+
+      const textAlpha = p < 0.3 ? p/0.3 : p > 0.8 ? 1 : 1;
+      ctx.globalAlpha = textAlpha;
+      ctx.fillStyle = '#1a73e8';
+      ctx.font = 'bold 38px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('CloudSync Pro', W/2, H/2 - 20);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '20px Arial';
+      ctx.fillText('Your data, everywhere.', W/2, H/2 + 20);
+      ctx.globalAlpha = 1;
+    } else {
+      // End state
+      ctx.fillStyle = '#000';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#1a73e8';
+      ctx.font = 'bold 38px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('CloudSync Pro', W/2, H/2 - 20);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '20px Arial';
+      ctx.fillText('Your data, everywhere.', W/2, H/2 + 20);
+    }
+
+    // Update progress bar
+    document.getElementById('progress-bar').style.width = (t * 100) + '%';
+
+    if (elapsed < DURATION) {
+      animFrame = requestAnimationFrame(drawFrame);
+    }
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + w - r, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + r);
+    ctx.lineTo(x + w, y + h - r);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+    ctx.lineTo(x + r, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+    ctx.fill();
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('progress-bar').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-input').value.trim().toLowerCase();
+    const msgEl = document.getElementById('result-msg');
+    if (val.includes('cloudsync')) {
+      taskResult = 'correct_answer';
+      msgEl.textContent = '✓ Correct! Product name accepted.';
+      msgEl.className = 'result-ok';
+    } else {
+      msgEl.textContent = '✗ Incorrect. Watch the video carefully and try again.';
+      msgEl.className = 'result-err';
+    }
+  }
+
+  // Auto-start on load
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

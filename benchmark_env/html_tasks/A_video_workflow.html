@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>How to Create Your First Project — Helios Platform Help Center</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, Arial, sans-serif; background: #f8fafc; color: #0f172a; }
+
+  /* TOPBAR */
+  #topbar {
+    background: #0f172a; color: #fff; height: 60px;
+    display: flex; align-items: center; padding: 0 32px; gap: 20px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-icon { width: 32px; height: 32px; background: #6366f1; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 900; font-size: 16px; }
+  .brand-text { font-size: 18px; font-weight: 700; }
+  .brand-text span { color: #818cf8; }
+  #topbar nav { display: flex; gap: 24px; margin-left: 32px; }
+  #topbar nav a { color: #94a3b8; text-decoration: none; font-size: 14px; }
+  #topbar nav a:hover { color: #fff; }
+  #topbar nav a.active { color: #fff; font-weight: 600; }
+  .search-wrap { margin-left: auto; position: relative; }
+  .search-wrap input { background: #1e293b; border: 1px solid #334155; color: #fff; padding: 7px 14px 7px 36px; border-radius: 8px; font-size: 14px; outline: none; width: 240px; }
+  .search-wrap::before { content: '⌕'; position: absolute; left: 12px; top: 8px; color: #64748b; font-size: 16px; }
+
+  /* LAYOUT */
+  #wrapper { display: flex; min-height: calc(100vh - 60px); }
+  #leftnav { width: 260px; flex-shrink: 0; background: #fff; border-right: 1px solid #e2e8f0; padding: 24px 0; position: sticky; top: 60px; height: calc(100vh - 60px); overflow-y: auto; }
+  .lnav-section-title { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; padding: 10px 20px; margin-top: 16px; }
+  .lnav-item { display: flex; align-items: center; gap: 8px; padding: 8px 20px 8px 28px; font-size: 14px; color: #475569; text-decoration: none; cursor: pointer; }
+  .lnav-item:hover { background: #f1f5f9; color: #6366f1; }
+  .lnav-item.active { background: #eef2ff; color: #6366f1; font-weight: 600; border-left: 3px solid #6366f1; padding-left: 25px; }
+  .lnav-divider { border: none; border-top: 1px solid #e2e8f0; margin: 12px 0; }
+
+  /* MAIN */
+  #content { flex: 1; max-width: 800px; padding: 40px 48px; }
+  .breadcrumb { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+  .breadcrumb a { color: #6366f1; text-decoration: none; }
+  h1.title { font-size: 28px; font-weight: 700; color: #0f172a; margin-bottom: 8px; }
+  .subtitle { font-size: 15px; color: #64748b; margin-bottom: 28px; }
+
+  .callout { background: #eef2ff; border-left: 4px solid #6366f1; border-radius: 0 8px 8px 0; padding: 14px 18px; margin-bottom: 24px; font-size: 14px; color: #312e81; line-height: 1.6; }
+
+  h2.sh { font-size: 18px; font-weight: 600; color: #0f172a; margin-bottom: 12px; border-bottom: 1px solid #e2e8f0; padding-bottom: 8px; }
+  p.bt { font-size: 15px; color: #475569; line-height: 1.7; margin-bottom: 16px; }
+
+  /* VIDEO */
+  #vid-container { background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+  #wfCanvas { width: 100%; display: block; }
+  #vid-bar { background: #0f172a; padding: 10px 14px; display: flex; align-items: center; gap: 12px; }
+  #vid-play { background: #6366f1; border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; }
+  #vid-prog-wrap { flex: 1; height: 4px; background: #334155; border-radius: 2px; }
+  #vid-prog-fill { height: 4px; background: #6366f1; border-radius: 2px; width: 0%; transition: width 0.1s; }
+  #vid-label { font-family: monospace; font-size: 12px; color: #64748b; }
+  .vid-cap { font-size: 13px; color: #94a3b8; text-align: center; margin-bottom: 28px; font-style: italic; }
+
+  /* INTERACTIVE APP */
+  #app-section { background: #fff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 28px; margin-bottom: 28px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  #app-section h3 { font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+  #app-section .app-desc { font-size: 14px; color: #64748b; margin-bottom: 20px; }
+
+  /* APP CHROME */
+  #helios-app { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden; }
+  #app-titlebar { background: #0f172a; padding: 10px 16px; display: flex; align-items: center; gap: 8px; }
+  #app-titlebar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  #app-titlebar .app-name { color: #94a3b8; font-size: 13px; margin-left: 8px; font-family: monospace; }
+  #app-body { display: flex; min-height: 360px; }
+  #app-sidebar { width: 200px; background: #1e293b; padding: 16px 0; flex-shrink: 0; }
+  .app-nav-item { padding: 10px 20px; font-size: 13px; color: #94a3b8; cursor: pointer; }
+  .app-nav-item:hover { background: #334155; color: #fff; }
+  .app-nav-item.app-active { background: #334155; color: #fff; }
+  #app-main { flex: 1; padding: 24px; }
+  #app-main h4 { font-size: 15px; font-weight: 600; color: #0f172a; margin-bottom: 16px; }
+
+  /* WORKFLOW STEPS */
+  #workflow-steps { list-style: none; margin-bottom: 24px; }
+  .wf-step {
+    display: flex; align-items: center; gap: 14px; padding: 12px 16px;
+    border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 8px;
+    background: #f8fafc; cursor: pointer; transition: all 0.15s;
+    font-size: 14px; color: #334155;
+  }
+  .wf-step:hover:not(.done):not(.locked) { background: #eef2ff; border-color: #6366f1; }
+  .wf-step.done { background: #f0fdf4; border-color: #22c55e; color: #166534; }
+  .wf-step.active { background: #eef2ff; border-color: #6366f1; color: #312e81; }
+  .wf-step.locked { opacity: 0.4; cursor: not-allowed; }
+  .step-num {
+    width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px;
+    background: #e2e8f0; color: #475569;
+  }
+  .wf-step.done .step-num { background: #22c55e; color: #fff; }
+  .wf-step.active .step-num { background: #6366f1; color: #fff; }
+  .step-label { font-weight: 500; flex: 1; }
+  .step-check { font-size: 18px; }
+
+  .wf-hint { font-size: 13px; color: #64748b; background: #f1f5f9; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; }
+
+  /* ANSWER */
+  #answer-section { background: #eef2ff; border: 2px solid #6366f1; border-radius: 12px; padding: 24px; margin-bottom: 28px; }
+  #answer-section h3 { font-size: 16px; font-weight: 700; color: #6366f1; margin-bottom: 6px; }
+  #answer-section .ap { font-size: 14px; color: #475569; margin-bottom: 12px; }
+  #progress-bar-wrap { background: #c7d2fe; border-radius: 8px; height: 8px; margin-bottom: 12px; overflow: hidden; }
+  #progress-bar-fill { height: 8px; background: #6366f1; border-radius: 8px; width: 0%; transition: width 0.3s; }
+  #progress-label { font-size: 13px; color: #6366f1; font-weight: 600; margin-bottom: 12px; }
+  #result-msg { font-size: 14px; font-weight: 700; min-height: 20px; }
+  .rok { color: #166534; } .rerr { color: #991b1b; }
+
+  /* RIGHT TOC */
+  #toc { width: 200px; flex-shrink: 0; padding: 40px 16px; }
+  #toc h5 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 12px; }
+  .toc-link { display: block; font-size: 13px; color: #64748b; padding: 4px 0; text-decoration: none; }
+  .toc-link:hover { color: #6366f1; }
+  .toc-link.active { color: #6366f1; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div id="topbar">
+  <div class="brand">
+    <div class="brand-icon">H</div>
+    <div class="brand-text">Helios <span>Platform</span></div>
+  </div>
+  <nav>
+    <a href="#" class="active">Help Center</a>
+    <a href="#">Docs</a>
+    <a href="#">API</a>
+    <a href="#">Community</a>
+  </nav>
+  <div class="search-wrap">
+    <input type="text" placeholder="Search help center…">
+  </div>
+</div>
+
+<div id="wrapper">
+  <!-- LEFT NAV -->
+  <nav id="leftnav">
+    <div class="lnav-section-title">Getting Started</div>
+    <a class="lnav-item" href="#">Overview</a>
+    <a class="lnav-item" href="#">Account Setup</a>
+    <a class="lnav-item active" href="#">Creating Projects</a>
+    <a class="lnav-item" href="#">Team Management</a>
+    <hr class="lnav-divider">
+    <div class="lnav-section-title">Workspace</div>
+    <a class="lnav-item" href="#">Settings</a>
+    <a class="lnav-item" href="#">Integrations</a>
+    <a class="lnav-item" href="#">Templates</a>
+    <hr class="lnav-divider">
+    <div class="lnav-section-title">Advanced</div>
+    <a class="lnav-item" href="#">Automation</a>
+    <a class="lnav-item" href="#">Permissions</a>
+    <a class="lnav-item" href="#">API Reference</a>
+  </nav>
+
+  <!-- CONTENT -->
+  <main id="content">
+    <div class="breadcrumb"><a href="#">Help Center</a> › <a href="#">Getting Started</a> › Creating Projects</div>
+    <h1 class="title">How to Create Your First Project</h1>
+    <p class="subtitle">A step-by-step guide to creating and configuring a new project in Helios Platform.</p>
+
+    <div class="callout">
+      <strong>Video Tutorial:</strong> Watch the demo video below to see the full 5-step project creation workflow. Then use the interactive panel to replicate it in order.
+    </div>
+
+    <h2 class="sh">Video Demo: 5-Step Workflow</h2>
+    <p class="bt">The video below shows the complete workflow for creating a new project in Helios Platform. Pay close attention to the sequence — you'll need to replicate it in the interactive panel below.</p>
+
+    <!-- VIDEO -->
+    <div id="vid-container">
+      <canvas id="wfCanvas" width="760" height="428"></canvas>
+    </div>
+    <div id="vid-bar">
+      <button id="vid-play" onclick="startAnimation()">&#9654;</button>
+      <div id="vid-prog-wrap"><div id="vid-prog-fill"></div></div>
+      <span id="vid-label">0:00 / 0:25</span>
+    </div>
+    <p class="vid-cap">Helios Platform — New Project Creation Workflow (25s)</p>
+
+    <h2 class="sh">Interactive Practice: Replicate the Workflow</h2>
+    <p class="bt">Now replicate the workflow shown in the video. Click each step button in order (1 → 2 → 3 → 4 → 5). Steps must be completed in sequence.</p>
+
+    <!-- INTERACTIVE APP -->
+    <div id="app-section">
+      <h3>&#9881; Helios Platform — Simulated Interface</h3>
+      <p class="app-desc">Complete the 5-step workflow in the correct order by clicking each step below.</p>
+
+      <div id="helios-app">
+        <div id="app-titlebar">
+          <div class="dot" style="background:#ff5f56;"></div>
+          <div class="dot" style="background:#ffbd2e;"></div>
+          <div class="dot" style="background:#27c93f;"></div>
+          <span class="app-name">Helios Platform — app.helios.io</span>
+        </div>
+        <div id="app-body">
+          <div id="app-sidebar">
+            <div class="app-nav-item app-active">&#128193; Projects</div>
+            <div class="app-nav-item">&#128101; Team</div>
+            <div class="app-nav-item">&#9881; Settings</div>
+            <div class="app-nav-item">&#128202; Analytics</div>
+            <div style="margin-top:auto;padding:16px 20px;color:#475569;font-size:12px;">Helios v3.1.0</div>
+          </div>
+          <div id="app-main">
+            <h4>Projects Dashboard</h4>
+            <div class="wf-hint" id="wf-hint">Follow the workflow steps below in order (1 → 2 → 3 → 4 → 5).</div>
+            <ul id="workflow-steps">
+              <li class="wf-step active" id="step-1" onclick="doStep(1)">
+                <div class="step-num">1</div>
+                <div class="step-label">Click 'New Project'</div>
+                <span class="step-check"></span>
+              </li>
+              <li class="wf-step locked" id="step-2" onclick="doStep(2)">
+                <div class="step-num">2</div>
+                <div class="step-label">Enter project name: 'Demo'</div>
+                <span class="step-check"></span>
+              </li>
+              <li class="wf-step locked" id="step-3" onclick="doStep(3)">
+                <div class="step-num">3</div>
+                <div class="step-label">Select template: 'Blank'</div>
+                <span class="step-check"></span>
+              </li>
+              <li class="wf-step locked" id="step-4" onclick="doStep(4)">
+                <div class="step-num">4</div>
+                <div class="step-label">Add team member</div>
+                <span class="step-check"></span>
+              </li>
+              <li class="wf-step locked" id="step-5" onclick="doStep(5)">
+                <div class="step-num">5</div>
+                <div class="step-label">Click 'Create Project'</div>
+                <span class="step-check"></span>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANSWER STATUS -->
+    <div id="answer-section">
+      <h3>&#127916; Task: Workflow Replication</h3>
+      <p class="ap">Watch the video demo end-to-end, then replicate the 5-step workflow shown by clicking each button above in the correct order.</p>
+      <div id="progress-label">Progress: 0 / 5 steps completed</div>
+      <div id="progress-bar-wrap"><div id="progress-bar-fill"></div></div>
+      <div id="result-msg"></div>
+    </div>
+
+    <h2 class="sh">Additional Notes</h2>
+    <p class="bt">After completing the 5-step workflow, your project will be created and you'll be redirected to the project dashboard. From there, you can invite additional team members, configure integrations, and start adding tasks.</p>
+    <p class="bt">If you encounter any issues during project creation, consult the <a href="#" style="color:#6366f1;">Troubleshooting Guide</a> or contact support via the Help button in the bottom-right corner of the platform.</p>
+  </main>
+
+  <!-- TOC -->
+  <nav id="toc">
+    <h5>On this page</h5>
+    <a class="toc-link active" href="#">Video Demo</a>
+    <a class="toc-link" href="#">Interactive Practice</a>
+    <a class="toc-link" href="#">Additional Notes</a>
+    <a class="toc-link" href="#">FAQ</a>
+  </nav>
+</div>
+
+<script>
+  // ===== TASK STATE =====
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let stepsCompleted = 0;
+  const TOTAL_STEPS = 5;
+  let wrongOrderAttempts = 0;
+
+  const stepHints = [
+    "Click 'New Project' to begin.",
+    "Enter your project name: type 'Demo' in the name field.",
+    "Choose a starting template — select 'Blank'.",
+    "Add a team member to collaborate on this project.",
+    "Click 'Create Project' to finalize and create."
+  ];
+
+  function doStep(n) {
+    const nextStep = stepsCompleted + 1;
+    const hintEl = document.getElementById('wf-hint');
+
+    if (n !== nextStep) {
+      if (n <= stepsCompleted) {
+        hintEl.textContent = `Step ${n} is already completed. Continue with step ${nextStep}.`;
+      } else {
+        wrongOrderAttempts++;
+        hintEl.textContent = `Please complete step ${nextStep} first — follow the sequence in order.`;
+        hintEl.style.background = '#fef2f2';
+        hintEl.style.color = '#991b1b';
+        setTimeout(() => { hintEl.style.background = ''; hintEl.style.color = ''; }, 1200);
+      }
+      return;
+    }
+
+    // Complete step n
+    stepsCompleted = n;
+    const stepEl = document.getElementById(`step-${n}`);
+    stepEl.classList.remove('active', 'locked');
+    stepEl.classList.add('done');
+    stepEl.querySelector('.step-check').textContent = '✓';
+
+    // Unlock next
+    if (n < TOTAL_STEPS) {
+      const nextEl = document.getElementById(`step-${n + 1}`);
+      nextEl.classList.remove('locked');
+      nextEl.classList.add('active');
+      hintEl.textContent = `Step ${n} done! Next: ${stepHints[n]}`;
+      hintEl.style.background = '#f0fdf4';
+      hintEl.style.color = '#166534';
+      setTimeout(() => { hintEl.style.background = ''; hintEl.style.color = ''; }, 1000);
+    }
+
+    // Update progress
+    const pct = (stepsCompleted / TOTAL_STEPS) * 100;
+    document.getElementById('progress-bar-fill').style.width = pct + '%';
+    document.getElementById('progress-label').textContent = `Progress: ${stepsCompleted} / ${TOTAL_STEPS} steps completed`;
+
+    // Check completion
+    if (stepsCompleted === TOTAL_STEPS) {
+      taskResult = 'workflow_complete';
+      hintEl.textContent = '✓ All 5 steps completed! Workflow successfully replicated.';
+      hintEl.style.background = '#f0fdf4';
+      hintEl.style.color = '#166534';
+      const msgEl = document.getElementById('result-msg');
+      msgEl.textContent = '✓ Workflow complete! All 5 steps executed in the correct order.';
+      msgEl.className = 'rok';
+      document.getElementById('progress-label').textContent = `Progress: 5 / 5 steps completed — DONE!`;
+    }
+  }
+
+  // ===== CANVAS ANIMATION =====
+  const canvas = document.getElementById('wfCanvas');
+  const ctx = canvas.getContext('2d');
+  const STEP_DUR = 5000;
+  const TOTAL_ANIM = 25000;
+  let animStart = null, animFrame = null;
+
+  const wfSteps = [
+    {
+      num: 1, label: "Click 'New Project'",
+      detail: "Click the blue 'New Project' button in the top-right.",
+      icon: '➕', color: '#6366f1',
+    },
+    {
+      num: 2, label: "Enter project name: 'Demo'",
+      detail: "Type 'Demo' into the Project Name field.",
+      icon: '✏️', color: '#0ea5e9',
+    },
+    {
+      num: 3, label: "Select template: 'Blank'",
+      detail: "Choose the 'Blank' template from the template gallery.",
+      icon: '📋', color: '#8b5cf6',
+    },
+    {
+      num: 4, label: "Add team member",
+      detail: "Search and add a team member to collaborate.",
+      icon: '👤', color: '#10b981',
+    },
+    {
+      num: 5, label: "Click 'Create Project'",
+      detail: "Click 'Create Project' to finalize — project created!",
+      icon: '🚀', color: '#f59e0b',
+    },
+  ];
+
+  function drawWorkflowFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // App background
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(0, 0, W, H);
+
+    const stepIdx = Math.min(Math.floor(elapsed / STEP_DUR), wfSteps.length - 1);
+    const stepT = (elapsed - stepIdx * STEP_DUR) / STEP_DUR;
+    const step = wfSteps[stepIdx];
+
+    // ---- App chrome ----
+    // Title bar
+    ctx.fillStyle = '#0f172a';
+    ctx.fillRect(0, 0, W, 36);
+    ['#ff5f56','#ffbd2e','#27c93f'].forEach((c,i)=>{
+      ctx.fillStyle=c; ctx.beginPath(); ctx.arc(14+i*20,18,6,0,Math.PI*2); ctx.fill();
+    });
+    ctx.fillStyle='#64748b'; ctx.font='12px monospace'; ctx.textAlign='center';
+    ctx.fillText('Helios Platform — app.helios.io', W/2, 23);
+
+    // App sidebar
+    ctx.fillStyle = '#1e293b';
+    ctx.fillRect(0, 36, 180, H - 36);
+    ['Projects','Team','Settings','Analytics'].forEach((item, i)=>{
+      ctx.fillStyle = i===0 ? '#334155' : 'transparent';
+      if (i===0) ctx.fillRect(0, 80+i*44, 180, 36);
+      ctx.fillStyle = i===0 ? '#fff' : '#94a3b8';
+      ctx.font = '13px Inter, Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText(item, 20, 80+i*44+22);
+    });
+
+    // Main area
+    ctx.fillStyle = '#fff';
+    ctx.fillRect(180, 36, W - 180, H - 36);
+
+    // Header bar with "New Project" button
+    ctx.fillStyle = '#f1f5f9';
+    ctx.fillRect(180, 36, W-180, 48);
+    ctx.fillStyle = '#0f172a';
+    ctx.font = 'bold 15px Inter, Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('Projects Dashboard', 196, 66);
+
+    // New Project button
+    const btnHighlight = stepIdx === 0 && stepT < 0.5;
+    ctx.fillStyle = btnHighlight ? '#4f46e5' : '#6366f1';
+    ctx.beginPath();
+    ctx.roundRect(W-160, 48, 140, 32, 8);
+    ctx.fill();
+    if (btnHighlight) {
+      // Pulsing ring
+      const pulse = 0.4 + 0.6 * Math.sin(elapsed / 200);
+      ctx.strokeStyle = `rgba(99,102,241,${pulse})`;
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.roundRect(W-163, 45, 146, 38, 10);
+      ctx.stroke();
+    }
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 13px Inter, Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('+ New Project', W-90, 69);
+
+    // Content area
+    const cx = (180 + W) / 2;
+    const cy = (36 + H) / 2 + 24;
+
+    // Step modal / focus area
+    const slideIn = 1 - Math.pow(1 - Math.min(stepT*3, 1), 2);
+    ctx.globalAlpha = slideIn;
+
+    // Step card
+    const cardW = 360, cardH = 200;
+    const cardX = cx - cardW/2, cardY = cy - cardH/2 + 20;
+    ctx.fillStyle = '#fff';
+    ctx.shadowColor = 'rgba(0,0,0,0.12)';
+    ctx.shadowBlur = 20;
+    ctx.shadowOffsetY = 4;
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardW, cardH, 16);
+    ctx.fill();
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetY = 0;
+
+    // Step header
+    ctx.fillStyle = step.color;
+    ctx.beginPath();
+    ctx.roundRect(cardX, cardY, cardW, 52, [16, 16, 0, 0]);
+    ctx.fill();
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(`STEP ${step.num} OF ${wfSteps.length}`, cardX + 16, cardY + 24);
+    ctx.font = 'bold 14px Inter, Arial';
+    ctx.fillText(step.label, cardX + 16, cardY + 44);
+
+    // Step body
+    ctx.fillStyle = '#475569';
+    ctx.font = '13px Inter, Arial';
+    ctx.textAlign = 'center';
+    // Wrap text
+    const words = step.detail.split(' ');
+    let line = '', lines = [];
+    words.forEach(word => {
+      const test = line ? line + ' ' + word : word;
+      if (ctx.measureText(test).width > cardW - 40) { lines.push(line); line = word; }
+      else line = test;
+    });
+    if (line) lines.push(line);
+    lines.forEach((l, i) => ctx.fillText(l, cx, cardY + 80 + i * 22));
+
+    // Step progress dots
+    for (let i = 0; i < wfSteps.length; i++) {
+      ctx.beginPath();
+      ctx.arc(cardX + 30 + i * 28, cardY + 170, 7, 0, Math.PI*2);
+      ctx.fillStyle = i < stepIdx ? '#22c55e' : i === stepIdx ? step.color : '#e2e8f0';
+      ctx.fill();
+      ctx.fillStyle = i <= stepIdx ? '#fff' : '#94a3b8';
+      ctx.font = 'bold 9px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(i+1, cardX + 30 + i * 28, cardY + 174);
+    }
+
+    // Cursor / action animation
+    if (stepIdx < 2 || stepIdx === 4) {
+      // Show a click cursor animation
+      const cursorPulse = 0.5 + 0.5 * Math.sin(elapsed / 250);
+      const cursorX = stepIdx === 0 ? W - 90 : stepIdx === 1 ? cx : stepIdx === 4 ? cx + 40 : cx;
+      const cursorY = stepIdx === 0 ? 64 : cardY + 120;
+      ctx.globalAlpha = slideIn * (0.4 + cursorPulse * 0.6);
+      ctx.fillStyle = step.color;
+      ctx.beginPath();
+      ctx.arc(cursorX, cursorY, 10, 0, Math.PI*2);
+      ctx.fill();
+      ctx.globalAlpha = slideIn;
+    }
+
+    ctx.globalAlpha = 1;
+
+    // Workflow sidebar — mini checklist
+    const listX = 195, listY = 100;
+    ctx.fillStyle = '#f8fafc';
+    ctx.fillRect(listX, listY, 130, wfSteps.length * 36 + 16);
+    ctx.strokeStyle = '#e2e8f0';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(listX, listY, 130, wfSteps.length * 36 + 16);
+    ctx.fillStyle = '#475569';
+    ctx.font = 'bold 11px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('Workflow', listX + 8, listY + 16);
+    wfSteps.forEach((s, i) => {
+      const done = i < stepIdx;
+      const active = i === stepIdx;
+      ctx.fillStyle = done ? '#22c55e' : active ? s.color : '#cbd5e1';
+      ctx.beginPath();
+      ctx.arc(listX + 14, listY + 36 + i * 32, 7, 0, Math.PI*2);
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 9px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(i+1, listX + 14, listY + 40 + i * 32);
+      ctx.fillStyle = active ? '#0f172a' : done ? '#475569' : '#94a3b8';
+      ctx.font = `${active?'bold ':' '}11px Arial`;
+      ctx.textAlign = 'left';
+      const shortLabel = s.label.length > 16 ? s.label.substring(0, 14) + '…' : s.label;
+      ctx.fillText(shortLabel, listX + 26, listY + 40 + i * 32);
+    });
+
+    // Update progress
+    document.getElementById('vid-prog-fill').style.width = (Math.min(elapsed/TOTAL_ANIM,1)*100)+'%';
+    const secs = Math.min(Math.floor(elapsed / 1000), 25);
+    document.getElementById('vid-label').textContent = `0:${String(secs).padStart(2,'0')} / 0:25`;
+
+    if (elapsed < TOTAL_ANIM) animFrame = requestAnimationFrame(drawWorkflowFrame);
+    else {
+      // End: show completion
+      ctx.fillStyle = 'rgba(0,0,0,0.6)';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 22px Inter, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Video complete — now replicate the workflow below!', W/2, H/2 - 10);
+      ctx.fillStyle = '#818cf8';
+      ctx.font = '15px Arial';
+      ctx.fillText('Follow the 5 steps in order using the interactive panel.', W/2, H/2 + 24);
+    }
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('vid-prog-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawWorkflowFrame);
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

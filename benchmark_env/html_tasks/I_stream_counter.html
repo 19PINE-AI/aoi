@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Counter</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #0f172a, #1e293b); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .counter-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 60px 80px; text-align: center; box-shadow: 0 20px 60px rgba(0,0,0,0.5); backdrop-filter: blur(10px); }
+  .counter-label { font-size: 0.85rem; color: #64748b; font-weight: 600; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 20px; }
+  .counter-display { font-family: 'Courier New', monospace; font-size: 8rem; font-weight: 900; color: #38bdf8; line-height: 1; text-shadow: 0 0 40px rgba(56,189,248,0.4); letter-spacing: -4px; transition: transform 0.1s; min-width: 3ch; display: inline-block; }
+  .counter-display.bump { transform: scale(1.08); color: #7dd3fc; }
+  .counter-unit { font-size: 1rem; color: #475569; margin-top: 8px; }
+  .target-hint { background: rgba(56,189,248,0.1); border: 1px solid rgba(56,189,248,0.2); border-radius: 10px; padding: 10px 20px; margin: 28px 0; color: #7dd3fc; font-size: 0.85rem; }
+  .target-hint strong { color: #38bdf8; font-size: 1.1rem; }
+  .capture-btn { background: linear-gradient(135deg, #0ea5e9, #2563eb); color: #fff; border: none; border-radius: 14px; padding: 18px 48px; font-size: 1.1rem; font-weight: 700; cursor: pointer; letter-spacing: 1px; box-shadow: 0 4px 20px rgba(14,165,233,0.4); transition: all 0.2s; }
+  .capture-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14,165,233,0.5); }
+  .capture-btn:active { transform: scale(0.96); }
+  .capture-btn:disabled { background: #334155; box-shadow: none; cursor: not-allowed; }
+  .result-display { margin-top: 28px; padding: 16px 24px; border-radius: 12px; font-size: 0.95rem; font-weight: 700; display: none; }
+  .result-display.success { background: rgba(22,163,74,0.15); border: 1px solid #22c55e; color: #4ade80; }
+  .result-display.miss { background: rgba(239,68,68,0.1); border: 1px solid #ef4444; color: #f87171; }
+  .btn-restart { background: transparent; border: 1px solid #334155; color: #64748b; border-radius: 10px; padding: 10px 24px; font-size: 0.85rem; cursor: pointer; margin-top: 16px; transition: all 0.2s; }
+  .btn-restart:hover { background: rgba(255,255,255,0.05); }
+  .speed-indicator { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 16px; color: #475569; font-size: 0.78rem; }
+  .speed-dot { width: 6px; height: 6px; border-radius: 50%; background: #22c55e; animation: pulse 0.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.8)} }
+</style>
+</head>
+<body>
+<div class="counter-card">
+  <div class="counter-label">Live Counter</div>
+  <div class="counter-display" id="counterDisplay">0</div>
+  <div class="counter-unit">counts</div>
+
+  <div class="target-hint">
+    Click <strong>Capture</strong> when the counter reaches exactly <strong>42</strong>
+  </div>
+
+  <button class="capture-btn" id="captureBtn" onclick="captureValue()">Capture</button>
+
+  <div class="speed-indicator">
+    <div class="speed-dot"></div>
+    <span>Updating every 500ms</span>
+  </div>
+
+  <div class="result-display" id="resultDisplay"></div>
+  <br>
+  <button class="btn-restart" onclick="restartCounter()">Restart Counter</button>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let currentValue = 0;
+let intervalId = null;
+let captured = false;
+
+function startCounter() {
+  intervalId = setInterval(() => {
+    if (captured) return;
+    currentValue++;
+    const disp = document.getElementById('counterDisplay');
+    disp.textContent = currentValue;
+    disp.classList.add('bump');
+    setTimeout(() => disp.classList.remove('bump'), 90);
+  }, 500);
+}
+
+function captureValue() {
+  if (captured) return;
+  captured = true;
+  clearInterval(intervalId);
+
+  const resultEl = document.getElementById('resultDisplay');
+  resultEl.style.display = 'block';
+  document.getElementById('captureBtn').disabled = true;
+
+  if (currentValue >= 40 && currentValue <= 44) {
+    taskResult = '42_captured';
+    resultEl.className = 'result-display success';
+    resultEl.textContent = `✓ Captured at ${currentValue}! Target zone hit (40–44). Task complete.`;
+  } else {
+    taskResult = 'captured_at_' + currentValue;
+    resultEl.className = 'result-display miss';
+    resultEl.textContent = `Captured at ${currentValue}. Target was 42 (±2). Try again!`;
+  }
+}
+
+function restartCounter() {
+  clearInterval(intervalId);
+  captured = false;
+  currentValue = 0;
+  taskResult = 'pending';
+  document.getElementById('counterDisplay').textContent = '0';
+  document.getElementById('captureBtn').disabled = false;
+  document.getElementById('resultDisplay').style.display = 'none';
+  startCounter();
+}
+
+startCounter();
+</script>
+</body>
+</html>

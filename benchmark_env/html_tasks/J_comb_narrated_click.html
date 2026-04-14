@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Narrated Screen Share</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #1e1e2e; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .screenshare-frame { background: #13151f; border: 2px solid #30363d; border-radius: 12px; width: 700px; overflow: hidden; box-shadow: 0 12px 50px rgba(0,0,0,0.7); }
+  /* Top bar */
+  .share-bar { background: #21262d; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #30363d; }
+  .share-bar .dots { display: flex; gap: 6px; }
+  .sd { width: 10px; height: 10px; border-radius: 50%; }
+  .sharing-label { background: #dc2626; color: #fff; font-size: 0.7rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; margin-left: auto; letter-spacing: 0.5px; }
+  /* Presenter info */
+  .presenter-bar { background: #13151f; padding: 10px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1e2030; }
+  .presenter-avatar { width: 32px; height: 32px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 0.9rem; }
+  .presenter-name { color: #c8d3f5; font-size: 0.85rem; font-weight: 600; }
+  .presenter-role { color: #565f89; font-size: 0.72rem; }
+  .audio-indicator { margin-left: auto; display: flex; align-items: center; gap: 6px; color: #4ade80; font-size: 0.72rem; }
+  .audio-bars { display: flex; align-items: flex-end; gap: 2px; height: 14px; }
+  .abar { width: 3px; background: #4ade80; border-radius: 1px; }
+  /* App content being shared */
+  .shared-app { background: #f8fafc; padding: 40px; min-height: 280px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 24px; }
+  .shared-app h2 { font-size: 1.2rem; color: #1e293b; text-align: center; }
+  .app-subtitle { font-size: 0.85rem; color: #64748b; text-align: center; }
+  .button-group { display: flex; gap: 16px; }
+  .app-btn { padding: 14px 32px; border-radius: 10px; font-size: 1rem; font-weight: 700; cursor: pointer; border: 2px solid transparent; transition: all 0.2s; }
+  .btn-save   { background: #fff; color: #475569; border-color: #e2e8f0; }
+  .btn-submit { background: #2563eb; color: #fff; border-color: #2563eb; }
+  .btn-cancel { background: #fff; color: #ef4444; border-color: #fecaca; }
+  .app-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+  .app-btn.highlighted { box-shadow: 0 0 0 4px rgba(37,99,235,0.4); animation: highlight 1s infinite; }
+  @keyframes highlight { 0%,100%{box-shadow:0 0 0 4px rgba(37,99,235,0.3)} 50%{box-shadow:0 0 0 8px rgba(37,99,235,0.1)} }
+  /* Narration caption */
+  .caption-bar { background: rgba(0,0,0,0.85); padding: 12px 20px; min-height: 52px; display: flex; align-items: center; justify-content: center; border-top: 1px solid #30363d; }
+  .caption-text { color: #fff; font-size: 0.88rem; text-align: center; max-width: 600px; font-style: italic; }
+  /* Result overlay */
+  .result-overlay { display: none; position: absolute; inset: 0; background: rgba(22,163,74,0.9); align-items: center; justify-content: center; font-size: 2rem; color: #fff; font-weight: 900; border-radius: 0 0 10px 10px; }
+  .result-overlay.show { display: flex; animation: popIn 0.4s ease; }
+  @keyframes popIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+  .shared-app-wrap { position: relative; }
+  /* Bottom controls */
+  .controls { display: flex; gap: 10px; padding: 14px 20px; background: #0a0a0f; align-items: center; }
+  .ctrl-btn { background: #21262d; border: 1px solid #30363d; color: #8b949e; border-radius: 8px; padding: 7px 16px; font-size: 0.8rem; cursor: pointer; transition: all 0.2s; }
+  .ctrl-btn:hover { background: #30363d; }
+  .ctrl-btn.danger { border-color: #7f1d1d; color: #f87171; }
+  .result-msg { margin-left: auto; font-size: 0.85rem; font-weight: 600; color: #4ade80; display: none; }
+</style>
+</head>
+<body>
+<div class="screenshare-frame">
+  <div class="share-bar">
+    <div class="dots"><div class="sd" style="background:#ef4444"></div><div class="sd" style="background:#f59e0b"></div><div class="sd" style="background:#22c55e"></div></div>
+    <span style="color:#8b949e;font-size:0.78rem">Screen Share Active</span>
+    <span class="sharing-label">● LIVE</span>
+  </div>
+
+  <div class="presenter-bar">
+    <div class="presenter-avatar">JM</div>
+    <div>
+      <div class="presenter-name">Jamie Martinez</div>
+      <div class="presenter-role">Product Manager · Presenting</div>
+    </div>
+    <div class="audio-indicator" id="audioIndicator" style="opacity:0.3">
+      <div class="audio-bars">
+        <div class="abar" style="height:4px" id="ab1"></div>
+        <div class="abar" style="height:8px" id="ab2"></div>
+        <div class="abar" style="height:12px" id="ab3"></div>
+        <div class="abar" style="height:6px" id="ab4"></div>
+        <div class="abar" style="height:10px" id="ab5"></div>
+      </div>
+      🎤 Speaking
+    </div>
+  </div>
+
+  <div class="shared-app-wrap">
+    <div class="shared-app" id="sharedApp">
+      <h2>Document Workflow System</h2>
+      <p class="app-subtitle">Choose an action to continue:</p>
+      <div class="button-group">
+        <button class="app-btn btn-save" onclick="handleClick('save')">Save</button>
+        <button class="app-btn btn-submit" id="submitBtn" onclick="handleClick('submit')">Submit</button>
+        <button class="app-btn btn-cancel" onclick="handleClick('cancel')">Cancel</button>
+      </div>
+    </div>
+    <div class="result-overlay" id="resultOverlay">✓ Submit Clicked!</div>
+  </div>
+
+  <div class="caption-bar">
+    <div class="caption-text" id="captionText">Waiting for presenter to speak...</div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn">🔇 Mute</button>
+    <button class="ctrl-btn">📷 Camera</button>
+    <button class="ctrl-btn">💬 Chat</button>
+    <button class="ctrl-btn danger" onclick="restartDemo()">↺ Restart</button>
+    <span class="result-msg" id="resultMsg"></span>
+  </div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let timers = [];
+let audioAnimId = null;
+
+function animateAudio() {
+  const bars = ['ab1','ab2','ab3','ab4','ab5'];
+  const heights = [4, 8, 12, 6, 10];
+  document.getElementById('audioIndicator').style.opacity = '1';
+  audioAnimId = setInterval(() => {
+    bars.forEach((id, i) => {
+      const h = Math.max(2, heights[i] + (Math.random() - 0.5) * 8);
+      document.getElementById(id).style.height = Math.round(h) + 'px';
+    });
+  }, 150);
+}
+
+function stopAudio() {
+  clearInterval(audioAnimId);
+  document.getElementById('audioIndicator').style.opacity = '0.3';
+}
+
+function speak(text, then) {
+  const caption = document.getElementById('captionText');
+  caption.style.opacity = '0';
+  setTimeout(() => {
+    caption.textContent = '"' + text + '"';
+    caption.style.opacity = '1';
+    caption.style.transition = 'opacity 0.3s';
+    animateAudio();
+  }, 200);
+
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = 0.95;
+  utt.pitch = 1;
+  utt.onend = () => {
+    stopAudio();
+    if (then) then();
+  };
+  window.speechSynthesis.speak(utt);
+}
+
+function highlightButton() {
+  document.getElementById('submitBtn').classList.add('highlighted');
+}
+
+function handleClick(btn) {
+  document.getElementById('submitBtn').classList.remove('highlighted');
+  if (btn === 'submit') {
+    taskResult = 'submit_clicked';
+    document.getElementById('resultOverlay').classList.add('show');
+    document.getElementById('resultMsg').style.display = 'inline';
+    document.getElementById('resultMsg').textContent = 'Correct! Submit was clicked.';
+  } else {
+    taskResult = btn + '_clicked';
+    document.getElementById('resultMsg').style.display = 'inline';
+    document.getElementById('resultMsg').style.color = '#f87171';
+    document.getElementById('resultMsg').textContent = 'Wrong button! Listen for the instruction.';
+  }
+}
+
+function runDemo() {
+  document.getElementById('captionText').textContent = 'Connecting to presenter...';
+  timers.push(setTimeout(() => {
+    speak("Great, now please click the Submit button to proceed.", highlightButton);
+  }, 3000));
+}
+
+function restartDemo() {
+  timers.forEach(clearTimeout);
+  window.speechSynthesis.cancel();
+  stopAudio();
+  timers = [];
+  taskResult = 'pending';
+  document.getElementById('submitBtn').classList.remove('highlighted');
+  document.getElementById('resultOverlay').classList.remove('show');
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('captionText').textContent = 'Waiting for presenter to speak...';
+  runDemo();
+}
+
+runDemo();
+</script>
+</body>
+</html>

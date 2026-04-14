@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Game Result</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #0f0028, #1a0040, #0a1628); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .game-frame { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; width: 640px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.6); }
+  /* Header */
+  .game-header { background: rgba(0,0,0,0.3); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.06); }
+  .game-title { color: #fff; font-size: 1rem; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; }
+  .score-display { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 4px 16px; color: #fbbf24; font-size: 0.9rem; font-weight: 700; font-family: monospace; }
+  .lives { display: flex; gap: 4px; }
+  /* Game area */
+  .game-area { background: rgba(0,0,0,0.2); position: relative; height: 300px; display: flex; align-items: center; justify-content: center; cursor: crosshair; overflow: hidden; }
+  .target { width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #ef4444, #7f1d1d); border: 3px solid #f87171; position: absolute; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; box-shadow: 0 0 20px rgba(239,68,68,0.4); animation: float 2s ease-in-out infinite; transition: transform 0.1s; }
+  .target:hover { transform: scale(1.1); }
+  .target.hit { animation: hitAnim 0.3s ease forwards; }
+  @keyframes hitAnim { to { transform: scale(0); opacity: 0; } }
+  @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+  .countdown { font-size: 1.2rem; color: #fff; font-weight: 700; position: absolute; top: 12px; right: 16px; font-family: monospace; }
+  .click-effect { position: absolute; width: 40px; height: 40px; border-radius: 50%; border: 3px solid #fbbf24; animation: clickRipple 0.4s ease forwards; pointer-events: none; }
+  @keyframes clickRipple { from{transform:scale(0.5);opacity:1} to{transform:scale(2);opacity:0} }
+  .start-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 16px; }
+  .start-btn { background: linear-gradient(135deg, #7c3aed, #2563eb); color: #fff; border: none; border-radius: 14px; padding: 14px 40px; font-size: 1.1rem; font-weight: 700; cursor: pointer; transition: all 0.2s; letter-spacing: 1px; }
+  .start-btn:hover { transform: scale(1.05); }
+  .game-msg { color: #c8d3f5; font-size: 0.9rem; }
+  /* Score popup */
+  .score-popup { position: absolute; inset: 0; background: rgba(0,0,0,0.85); display: none; flex-direction: column; align-items: center; justify-content: center; gap: 8px; animation: popIn 0.5s ease; }
+  @keyframes popIn { from{opacity:0;transform:scale(0.8)} to{opacity:1;transform:scale(1)} }
+  .score-popup.show { display: flex; }
+  .popup-icon { font-size: 3.5rem; }
+  .popup-title { font-size: 1.5rem; font-weight: 900; color: #fbbf24; letter-spacing: 2px; }
+  .popup-score { font-size: 2.5rem; font-weight: 900; color: #fff; font-family: monospace; }
+  .popup-score span { font-size: 1rem; color: #94a3b8; font-weight: 400; }
+  .popup-sub { color: #94a3b8; font-size: 0.85rem; }
+  /* Footer */
+  .game-footer { padding: 14px 24px; display: flex; gap: 10px; align-items: center; background: rgba(0,0,0,0.2); border-top: 1px solid rgba(255,255,255,0.06); }
+  .footer-btn { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; border-radius: 8px; padding: 7px 16px; font-size: 0.8rem; cursor: pointer; }
+  /* Answer section */
+  .answer-box { margin-top: 20px; background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; width: 640px; padding: 20px; backdrop-filter: blur(10px); }
+  .answer-box h3 { color: #8b949e; font-size: 0.85rem; font-weight: 600; margin-bottom: 14px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field-row label { color: #8b949e; font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px; }
+  .field-row input { width: 100%; padding: 8px 12px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: #f1f5f9; font-size: 0.9rem; outline: none; font-family: inherit; }
+  .field-row input:focus { border-color: #a78bfa; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: rgba(255,255,255,0.08); color: #94a3b8; border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="game-frame">
+  <div class="game-header">
+    <div class="game-title">🎮 Target Rush</div>
+    <div class="score-display">Score: <span id="scoreVal">0</span></div>
+    <div class="lives" id="lives">❤️❤️❤️</div>
+  </div>
+
+  <div class="game-area" id="gameArea">
+    <div class="countdown" id="countdown">5</div>
+
+    <div class="start-overlay" id="startOverlay">
+      <div style="font-size:3rem">🎯</div>
+      <div style="color:#fff;font-size:1.2rem;font-weight:800">Target Rush</div>
+      <div class="game-msg">Click the targets 3 times as fast as you can!</div>
+      <button class="start-btn" onclick="startGame()">Start Game</button>
+    </div>
+
+    <div class="score-popup" id="scorePopup">
+      <div class="popup-icon">🏆</div>
+      <div class="popup-title">LEVEL COMPLETE!</div>
+      <div class="popup-score">Score: 1,250 <span>pts</span></div>
+      <div class="popup-sub">3 targets hit · Excellent!</div>
+    </div>
+  </div>
+
+  <div class="game-footer">
+    <button class="footer-btn" onclick="restartGame()">↺ Restart</button>
+    <button class="footer-btn">⚙️ Settings</button>
+    <span style="color:#64748b;font-size:0.75rem;margin-left:auto" id="gameStatus">Ready to play</span>
+  </div>
+</div>
+
+<div class="answer-box">
+  <h3>After the game ends, record what you observed:</h3>
+  <div class="field-row">
+    <div>
+      <label>Score shown:</label>
+      <input type="text" id="scoreInput" placeholder="What score was displayed?" />
+    </div>
+    <div>
+      <label>Sound heard (describe):</label>
+      <input type="text" id="soundInput" placeholder="Describe the victory sound..." />
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartGame()">Restart Game</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let score = 0;
+let hits = 0;
+let gameActive = false;
+let timeLeft = 5;
+let targetEl = null;
+let countdownId = null;
+let timers = [];
+
+function playFanfare() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Ascending arpeggio: C E G C
+    const notes = [261.6, 329.6, 392.0, 523.3];
+    notes.forEach((freq, i) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.frequency.value = freq;
+      osc.type = 'triangle';
+      const start = ctx.currentTime + i * 0.18;
+      gain.gain.setValueAtTime(0.4, start);
+      gain.gain.exponentialRampToValueAtTime(0.001, start + 0.4);
+      osc.start(start);
+      osc.stop(start + 0.4);
+    });
+  } catch(e) {}
+}
+
+function playHit() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.frequency.value = 660;
+    gain.gain.setValueAtTime(0.2, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch(e) {}
+}
+
+function placeTarget() {
+  if (targetEl) targetEl.remove();
+  if (!gameActive) return;
+
+  targetEl = document.createElement('div');
+  targetEl.className = 'target';
+  targetEl.textContent = '🎯';
+
+  const area = document.getElementById('gameArea');
+  const maxX = area.offsetWidth - 60;
+  const maxY = area.offsetHeight - 60;
+  targetEl.style.left = (20 + Math.random() * (maxX - 20)) + 'px';
+  targetEl.style.top  = (20 + Math.random() * (maxY - 20)) + 'px';
+
+  targetEl.onclick = (e) => {
+    if (!gameActive) return;
+    hits++;
+    score += 250 + Math.floor(Math.random() * 200);
+    document.getElementById('scoreVal').textContent = score.toLocaleString();
+    playHit();
+
+    // Click ripple
+    const ripple = document.createElement('div');
+    ripple.className = 'click-effect';
+    ripple.style.left = (e.clientX - area.getBoundingClientRect().left - 20) + 'px';
+    ripple.style.top  = (e.clientY - area.getBoundingClientRect().top - 20) + 'px';
+    area.appendChild(ripple);
+    timers.push(setTimeout(() => ripple.remove(), 400));
+
+    targetEl.classList.add('hit');
+    timers.push(setTimeout(() => {
+      if (hits >= 3) {
+        endGame();
+      } else {
+        placeTarget();
+      }
+    }, 300));
+  };
+  area.appendChild(targetEl);
+}
+
+function startGame() {
+  document.getElementById('startOverlay').style.display = 'none';
+  gameActive = true;
+  score = 0; hits = 0;
+  timeLeft = 5;
+  document.getElementById('scoreVal').textContent = '0';
+  document.getElementById('countdown').textContent = timeLeft;
+  document.getElementById('gameStatus').textContent = 'Playing!';
+  placeTarget();
+  countdownId = setInterval(() => {
+    timeLeft--;
+    document.getElementById('countdown').textContent = timeLeft;
+    if (timeLeft <= 0) {
+      clearInterval(countdownId);
+      if (hits < 3) endGame();
+    }
+  }, 1000);
+}
+
+function endGame() {
+  gameActive = false;
+  clearInterval(countdownId);
+  if (targetEl) { targetEl.remove(); targetEl = null; }
+
+  // Force score to 1250 for consistency
+  score = 1250;
+  document.getElementById('scoreVal').textContent = '1,250';
+
+  const popup = document.getElementById('scorePopup');
+  popup.classList.add('show');
+  document.getElementById('gameStatus').textContent = 'Level Complete!';
+  playFanfare();
+}
+
+function restartGame() {
+  timers.forEach(clearTimeout);
+  clearInterval(countdownId);
+  gameActive = false;
+  if (targetEl) { targetEl.remove(); targetEl = null; }
+  score = 0; hits = 0; timeLeft = 5;
+  taskResult = 'pending';
+  document.getElementById('scoreInput').value = '';
+  document.getElementById('soundInput').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('scoreVal').textContent = '0';
+  document.getElementById('countdown').textContent = '5';
+  document.getElementById('scorePopup').classList.remove('show');
+  document.getElementById('startOverlay').style.display = 'flex';
+  document.getElementById('gameStatus').textContent = 'Ready to play';
+}
+
+function submitAnswer() {
+  const scoreIn = document.getElementById('scoreInput').value.toLowerCase();
+  const soundIn = document.getElementById('soundInput').value.toLowerCase();
+  const combined = scoreIn + soundIn;
+  const msg = document.getElementById('resultMsg');
+  if ((scoreIn.includes('1250') || scoreIn.includes('1,250') || scoreIn.includes('score')) && combined.length > 20) {
+    taskResult = 'result_noted';
+    msg.style.color = '#fbbf24';
+    msg.textContent = 'Correct! Score: 1,250 pts. Sound: ascending arpeggio (victory fanfare).';
+  } else if (combined.length > 20) {
+    taskResult = 'result_noted';
+    msg.style.color = '#4ade80';
+    msg.textContent = 'Noted! (Score shown: 1,250 pts + victory fanfare sound)';
+  } else {
+    taskResult = 'incomplete';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Please fill both fields — the score shown AND describe the sound heard.';
+  }
+  msg.style.display = 'block';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IndustrialWatch — Machine Monitor</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #c9d1d9; min-height: 100vh; }
+
+  .header {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .logo { font-size: 1.2rem; font-weight: 700; color: #e6edf3; }
+  .logo span { color: #58a6ff; }
+  .header-right { margin-left: auto; display: flex; gap: 20px; font-size: 0.82rem; color: #8b949e; }
+  .header-right .hl { color: #3fb950; font-weight: 600; }
+  .header-right .hw { color: #d29922; font-weight: 600; }
+  .header-right .hf { color: #f85149; font-weight: 600; }
+
+  .container { max-width: 1200px; margin: 22px auto; padding: 0 20px; }
+  .page-title { font-size: 1.05rem; font-weight: 600; color: #e6edf3; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+  .live-pill {
+    background: #1b3a1f;
+    color: #3fb950;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid #3fb950;
+    letter-spacing: 0.5px;
+  }
+
+  /* Machine grid */
+  .machine-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; margin-bottom: 24px; }
+  .machine-card {
+    background: #161b22;
+    border: 2px solid #21262d;
+    border-radius: 12px;
+    padding: 18px 14px;
+    text-align: center;
+    transition: border-color 0.4s, background 0.4s;
+    position: relative;
+    overflow: hidden;
+  }
+  .machine-card.reporting {
+    border-color: #58a6ff;
+    background: #0d1f35;
+    animation: reportingPulse 0.5s ease infinite alternate;
+  }
+  .machine-card.ok { border-color: #3fb950; background: #0d1a12; }
+  .machine-card.warning { border-color: #d29922; background: #1a1600; }
+  .machine-card.fail { border-color: #f85149; background: #1a0808; }
+
+  @keyframes reportingPulse {
+    from { box-shadow: 0 0 0 0 rgba(88,166,255,0.4); }
+    to { box-shadow: 0 0 16px rgba(88,166,255,0.2); }
+  }
+
+  .mc-icon { font-size: 2.2rem; margin-bottom: 8px; }
+  .mc-name { font-size: 0.88rem; font-weight: 700; color: #e6edf3; margin-bottom: 4px; }
+  .mc-id { font-size: 0.72rem; color: #484f58; margin-bottom: 10px; }
+  .mc-status {
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    display: inline-block;
+  }
+  .mcs-unknown { background: #21262d; color: #484f58; }
+  .mcs-reporting { background: #1c2938; color: #58a6ff; animation: textBlink 0.5s ease infinite alternate; }
+  .mcs-ok { background: #1b4332; color: #6fcf97; }
+  .mcs-warning { background: #2d2000; color: #fcd34d; }
+  .mcs-fail { background: #2d1212; color: #f47067; }
+  @keyframes textBlink { from{opacity:1} to{opacity:0.4} }
+
+  .mc-beeps { font-size: 0.72rem; color: #484f58; margin-top: 6px; min-height: 16px; }
+  .mc-beeps.show { color: #8b949e; }
+
+  /* Beep indicator */
+  .beep-indicator {
+    position: fixed;
+    top: 60px; left: 50%; transform: translateX(-50%);
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 12px 22px;
+    text-align: center;
+    z-index: 500;
+    display: none;
+    min-width: 260px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .beep-indicator.show { display: block; }
+  .bi-title { font-size: 0.85rem; color: #8b949e; margin-bottom: 6px; }
+  .bi-dots { display: flex; justify-content: center; gap: 8px; margin: 6px 0; }
+  .bi-dot {
+    width: 14px; height: 14px; border-radius: 50%;
+    background: #21262d;
+    border: 2px solid #30363d;
+    transition: all 0.05s;
+  }
+  .bi-dot.lit { background: #58a6ff; border-color: #58a6ff; box-shadow: 0 0 10px rgba(88,166,255,0.8); }
+
+  /* Answer section */
+  .answer-section {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .answer-section h3 { font-size: 1rem; font-weight: 600; color: #e6edf3; margin-bottom: 8px; }
+  .answer-section p { font-size: 0.85rem; color: #8b949e; margin-bottom: 16px; }
+
+  /* Beep key */
+  .beep-key {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .bk-item { display: flex; align-items: center; gap: 8px; font-size: 0.82rem; color: #8b949e; }
+  .bk-badge {
+    font-size: 0.72rem; font-weight: 700;
+    padding: 3px 8px; border-radius: 6px;
+  }
+  .bk-ok { background: #1b4332; color: #6fcf97; border: 1px solid #3fb950; }
+  .bk-warn { background: #2d2000; color: #fcd34d; border: 1px solid #d29922; }
+  .bk-fail { background: #2d1212; color: #f47067; border: 1px solid #f85149; }
+
+  .report-textarea {
+    width: 100%;
+    background: #0d1117;
+    border: 1.5px solid #30363d;
+    border-radius: 8px;
+    padding: 12px;
+    color: #e6edf3;
+    font-size: 0.88rem;
+    font-family: 'Consolas', monospace;
+    min-height: 130px;
+    resize: vertical;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .report-textarea:focus { border-color: #58a6ff; }
+  .report-textarea::placeholder { color: #484f58; }
+
+  .btn-submit-report {
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 11px 28px;
+    font-size: 0.92rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-submit-report:hover { background: #2ea043; }
+
+  .report-result { margin-top: 12px; padding: 12px; border-radius: 8px; font-size: 0.88rem; font-weight: 600; display: none; }
+  .report-result.ok { background: #1b4332; color: #6fcf97; display: block; }
+  .report-result.err { background: #2d1212; color: #f47067; display: block; }
+
+  /* Sequence log */
+  .seq-log {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .seq-log h4 { font-size: 0.85rem; font-weight: 600; color: #8b949e; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .seq-item { display: flex; align-items: center; gap: 12px; font-size: 0.82rem; margin-bottom: 8px; color: #8b949e; }
+  .seq-time { font-family: monospace; color: #484f58; min-width: 40px; }
+  .seq-machine { font-weight: 600; min-width: 80px; }
+  .seq-beeps { color: #58a6ff; min-width: 60px; }
+  .seq-meaning { color: #c9d1d9; }
+  .seq-item.pending-item { color: #30363d; }
+  .seq-item.pending-item .seq-machine { color: #30363d; }
+  .seq-item.active-item .seq-machine { color: #58a6ff; }
+  .seq-item.done-item { color: #8b949e; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚙️ Industrial<span>Watch</span></div>
+  <span style="font-size:0.82rem;color:#484f58">Machine Status Monitor v4.2</span>
+  <div class="header-right">
+    <span>OK: <span class="hl" id="countOk">0</span></span>
+    <span>WARNING: <span class="hw" id="countWarn">0</span></span>
+    <span>FAIL: <span class="hf" id="countFail">0</span></span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="page-title">
+    Machine Floor Status
+    <span class="live-pill">● LIVE</span>
+  </div>
+
+  <div class="machine-grid">
+    <div class="machine-card" id="card1">
+      <div class="mc-icon">🏭</div>
+      <div class="mc-name">Machine 1</div>
+      <div class="mc-id">MCH-001 · Line A</div>
+      <div class="mc-status mcs-unknown" id="st1">— Unknown</div>
+      <div class="mc-beeps" id="bp1"></div>
+    </div>
+    <div class="machine-card" id="card2">
+      <div class="mc-icon">🔧</div>
+      <div class="mc-name">Machine 2</div>
+      <div class="mc-id">MCH-002 · Line A</div>
+      <div class="mc-status mcs-unknown" id="st2">— Unknown</div>
+      <div class="mc-beeps" id="bp2"></div>
+    </div>
+    <div class="machine-card" id="card3">
+      <div class="mc-icon">⚙️</div>
+      <div class="mc-name">Machine 3</div>
+      <div class="mc-id">MCH-003 · Line B</div>
+      <div class="mc-status mcs-unknown" id="st3">— Unknown</div>
+      <div class="mc-beeps" id="bp3"></div>
+    </div>
+    <div class="machine-card" id="card4">
+      <div class="mc-icon">🔩</div>
+      <div class="mc-name">Machine 4</div>
+      <div class="mc-id">MCH-004 · Line B</div>
+      <div class="mc-status mcs-unknown" id="st4">— Unknown</div>
+      <div class="mc-beeps" id="bp4"></div>
+    </div>
+    <div class="machine-card" id="card5">
+      <div class="mc-icon">🛠️</div>
+      <div class="mc-name">Machine 5</div>
+      <div class="mc-id">MCH-005 · Line C</div>
+      <div class="mc-status mcs-unknown" id="st5">— Unknown</div>
+      <div class="mc-beeps" id="bp5"></div>
+    </div>
+  </div>
+
+  <div class="answer-section">
+    <h3>Status Report</h3>
+    <p>Listen to each machine's beeps. Report each machine's status based on what you heard:</p>
+
+    <div class="beep-key">
+      <div class="bk-item"><span class="bk-badge bk-ok">1 beep</span> = OK</div>
+      <div class="bk-item"><span class="bk-badge bk-warn">2 beeps</span> = WARNING</div>
+      <div class="bk-item"><span class="bk-badge bk-fail">3 beeps</span> = FAIL</div>
+    </div>
+
+    <textarea class="report-textarea" id="reportInput" placeholder="Example:&#10;Machine 1: OK&#10;Machine 2: WARNING&#10;Machine 3: OK&#10;Machine 4: FAIL&#10;Machine 5: WARNING"></textarea>
+    <button class="btn-submit-report" onclick="submitReport()">Submit Report</button>
+    <div class="report-result" id="reportResult"></div>
+  </div>
+
+  <div class="seq-log">
+    <h4>Reporting Sequence</h4>
+    <div class="seq-item pending-item" id="seq1">
+      <span class="seq-time">t=2s</span>
+      <span class="seq-machine">Machine 1</span>
+      <span class="seq-beeps">1 beep</span>
+      <span class="seq-meaning">Awaiting...</span>
+    </div>
+    <div class="seq-item pending-item" id="seq2">
+      <span class="seq-time">t=7s</span>
+      <span class="seq-machine">Machine 2</span>
+      <span class="seq-beeps">2 beeps</span>
+      <span class="seq-meaning">Awaiting...</span>
+    </div>
+    <div class="seq-item pending-item" id="seq3">
+      <span class="seq-time">t=12s</span>
+      <span class="seq-machine">Machine 3</span>
+      <span class="seq-beeps">1 beep</span>
+      <span class="seq-meaning">Awaiting...</span>
+    </div>
+    <div class="seq-item pending-item" id="seq4">
+      <span class="seq-time">t=17s</span>
+      <span class="seq-machine">Machine 4</span>
+      <span class="seq-beeps">3 beeps</span>
+      <span class="seq-meaning">Awaiting...</span>
+    </div>
+    <div class="seq-item pending-item" id="seq5">
+      <span class="seq-time">t=22s</span>
+      <span class="seq-machine">Machine 5</span>
+      <span class="seq-beeps">2 beeps</span>
+      <span class="seq-meaning">Awaiting...</span>
+    </div>
+  </div>
+</div>
+
+<!-- Beep indicator overlay -->
+<div class="beep-indicator" id="beepIndicator">
+  <div class="bi-title" id="biTitle">Machine reporting...</div>
+  <div class="bi-dots" id="biDots"></div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let okCount = 0, warnCount = 0, failCount = 0;
+
+  function playBeeps(n) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      for (let i = 0; i < n; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(880, ctx.currentTime);
+        const s = ctx.currentTime + i * 0.2;
+        gain.gain.setValueAtTime(0, s);
+        gain.gain.linearRampToValueAtTime(0.5, s + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, s + 0.1);
+        osc.start(s);
+        osc.stop(s + 0.1);
+      }
+    } catch (e) {}
+  }
+
+  function showBeepIndicator(machineNum, n) {
+    const ind = document.getElementById('beepIndicator');
+    const dots = document.getElementById('biDots');
+    const title = document.getElementById('biTitle');
+
+    title.textContent = `Machine ${machineNum} reporting...`;
+    dots.innerHTML = '';
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('div');
+      d.className = 'bi-dot';
+      d.id = 'bidot' + i;
+      dots.appendChild(d);
+    }
+    ind.classList.add('show');
+
+    // Animate each dot
+    for (let i = 0; i < n; i++) {
+      setTimeout(() => {
+        document.getElementById('bidot' + i).classList.add('lit');
+        setTimeout(() => {
+          document.getElementById('bidot' + i)?.classList.remove('lit');
+        }, 100);
+      }, i * 200);
+    }
+
+    setTimeout(() => {
+      ind.classList.remove('show');
+    }, n * 200 + 600);
+  }
+
+  function reportMachine(n, beepCount, status) {
+    const statusMap = { ok: ['mcs-ok', '✅ OK', 'ok'], warning: ['mcs-warning', '⚠️ WARNING', 'warning'], fail: ['mcs-fail', '🚨 FAIL', 'fail'] };
+    const [cls, label, cardCls] = statusMap[status];
+
+    // Set card state
+    const card = document.getElementById('card' + n);
+    card.classList.add('reporting');
+    setTimeout(() => {
+      card.classList.remove('reporting');
+      card.classList.add(cardCls);
+    }, beepCount * 200 + 400);
+
+    // Update status badge
+    setTimeout(() => {
+      const st = document.getElementById('st' + n);
+      st.textContent = label;
+      st.className = 'mc-status ' + cls;
+      const bp = document.getElementById('bp' + n);
+      bp.textContent = '•'.repeat(beepCount) + ' (' + beepCount + ' beep' + (beepCount > 1 ? 's' : '') + ')';
+      bp.classList.add('show');
+
+      // Update counters
+      if (status === 'ok') { okCount++; document.getElementById('countOk').textContent = okCount; }
+      if (status === 'warning') { warnCount++; document.getElementById('countWarn').textContent = warnCount; }
+      if (status === 'fail') { failCount++; document.getElementById('countFail').textContent = failCount; }
+    }, beepCount * 200 + 500);
+
+    // Update seq log
+    const seqMap = { ok: '✅ OK', warning: '⚠️ WARNING', fail: '🚨 FAIL' };
+    const seqEl = document.getElementById('seq' + n);
+    seqEl.classList.remove('pending-item');
+    seqEl.classList.add('active-item');
+    seqEl.querySelector('.seq-meaning').textContent = 'Reporting...';
+    setTimeout(() => {
+      seqEl.classList.remove('active-item');
+      seqEl.classList.add('done-item');
+      seqEl.querySelector('.seq-meaning').textContent = seqMap[status];
+    }, beepCount * 200 + 500);
+  }
+
+  function triggerMachine(n, beepCount, status) {
+    reportMachine(n, beepCount, status);
+    playBeeps(beepCount);
+    showBeepIndicator(n, beepCount);
+  }
+
+  // t=2s: Machine 1 → 1 beep (OK)
+  setTimeout(() => triggerMachine(1, 1, 'ok'), 2000);
+  // t=7s: Machine 2 → 2 beeps (WARNING)
+  setTimeout(() => triggerMachine(2, 2, 'warning'), 7000);
+  // t=12s: Machine 3 → 1 beep (OK)
+  setTimeout(() => triggerMachine(3, 1, 'ok'), 12000);
+  // t=17s: Machine 4 → 3 beeps (FAIL)
+  setTimeout(() => triggerMachine(4, 3, 'fail'), 17000);
+  // t=22s: Machine 5 → 2 beeps (WARNING)
+  setTimeout(() => triggerMachine(5, 2, 'warning'), 22000);
+
+  function submitReport() {
+    const val = document.getElementById('reportInput').value.trim();
+    const res = document.getElementById('reportResult');
+    if (val.length > 30) {
+      taskResult = 'machines_reported';
+      res.textContent = '✓ Report submitted. Correct answers: Machine 1=OK, Machine 2=WARNING, Machine 3=OK, Machine 4=FAIL, Machine 5=WARNING';
+      res.className = 'report-result ok';
+    } else {
+      res.textContent = '✗ Report too brief. Please include a status for each of the 5 machines.';
+      res.className = 'report-result err';
+    }
+  }
+</script>
+</body>
+</html>

@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DeployHub — Deployment Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0d1117; color: #c9d1d9; min-height: 100vh; }
+
+  /* Top banner area */
+  .banner-area {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 1000;
+    min-height: 4px;
+  }
+  .progress-banner {
+    display: none;
+    padding: 14px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    animation: slideInBanner 0.35s ease;
+    align-items: center;
+    gap: 10px;
+  }
+  .progress-banner.show { display: flex; }
+  .progress-banner.blue { background: #1f4788; color: #90caf9; border-bottom: 2px solid #2979ff; }
+  .progress-banner.green { background: #1b4332; color: #6fcf97; border-bottom: 2px solid #27ae60; }
+
+  @keyframes slideInBanner {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Header */
+  .header {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 0;
+  }
+  .header .logo { font-size: 1.2rem; font-weight: 700; color: #58a6ff; }
+  .header .env-tag {
+    background: #21262d;
+    border: 1px solid #30363d;
+    border-radius: 20px;
+    padding: 3px 12px;
+    font-size: 0.78rem;
+    color: #8b949e;
+  }
+  .header .status-pill {
+    margin-left: auto;
+    background: #1b4332;
+    color: #6fcf97;
+    border-radius: 20px;
+    padding: 4px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+  }
+
+  /* Main layout */
+  .container { max-width: 1100px; margin: 0 auto; padding: 24px 20px; margin-top: 56px; }
+  .deploy-info { display: flex; gap: 16px; margin-bottom: 20px; }
+  .info-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 8px;
+    padding: 14px 18px;
+    flex: 1;
+  }
+  .info-card .ic-label { font-size: 0.75rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+  .info-card .ic-value { font-size: 1rem; font-weight: 600; color: #e6edf3; }
+
+  /* Log panel */
+  .log-panel {
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .log-header {
+    background: #161b22;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    color: #8b949e;
+    border-bottom: 1px solid #30363d;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .log-header .dot { width: 8px; height: 8px; border-radius: 50%; background: #3fb950; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.4; } }
+  .log-body {
+    padding: 16px;
+    font-family: 'Consolas', 'Fira Code', monospace;
+    font-size: 0.84rem;
+    line-height: 1.8;
+    min-height: 300px;
+    max-height: 360px;
+    overflow-y: auto;
+  }
+  .log-line { display: flex; gap: 10px; }
+  .log-ts { color: #484f58; min-width: 90px; }
+  .log-ok { color: #3fb950; }
+  .log-run { color: #58a6ff; }
+  .log-warn { color: #d29922; }
+  .log-info { color: #8b949e; }
+
+  /* Steps overview */
+  .steps { display: flex; gap: 0; margin-bottom: 24px; }
+  .step {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 16px;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-right: none;
+    font-size: 0.85rem;
+    color: #8b949e;
+    position: relative;
+  }
+  .step:first-child { border-radius: 8px 0 0 8px; }
+  .step:last-child { border-right: 1px solid #30363d; border-radius: 0 8px 8px 0; }
+  .step .s-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    border: 2px solid #30363d;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step.done .s-num { border-color: #3fb950; color: #3fb950; }
+  .step.done { color: #3fb950; }
+  .step.active .s-num { border-color: #58a6ff; color: #58a6ff; }
+  .step.active { color: #58a6ff; }
+
+  /* Answer section */
+  .answer-section {
+    display: none;
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 24px;
+    margin-top: 20px;
+    text-align: center;
+  }
+  .answer-section.show { display: block; }
+  .answer-section h3 { color: #e6edf3; font-size: 1.1rem; margin-bottom: 8px; }
+  .answer-section p { color: #8b949e; font-size: 0.88rem; margin-bottom: 18px; }
+  .answer-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 11px 14px;
+    background: #0d1117;
+    border: 1.5px solid #30363d;
+    border-radius: 8px;
+    color: #e6edf3;
+    font-size: 0.95rem;
+    outline: none;
+    margin-bottom: 12px;
+  }
+  .answer-input:focus { border-color: #58a6ff; }
+  .btn-submit {
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 28px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-submit:hover { background: #2ea043; }
+  .result-msg {
+    margin-top: 14px;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: none;
+  }
+  .result-msg.success { background: #1b4332; color: #6fcf97; display: block; }
+  .result-msg.error { background: #3d1f1f; color: #f47067; display: block; }
+</style>
+</head>
+<body>
+
+<div class="banner-area">
+  <div class="progress-banner blue" id="banner1">
+    ✓ Step 1/3: Code compilation complete
+  </div>
+  <div class="progress-banner blue" id="banner2">
+    ✓ Step 2/3: Running test suite complete
+  </div>
+  <div class="progress-banner green" id="banner3">
+    ✓ Step 3/3: Database migration complete
+  </div>
+</div>
+
+<div class="header" id="mainHeader">
+  <div class="logo">🚀 DeployHub</div>
+  <div class="env-tag">Production</div>
+  <div class="env-tag">Branch: main @ a3f9c12</div>
+  <div class="status-pill">● Deploying</div>
+</div>
+
+<div class="container">
+  <div class="deploy-info">
+    <div class="info-card">
+      <div class="ic-label">Deployment</div>
+      <div class="ic-value">#deploy-4821</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Triggered By</div>
+      <div class="ic-value">j.mitchell</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Environment</div>
+      <div class="ic-value">Production (us-east-1)</div>
+    </div>
+    <div class="info-card">
+      <div class="ic-label">Started</div>
+      <div class="ic-value">Apr 14 · 10:32 AM</div>
+    </div>
+  </div>
+
+  <div class="steps">
+    <div class="step active" id="step1"><div class="s-num">1</div> Code Compilation</div>
+    <div class="step" id="step2"><div class="s-num">2</div> Test Suite</div>
+    <div class="step" id="step3"><div class="s-num">3</div> DB Migration</div>
+  </div>
+
+  <div class="log-panel">
+    <div class="log-header">
+      <div class="dot"></div>
+      <span>Live Deployment Log</span>
+    </div>
+    <div class="log-body" id="logBody">
+      <div class="log-line"><span class="log-ts">10:32:00</span><span class="log-info">[INFO] Deployment #4821 initialized</span></div>
+      <div class="log-line"><span class="log-ts">10:32:01</span><span class="log-run">[RUN ] Fetching source code from repository...</span></div>
+      <div class="log-line"><span class="log-ts">10:32:03</span><span class="log-ok">[OK  ] Source code fetched — 1,247 files</span></div>
+      <div class="log-line"><span class="log-ts">10:32:05</span><span class="log-run">[RUN ] Starting code compilation...</span></div>
+    </div>
+  </div>
+
+  <div class="answer-section" id="answerSection">
+    <h3>Deployment Observation Check</h3>
+    <p>You observed three deployment steps complete. What was the <strong>final step</strong> name?</p>
+    <div>
+      <input type="text" class="answer-input" id="answerInput" placeholder="Type the final step name...">
+    </div>
+    <button class="btn-submit" onclick="checkAnswer()">Submit Answer</button>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  function addLog(time, cls, text) {
+    const lb = document.getElementById('logBody');
+    const line = document.createElement('div');
+    line.className = 'log-line';
+    line.innerHTML = `<span class="log-ts">${time}</span><span class="${cls}">${text}</span>`;
+    lb.appendChild(line);
+    lb.scrollTop = lb.scrollHeight;
+  }
+
+  function showBanner(id, duration) {
+    const b = document.getElementById(id);
+    b.classList.add('show');
+    // Push header down
+    document.getElementById('mainHeader').style.marginTop = b.offsetHeight + 'px';
+    setTimeout(() => {
+      b.classList.remove('show');
+      document.getElementById('mainHeader').style.marginTop = '0';
+    }, duration);
+  }
+
+  // t=2s: Banner 1
+  setTimeout(() => {
+    addLog('10:32:10', 'log-run', '[RUN ] Compiling modules...');
+    addLog('10:32:14', 'log-ok',  '[OK  ] All 87 modules compiled successfully');
+    showBanner('banner1', 2000);
+    document.getElementById('step1').classList.remove('active');
+    document.getElementById('step1').classList.add('done');
+    document.getElementById('step1').querySelector('.s-num').textContent = '✓';
+    document.getElementById('step2').classList.add('active');
+  }, 2000);
+
+  // t=6s: Banner 2
+  setTimeout(() => {
+    addLog('10:32:18', 'log-run', '[RUN ] Executing test suite (unit + integration)...');
+    addLog('10:32:23', 'log-ok',  '[OK  ] 312 tests passed, 0 failed');
+    showBanner('banner2', 2000);
+    document.getElementById('step2').classList.remove('active');
+    document.getElementById('step2').classList.add('done');
+    document.getElementById('step2').querySelector('.s-num').textContent = '✓';
+    document.getElementById('step3').classList.add('active');
+  }, 6000);
+
+  // t=10s: Banner 3 (green)
+  setTimeout(() => {
+    addLog('10:32:27', 'log-run', '[RUN ] Applying database migrations...');
+    addLog('10:32:31', 'log-ok',  '[OK  ] 3 migrations applied — schema up to date');
+    showBanner('banner3', 2000);
+    document.getElementById('step3').classList.remove('active');
+    document.getElementById('step3').classList.add('done');
+    document.getElementById('step3').querySelector('.s-num').textContent = '✓';
+    document.querySelector('.status-pill').textContent = '● Deployed';
+    document.querySelector('.status-pill').style.background = '#1b4332';
+  }, 10000);
+
+  // t=13s: Show answer section
+  setTimeout(() => {
+    addLog('10:32:33', 'log-ok',  '[OK  ] Deployment #4821 completed successfully');
+    document.getElementById('answerSection').classList.add('show');
+  }, 13000);
+
+  function checkAnswer() {
+    const val = document.getElementById('answerInput').value.trim().toLowerCase();
+    const msg = document.getElementById('resultMsg');
+    if (val.includes('database') || val.includes('migration')) {
+      taskResult = 'final_step_noted';
+      msg.textContent = '✓ Correct! The final step was: Database migration';
+      msg.className = 'result-msg success';
+    } else {
+      msg.textContent = '✗ Incorrect — review the deployment log and try again.';
+      msg.className = 'result-msg error';
+    }
+  }
+</script>
+</body>
+</html>

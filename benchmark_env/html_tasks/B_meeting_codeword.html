@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Teleconference — Code Word Entry</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0d1117;
+    color: #c9d1d9;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #161b22;
+    padding: 12px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #30363d;
+  }
+  .logo { font-size: 17px; font-weight: 700; color: #58a6ff; display: flex; align-items: center; gap: 8px; }
+  .lock { font-size: 16px; }
+  .secure-badge {
+    background: #1f3a1f;
+    border: 1px solid #2ea043;
+    color: #3fb950;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 0.8px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .secure-dot { width: 6px; height: 6px; border-radius: 50%; background: #3fb950; }
+
+  .main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 24px;
+    gap: 32px;
+  }
+
+  .call-panel {
+    width: 480px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  .call-header {
+    text-align: center;
+    padding: 16px;
+    background: #161b22;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+  }
+  .call-header h2 { font-size: 16px; color: #c9d1d9; margin-bottom: 4px; }
+  .call-header p { font-size: 12px; color: #8b949e; }
+
+  .participant-list {
+    background: #161b22;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .participant-list h4 { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .p-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    transition: background 0.3s;
+  }
+  .p-row.speaking { background: #1c2d3a; }
+  .av {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+  }
+  .p-info { flex: 1; }
+  .p-info .pname { font-size: 13px; color: #c9d1d9; }
+  .p-info .prole { font-size: 11px; color: #8b949e; }
+  .p-status { font-size: 18px; }
+
+  .audio-vis {
+    background: #161b22;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .waveform {
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    height: 32px;
+    flex: 1;
+  }
+  .bar {
+    width: 4px;
+    background: #58a6ff;
+    border-radius: 2px;
+    min-height: 4px;
+    transition: height 0.15s;
+  }
+  .bar.active { animation: wave 0.5s infinite alternate; }
+  @keyframes wave {
+    from { height: 4px; }
+    to { height: 28px; }
+  }
+  .vis-label { font-size: 12px; color: #8b949e; white-space: nowrap; }
+
+  .form-panel {
+    width: 340px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .form-card {
+    background: #161b22;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    padding: 24px;
+  }
+  .form-card h3 { font-size: 15px; color: #58a6ff; margin-bottom: 6px; }
+  .form-card p { font-size: 12px; color: #8b949e; margin-bottom: 18px; line-height: 1.5; }
+  label { font-size: 12px; color: #8b949e; display: block; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%;
+    background: #0d1117;
+    border: 1px solid #30363d;
+    border-radius: 7px;
+    color: #c9d1d9;
+    padding: 10px 14px;
+    font-size: 15px;
+    letter-spacing: 1px;
+    outline: none;
+    margin-bottom: 14px;
+    font-family: 'Courier New', monospace;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: #58a6ff; box-shadow: 0 0 0 2px rgba(88,166,255,0.15); }
+  .btn-row { display: flex; gap: 8px; }
+  .btn {
+    flex: 1;
+    padding: 10px;
+    border-radius: 7px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-submit { background: #1f6feb; color: #fff; }
+  .btn-replay { background: #21262d; color: #c9d1d9; border: 1px solid #30363d; }
+  .result-msg { margin-top: 12px; font-size: 13px; padding: 10px 14px; border-radius: 7px; display: none; }
+  .result-msg.success { background: #1a3a1a; color: #7ee787; display: block; }
+  .result-msg.error   { background: #3a1a1a; color: #f85149; display: block; }
+
+  .instructions-card {
+    background: #161b22;
+    border-radius: 12px;
+    border: 1px solid #30363d;
+    padding: 16px;
+    font-size: 12px;
+    color: #8b949e;
+    line-height: 1.7;
+  }
+  .instructions-card h4 { font-size: 11px; color: #8b949e; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo"><span class="lock">🔒</span> SecureConnect</div>
+  <div class="secure-badge"><span class="secure-dot"></span> End-to-End Encrypted</div>
+</header>
+
+<div class="main">
+  <div class="call-panel">
+    <div class="call-header">
+      <h2>Security Verification Call</h2>
+      <p>Meeting ID: SC-8841 · Encrypted · 6 participants</p>
+    </div>
+
+    <div class="participant-list">
+      <h4>Participants</h4>
+      <div class="p-row" id="facilitator-row">
+        <div class="av" style="background:#1f6feb;">MF</div>
+        <div class="p-info">
+          <div class="pname">Morgan F. — Facilitator</div>
+          <div class="prole">Security Team</div>
+        </div>
+        <div class="p-status" id="fac-mic">🎙</div>
+      </div>
+      <div class="p-row">
+        <div class="av" style="background:#8250df;">KL</div>
+        <div class="p-info">
+          <div class="pname">Kim L.</div>
+          <div class="prole">Engineering</div>
+        </div>
+        <div class="p-status">🔇</div>
+      </div>
+      <div class="p-row">
+        <div class="av" style="background:#2da44e;">RP</div>
+        <div class="p-info">
+          <div class="pname">Raj P.</div>
+          <div class="prole">Operations</div>
+        </div>
+        <div class="p-status">🔇</div>
+      </div>
+      <div class="p-row">
+        <div class="av" style="background:#cf222e;">ST</div>
+        <div class="p-info">
+          <div class="pname">Sara T.</div>
+          <div class="prole">Product</div>
+        </div>
+        <div class="p-status">🔇</div>
+      </div>
+    </div>
+
+    <div class="audio-vis" id="audio-vis">
+      <span class="vis-label" id="vis-label">Waiting...</span>
+      <div class="waveform" id="waveform"></div>
+    </div>
+  </div>
+
+  <div class="form-panel">
+    <div class="form-card">
+      <h3>Security Verification</h3>
+      <p>Listen to the facilitator announce today's security code word, then enter it below to verify your attendance.</p>
+      <label for="code-input">Code word:</label>
+      <input type="text" id="code-input" placeholder="Enter code word..." autocomplete="off" />
+      <div class="btn-row">
+        <button class="btn btn-submit" onclick="submitAnswer()">Verify &amp; Submit</button>
+        <button class="btn btn-replay" onclick="replayAudio()">&#9654; Replay</button>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+
+    <div class="instructions-card">
+      <h4>Instructions</h4>
+      Listen carefully to the facilitator. They will announce the security code word for today's session. Enter the code word exactly as spoken to complete verification.
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  // Build waveform bars
+  const wf = document.getElementById('waveform');
+  const bars = [];
+  for (let i = 0; i < 24; i++) {
+    const b = document.createElement('div');
+    b.className = 'bar';
+    b.style.height = '4px';
+    wf.appendChild(b);
+    bars.push(b);
+  }
+
+  let waveInterval = null;
+  function startWave() {
+    waveInterval = setInterval(() => {
+      bars.forEach(b => {
+        b.style.height = (4 + Math.random() * 24) + 'px';
+      });
+    }, 120);
+  }
+  function stopWave() {
+    if (waveInterval) clearInterval(waveInterval);
+    bars.forEach(b => { b.style.height = '4px'; });
+  }
+
+  function speak(text) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+    return u;
+  }
+
+  function doAudio() {
+    const msg = "Alright team, for security verification today's code word is: Delta Seven. That's D-E-L-T-A dash Seven. Please enter it in the system.";
+    document.getElementById('vis-label').textContent = 'Morgan F. speaking';
+    document.getElementById('facilitator-row').classList.add('speaking');
+    startWave();
+    const u = speak(msg);
+    u.onend = () => {
+      stopWave();
+      document.getElementById('vis-label').textContent = 'Audio ended';
+      document.getElementById('facilitator-row').classList.remove('speaking');
+    };
+  }
+
+  function replayAudio() {
+    doAudio();
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('code-input').value;
+    const lower = val.toLowerCase().trim();
+    const msg = document.getElementById('result-msg');
+    if (lower.includes('delta')) {
+      taskResult = 'correct_codeword';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Verified! Code word accepted. ✓';
+    } else {
+      taskResult = 'wrong_codeword';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Incorrect code word. Please listen again.';
+    }
+  }
+
+  setTimeout(doAudio, 6000);
+</script>
+</body>
+</html>

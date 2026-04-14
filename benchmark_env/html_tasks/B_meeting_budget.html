@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Review Meeting</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f172a;
+    color: #e2e8f0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #0a0e1e;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e293b;
+  }
+  .logo { font-size: 17px; font-weight: 700; color: #22d3ee; }
+  .h-info { font-size: 12px; color: #64748b; }
+  .h-badge {
+    background: #164e63;
+    color: #67e8f9;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid #22d3ee44;
+  }
+
+  .layout {
+    flex: 1;
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+  }
+  .left { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .right { width: 320px; display: flex; flex-direction: column; gap: 14px; }
+
+  /* Participants row */
+  .p-row { display: flex; gap: 10px; }
+  .p-card {
+    background: #1e293b;
+    border-radius: 10px;
+    border: 2px solid #334155;
+    flex: 1;
+    padding: 14px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: border-color 0.3s;
+  }
+  .p-card.active { border-color: #22d3ee; }
+  .av { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 15px; font-weight: 700; color: #fff; }
+  .p-name { font-size: 11px; color: #94a3b8; text-align: center; }
+
+  /* Screen share / spreadsheet */
+  .screen-share {
+    background: #fff;
+    border-radius: 10px;
+    border: 2px solid #22d3ee44;
+    overflow: hidden;
+    position: relative;
+  }
+  .ss-titlebar {
+    background: #f1f5f9;
+    padding: 8px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid #e2e8f0;
+    font-size: 12px;
+    color: #475569;
+    font-family: system-ui;
+  }
+  .ss-dots { display: flex; gap: 4px; }
+  .ss-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .ss-icon { font-size: 14px; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: system-ui;
+    font-size: 13px;
+  }
+  th {
+    background: #1d4ed8;
+    color: #fff;
+    padding: 8px 12px;
+    text-align: left;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #e2e8f0;
+    color: #1e293b;
+  }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .row-highlight td { background: #eff6ff !important; }
+  .amount { font-weight: 700; color: #1d4ed8; }
+  .status-cell { font-size: 11px; font-weight: 600; }
+  .status-approved { color: #15803d; }
+  .status-pending { color: #b45309; }
+  .spreadsheet-row { opacity: 0.25; transition: opacity 0.5s; }
+  .spreadsheet-row.visible { opacity: 1; }
+
+  /* Current speaker quote */
+  .quote-bar {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 12px 14px;
+    border-left: 3px solid #22d3ee;
+    font-size: 13px;
+    color: #94a3b8;
+    min-height: 40px;
+  }
+  .quote-bar span { color: #22d3ee; font-weight: 600; }
+
+  /* Answer */
+  .answer-card {
+    background: #1e293b;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    padding: 16px;
+    flex: 1;
+  }
+  .answer-card h4 { font-size: 11px; color: #22d3ee; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .answer-card p { font-size: 11px; color: #64748b; margin-bottom: 10px; line-height: 1.5; }
+  textarea {
+    width: 100%;
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 7px;
+    color: #e2e8f0;
+    padding: 10px;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 10px;
+    line-height: 1.6;
+  }
+  textarea:focus { border-color: #22d3ee; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn { padding: 9px 16px; border-radius: 6px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #0891b2; color: #fff; }
+  .btn-replay  { background: #334155; color: #e2e8f0; }
+  .result-msg { margin-top: 10px; font-size: 12px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .result-msg.success { background: #14532d; color: #86efac; display: block; }
+  .result-msg.error   { background: #450a0a; color: #fca5a5; display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">&#9670; FiscalMeet</div>
+  <div class="h-info">Budget Review — FY2025 Q4 Proposal</div>
+  <div class="h-badge">Screen Share Active</div>
+</header>
+
+<div class="layout">
+  <div class="left">
+    <div class="p-row">
+      <div class="p-card" id="pc-cfo">
+        <div class="av" style="background:#1d4ed8;">CF</div>
+        <div class="p-name">C. Farrell<br>CFO</div>
+      </div>
+      <div class="p-card" id="pc-mktg">
+        <div class="av" style="background:#7c3aed;">LP</div>
+        <div class="p-name">L. Park<br>Marketing</div>
+      </div>
+      <div class="p-card" id="pc-eng">
+        <div class="av" style="background:#065f46;">DN</div>
+        <div class="p-name">D. Nair<br>Engineering</div>
+      </div>
+      <div class="p-card" id="pc-ops">
+        <div class="av" style="background:#92400e;">VR</div>
+        <div class="p-name">V. Russo<br>Operations</div>
+      </div>
+    </div>
+
+    <div class="screen-share">
+      <div class="ss-titlebar">
+        <div class="ss-dots">
+          <div class="ss-dot" style="background:#ef4444;"></div>
+          <div class="ss-dot" style="background:#f59e0b;"></div>
+          <div class="ss-dot" style="background:#22c55e;"></div>
+        </div>
+        <span class="ss-icon">&#9646;&#9646;</span>
+        FY2025-Q4-Budget-Proposal.xlsx — Shared by C. Farrell
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Line Item</th>
+            <th>Department</th>
+            <th>Requested</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="spreadsheet-row" id="sr-mktg">
+            <td>Marketing Campaigns</td>
+            <td>Marketing</td>
+            <td class="amount">$50,000</td>
+            <td class="status-cell status-approved">✓ Approved</td>
+          </tr>
+          <tr class="spreadsheet-row" id="sr-eng">
+            <td>Engineering Headcount</td>
+            <td>Engineering</td>
+            <td class="amount">$120,000</td>
+            <td class="status-cell status-approved">✓ Approved</td>
+          </tr>
+          <tr class="spreadsheet-row" id="sr-infra">
+            <td>Infrastructure & Cloud</td>
+            <td>Operations</td>
+            <td class="amount">$30,000</td>
+            <td class="status-cell status-approved">✓ Approved</td>
+          </tr>
+          <tr class="spreadsheet-row" id="sr-travel">
+            <td>Travel & Training</td>
+            <td>All Depts</td>
+            <td class="amount">$15,000</td>
+            <td class="status-cell status-approved">✓ Approved</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="quote-bar" id="quote-bar">
+      <span>CFO:</span> Meeting in progress. Budget items will be reviewed now.
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="answer-card">
+      <h4>Budget Recorder</h4>
+      <p>As each line item is announced, record it below. Include the name and dollar amount for all four items.</p>
+      <textarea id="budget-ta" placeholder="Example format:&#10;Marketing: $50,000&#10;Engineering headcount: $120,000&#10;..."></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="submitAnswer()">Submit</button>
+        <button class="btn btn-replay" onclick="replayAll()">&#9654; Replay</button>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const items = [
+    {
+      t: 3000,
+      pc: 'pc-cfo',
+      sr: 'sr-mktg',
+      speech: "First item: Marketing campaigns. Fifty thousand dollars. Approved.",
+      quote: '<span>CFO (C. Farrell):</span> First item: Marketing campaigns — <strong>$50,000</strong>. Approved.'
+    },
+    {
+      t: 9000,
+      pc: 'pc-eng',
+      sr: 'sr-eng',
+      speech: "Second: Engineering headcount — one hundred twenty thousand dollars. Approved.",
+      quote: '<span>D. Nair (Engineering):</span> Engineering headcount — <strong>$120,000</strong>. Approved.'
+    },
+    {
+      t: 15000,
+      pc: 'pc-ops',
+      sr: 'sr-infra',
+      speech: "Third: Infrastructure and cloud — thirty thousand dollars. Approved.",
+      quote: '<span>V. Russo (Operations):</span> Infrastructure & cloud — <strong>$30,000</strong>. Approved.'
+    },
+    {
+      t: 21000,
+      pc: 'pc-ops',
+      sr: 'sr-travel',
+      speech: "And finally: Travel and Training — fifteen thousand dollars. Approved.",
+      quote: '<span>V. Russo (Operations):</span> Travel & Training — <strong>$15,000</strong>. Approved.'
+    }
+  ];
+
+  let tos = [];
+
+  function speak(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }
+
+  function playItem(item) {
+    document.querySelectorAll('.p-card').forEach(c => c.classList.remove('active'));
+    document.getElementById(item.pc).classList.add('active');
+    document.getElementById(item.sr).classList.add('visible');
+    document.getElementById('quote-bar').innerHTML = item.quote;
+    speak(item.speech);
+    setTimeout(() => document.getElementById(item.pc).classList.remove('active'), 4000);
+  }
+
+  function startAll() {
+    tos = items.map(item => setTimeout(() => playItem(item), item.t));
+  }
+
+  function replayAll() {
+    tos.forEach(clearTimeout);
+    window.speechSynthesis.cancel();
+    document.querySelectorAll('.p-card').forEach(c => c.classList.remove('active'));
+    tos = items.map(item => setTimeout(() => playItem(item), item.t));
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('budget-ta').value;
+    const msg = document.getElementById('result-msg');
+    if (val.length > 40 && val.includes('$')) {
+      taskResult = 'budget_complete';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Budget recorded successfully!';
+    } else {
+      taskResult = 'budget_incomplete';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Include all 4 line items with dollar amounts.';
+    }
+  }
+
+  startAll();
+</script>
+</body>
+</html>

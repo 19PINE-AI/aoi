@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decision Meeting — Video Call</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #111827;
+    color: #f3f4f6;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #0d1117;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1f2937;
+  }
+  .logo { font-size: 17px; font-weight: 700; color: #818cf8; }
+  .call-id { font-size: 12px; color: #6b7280; }
+  .rec { background: #7f1d1d; color: #fca5a5; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; display: flex; align-items: center; gap: 5px; }
+  .rdot { width: 6px; height: 6px; border-radius: 50%; background: #fca5a5; animation: b 1s infinite; }
+  @keyframes b { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+  .main {
+    flex: 1;
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+  }
+  .left { flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .right { width: 300px; display: flex; flex-direction: column; gap: 14px; }
+
+  .video-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+  }
+  .v-card {
+    background: #1f2937;
+    border-radius: 12px;
+    border: 2px solid #374151;
+    padding: 0;
+    overflow: hidden;
+    transition: border-color 0.3s, box-shadow 0.3s;
+  }
+  .v-card.active {
+    border-color: #818cf8;
+    box-shadow: 0 0 16px rgba(129,140,248,0.3);
+  }
+  .v-screen {
+    background: #0d1117;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 20px;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .avatar {
+    width: 70px; height: 70px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .v-name {
+    background: #0d1117;
+    color: #9ca3af;
+    padding: 8px 14px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-top: 1px solid #1f2937;
+  }
+  .v-status { font-size: 16px; }
+
+  .debate-log {
+    background: #1a2235;
+    border-radius: 10px;
+    border: 1px solid #1f2937;
+    padding: 14px;
+    flex: 1;
+  }
+  .debate-log h4 { font-size: 11px; color: #818cf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .msg {
+    display: none;
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    animation: fadeIn 0.4s ease;
+  }
+  .msg.show { display: block; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;} }
+  .msg.alice { background: #1e1b4b; border-left: 3px solid #818cf8; }
+  .msg.bob   { background: #1a3a2a; border-left: 3px solid #34d399; }
+  .msg .who { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+  .who-alice { color: #818cf8; }
+  .who-bob   { color: #34d399; }
+
+  .decision-panel {
+    background: #1f2937;
+    border-radius: 10px;
+    border: 1px solid #374151;
+    padding: 14px;
+  }
+  .decision-panel h4 { font-size: 11px; color: #818cf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .option-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .opt-card {
+    flex: 1;
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 8px;
+    padding: 10px;
+    text-align: center;
+    font-size: 12px;
+    color: #9ca3af;
+    transition: all 0.4s;
+  }
+  .opt-card.selected {
+    border-color: #34d399;
+    background: #0d2a1a;
+    color: #34d399;
+    font-weight: 600;
+  }
+  .opt-card .opt-label { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+  .opt-desc { font-size: 11px; }
+
+  .answer-card {
+    background: #1f2937;
+    border-radius: 10px;
+    border: 1px solid #374151;
+    padding: 16px;
+  }
+  .answer-card h4 { font-size: 11px; color: #818cf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  label { font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%;
+    background: #111827;
+    border: 1px solid #374151;
+    border-radius: 6px;
+    color: #f3f4f6;
+    padding: 9px 12px;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 10px;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: #818cf8; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn { padding: 9px 16px; border-radius: 7px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #4f46e5; color: #fff; }
+  .btn-replay  { background: #374151; color: #f3f4f6; }
+  .result-msg { margin-top: 10px; font-size: 12px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .result-msg.success { background: #14532d; color: #86efac; display: block; }
+  .result-msg.error   { background: #450a0a; color: #fca5a5; display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">&#9670; Pivot Calls</div>
+  <div class="call-id">Strategy Decision — Call #2941</div>
+  <div class="rec"><span class="rdot"></span> REC</div>
+</header>
+
+<div class="main">
+  <div class="left">
+    <div class="video-row">
+      <div class="v-card" id="card-alice">
+        <div class="v-screen">
+          <div class="avatar" style="background:#4338ca;">AL</div>
+        </div>
+        <div class="v-name">
+          <span class="v-status" id="alice-mic">🔇</span>
+          Alice — Product Lead
+        </div>
+      </div>
+      <div class="v-card" id="card-bob">
+        <div class="v-screen">
+          <div class="avatar" style="background:#065f46;">BO</div>
+        </div>
+        <div class="v-name">
+          <span class="v-status" id="bob-mic">🔇</span>
+          Bob — Engineering Lead
+        </div>
+      </div>
+    </div>
+
+    <div class="debate-log">
+      <h4>Discussion Log</h4>
+      <div class="msg alice" id="m1">
+        <div class="who who-alice">Alice</div>
+        I think we should go with Option A, it's more cost-effective.
+      </div>
+      <div class="msg bob" id="m2">
+        <div class="who who-bob">Bob</div>
+        But Option B has better scalability for our needs.
+      </div>
+      <div class="msg alice" id="m3">
+        <div class="who who-alice">Alice</div>
+        You make a fair point about scalability.
+      </div>
+      <div class="msg bob" id="m4">
+        <div class="who who-bob">Bob</div>
+        So we're aligned on Option B then?
+      </div>
+      <div class="msg alice" id="m5">
+        <div class="who who-alice">Alice</div>
+        <strong>Agreed. Option B it is.</strong>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="decision-panel">
+      <h4>Options Being Debated</h4>
+      <div class="option-row">
+        <div class="opt-card" id="opt-a">
+          <div class="opt-label">A</div>
+          <div class="opt-desc">Cost-Effective Solution</div>
+        </div>
+        <div class="opt-card" id="opt-b">
+          <div class="opt-label">B</div>
+          <div class="opt-desc">Scalable Solution</div>
+        </div>
+      </div>
+      <div style="font-size:11px; color:#6b7280; margin-top:4px;">Decision pending...</div>
+    </div>
+
+    <div class="answer-card">
+      <h4>Your Answer</h4>
+      <label for="decision-input">Which option did they agree on?</label>
+      <input type="text" id="decision-input" placeholder="e.g. Option A or Option B" />
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="submitAnswer()">Submit</button>
+        <button class="btn btn-replay" onclick="replayAll()">&#9654; Replay</button>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const events = [
+    {
+      t: 2000,
+      speaker: 'alice',
+      msgId: 'm1',
+      speech: "I think we should go with Option A, it's more cost-effective."
+    },
+    {
+      t: 5000,
+      speaker: 'bob',
+      msgId: 'm2',
+      speech: "But Option B has better scalability for our needs."
+    },
+    {
+      t: 8000,
+      speaker: 'alice',
+      msgId: 'm3',
+      speech: "You make a fair point about scalability."
+    },
+    {
+      t: 11000,
+      speaker: 'bob',
+      msgId: 'm4',
+      speech: "So we're aligned on Option B then?"
+    },
+    {
+      t: 14000,
+      speaker: 'alice',
+      msgId: 'm5',
+      speech: "Agreed. Option B it is.",
+      final: true
+    }
+  ];
+
+  let tos = [];
+  let current = null;
+
+  function speak(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }
+
+  function playEvent(ev) {
+    if (current) {
+      document.getElementById('card-' + current).classList.remove('active');
+      document.getElementById(current + '-mic').textContent = '🔇';
+    }
+    current = ev.speaker;
+    document.getElementById('card-' + ev.speaker).classList.add('active');
+    document.getElementById(ev.speaker + '-mic').textContent = '🎙';
+    document.getElementById(ev.msgId).classList.add('show');
+    speak(ev.speech);
+    if (ev.final) {
+      setTimeout(() => {
+        document.getElementById('opt-b').classList.add('selected');
+        document.querySelector('.decision-panel div:last-child').textContent = 'Decision: Option B selected';
+        document.getElementById('card-' + ev.speaker).classList.remove('active');
+        document.getElementById(ev.speaker + '-mic').textContent = '🔇';
+        current = null;
+      }, 3500);
+    } else {
+      setTimeout(() => {
+        document.getElementById('card-' + ev.speaker).classList.remove('active');
+        document.getElementById(ev.speaker + '-mic').textContent = '🔇';
+        current = null;
+      }, 3000);
+    }
+  }
+
+  function startAll() {
+    tos = events.map(ev => setTimeout(() => playEvent(ev), ev.t));
+  }
+
+  function replayAll() {
+    tos.forEach(clearTimeout);
+    window.speechSynthesis.cancel();
+    if (current) {
+      document.getElementById('card-' + current).classList.remove('active');
+      document.getElementById(current + '-mic').textContent = '🔇';
+      current = null;
+    }
+    document.querySelectorAll('.msg').forEach(m => m.classList.remove('show'));
+    document.getElementById('opt-b').classList.remove('selected');
+    tos = events.map(ev => setTimeout(() => playEvent(ev), ev.t));
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('decision-input').value.toLowerCase().trim();
+    const msg = document.getElementById('result-msg');
+    if (val.includes('option b') || val === 'b') {
+      taskResult = 'correct_decision';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Correct! They agreed on Option B.';
+    } else {
+      taskResult = 'wrong_decision';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Not quite. Listen to the final agreement again.';
+    }
+  }
+
+  startAll();
+</script>
+</body>
+</html>

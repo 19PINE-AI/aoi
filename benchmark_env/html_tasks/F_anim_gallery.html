@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Photo Gallery</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #eee;
+  }
+  h1 { font-size: 20px; margin-bottom: 18px; letter-spacing: 1px; color: #aad4f5; }
+  .gallery-wrap {
+    background: #16213e;
+    border-radius: 16px;
+    padding: 24px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+    width: 540px;
+  }
+  .frame {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 14px;
+  }
+  canvas { width: 100%; height: 100%; display: block; }
+  .caption-overlay {
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.75));
+    padding: 20px 16px 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #fff;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.8);
+  }
+  .indicators {
+    text-align: center;
+    margin-bottom: 14px;
+    font-size: 22px;
+    letter-spacing: 6px;
+    color: #555;
+  }
+  .indicators .active { color: #aad4f5; }
+  .timer-bar {
+    height: 3px;
+    background: #0f3460;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    overflow: hidden;
+  }
+  .timer-fill {
+    height: 100%;
+    background: #aad4f5;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+  }
+  .answer-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  label { font-size: 13px; white-space: nowrap; color: #aad4f5; font-weight: 600; }
+  input[type="text"] {
+    flex: 1;
+    padding: 9px 12px;
+    border: 1.5px solid #0f3460;
+    border-radius: 8px;
+    background: #0f3460;
+    color: #eee;
+    font-size: 13px;
+    outline: none;
+  }
+  input[type="text"]:focus { border-color: #aad4f5; }
+  button {
+    background: #aad4f5;
+    color: #1a1a2e;
+    border: none;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  button:hover { background: #79b8e0; }
+  #feedback { margin-top: 10px; font-size: 13px; font-weight: 600; min-height: 18px; }
+  .correct { color: #2ecc71; }
+  .wrong { color: #e74c3c; }
+</style>
+</head>
+<body>
+<div class="gallery-wrap">
+  <h1>Photo Gallery — Auto Advance</h1>
+  <div class="frame">
+    <canvas id="imgCanvas" width="492" height="300"></canvas>
+    <div class="caption-overlay" id="captionOverlay">Coastal Sunrise 2024</div>
+  </div>
+  <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+  <div class="indicators" id="indicators">• • • •</div>
+  <div class="answer-row">
+    <label>Caption of 3rd image:</label>
+    <input type="text" id="answer" placeholder="Type caption..." />
+    <button onclick="submitAnswer()">Submit</button>
+  </div>
+  <div id="feedback"></div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const images = [
+    {
+      caption: 'Coastal Sunrise 2024',
+      draw(ctx, w, h) {
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#ff6b35');
+        grad.addColorStop(0.4, '#ffd700');
+        grad.addColorStop(1, '#4a90d9');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        // sun
+        ctx.beginPath();
+        ctx.arc(w * 0.5, h * 0.38, 36, 0, 2 * Math.PI);
+        ctx.fillStyle = 'rgba(255,220,50,0.95)';
+        ctx.fill();
+        // waves
+        for (let i = 0; i < 4; i++) {
+          ctx.beginPath();
+          const y = h * 0.65 + i * 20;
+          ctx.moveTo(0, y);
+          for (let x = 0; x < w; x += 20) {
+            ctx.quadraticCurveTo(x + 10, y - 10, x + 20, y);
+          }
+          ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      }
+    },
+    {
+      caption: 'Urban Skyline',
+      draw(ctx, w, h) {
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#1a1a3e');
+        grad.addColorStop(0.6, '#3a5f8a');
+        grad.addColorStop(1, '#5b8fa8');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        // buildings
+        const bldgs = [[40,120,50,160],[100,80,40,200],[150,100,60,180],[220,60,45,220],[275,90,55,190],[340,70,50,210],[400,100,45,180],[450,50,40,230]];
+        bldgs.forEach(([x, height, bw, y]) => {
+          ctx.fillStyle = '#23304a';
+          ctx.fillRect(x, h - height, bw, height);
+          // windows
+          for (let wy = h - height + 8; wy < h - 10; wy += 18) {
+            for (let wx = x + 6; wx < x + bw - 6; wx += 12) {
+              ctx.fillStyle = Math.random() > 0.4 ? 'rgba(255,240,120,0.7)' : 'rgba(80,120,180,0.4)';
+              ctx.fillRect(wx, wy, 7, 10);
+            }
+          }
+        });
+      }
+    },
+    {
+      caption: 'Mountain Summit 2024',
+      draw(ctx, w, h) {
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#b8d4f0');
+        grad.addColorStop(0.5, '#7fb3d3');
+        grad.addColorStop(1, '#e8f4f8');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        // mountains
+        const peaks = [[0,h,200,80],[150,h,200,40],[250,h,200,20],[50,h,250,100]];
+        peaks.forEach(([x, base, bw, peakH]) => {
+          ctx.beginPath();
+          ctx.moveTo(x, base);
+          ctx.lineTo(x + bw / 2, base - peakH);
+          ctx.lineTo(x + bw, base);
+          ctx.closePath();
+          ctx.fillStyle = '#5a7fa0';
+          ctx.fill();
+          // snow cap
+          ctx.beginPath();
+          ctx.moveTo(x + bw / 2, base - peakH);
+          ctx.lineTo(x + bw / 2 - 18, base - peakH + 30);
+          ctx.lineTo(x + bw / 2 + 18, base - peakH + 30);
+          ctx.closePath();
+          ctx.fillStyle = '#f0f8ff';
+          ctx.fill();
+        });
+        // label on image
+        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+        ctx.font = 'bold 18px Segoe UI, Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Mountain Summit 2024', w / 2, 36);
+      }
+    },
+    {
+      caption: 'Forest Trail',
+      draw(ctx, w, h) {
+        const grad = ctx.createLinearGradient(0, 0, 0, h);
+        grad.addColorStop(0, '#1a4a1a');
+        grad.addColorStop(0.5, '#2d7a2d');
+        grad.addColorStop(1, '#4aaa4a');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, w, h);
+        // trees
+        for (let i = 0; i < 12; i++) {
+          const tx = (i * 45) % w;
+          const th = 80 + (i * 17) % 60;
+          const ty = h - th;
+          ctx.beginPath();
+          ctx.moveTo(tx + 20, ty);
+          ctx.lineTo(tx, ty + th * 0.6);
+          ctx.lineTo(tx + 40, ty + th * 0.6);
+          ctx.closePath();
+          ctx.fillStyle = `hsl(${120 + (i * 10) % 40}, 50%, ${25 + (i * 5) % 20}%)`;
+          ctx.fill();
+          ctx.fillStyle = '#5a3a1a';
+          ctx.fillRect(tx + 16, ty + th * 0.6, 8, th * 0.4);
+        }
+        // trail path
+        ctx.beginPath();
+        ctx.moveTo(w * 0.4, h);
+        ctx.quadraticCurveTo(w * 0.5, h * 0.6, w * 0.55, 0);
+        ctx.strokeStyle = 'rgba(180,140,80,0.5)';
+        ctx.lineWidth = 22;
+        ctx.stroke();
+      }
+    }
+  ];
+
+  let current = 0;
+  const canvas = document.getElementById('imgCanvas');
+  const ctx = canvas.getContext('2d');
+  const captionEl = document.getElementById('captionOverlay');
+  const indicatorsEl = document.getElementById('indicators');
+  const timerFill = document.getElementById('timerFill');
+
+  const INTERVAL = 3000;
+
+  function renderImage() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    images[current].draw(ctx, canvas.width, canvas.height);
+    captionEl.textContent = images[current].caption;
+    const dots = ['•','•','•','•'].map((d, i) =>
+      i === current ? `<span class="active">•</span>` : '•'
+    ).join(' ');
+    indicatorsEl.innerHTML = dots;
+  }
+
+  // Timer bar animation
+  let timerStart = null;
+  function animateTimer(ts) {
+    if (!timerStart) timerStart = ts;
+    const elapsed = (ts - timerStart) % INTERVAL;
+    timerFill.style.width = ((elapsed / INTERVAL) * 100) + '%';
+    requestAnimationFrame(animateTimer);
+  }
+
+  renderImage();
+  requestAnimationFrame(animateTimer);
+
+  setInterval(() => {
+    current = (current + 1) % images.length;
+    renderImage();
+    timerStart = null;
+  }, INTERVAL);
+
+  function submitAnswer() {
+    const val = document.getElementById('answer').value.trim().toLowerCase();
+    const fb = document.getElementById('feedback');
+    if (val.includes('mountain') || val.includes('summit')) {
+      taskResult = 'caption_correct';
+      fb.textContent = 'Correct! The 3rd image caption is "Mountain Summit 2024".';
+      fb.className = 'correct';
+    } else {
+      taskResult = 'wrong_caption';
+      fb.textContent = 'Incorrect. Watch for the 3rd image caption.';
+      fb.className = 'wrong';
+    }
+  }
+</script>
+</body>
+</html>

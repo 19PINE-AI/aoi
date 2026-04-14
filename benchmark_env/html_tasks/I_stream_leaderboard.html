@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Leaderboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: linear-gradient(135deg, #0f172a, #1e1b4b); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .lb-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; width: 600px; overflow: hidden; margin-bottom: 20px; backdrop-filter: blur(10px); }
+  .lb-header { background: linear-gradient(135deg, #7c3aed, #4f46e5); padding: 20px 28px; }
+  .lb-header h1 { color: #fff; font-size: 1.3rem; font-weight: 800; }
+  .lb-header p { color: rgba(255,255,255,0.7); font-size: 0.82rem; margin-top: 4px; }
+  .timer-bar { background: rgba(0,0,0,0.2); height: 6px; border-radius: 3px; margin-top: 14px; overflow: hidden; }
+  .timer-fill { height: 100%; background: linear-gradient(90deg, #a78bfa, #818cf8); border-radius: 3px; transition: width 0.5s linear; }
+  .lb-body { padding: 16px; }
+  .lb-row { display: flex; align-items: center; gap: 14px; padding: 12px 14px; border-radius: 12px; margin-bottom: 8px; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.06); }
+  .lb-row.first { background: linear-gradient(135deg, rgba(251,191,36,0.2), rgba(245,158,11,0.1)); border-color: rgba(251,191,36,0.4); }
+  .rank { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; flex-shrink: 0; }
+  .rank-1 { background: linear-gradient(135deg, #f59e0b, #fbbf24); color: #fff; }
+  .rank-2 { background: #475569; color: #e2e8f0; }
+  .rank-3 { background: #92400e; color: #fde68a; }
+  .rank-other { background: #1e293b; color: #64748b; }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; flex-shrink: 0; }
+  .person-info { flex: 1; }
+  .person-name { color: #f1f5f9; font-size: 0.95rem; font-weight: 700; }
+  .person-delta { font-size: 0.72rem; margin-top: 2px; }
+  .delta-up { color: #4ade80; }
+  .delta-down { color: #f87171; }
+  .sales-amount { font-size: 1.1rem; font-weight: 800; font-family: monospace; color: #c8d3f5; }
+  .sales-amount.first-place { color: #fbbf24; }
+  .sales-bar { flex: 1; height: 5px; background: rgba(255,255,255,0.08); border-radius: 3px; overflow: hidden; max-width: 100px; }
+  .sales-fill { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+  .update-flash { animation: flash 0.4s ease; }
+  @keyframes flash { 0%{background:rgba(99,102,241,0.4)} 100%{background:rgba(255,255,255,0.04)} }
+  .answer-box { width: 600px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; backdrop-filter: blur(10px); }
+  .answer-box label { color: #a5b4fc; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box input { width: 100%; padding: 10px 14px; background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #f1f5f9; font-size: 0.95rem; outline: none; }
+  .answer-box input:focus { border-color: #818cf8; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: linear-gradient(135deg, #7c3aed, #6d28d9); color: #fff; border: none; border-radius: 10px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: rgba(255,255,255,0.08); color: #94a3b8; border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="lb-card">
+  <div class="lb-header">
+    <h1>🏆 Q2 Sales Competition</h1>
+    <p>Live leaderboard — updates every 2 seconds</p>
+    <div class="timer-bar"><div class="timer-fill" id="timerFill" style="width:0%"></div></div>
+  </div>
+  <div class="lb-body" id="lbBody"></div>
+</div>
+
+<div class="answer-box">
+  <label for="answerInput">Who is in first place at 20 seconds?</label>
+  <input type="text" id="answerInput" placeholder="Type the name of the leader..." />
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartLB()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const AVATARS = { Alice: '👩', Bob: '👨', Sarah: '👩‍💼', David: '🧑', Emma: '👩‍🦱' };
+const COLORS  = { Alice: '#3b82f6', Bob: '#8b5cf6', Sarah: '#f59e0b', David: '#10b981', Emma: '#ef4444' };
+
+// Sales sequences over 10 updates (every 2s = 20s total)
+const salesSeq = {
+  Alice: [4200, 4350, 4520, 4680, 4810, 4950, 5100, 5200, 5300, 5400],
+  Bob:   [3800, 3950, 4100, 4300, 4500, 4700, 4850, 4980, 5080, 5180],
+  Sarah: [2100, 2800, 3600, 4500, 5200, 5900, 6700, 7400, 8100, 8750],
+  David: [5500, 5580, 5640, 5690, 5730, 5770, 5810, 5850, 5870, 5890],
+  Emma:  [4900, 5000, 5090, 5170, 5240, 5310, 5370, 5430, 5480, 5520],
+};
+
+let updateIdx = 0;
+let intervalId = null;
+const TOTAL_UPDATES = 10;
+
+function getSortedData(idx) {
+  return Object.entries(salesSeq).map(([name, seq]) => ({
+    name,
+    sales: seq[Math.min(idx, seq.length - 1)],
+    prev: idx > 0 ? seq[idx - 1] : seq[0],
+  })).sort((a, b) => b.sales - a.sales);
+}
+
+function formatMoney(n) {
+  return '$' + n.toLocaleString();
+}
+
+function renderLB(dataIdx, animate) {
+  const data = getSortedData(dataIdx);
+  const maxSales = data[0].sales;
+  const body = document.getElementById('lbBody');
+
+  data.forEach((person, rank) => {
+    let row = document.getElementById('row_' + person.name);
+    if (!row) {
+      row = document.createElement('div');
+      row.id = 'row_' + person.name;
+      row.className = 'lb-row';
+      body.appendChild(row);
+    }
+
+    const delta = person.sales - person.prev;
+    const isFirst = rank === 0;
+    row.className = 'lb-row' + (isFirst ? ' first' : '') + (animate && delta > 0 ? ' update-flash' : '');
+
+    const rankClass = ['rank-1','rank-2','rank-3'][rank] || 'rank-other';
+    const rankIcon = ['🥇','🥈','🥉'][rank] || (rank + 1);
+
+    row.innerHTML = `
+      <div class="rank ${rankClass}">${rankIcon}</div>
+      <div class="avatar">${AVATARS[person.name]}</div>
+      <div class="person-info">
+        <div class="person-name">${person.name}</div>
+        <div class="person-delta ${delta >= 0 ? 'delta-up' : 'delta-down'}">
+          ${delta >= 0 ? '+' : ''}${formatMoney(delta)} this update
+        </div>
+      </div>
+      <div class="sales-bar"><div class="sales-fill" style="width:${(person.sales/maxSales*100).toFixed(1)}%;background:${COLORS[person.name]}"></div></div>
+      <div class="sales-amount ${isFirst ? 'first-place' : ''}">${formatMoney(person.sales)}</div>
+    `;
+
+    // Re-order DOM
+    body.appendChild(row);
+  });
+}
+
+function tick() {
+  if (updateIdx >= TOTAL_UPDATES) {
+    clearInterval(intervalId);
+    return;
+  }
+  const pct = (updateIdx / (TOTAL_UPDATES - 1)) * 100;
+  document.getElementById('timerFill').style.width = pct + '%';
+  renderLB(updateIdx, updateIdx > 0);
+  updateIdx++;
+}
+
+function startLB() {
+  document.getElementById('lbBody').innerHTML = '';
+  renderLB(0, false);
+  intervalId = setInterval(tick, 2000);
+}
+
+function restartLB() {
+  clearInterval(intervalId);
+  updateIdx = 0;
+  taskResult = 'pending';
+  document.getElementById('answerInput').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('timerFill').style.width = '0%';
+  startLB();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerInput').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('sarah')) {
+    taskResult = 'leader_identified';
+    msg.style.color = '#fbbf24';
+    msg.textContent = 'Correct! Sarah surged from $2,100 to $8,750, taking first place at 20 seconds.';
+  } else {
+    taskResult = 'incorrect';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Incorrect. Watch the leaderboard for 20 seconds to see who ends up on top.';
+  }
+  msg.style.display = 'block';
+}
+
+startLB();
+</script>
+</body>
+</html>

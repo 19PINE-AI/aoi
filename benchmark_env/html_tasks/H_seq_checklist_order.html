@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD Deployment Checklist</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+  .panel { background: #1e293b; border-radius: 14px; width: 520px; padding: 32px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .panel-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; }
+  .panel-header h2 { color: #f1f5f9; font-size: 1.2rem; }
+  .pipeline-tag { background: #334155; color: #94a3b8; padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.5px; }
+  .checklist { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px; }
+  .checklist-item { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 14px 16px; display: flex; align-items: center; gap: 14px; transition: all 0.4s; }
+  .checklist-item.processing { border-color: #3b82f6; background: #1e3a5f; }
+  .checklist-item.done { border-color: #22c55e; background: #052e16; }
+  .item-status { width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
+  .status-pending { background: #334155; color: #64748b; font-size: 0.7rem; font-weight: 700; }
+  .status-spinner { background: #1d4ed8; color: #fff; animation: spin 1s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .status-done { background: #16a34a; color: #fff; }
+  .item-info { flex: 1; }
+  .item-name { color: #e2e8f0; font-size: 0.9rem; font-weight: 600; }
+  .item-detail { color: #64748b; font-size: 0.75rem; margin-top: 2px; }
+  .item-time { color: #64748b; font-size: 0.75rem; }
+  .progress-track { background: #334155; height: 4px; border-radius: 2px; margin-bottom: 24px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #22c55e); width: 0%; transition: width 0.8s ease; border-radius: 2px; }
+  .answer-section { border-top: 1px solid #334155; padding-top: 20px; }
+  .answer-section label { color: #94a3b8; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-section input { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f1f5f9; font-size: 0.95rem; outline: none; transition: border 0.2s; }
+  .answer-section input:focus { border-color: #3b82f6; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn-submit { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #334155; color: #94a3b8; border: none; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="panel">
+  <div class="panel-header">
+    <h2>Deployment Checklist</h2>
+    <span class="pipeline-tag">main → production</span>
+  </div>
+
+  <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+
+  <ul class="checklist" id="checklist">
+    <li class="checklist-item" id="item0">
+      <div class="item-status status-pending" id="status0">–</div>
+      <div class="item-info"><div class="item-name">Lint code</div><div class="item-detail">ESLint + Prettier checks</div></div>
+      <div class="item-time" id="time0"></div>
+    </li>
+    <li class="checklist-item" id="item1">
+      <div class="item-status status-pending" id="status1">–</div>
+      <div class="item-info"><div class="item-name">Run tests</div><div class="item-detail">Unit + Integration test suite</div></div>
+      <div class="item-time" id="time1"></div>
+    </li>
+    <li class="checklist-item" id="item2">
+      <div class="item-status status-pending" id="status2">–</div>
+      <div class="item-info"><div class="item-name">Build Docker image</div><div class="item-detail">Multi-stage production build</div></div>
+      <div class="item-time" id="time2"></div>
+    </li>
+    <li class="checklist-item" id="item3">
+      <div class="item-status status-pending" id="status3">–</div>
+      <div class="item-info"><div class="item-name">Push to registry</div><div class="item-detail">ghcr.io/org/app:latest</div></div>
+      <div class="item-time" id="time3"></div>
+    </li>
+    <li class="checklist-item" id="item4">
+      <div class="item-status status-pending" id="status4">–</div>
+      <div class="item-info"><div class="item-name">Deploy</div><div class="item-detail">Rolling update to k8s cluster</div></div>
+      <div class="item-time" id="time4"></div>
+    </li>
+  </ul>
+
+  <div class="answer-section">
+    <label for="answerInput">Which item completed last?</label>
+    <input type="text" id="answerInput" placeholder="Name the last item to complete..." />
+    <div class="btn-row">
+      <button class="btn-submit" onclick="submitAnswer()">Submit</button>
+      <button class="btn-restart" onclick="restartChecklist()">Restart</button>
+    </div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const durations = ['1.2s', '3.8s', '12.4s', '5.1s', '8.7s'];
+let timers = [];
+
+function setSpinner(idx) {
+  const statusEl = document.getElementById('status' + idx);
+  statusEl.className = 'item-status status-spinner';
+  statusEl.textContent = '↻';
+  document.getElementById('item' + idx).classList.add('processing');
+}
+
+function setDone(idx, progress) {
+  const statusEl = document.getElementById('status' + idx);
+  statusEl.className = 'item-status status-done';
+  statusEl.textContent = '✓';
+  document.getElementById('item' + idx).classList.remove('processing');
+  document.getElementById('item' + idx).classList.add('done');
+  document.getElementById('time' + idx).textContent = durations[idx];
+  document.getElementById('progressFill').style.width = progress + '%';
+}
+
+function runChecklist() {
+  const schedule = [
+    { start: 0, end: 2000 },
+    { start: 2000, end: 6000 },
+    { start: 6000, end: 10000 },
+    { start: 10000, end: 14000 },
+    { start: 14000, end: 18000 },
+  ];
+
+  const progresses = [20, 40, 60, 80, 100];
+
+  schedule.forEach((s, i) => {
+    timers.push(setTimeout(() => setSpinner(i), s.start));
+    timers.push(setTimeout(() => setDone(i, progresses[i]), s.end));
+  });
+}
+
+function restartChecklist() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  taskResult = 'pending';
+  document.getElementById('answerInput').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('progressFill').style.width = '0%';
+  for (let i = 0; i < 5; i++) {
+    const statusEl = document.getElementById('status' + i);
+    statusEl.className = 'item-status status-pending';
+    statusEl.textContent = '–';
+    document.getElementById('item' + i).className = 'checklist-item';
+    document.getElementById('time' + i).textContent = '';
+  }
+  runChecklist();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerInput').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('deploy')) {
+    taskResult = 'last_item_correct';
+    msg.style.color = '#22c55e';
+    msg.textContent = 'Correct! Deploy was the last item to complete.';
+  } else {
+    taskResult = 'incorrect';
+    msg.style.color = '#ef4444';
+    msg.textContent = 'Incorrect. Watch the checklist process all items.';
+  }
+  msg.style.display = 'block';
+}
+
+runChecklist();
+</script>
+</body>
+</html>

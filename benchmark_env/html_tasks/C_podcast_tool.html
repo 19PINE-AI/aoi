@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python for Data Science — Ep 12</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f0f0f;
+    color: #f5f5f5;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
+  .player-shell { width: 100%; max-width: 460px; display: flex; flex-direction: column; gap: 24px; }
+
+  .cover-section { display: flex; gap: 20px; align-items: flex-start; }
+  .cover-art {
+    width: 120px; height: 120px;
+    border-radius: 12px;
+    flex-shrink: 0;
+    background: linear-gradient(135deg, #1a2a0a 0%, #1a3a0a 40%, #0d4a0d 70%, #0a2a0a 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border: 1px solid #2a4a1a;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .cover-icon { font-size: 40px; }
+  .cover-label { font-size: 9px; color: #86efac; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  .episode-meta { flex: 1; }
+  .podcast-name { font-size: 12px; color: #86efac; font-weight: 600; margin-bottom: 4px; }
+  .episode-title { font-size: 18px; font-weight: 800; margin-bottom: 6px; line-height: 1.3; }
+  .episode-sub { font-size: 12px; color: #737373; line-height: 1.5; }
+  .ep-meta { font-size: 11px; color: #525252; margin-top: 6px; }
+
+  .viz-section {
+    background: #1a1a1a;
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid #2a2a2a;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .waveform { display: flex; align-items: center; gap: 2px; height: 36px; flex: 1; }
+  .wbar { flex: 1; background: #2a2a2a; border-radius: 2px; min-height: 3px; max-height: 36px; transition: background 0.3s; }
+  .wbar.active { background: #86efac; }
+  .viz-label { font-size: 11px; color: #525252; white-space: nowrap; }
+
+  .playback-section {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #2a2a2a;
+  }
+  .seek-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .t-lbl { font-size: 11px; color: #737373; font-variant-numeric: tabular-nums; }
+  .seek-track { flex: 1; background: #2a2a2a; border-radius: 4px; height: 5px; position: relative; }
+  .seek-fill { background: #86efac; height: 100%; border-radius: 4px; width: 0%; transition: width 0.5s linear; }
+  .seek-thumb {
+    position: absolute; top: 50%; transform: translate(-50%,-50%);
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #86efac; left: 0%; transition: left 0.5s linear;
+    box-shadow: 0 0 6px rgba(134,239,172,0.6);
+  }
+  .controls-row { display: flex; align-items: center; justify-content: center; gap: 20px; }
+  .ctrl-btn {
+    background: none; border: none; color: #9ca3af; font-size: 20px;
+    cursor: pointer; padding: 6px; border-radius: 50%; transition: color 0.2s;
+  }
+  .ctrl-btn:hover { color: #f5f5f5; }
+  .play-btn {
+    width: 54px; height: 54px; background: #22c55e; color: #000; font-size: 22px;
+    border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(34,197,94,0.4); transition: transform 0.1s;
+  }
+  .play-btn:hover { box-shadow: 0 6px 20px rgba(34,197,94,0.6); }
+  .volume-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .vol-icon { font-size: 14px; color: #737373; }
+  .vol-track { flex: 1; background: #2a2a2a; border-radius: 4px; height: 4px; }
+  .vol-fill { background: #737373; height: 100%; border-radius: 4px; width: 75%; }
+
+  .answer-section {
+    background: #1a1a1a;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid #2a2a2a;
+  }
+  .answer-section h4 { font-size: 13px; color: #f5f5f5; margin-bottom: 8px; font-weight: 600; }
+  .answer-section p { font-size: 12px; color: #737373; margin-bottom: 14px; }
+  label { font-size: 12px; color: #9ca3af; display: block; margin-bottom: 6px; }
+  input[type="text"] {
+    width: 100%;
+    background: #0f0f0f;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    color: #f5f5f5;
+    padding: 10px 14px;
+    font-size: 14px;
+    outline: none;
+    margin-bottom: 12px;
+    transition: border-color 0.2s;
+  }
+  input:focus { border-color: #86efac; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #22c55e; color: #000; }
+  .btn-replay  { background: #2a2a2a; color: #f5f5f5; }
+  .result-msg { margin-top: 12px; font-size: 13px; padding: 10px 14px; border-radius: 8px; display: none; }
+  .result-msg.success { background: #0a2a0a; color: #86efac; border: 1px solid #22c55e33; display: block; }
+  .result-msg.error   { background: #2a0a0a; color: #f87171; border: 1px solid #ef444433; display: block; }
+</style>
+</head>
+<body>
+<div class="player-shell">
+  <div class="cover-section">
+    <div class="cover-art">
+      <div class="cover-icon">🐍</div>
+      <div class="cover-label">Data Science</div>
+    </div>
+    <div class="episode-meta">
+      <div class="podcast-name">Python for Data Science</div>
+      <div class="episode-title">Episode 12</div>
+      <div class="episode-sub">Deep learning frameworks — which one rules the research world?</div>
+      <div class="ep-meta">Ep 12 · 42 min · This week</div>
+    </div>
+  </div>
+
+  <div class="viz-section">
+    <div class="viz-label" id="viz-label">Waiting...</div>
+    <div class="waveform" id="waveform"></div>
+  </div>
+
+  <div class="playback-section">
+    <div class="seek-row">
+      <span class="t-lbl" id="t-elapsed">0:00</span>
+      <div class="seek-track">
+        <div class="seek-fill" id="seek-fill"></div>
+        <div class="seek-thumb" id="seek-thumb"></div>
+      </div>
+      <span class="t-lbl">42:00</span>
+    </div>
+    <div class="controls-row">
+      <button class="ctrl-btn">⟨⟨</button>
+      <button class="ctrl-btn">⏮</button>
+      <button class="play-btn" id="play-btn">▶</button>
+      <button class="ctrl-btn">⏭</button>
+      <button class="ctrl-btn" onclick="replayAudio()">↺</button>
+    </div>
+    <div class="volume-row">
+      <span class="vol-icon">🔈</span>
+      <div class="vol-track"><div class="vol-fill"></div></div>
+      <span class="vol-icon">🔊</span>
+    </div>
+  </div>
+
+  <div class="answer-section">
+    <h4>Name the tool mentioned</h4>
+    <p>The host names one specific framework that dominates deep learning research. Type its name below.</p>
+    <label for="tool-input">Tool name:</label>
+    <input type="text" id="tool-input" placeholder="Enter the tool or framework name..." />
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitAnswer()">Submit</button>
+      <button class="btn btn-replay" onclick="replayAudio()">&#9654; Replay</button>
+    </div>
+    <div class="result-msg" id="result-msg"></div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const wf = document.getElementById('waveform');
+  const bars = [];
+  for (let i = 0; i < 40; i++) {
+    const b = document.createElement('div');
+    b.className = 'wbar';
+    b.style.height = '3px';
+    wf.appendChild(b);
+    bars.push(b);
+  }
+  const heights = Array.from({length: 40}, (_, i) => Math.round(4 + 16 * Math.abs(Math.sin(i * 0.7))));
+  heights.forEach((h, i) => bars[i].style.height = h + 'px');
+
+  let waveInterval = null;
+  let elapsed = 0;
+  let playing = false;
+
+  function startWave() {
+    playing = true;
+    document.getElementById('viz-label').textContent = 'Playing';
+    bars.forEach(b => b.classList.add('active'));
+    document.getElementById('play-btn').textContent = '⏸';
+    waveInterval = setInterval(() => {
+      bars.forEach(b => { b.style.height = (3 + Math.random() * 28) + 'px'; });
+      elapsed++;
+      const pct = Math.min((elapsed / 90) * 100, 100);
+      document.getElementById('seek-fill').style.width = pct + '%';
+      document.getElementById('seek-thumb').style.left = pct + '%';
+      const m = Math.floor(elapsed / 60);
+      const s = String(elapsed % 60).padStart(2,'0');
+      document.getElementById('t-elapsed').textContent = `${m}:${s}`;
+    }, 1000);
+  }
+
+  function stopWave() {
+    playing = false;
+    if (waveInterval) clearInterval(waveInterval);
+    waveInterval = null;
+    bars.forEach(b => { b.classList.remove('active'); });
+    heights.forEach((h, i) => bars[i].style.height = h + 'px');
+    document.getElementById('viz-label').textContent = 'Paused';
+    document.getElementById('play-btn').textContent = '▶';
+  }
+
+  function speak(text) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    u.onend = stopWave;
+    window.speechSynthesis.speak(u);
+  }
+
+  function doAudio() {
+    startWave();
+    speak("When it comes to deep learning, there's really one framework that dominates. PyTorch has become the de facto standard for research. Its dynamic computation graph makes experimentation so much easier. Almost every major research paper in the last two years uses PyTorch as the foundation.");
+  }
+
+  function replayAudio() {
+    elapsed = 0;
+    document.getElementById('seek-fill').style.width = '0%';
+    document.getElementById('seek-thumb').style.left = '0%';
+    document.getElementById('t-elapsed').textContent = '0:00';
+    stopWave();
+    doAudio();
+  }
+
+  document.getElementById('play-btn').addEventListener('click', () => {
+    if (playing) { stopWave(); window.speechSynthesis.cancel(); }
+    else doAudio();
+  });
+
+  function submitAnswer() {
+    const val = document.getElementById('tool-input').value.toLowerCase().trim();
+    const msg = document.getElementById('result-msg');
+    if (val.includes('pytorch') || val.includes('torch')) {
+      taskResult = 'correct_tool';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Correct! PyTorch is the framework mentioned.';
+    } else {
+      taskResult = 'wrong_tool';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Not the right tool. Listen to the episode again.';
+    }
+  }
+
+  setTimeout(doAudio, 3000);
+</script>
+</body>
+</html>

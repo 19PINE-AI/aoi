@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Open Source AI Debate Podcast</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f0f0f;
+    color: #f5f5f5;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 20px;
+  }
+  .player-shell { width: 100%; max-width: 520px; display: flex; flex-direction: column; gap: 20px; }
+
+  .cover-section { display: flex; gap: 20px; align-items: flex-start; }
+  .cover-art {
+    width: 120px; height: 120px;
+    border-radius: 12px; flex-shrink: 0;
+    background: linear-gradient(135deg, #1a1a0a 0%, #2a2a0a 40%, #1a2a0a 70%, #0a1a0a 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    gap: 4px; border: 1px solid #a3e63544; box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+  }
+  .cover-icon { font-size: 40px; }
+  .cover-label { font-size: 9px; color: #a3e635; text-transform: uppercase; letter-spacing: 1.5px; font-weight: 700; }
+  .episode-meta { flex: 1; }
+  .podcast-name { font-size: 12px; color: #a3e635; font-weight: 600; margin-bottom: 4px; }
+  .episode-title { font-size: 17px; font-weight: 800; margin-bottom: 6px; line-height: 1.3; }
+  .episode-sub { font-size: 12px; color: #737373; line-height: 1.5; }
+  .ep-meta { font-size: 11px; color: #525252; margin-top: 6px; }
+
+  /* Speaker cards */
+  .speakers-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .spk-card {
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    border: 2px solid #1e1e1e;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+  }
+  .spk-card.active-a { border-color: #60a5fa; box-shadow: 0 0 12px rgba(96,165,250,0.2); }
+  .spk-card.active-b { border-color: #f59e0b; box-shadow: 0 0 12px rgba(245,158,11,0.2); }
+  .spk-a-bg { background: #0a0f1a; }
+  .spk-b-bg { background: #1a0f0a; }
+  .spk-av { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+  .spk-label { font-size: 14px; font-weight: 700; }
+  .spk-stance { font-size: 11px; color: #737373; line-height: 1.4; }
+  .spk-mic { position: absolute; top: 8px; right: 8px; font-size: 14px; }
+
+  /* Debate turns */
+  .debate-feed {
+    background: #141414;
+    border-radius: 12px;
+    border: 1px solid #1e1e1e;
+    padding: 14px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .debate-feed h4 { font-size: 11px; color: #737373; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .turn {
+    margin-bottom: 10px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.5;
+    display: none;
+    animation: fadeIn 0.4s ease;
+  }
+  .turn.show { display: block; }
+  @keyframes fadeIn { from{opacity:0;} to{opacity:1;} }
+  .turn-a { background: #0a1525; border-left: 3px solid #60a5fa; }
+  .turn-b { background: #1a1005; border-left: 3px solid #f59e0b; }
+  .turn-who { font-size: 11px; font-weight: 700; margin-bottom: 4px; }
+  .who-a { color: #60a5fa; }
+  .who-b { color: #f59e0b; }
+
+  .viz-section {
+    background: #141414; border-radius: 12px; padding: 14px; border: 1px solid #1e1e1e;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .waveform { display: flex; align-items: center; gap: 2px; height: 36px; flex: 1; }
+  .wbar { flex: 1; background: #1e1e1e; border-radius: 2px; min-height: 3px; max-height: 36px; transition: background 0.3s; }
+  .wbar.active-a { background: #60a5fa; }
+  .wbar.active-b { background: #f59e0b; }
+  .viz-label { font-size: 11px; color: #525252; white-space: nowrap; }
+
+  .playback-section {
+    background: #141414; border-radius: 16px; padding: 20px; border: 1px solid #1e1e1e;
+  }
+  .seek-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .t-lbl { font-size: 11px; color: #737373; font-variant-numeric: tabular-nums; }
+  .seek-track { flex: 1; background: #1e1e1e; border-radius: 4px; height: 5px; position: relative; }
+  .seek-fill { background: #a3e635; height: 100%; border-radius: 4px; width: 0%; transition: width 0.5s linear; }
+  .seek-thumb {
+    position: absolute; top: 50%; transform: translate(-50%,-50%);
+    width: 13px; height: 13px; border-radius: 50%;
+    background: #a3e635; left: 0%; transition: left 0.5s linear;
+    box-shadow: 0 0 6px rgba(163,230,53,0.6);
+  }
+  .controls-row { display: flex; align-items: center; justify-content: center; gap: 20px; }
+  .ctrl-btn { background: none; border: none; color: #9ca3af; font-size: 20px; cursor: pointer; padding: 6px; border-radius: 50%; transition: color 0.2s; }
+  .ctrl-btn:hover { color: #f5f5f5; }
+  .play-btn {
+    width: 54px; height: 54px; background: #65a30d; color: #fff; font-size: 22px;
+    border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(101,163,13,0.4); transition: transform 0.1s;
+  }
+  .volume-row { display: flex; align-items: center; gap: 8px; margin-top: 14px; }
+  .vol-icon { font-size: 14px; color: #737373; }
+  .vol-track { flex: 1; background: #1e1e1e; border-radius: 4px; height: 4px; }
+  .vol-fill { background: #737373; height: 100%; border-radius: 4px; width: 75%; }
+
+  .answer-section {
+    background: #141414; border-radius: 16px; padding: 20px; border: 1px solid #1e1e1e;
+  }
+  .answer-section h4 { font-size: 13px; color: #f5f5f5; margin-bottom: 8px; font-weight: 600; }
+  .answer-section p { font-size: 12px; color: #737373; margin-bottom: 14px; }
+  textarea {
+    width: 100%; background: #0a0a0a; border: 1px solid #1e1e1e; border-radius: 8px;
+    color: #f5f5f5; padding: 10px 14px; font-size: 13px; resize: vertical; min-height: 110px;
+    outline: none; font-family: inherit; margin-bottom: 12px; line-height: 1.6;
+  }
+  textarea:focus { border-color: #a3e635; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn { padding: 10px 20px; border-radius: 8px; border: none; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s; }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #65a30d; color: #fff; }
+  .btn-replay  { background: #1e1e1e; color: #f5f5f5; }
+  .result-msg { margin-top: 12px; font-size: 13px; padding: 10px 14px; border-radius: 8px; display: none; }
+  .result-msg.success { background: #0a2a0a; color: #86efac; border: 1px solid #22c55e33; display: block; }
+  .result-msg.error   { background: #2a0a0a; color: #f87171; border: 1px solid #ef444433; display: block; }
+</style>
+</head>
+<body>
+<div class="player-shell">
+  <div class="cover-section">
+    <div class="cover-art">
+      <div class="cover-icon">⚡</div>
+      <div class="cover-label">Debate</div>
+    </div>
+    <div class="episode-meta">
+      <div class="podcast-name">AI Policy Debates</div>
+      <div class="episode-title">Open Source vs. Proprietary AI</div>
+      <div class="episode-sub">Two speakers argue opposing sides of the open source AI debate. Score their arguments.</div>
+      <div class="ep-meta">Debate format · ~1:10 total</div>
+    </div>
+  </div>
+
+  <div class="speakers-grid">
+    <div class="spk-card spk-a-bg" id="card-a">
+      <div class="spk-mic" id="mic-a">🔇</div>
+      <div class="spk-av" style="background:#1d4ed8;">A</div>
+      <div class="spk-label" style="color:#60a5fa;">Speaker A</div>
+      <div class="spk-stance">Pro open-source AI access</div>
+    </div>
+    <div class="spk-card spk-b-bg" id="card-b">
+      <div class="spk-mic" id="mic-b">🔇</div>
+      <div class="spk-av" style="background:#b45309;">B</div>
+      <div class="spk-label" style="color:#f59e0b;">Speaker B</div>
+      <div class="spk-stance">Pro controlled commercial AI</div>
+    </div>
+  </div>
+
+  <div class="debate-feed">
+    <h4>Debate Log</h4>
+    <div class="turn turn-a" id="t1">
+      <div class="turn-who who-a">Speaker A (0:03)</div>
+      Open source AI is essential for democratic access to technology. Proprietary models create dangerous centralization of power.
+    </div>
+    <div class="turn turn-b" id="t2">
+      <div class="turn-who who-b">Speaker B (0:20)</div>
+      Commercial AI development drives safety research through financial incentives. Without profit motives, safety takes a back seat.
+    </div>
+    <div class="turn turn-a" id="t3">
+      <div class="turn-who who-a">Speaker A (0:37)</div>
+      History shows open standards win — HTTP, Linux, the web itself. AI should be no different.
+    </div>
+    <div class="turn turn-b" id="t4">
+      <div class="turn-who who-b">Speaker B (0:54)</div>
+      But dangerous capabilities require controlled access. Open-sourcing frontier models is genuinely reckless.
+    </div>
+  </div>
+
+  <div class="viz-section">
+    <div class="viz-label" id="viz-label">Waiting...</div>
+    <div class="waveform" id="waveform"></div>
+  </div>
+
+  <div class="playback-section">
+    <div class="seek-row">
+      <span class="t-lbl" id="t-elapsed">0:00</span>
+      <div class="seek-track">
+        <div class="seek-fill" id="seek-fill"></div>
+        <div class="seek-thumb" id="seek-thumb"></div>
+      </div>
+      <span class="t-lbl">1:10</span>
+    </div>
+    <div class="controls-row">
+      <button class="ctrl-btn">⟨⟨</button>
+      <button class="ctrl-btn">⏮</button>
+      <button class="play-btn" id="play-btn">▶</button>
+      <button class="ctrl-btn">⏭</button>
+      <button class="ctrl-btn" onclick="replayAll()">↺</button>
+    </div>
+    <div class="volume-row">
+      <span class="vol-icon">🔈</span>
+      <div class="vol-track"><div class="vol-fill"></div></div>
+      <span class="vol-icon">🔊</span>
+    </div>
+  </div>
+
+  <div class="answer-section">
+    <h4>Score each speaker's arguments (1–5)</h4>
+    <p>Listen to the debate. Rate each speaker's argument quality from 1 (weak) to 5 (excellent) and briefly explain your scores.</p>
+    <textarea id="score-ta" placeholder="Speaker A score: /5&#10;Reasoning: ...&#10;&#10;Speaker B score: /5&#10;Reasoning: ..."></textarea>
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="submitAnswer()">Submit Scores</button>
+      <button class="btn btn-replay" onclick="replayAll()">&#9654; Replay</button>
+    </div>
+    <div class="result-msg" id="result-msg"></div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const wf = document.getElementById('waveform');
+  const bars = [];
+  for (let i = 0; i < 40; i++) {
+    const b = document.createElement('div');
+    b.className = 'wbar';
+    b.style.height = '3px';
+    wf.appendChild(b);
+    bars.push(b);
+  }
+  const heights = Array.from({length: 40}, (_, i) => Math.round(4 + 18 * Math.abs(Math.sin(i * 0.5))));
+  heights.forEach((h, i) => bars[i].style.height = h + 'px');
+
+  let waveInterval = null;
+  let elapsed = 0;
+  const duration = 70;
+  let playing = false;
+  let currentSpeaker = null;
+  let tos = [];
+
+  function setActive(spk) {
+    document.getElementById('card-a').classList.remove('active-a');
+    document.getElementById('card-b').classList.remove('active-b');
+    document.getElementById('mic-a').textContent = '🔇';
+    document.getElementById('mic-b').textContent = '🔇';
+    bars.forEach(b => { b.classList.remove('active-a','active-b'); });
+    if (spk === 'a') {
+      document.getElementById('card-a').classList.add('active-a');
+      document.getElementById('mic-a').textContent = '🎙';
+      bars.forEach(b => b.classList.add('active-a'));
+      document.getElementById('viz-label').textContent = 'Speaker A';
+    } else if (spk === 'b') {
+      document.getElementById('card-b').classList.add('active-b');
+      document.getElementById('mic-b').textContent = '🎙';
+      bars.forEach(b => b.classList.add('active-b'));
+      document.getElementById('viz-label').textContent = 'Speaker B';
+    } else {
+      document.getElementById('viz-label').textContent = 'Paused';
+    }
+    if (waveInterval && spk) {
+      setInterval(() => {
+        bars.forEach(b => { b.style.height = (3 + Math.random() * 28) + 'px'; });
+      }, 120);
+    }
+  }
+
+  function startWave() {
+    playing = true;
+    document.getElementById('play-btn').textContent = '⏸';
+    waveInterval = setInterval(() => {
+      bars.forEach(b => { b.style.height = (3 + Math.random() * 28) + 'px'; });
+      elapsed++;
+      const pct = Math.min((elapsed / duration) * 100, 100);
+      document.getElementById('seek-fill').style.width = pct + '%';
+      document.getElementById('seek-thumb').style.left = pct + '%';
+      const m = Math.floor(elapsed / 60);
+      const s = String(elapsed % 60).padStart(2,'0');
+      document.getElementById('t-elapsed').textContent = `${m}:${s}`;
+      if (elapsed >= duration) { stopWave(); setActive(null); }
+    }, 1000);
+  }
+
+  function stopWave() {
+    playing = false;
+    if (waveInterval) clearInterval(waveInterval);
+    waveInterval = null;
+    heights.forEach((h, i) => bars[i].style.height = h + 'px');
+    document.getElementById('play-btn').textContent = '▶';
+  }
+
+  const turns = [
+    {
+      t: 3000, spk: 'a', msgId: 't1',
+      speech: "Open source AI is essential for democratic access to technology. Proprietary models create dangerous centralization of power."
+    },
+    {
+      t: 20000, spk: 'b', msgId: 't2',
+      speech: "Commercial AI development drives safety research through financial incentives. Without profit motives, safety takes a back seat."
+    },
+    {
+      t: 37000, spk: 'a', msgId: 't3',
+      speech: "History shows open standards win — HTTP, Linux, the web itself. AI should be no different."
+    },
+    {
+      t: 54000, spk: 'b', msgId: 't4',
+      speech: "But dangerous capabilities require controlled access. Open-sourcing frontier models is genuinely reckless."
+    }
+  ];
+
+  function speakTurn(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }
+
+  function startAll() {
+    startWave();
+    tos = turns.map(turn => setTimeout(() => {
+      setActive(turn.spk);
+      document.getElementById(turn.msgId).classList.add('show');
+      speakTurn(turn.speech);
+    }, turn.t));
+  }
+
+  function replayAll() {
+    tos.forEach(clearTimeout);
+    window.speechSynthesis.cancel();
+    elapsed = 0;
+    document.getElementById('seek-fill').style.width = '0%';
+    document.getElementById('seek-thumb').style.left = '0%';
+    document.getElementById('t-elapsed').textContent = '0:00';
+    document.querySelectorAll('.turn').forEach(t => t.classList.remove('show'));
+    setActive(null);
+    stopWave();
+    startAll();
+  }
+
+  document.getElementById('play-btn').addEventListener('click', () => {
+    if (playing) { stopWave(); window.speechSynthesis.cancel(); setActive(null); tos.forEach(clearTimeout); }
+    else startAll();
+  });
+
+  function submitAnswer() {
+    const val = document.getElementById('score-ta').value;
+    const msg = document.getElementById('result-msg');
+    // Check for any digit 1-5
+    if (/[1-5]/.test(val)) {
+      taskResult = 'debate_scored';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Debate scores submitted!';
+    } else {
+      taskResult = 'debate_not_scored';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Include a numeric score (1–5) for each speaker.';
+    }
+  }
+
+  setTimeout(startAll, 2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Screen Recording: Full-Stack Dev Session — Navigating a Web Project | VideoHub</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Roboto, Arial, sans-serif; background: #0f0f0f; color: #fff; }
+
+  /* NAV */
+  #navbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: #0f0f0f; display: flex; align-items: center;
+    padding: 0 16px; z-index: 100; border-bottom: 1px solid #272727;
+  }
+  .logo { font-size: 20px; font-weight: 700; color: #ff0000; }
+  .logo span { color: #fff; font-weight: 400; }
+  .search-bar { flex: 1; max-width: 560px; margin: 0 32px; display: flex; }
+  .search-bar input { flex: 1; padding: 8px 16px; border: 1px solid #303030; background: #121212; color: #fff; border-radius: 40px 0 0 40px; font-size: 14px; outline: none; }
+  .search-bar button { padding: 8px 18px; background: #272727; border: 1px solid #303030; border-left: none; border-radius: 0 40px 40px 0; color: #aaa; cursor: pointer; }
+  .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+
+  /* LAYOUT */
+  #layout { display: flex; margin-top: 56px; }
+  #sidebar {
+    width: 240px; min-height: calc(100vh - 56px); background: #0f0f0f;
+    padding: 12px 0; position: fixed; top: 56px; border-right: 1px solid #272727;
+  }
+  .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 10px 24px; cursor: pointer; font-size: 14px; border-radius: 10px; margin: 0 8px; }
+  .sidebar-item:hover { background: #272727; }
+  .sidebar-item.active { background: #272727; font-weight: 600; }
+  .icon { font-size: 18px; width: 24px; text-align: center; }
+  .sdiv { border: none; border-top: 1px solid #272727; margin: 12px 0; }
+
+  #main { margin-left: 240px; padding: 24px; max-width: 1280px; }
+  #crow { display: flex; gap: 24px; }
+  #primary { flex: 1; min-width: 0; }
+
+  /* PLAYER */
+  #player-wrap { background: #1e1e1e; border-radius: 12px; overflow: hidden; position: relative; }
+  #fileCanvas { width: 100%; display: block; }
+  #replay-btn { position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.7); color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; }
+  #replay-btn:hover { background: rgba(60,60,60,0.9); }
+  #pb-wrap { width: 100%; height: 4px; background: #333; }
+  #pb-fill { height: 4px; background: #ff0000; width: 0%; transition: width 0.05s; }
+
+  /* META */
+  #video-title { font-size: 18px; font-weight: 600; margin-top: 12px; }
+  #video-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; gap: 8px; }
+  #ch-wrap { display: flex; align-items: center; gap: 12px; }
+  .ch-av { width: 40px; height: 40px; border-radius: 50%; background: #444; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .ch-name { font-weight: 600; font-size: 14px; }
+  .ch-sub { font-size: 12px; color: #aaa; }
+  .sub-btn { background: #fff; color: #0f0f0f; border: none; padding: 8px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+  #acts { display: flex; gap: 8px; }
+  .abtn { background: #272727; border: none; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; }
+  .abtn:hover { background: #3a3a3a; }
+
+  #desc { background: #1a1a1a; border-radius: 12px; padding: 16px; margin-top: 16px; font-size: 14px; line-height: 1.6; }
+  #desc .vc { font-weight: 600; color: #eee; }
+  #desc .dt { color: #aaa; font-size: 13px; margin-top: 6px; }
+
+  /* ANSWER */
+  #answer-section { background: #111; border: 1px solid #555; border-radius: 12px; padding: 24px; margin-top: 20px; }
+  #answer-section h3 { font-size: 16px; margin-bottom: 6px; color: #ddd; }
+  #answer-section .ap { font-size: 13px; color: #aaa; margin-bottom: 16px; }
+  #answer-section label { font-size: 13px; font-weight: 600; color: #ccc; display: block; margin-bottom: 6px; }
+  #answer-section input { width: 100%; padding: 11px 16px; border: 1px solid #333; background: #0a0a0a; color: #fff; border-radius: 8px; font-size: 16px; outline: none; }
+  #answer-section input:focus { border-color: #666; }
+  #submit-btn { background: #333; color: #fff; border: 1px solid #555; padding: 11px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+  #submit-btn:hover { background: #444; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 600; min-height: 20px; }
+  .rok { color: #4caf50; } .rerr { color: #f44336; }
+
+  /* COMMENTS */
+  #comments { margin-top: 24px; }
+  #comments h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+  .cmt { display: flex; gap: 12px; margin-bottom: 18px; }
+  .cmt-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .cmt-author { font-size: 13px; font-weight: 600; }
+  .cmt-time { font-size: 12px; color: #aaa; margin-left: 8px; }
+  .cmt-text { font-size: 14px; margin-top: 4px; color: #ccc; }
+
+  #secondary { width: 360px; flex-shrink: 0; }
+  .rec { display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer; }
+  .rec-thumb { width: 168px; height: 94px; border-radius: 8px; background: #1a1a1a; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #555; font-size: 22px; }
+  .rec-title { font-size: 14px; font-weight: 500; line-height: 1.3; }
+  .rec-ch { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .rec-v { font-size: 12px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="logo">▶ <span>VideoHub</span></div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search" value="screen recording developer web project navigation files">
+    <button>&#128269;</button>
+  </div>
+  <div class="nav-right">
+    <span style="font-size:20px;">&#128276;</span>
+    <div class="avatar">U</div>
+  </div>
+</nav>
+
+<div id="layout">
+  <aside id="sidebar">
+    <div class="sidebar-item active"><span class="icon">&#8962;</span> Home</div>
+    <div class="sidebar-item"><span class="icon">&#128293;</span> Trending</div>
+    <div class="sidebar-item"><span class="icon">&#128250;</span> Subscriptions</div>
+    <hr class="sdiv">
+    <div class="sidebar-item"><span class="icon">&#128196;</span> Library</div>
+    <div class="sidebar-item"><span class="icon">&#128336;</span> History</div>
+    <hr class="sdiv">
+    <div style="padding:10px 24px;font-size:12px;color:#aaa;font-weight:600;text-transform:uppercase;">Subscriptions</div>
+    <div class="sidebar-item"><span class="icon" style="width:22px;height:22px;border-radius:50%;background:#444;font-size:11px;display:flex;align-items:center;justify-content:center;">D</span> DevScreens</div>
+    <div class="sidebar-item"><span class="icon" style="width:22px;height:22px;border-radius:50%;background:#1a73e8;font-size:11px;display:flex;align-items:center;justify-content:center;">C</span> CodeWalk</div>
+  </aside>
+
+  <main id="main">
+    <div id="crow">
+      <div id="primary">
+        <div id="player-wrap">
+          <canvas id="fileCanvas" width="854" height="480"></canvas>
+          <button id="replay-btn" onclick="startAnimation()">&#9654; Replay</button>
+          <div id="pb-wrap"><div id="pb-fill"></div></div>
+        </div>
+
+        <h1 id="video-title">60-Second Dev Session: Full-Stack Developer Navigates a Web Project (Screen Recording)</h1>
+        <div id="video-meta">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="ch-wrap">
+              <div class="ch-av">DS</div>
+              <div>
+                <div class="ch-name">DevScreens</div>
+                <div class="ch-sub">74K subscribers</div>
+              </div>
+            </div>
+            <button class="sub-btn">Subscribe</button>
+          </div>
+          <div id="acts">
+            <button class="abtn">&#128077; 1.8K</button>
+            <button class="abtn">&#128078;</button>
+            <button class="abtn">&#8599; Share</button>
+            <button class="abtn">&#8942;</button>
+          </div>
+        </div>
+
+        <div id="desc">
+          <div class="vc">8,241 views &nbsp;·&nbsp; Mar 5, 2024</div>
+          <div class="dt">
+            A 60-second unedited screen recording of a typical developer session. Watch how files are opened and navigated during a web project. Count the files carefully — the developer opens several, closes one, but how many total unique files were opened?<br><br>
+            #ScreenRecording #WebDev #DeveloperLife #Coding
+          </div>
+        </div>
+
+        <!-- ANSWER -->
+        <div id="answer-section">
+          <h3>&#127916; Task: File Count</h3>
+          <p class="ap">A 60-second screen recording shows a developer navigating code. How many files were opened during the session? Type the number.</p>
+          <label for="answer-input">Number of files opened:</label>
+          <input type="number" id="answer-input" placeholder="Enter a number" min="1" max="20">
+          <br>
+          <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+          <div id="result-msg"></div>
+        </div>
+
+        <div id="comments">
+          <h3>62 Comments</h3>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#1565c0;">W</div>
+            <div>
+              <span class="cmt-author">@webdev_will</span><span class="cmt-time">1 week ago</span>
+              <div class="cmt-text">Love watching real unedited dev sessions. The tab management is very relatable.</div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#2e7d32;">F</div>
+            <div>
+              <span class="cmt-author">@frontend_faye</span><span class="cmt-time">2 weeks ago</span>
+              <div class="cmt-text">Classic — opens config.json right when you think you're done lol.</div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#6a1b9a;">R</div>
+            <div>
+              <span class="cmt-author">@roshni_dev</span><span class="cmt-time">3 weeks ago</span>
+              <div class="cmt-text">This is exactly what a typical dev session looks like. The close + reopen to index at the end is so accurate.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside id="secondary">
+        <div class="rec"><div class="rec-thumb">&#128187;</div><div><div class="rec-title">Building a REST API in 10 Minutes — Live Screen</div><div class="rec-ch">CodeWalk</div><div class="rec-v">22K views · 1 month ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#128196;</div><div><div class="rec-title">Refactoring a React Component — Live Session</div><div class="rec-ch">DevScreens</div><div class="rec-v">9.4K views · 2 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#9881;</div><div><div class="rec-title">Setting Up a New JS Project from Scratch</div><div class="rec-ch">CodeWalk</div><div class="rec-v">34K views · 3 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#128203;</div><div><div class="rec-title">The Developer Workflow — Tools &amp; Tips 2024</div><div class="rec-ch">DevScreens</div><div class="rec-v">14K views · 4 months ago</div></div></div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('fileCanvas');
+  const ctx = canvas.getContext('2d');
+  const DURATION = 60000;
+  let animStart = null, animFrame = null;
+
+  // Phases: which tabs are open at each time
+  // 4 files opened, one closed then returned to index
+  const phases = [
+    // 0-10s: index.html opened
+    { tabs: ['index.html'], active: 0 },
+    // 10-20s: styles.css added
+    { tabs: ['index.html', 'styles.css'], active: 1 },
+    // 20-30s: app.js added
+    { tabs: ['index.html', 'styles.css', 'app.js'], active: 2 },
+    // 30-40s: config.json added
+    { tabs: ['index.html', 'styles.css', 'app.js', 'config.json'], active: 3 },
+    // 40-50s: styles.css closed, back to index.html
+    { tabs: ['index.html', 'app.js', 'config.json'], active: 0 },
+    // 50-60s: end — 4 tabs total opened (still showing 3 tabs after close, but 4 unique files were opened)
+    { tabs: ['index.html', 'app.js', 'config.json'], active: 0, endScreen: true },
+  ];
+
+  const fileColors = {
+    'index.html': '#e06c75',
+    'styles.css': '#61afef',
+    'app.js': '#e5c07b',
+    'config.json': '#98c379',
+  };
+
+  const fileContent = {
+    'index.html': [
+      '<!DOCTYPE html>',
+      '<html lang="en">',
+      '<head>',
+      '  <meta charset="UTF-8">',
+      '  <title>My App</title>',
+      '  <link rel="stylesheet" href="styles.css">',
+      '</head>',
+      '<body>',
+      '  <div id="app"></div>',
+      '  <script src="app.js"><\/script>',
+      '</body>',
+      '</html>',
+    ],
+    'styles.css': [
+      '* { box-sizing: border-box; }',
+      'body {',
+      '  font-family: sans-serif;',
+      '  background: #f4f4f4;',
+      '  margin: 0; padding: 0;',
+      '}',
+      '#app {',
+      '  max-width: 960px;',
+      '  margin: 0 auto;',
+      '  padding: 24px;',
+      '}',
+    ],
+    'app.js': [
+      "import { initRouter } from './router.js';",
+      "import { loadConfig } from './config.js';",
+      '',
+      'async function main() {',
+      '  const cfg = await loadConfig();',
+      '  initRouter(cfg);',
+      '}',
+      '',
+      'main();',
+    ],
+    'config.json': [
+      '{',
+      '  "apiUrl": "https://api.myapp.io",',
+      '  "version": "2.1.0",',
+      '  "features": {',
+      '    "darkMode": true,',
+      '    "analytics": false',
+      '  }',
+      '}',
+    ],
+  };
+
+  function getPhase(elapsed) {
+    if (elapsed < 10000) return phases[0];
+    if (elapsed < 20000) return phases[1];
+    if (elapsed < 30000) return phases[2];
+    if (elapsed < 40000) return phases[3];
+    if (elapsed < 50000) return phases[4];
+    return phases[5];
+  }
+
+  function drawEditorChrome(ctx, W, H, phase, elapsed) {
+    const tabs = phase.tabs;
+    const activeIdx = phase.active;
+
+    // Window chrome
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Title bar
+    ctx.fillStyle = '#323233';
+    ctx.fillRect(0, 0, W, 32);
+    // Window controls
+    ['#ff5f56','#ffbd2e','#27c93f'].forEach((c, i) => {
+      ctx.fillStyle = c;
+      ctx.beginPath(); ctx.arc(14 + i*20, 16, 6, 0, Math.PI*2); ctx.fill();
+    });
+    // Title
+    ctx.fillStyle = '#9d9d9d';
+    ctx.font = '13px "Courier New", monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(`${tabs[activeIdx]} — VS Code`, W/2, 21);
+
+    // Tab bar
+    const tabH = 35;
+    ctx.fillStyle = '#2d2d2d';
+    ctx.fillRect(0, 32, W, tabH);
+
+    const tabW = Math.min(160, W / (tabs.length + 0.5));
+    tabs.forEach((tab, i) => {
+      const tx = i * (tabW);
+      const isActive = i === activeIdx;
+      ctx.fillStyle = isActive ? '#1e1e1e' : '#2d2d2d';
+      ctx.fillRect(tx, 32, tabW - 1, tabH);
+      if (isActive) {
+        ctx.fillStyle = '#1a73e8';
+        ctx.fillRect(tx, 32, tabW - 1, 2);
+      }
+      // Dot for file type color
+      ctx.fillStyle = fileColors[tab] || '#aaa';
+      ctx.beginPath();
+      ctx.arc(tx + 14, 32 + tabH/2, 4, 0, Math.PI*2);
+      ctx.fill();
+      // Tab name
+      ctx.fillStyle = isActive ? '#ffffff' : '#9d9d9d';
+      ctx.font = '12px "Courier New", monospace';
+      ctx.textAlign = 'left';
+      const displayName = tab.length > 12 ? tab.substring(0, 10) + '…' : tab;
+      ctx.fillText(displayName, tx + 24, 32 + tabH/2 + 4);
+    });
+
+    // Line numbers + editor area
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 32 + tabH, W, H - 32 - tabH);
+
+    ctx.fillStyle = '#252526';
+    ctx.fillRect(0, 32 + tabH, 52, H - 32 - tabH);
+
+    // File content
+    const activeFile = tabs[activeIdx];
+    const lines = fileContent[activeFile] || [];
+    const lineH = 22;
+    const startY = 32 + tabH + 20;
+
+    ctx.font = '14px "Courier New", monospace';
+    const linesToShow = Math.min(lines.length, Math.floor((H - 32 - tabH - 30) / lineH));
+
+    lines.slice(0, linesToShow).forEach((line, li) => {
+      // Line number
+      ctx.fillStyle = '#4a4a4a';
+      ctx.textAlign = 'right';
+      ctx.fillText(li + 1, 44, startY + li * lineH);
+
+      // Syntax coloring (simplified)
+      ctx.textAlign = 'left';
+      let color = '#d4d4d4';
+      if (line.startsWith('//') || line.startsWith('#')) color = '#6a9955';
+      else if (line.match(/^(import|from|async|function|const|let|return|await)/)) color = '#569cd6';
+      else if (line.includes('"') || line.includes("'")) color = '#ce9178';
+      else if (line.match(/[{}[\]<>]/)) color = '#ffd700';
+      ctx.fillStyle = color;
+      ctx.fillText(line, 60, startY + li * lineH);
+    });
+
+    // Blinking cursor
+    const cursorLine = Math.floor((elapsed % 3000) / 3000 * linesToShow);
+    const blink = Math.floor(elapsed / 500) % 2;
+    if (blink) {
+      const line = lines[cursorLine] || '';
+      const lineWidth = ctx.measureText(line).width;
+      ctx.fillStyle = '#aeafad';
+      ctx.fillRect(60 + lineWidth + 2, startY + cursorLine * lineH - 14, 2, 16);
+    }
+
+    // Status bar
+    ctx.fillStyle = '#007acc';
+    ctx.fillRect(0, H - 24, W, 24);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(`  ${activeFile}`, 8, H - 7);
+    ctx.textAlign = 'right';
+    const secs = Math.floor(elapsed / 1000);
+    const timeStr = `${Math.floor(secs/60)}:${String(secs % 60).padStart(2,'0')}`;
+    ctx.fillText(`${tabs.length} tab${tabs.length>1?'s':''} open  ·  ${timeStr}`, W - 8, H - 7);
+  }
+
+  function drawEndScreen(ctx, W, H, elapsed) {
+    ctx.fillStyle = '#1e1e1e';
+    ctx.fillRect(0, 0, W, H);
+
+    // Title bar
+    ctx.fillStyle = '#323233';
+    ctx.fillRect(0, 0, W, 32);
+    ['#ff5f56','#ffbd2e','#27c93f'].forEach((c, i) => {
+      ctx.fillStyle = c;
+      ctx.beginPath(); ctx.arc(14 + i*20, 16, 6, 0, Math.PI*2); ctx.fill();
+    });
+    ctx.fillStyle = '#9d9d9d';
+    ctx.font = '13px "Courier New"';
+    ctx.textAlign = 'center';
+    ctx.fillText('index.html — VS Code', W/2, 21);
+
+    // Show 3 remaining tabs (styles.css was closed)
+    const finalTabs = ['index.html', 'app.js', 'config.json'];
+    const tabH = 35, tabW = 160;
+    ctx.fillStyle = '#2d2d2d';
+    ctx.fillRect(0, 32, W, tabH);
+    finalTabs.forEach((tab, i) => {
+      const tx = i * tabW;
+      ctx.fillStyle = i === 0 ? '#1e1e1e' : '#2d2d2d';
+      ctx.fillRect(tx, 32, tabW - 1, tabH);
+      if (i === 0) { ctx.fillStyle = '#1a73e8'; ctx.fillRect(tx, 32, tabW-1, 2); }
+      ctx.fillStyle = fileColors[tab] || '#aaa';
+      ctx.beginPath(); ctx.arc(tx + 14, 32 + tabH/2, 4, 0, Math.PI*2); ctx.fill();
+      ctx.fillStyle = i === 0 ? '#fff' : '#9d9d9d';
+      ctx.font = '12px "Courier New"';
+      ctx.textAlign = 'left';
+      ctx.fillText(tab, tx + 24, 32 + tabH/2 + 4);
+    });
+
+    // index.html content
+    ctx.fillStyle = '#252526';
+    ctx.fillRect(0, 67, 52, H - 67 - 24);
+    const lines = fileContent['index.html'];
+    const lineH = 22;
+    ctx.font = '14px "Courier New"';
+    lines.forEach((line, li) => {
+      ctx.fillStyle = '#4a4a4a'; ctx.textAlign = 'right';
+      ctx.fillText(li + 1, 44, 90 + li * lineH);
+      ctx.fillStyle = line.startsWith('<') || line.startsWith('</') ? '#ffd700' : '#d4d4d4';
+      ctx.textAlign = 'left';
+      ctx.fillText(line, 60, 90 + li * lineH);
+    });
+
+    // Overlay box
+    const p = Math.min((elapsed - 50000) / 5000, 1);
+    ctx.globalAlpha = p;
+    ctx.fillStyle = 'rgba(30,30,30,0.9)';
+    ctx.fillRect(W/2 - 240, H/2 - 80, 480, 160);
+    ctx.strokeStyle = '#555';
+    ctx.lineWidth = 1;
+    ctx.strokeRect(W/2 - 240, H/2 - 80, 480, 160);
+    ctx.fillStyle = '#aaa';
+    ctx.font = '13px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText('SESSION COMPLETE', W/2, H/2 - 48);
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('Files in session:', W/2, H/2 - 14);
+
+    const sessionFiles = ['index.html', 'styles.css', 'app.js', 'config.json'];
+    sessionFiles.forEach((f, i) => {
+      ctx.fillStyle = fileColors[f];
+      ctx.font = '13px "Courier New"';
+      ctx.fillText(`${i+1}. ${f}`, W/2 - 60, H/2 + 14 + i * 20);
+    });
+    ctx.fillStyle = '#aaa';
+    ctx.font = '12px Arial';
+    ctx.fillText('(styles.css was closed during session)', W/2, H/2 + 98);
+    ctx.globalAlpha = 1;
+
+    // Status bar
+    ctx.fillStyle = '#007acc';
+    ctx.fillRect(0, H - 24, W, 24);
+    ctx.fillStyle = '#fff';
+    ctx.font = '12px Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText('  index.html', 8, H - 7);
+    ctx.textAlign = 'right';
+    ctx.fillText('3 tabs open  ·  1:00', W - 8, H - 7);
+  }
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+
+    const phase = getPhase(elapsed);
+    if (phase.endScreen) {
+      drawEndScreen(ctx, W, H, elapsed);
+    } else {
+      drawEditorChrome(ctx, W, H, phase, elapsed);
+    }
+
+    document.getElementById('pb-fill').style.width = (Math.min(elapsed/DURATION,1)*100)+'%';
+    if (elapsed < DURATION) animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('pb-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-input').value.trim();
+    const msgEl = document.getElementById('result-msg');
+    if (val === '4' || val.includes('4')) {
+      taskResult = 'correct_file_count';
+      msgEl.textContent = '✓ Correct! 4 files were opened: index.html, styles.css, app.js, config.json.';
+      msgEl.className = 'rok';
+    } else {
+      msgEl.textContent = '✗ Incorrect. Watch carefully — count all files opened, even if one was later closed.';
+      msgEl.className = 'rerr';
+    }
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

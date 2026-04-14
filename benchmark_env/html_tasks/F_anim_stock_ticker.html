@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Financial Data Terminal</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #0a0e0a;
+    color: #00ff41;
+    font-family: 'Courier New', Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  .terminal {
+    background: #0d1a0d;
+    border: 1px solid #003300;
+    border-radius: 8px;
+    width: 640px;
+    box-shadow: 0 0 40px rgba(0,255,65,0.12);
+    overflow: hidden;
+  }
+  .term-header {
+    background: #051005;
+    padding: 10px 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #003300;
+  }
+  .term-title { font-size: 13px; color: #00cc33; letter-spacing: 2px; }
+  .term-time { font-size: 12px; color: #006600; }
+  .ticker-strip {
+    background: #050f05;
+    padding: 8px 0;
+    overflow: hidden;
+    border-bottom: 1px solid #003300;
+    white-space: nowrap;
+    position: relative;
+  }
+  .ticker-inner {
+    display: inline-block;
+    animation: scroll 18s linear infinite;
+  }
+  .ticker-item { display: inline-block; margin: 0 20px; font-size: 12px; }
+  .ticker-item .sym { color: #00ff41; font-weight: bold; }
+  .ticker-item .up { color: #00ff41; }
+  .ticker-item .dn { color: #ff3333; }
+  @keyframes scroll {
+    0% { transform: translateX(640px); }
+    100% { transform: translateX(-100%); }
+  }
+  .table-wrap { padding: 18px; }
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 11px;
+    color: #006600;
+    text-align: left;
+    padding: 4px 8px;
+    border-bottom: 1px solid #003300;
+    letter-spacing: 1px;
+  }
+  td {
+    padding: 10px 8px;
+    font-size: 14px;
+    border-bottom: 1px solid #0a1a0a;
+  }
+  .aapl-row td { background: #0d1f0d; }
+  .aapl-row .sym-cell { color: #00ffaa; font-weight: bold; font-size: 16px; }
+  .sym-cell { color: #00ff41; font-weight: bold; }
+  .price-up { color: #00ff41; }
+  .price-dn { color: #ff3333; }
+  .change-up { color: #00cc33; font-size: 12px; }
+  .change-dn { color: #ff4444; font-size: 12px; }
+  .alert-btn {
+    background: #003300;
+    border: 1px solid #00aa22;
+    color: #00ff41;
+    padding: 5px 12px;
+    font-size: 12px;
+    font-family: 'Courier New', monospace;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background 0.2s;
+  }
+  .alert-btn:hover { background: #004400; }
+  .alert-btn.triggered { background: #004400; border-color: #ff4444; color: #ff4444; }
+  .status-bar {
+    background: #050f05;
+    border-top: 1px solid #003300;
+    padding: 8px 18px;
+    font-size: 11px;
+    color: #006600;
+    display: flex;
+    justify-content: space-between;
+  }
+  #aaplPrice { font-size: 18px; font-weight: bold; }
+  #aaplStatus {
+    font-size: 12px;
+    color: #00cc33;
+    font-style: italic;
+  }
+  #feedback {
+    margin-top: 12px;
+    padding: 10px 18px;
+    font-size: 13px;
+    min-height: 20px;
+    color: #00ff41;
+    border-top: 1px solid #003300;
+  }
+  .alert-row {
+    background: #0a1a0a;
+    padding: 10px 18px;
+    border-top: 1px solid #003300;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13px;
+    color: #00cc33;
+  }
+</style>
+</head>
+<body>
+<div class="terminal">
+  <div class="term-header">
+    <span class="term-title">NEXUS FINANCIAL TERMINAL v4.2</span>
+    <span class="term-time" id="termTime">--:--:--</span>
+  </div>
+  <div class="ticker-strip">
+    <div class="ticker-inner" id="tickerInner"></div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>SYMBOL</th>
+          <th>PRICE</th>
+          <th>CHANGE</th>
+          <th>% CHG</th>
+          <th>VOL</th>
+          <th>ALERT</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+  <div class="alert-row">
+    <span>AAPL ALERT TRIGGER: price drops below $180</span>
+    <span id="aaplStatus" style="margin-left:auto">Monitoring...</span>
+  </div>
+  <div id="feedback"></div>
+  <div class="status-bar">
+    <span>MARKET OPEN</span>
+    <span id="updateLabel">Last update: --</span>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const stocks = [
+    { sym: 'AAPL', prices: [195, 191, 186, 178, 178, 178], base: 195 },
+    { sym: 'MSFT', prices: [412, 415, 410, 418, 420, 420], base: 412 },
+    { sym: 'GOOGL', prices: [175, 177, 173, 176, 178, 178], base: 175 },
+    { sym: 'TSLA', prices: [248, 240, 252, 245, 250, 250], base: 248 },
+    { sym: 'NVDA', prices: [875, 890, 882, 910, 905, 905], base: 875 },
+  ];
+
+  let updateIdx = 0;
+  let aaplCurrentPrice = stocks[0].prices[0];
+  let alertClicked = false;
+
+  function buildTicker() {
+    const inner = document.getElementById('tickerInner');
+    inner.innerHTML = stocks.map(s => {
+      const p = s.prices[updateIdx];
+      const chg = p - s.base;
+      const cls = chg >= 0 ? 'up' : 'dn';
+      const sign = chg >= 0 ? '+' : '';
+      return `<span class="ticker-item"><span class="sym">${s.sym}</span> <span class="${cls}">$${p} (${sign}${chg})</span></span>`;
+    }).join('');
+  }
+
+  function buildTable() {
+    const body = document.getElementById('tableBody');
+    body.innerHTML = stocks.map((s, i) => {
+      const p = s.prices[updateIdx];
+      const prev = updateIdx > 0 ? s.prices[updateIdx - 1] : s.prices[0];
+      const chg = p - prev;
+      const pct = ((chg / prev) * 100).toFixed(2);
+      const isAapl = s.sym === 'AAPL';
+      const rowClass = isAapl ? 'aapl-row' : '';
+      const priceClass = chg >= 0 ? 'price-up' : 'price-dn';
+      const chgClass = chg >= 0 ? 'change-up' : 'change-dn';
+      const sign = chg >= 0 ? '+' : '';
+      const vol = (Math.random() * 20 + 5).toFixed(1) + 'M';
+      const alertHtml = isAapl
+        ? `<button class="alert-btn" id="aaplAlertBtn" onclick="onAlertClick()">Alert me</button>`
+        : `<span style="color:#003300">—</span>`;
+      return `
+        <tr class="${rowClass}">
+          <td class="${isAapl ? 'aapl-row sym-cell' : 'sym-cell'}">${s.sym}</td>
+          <td class="${priceClass}" ${isAapl ? `id="aaplPrice"` : ''}><b>$${p}</b></td>
+          <td class="${chgClass}">${sign}${chg}.00</td>
+          <td class="${chgClass}">${sign}${pct}%</td>
+          <td style="color:#006600">${vol}</td>
+          <td>${alertHtml}</td>
+        </tr>`;
+    }).join('');
+  }
+
+  function update() {
+    buildTicker();
+    buildTable();
+    aaplCurrentPrice = stocks[0].prices[updateIdx];
+    document.getElementById('updateLabel').textContent = `Last update: ${new Date().toLocaleTimeString()}`;
+
+    const statusEl = document.getElementById('aaplStatus');
+    if (aaplCurrentPrice < 180) {
+      statusEl.textContent = '⚠ BELOW THRESHOLD ($180) — Click Alert!';
+      statusEl.style.color = '#ff4444';
+    } else {
+      statusEl.textContent = `Monitoring... AAPL $${aaplCurrentPrice} (threshold: $180)`;
+      statusEl.style.color = '#00cc33';
+    }
+
+    if (updateIdx < stocks[0].prices.length - 1) updateIdx++;
+  }
+
+  function onAlertClick() {
+    const fb = document.getElementById('feedback');
+    if (aaplCurrentPrice < 180) {
+      taskResult = 'alert_set';
+      fb.textContent = `> ALERT SET: AAPL @ $${aaplCurrentPrice} — below $180 threshold. Notification queued.`;
+      fb.style.color = '#00ff41';
+      const btn = document.getElementById('aaplAlertBtn');
+      if (btn) { btn.className = 'alert-btn triggered'; btn.textContent = 'ALERT ACTIVE'; btn.disabled = true; }
+    } else {
+      taskResult = 'premature_alert';
+      fb.textContent = `> PREMATURE ALERT: AAPL @ $${aaplCurrentPrice} — price still above $180. Wait for drop.`;
+      fb.style.color = '#ff6600';
+    }
+  }
+
+  // Time clock
+  setInterval(() => {
+    document.getElementById('termTime').textContent = new Date().toLocaleTimeString();
+  }, 1000);
+
+  update();
+  setInterval(update, 2000);
+</script>
+</body>
+</html>

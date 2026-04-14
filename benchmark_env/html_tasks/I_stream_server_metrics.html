@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Server Metrics Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px; }
+  .dashboard { width: 780px; }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .dash-header h1 { color: #c9d1d9; font-size: 1.1rem; font-weight: 700; }
+  .live-pill { background: #0d3320; border: 1px solid #238636; color: #3fb950; font-size: 0.72rem; font-weight: 700; padding: 4px 12px; border-radius: 20px; display: flex; align-items: center; gap: 6px; }
+  .live-dot { width: 6px; height: 6px; border-radius: 50%; background: #3fb950; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .metrics-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .metric-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
+  .metric-card.peak { border-color: #f85149; background: #1c0a0a; }
+  .metric-label { color: #8b949e; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; }
+  .peak-badge { background: #3d0f0a; color: #f87171; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; }
+  .metric-value { font-size: 3rem; font-weight: 900; font-family: monospace; line-height: 1; margin-bottom: 8px; }
+  .metric-bar { height: 8px; background: #21262d; border-radius: 4px; overflow: hidden; }
+  .metric-fill { height: 100%; border-radius: 4px; transition: width 0.8s ease, background 0.5s; }
+  .fill-low { background: #3fb950; }
+  .fill-mid { background: #f59e0b; }
+  .fill-high { background: #f85149; }
+  .metric-history { font-size: 0.7rem; color: #8b949e; margin-top: 8px; }
+  /* Mini spark chart */
+  .spark { height: 40px; margin-top: 8px; }
+  canvas { display: block; width: 100%; }
+  /* Service breakdown */
+  .service-panel { background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 16px; margin-bottom: 20px; }
+  .service-panel h3 { color: #8b949e; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+  .service-row { display: flex; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid #21262d; }
+  .service-row:last-child { border-bottom: none; }
+  .service-name { color: #c9d1d9; font-size: 0.85rem; font-family: monospace; width: 160px; }
+  .service-bar-wrap { flex: 1; height: 6px; background: #21262d; border-radius: 3px; overflow: hidden; }
+  .service-bar { height: 100%; border-radius: 3px; transition: width 0.8s; }
+  .service-pct { color: #8b949e; font-size: 0.8rem; font-family: monospace; min-width: 40px; text-align: right; }
+  .service-pct.highlight { color: #f87171; font-weight: 700; }
+  /* Answer */
+  .answer-box { width: 780px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
+  .answer-box h3 { color: #8b949e; font-size: 0.85rem; font-weight: 600; margin-bottom: 14px; }
+  .field-group { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+  .field-group label { color: #8b949e; font-size: 0.8rem; font-weight: 600; display: block; margin-bottom: 4px; }
+  .field-group input { width: 100%; padding: 8px 12px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; font-size: 0.88rem; outline: none; font-family: monospace; }
+  .field-group input:focus { border-color: #388bfd; }
+  .btn-row { display: flex; gap: 10px; }
+  .btn { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="dash-header">
+    <h1>📡 Server Metrics — prod-cluster-01</h1>
+    <div class="live-pill"><div class="live-dot"></div>Live · updates every 2s</div>
+  </div>
+
+  <div class="metrics-grid">
+    <div class="metric-card" id="cpuCard">
+      <div class="metric-label">CPU Usage <span class="peak-badge" id="cpuPeakBadge" style="display:none">PEAK</span></div>
+      <div class="metric-value" id="cpuVal" style="color:#3fb950">45%</div>
+      <div class="metric-bar"><div class="metric-fill fill-low" id="cpuFill" style="width:45%"></div></div>
+      <div class="metric-history" id="cpuHistory">History: 45%</div>
+      <canvas class="spark" id="cpuChart" height="40"></canvas>
+    </div>
+    <div class="metric-card" id="memCard">
+      <div class="metric-label">Memory Usage <span class="peak-badge" id="memPeakBadge" style="display:none">PEAK</span></div>
+      <div class="metric-value" id="memVal" style="color:#3fb950">62%</div>
+      <div class="metric-bar"><div class="metric-fill fill-mid" id="memFill" style="width:62%"></div></div>
+      <div class="metric-history" id="memHistory">History: 62%</div>
+      <canvas class="spark" id="memChart" height="40"></canvas>
+    </div>
+  </div>
+
+  <div class="service-panel" id="servicePanel">
+    <h3>Service CPU Breakdown (current)</h3>
+    <div class="service-row"><span class="service-name">api-gateway</span><div class="service-bar-wrap"><div class="service-bar" id="sb0" style="width:30%;background:#3b82f6"></div></div><span class="service-pct" id="sp0">30%</span></div>
+    <div class="service-row"><span class="service-name">auth-service</span><div class="service-bar-wrap"><div class="service-bar" id="sb1" style="width:12%;background:#8b5cf6"></div></div><span class="service-pct" id="sp1">12%</span></div>
+    <div class="service-row"><span class="service-name">data-processor</span><div class="service-bar-wrap"><div class="service-bar" id="sb2" style="width:2%;background:#22c55e"></div></div><span class="service-pct" id="sp2">2%</span></div>
+    <div class="service-row"><span class="service-name">cache-redis</span><div class="service-bar-wrap"><div class="service-bar" id="sb3" style="width:1%;background:#f59e0b"></div></div><span class="service-pct" id="sp3">1%</span></div>
+  </div>
+</div>
+
+<div class="answer-box">
+  <h3>Report Peak Values</h3>
+  <div class="field-group">
+    <div>
+      <label>Peak CPU %</label>
+      <input type="text" id="cpuInput" placeholder="e.g. 89%" />
+    </div>
+    <div>
+      <label>Peak Memory %</label>
+      <input type="text" id="memInput" placeholder="e.g. 82%" />
+    </div>
+    <div>
+      <label>Service causing peak</label>
+      <input type="text" id="svcInput" placeholder="e.g. api-gateway" />
+    </div>
+  </div>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit Report</button>
+    <button class="btn-restart" onclick="restartMetrics()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const cpuSeq = [45, 52, 67, 89, 71, 55, 48];
+const memSeq = [62, 68, 74, 82, 75, 68, 63];
+// Service CPU at peak (t=10s = idx 4)
+const svcPeak = [67, 15, 5, 2];
+const svcBase = [30, 12, 2, 1];
+
+let idx = 0;
+let cpuHistory = [45];
+let memHistory = [62];
+let intervalId = null;
+
+function fillColor(v) {
+  if (v >= 85) return '#f85149';
+  if (v >= 60) return '#f59e0b';
+  return '#3fb950';
+}
+
+function updateMetric(id, fillId, valEl, val, history, isLow) {
+  const color = fillColor(val);
+  document.getElementById(valEl).textContent = val + '%';
+  document.getElementById(valEl).style.color = color;
+  document.getElementById(fillId).style.width = val + '%';
+  document.getElementById(fillId).className = 'metric-fill ' + (val >= 85 ? 'fill-high' : val >= 60 ? 'fill-mid' : 'fill-low');
+}
+
+function drawSpark(canvasId, history, color) {
+  const canvas = document.getElementById(canvasId);
+  canvas.width = canvas.offsetWidth || 320;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+  if (history.length < 2) return;
+  const min = 30, max = 100;
+  const step = w / (cpuSeq.length - 1);
+  ctx.beginPath();
+  history.forEach((v, i) => {
+    const x = i * step;
+    const y = h - ((v - min) / (max - min) * h);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  // Last dot
+  const lx = (history.length - 1) * step;
+  const ly = h - ((history[history.length-1] - min) / (max - min) * h);
+  ctx.beginPath();
+  ctx.arc(lx, ly, 4, 0, Math.PI*2);
+  ctx.fillStyle = color;
+  ctx.fill();
+}
+
+function updateServices(atPeak) {
+  const vals = atPeak ? svcPeak : svcBase;
+  const colors = ['#3b82f6','#8b5cf6','#22c55e','#f59e0b'];
+  const names = ['api-gateway','auth-service','data-processor','cache-redis'];
+  vals.forEach((v, i) => {
+    document.getElementById('sb'+i).style.width = v + '%';
+    document.getElementById('sp'+i).textContent = v + '%';
+    if (atPeak && i === 0) {
+      document.getElementById('sp'+i).className = 'service-pct highlight';
+    } else {
+      document.getElementById('sp'+i).className = 'service-pct';
+    }
+  });
+}
+
+let cpuPeak = 45, memPeak = 62;
+
+function tick() {
+  if (idx >= cpuSeq.length) {
+    clearInterval(intervalId);
+    return;
+  }
+  const cpu = cpuSeq[idx];
+  const mem = memSeq[idx];
+  cpuHistory.push(cpu);
+  memHistory.push(mem);
+
+  updateMetric('cpuCard', 'cpuFill', 'cpuVal', cpu, cpuHistory);
+  updateMetric('memCard', 'memFill', 'memVal', mem, memHistory);
+  document.getElementById('cpuHistory').textContent = 'History: ' + cpuHistory.join('% → ') + '%';
+  document.getElementById('memHistory').textContent = 'History: ' + memHistory.join('% → ') + '%';
+
+  if (cpu > cpuPeak) {
+    cpuPeak = cpu;
+    document.getElementById('cpuPeakBadge').style.display = '';
+    document.getElementById('cpuCard').classList.add('peak');
+    updateServices(true);
+  }
+  if (mem > memPeak) {
+    memPeak = mem;
+    document.getElementById('memPeakBadge').style.display = '';
+    document.getElementById('memCard').classList.add('peak');
+  }
+  if (cpu < cpuPeak && mem < memPeak && idx > 4) {
+    document.getElementById('cpuCard').classList.remove('peak');
+    document.getElementById('memCard').classList.remove('peak');
+    updateServices(false);
+  }
+
+  drawSpark('cpuChart', cpuHistory, fillColor(cpu));
+  drawSpark('memChart', memHistory, fillColor(mem));
+  idx++;
+}
+
+function startMetrics() {
+  updateMetric('cpuCard', 'cpuFill', 'cpuVal', 45, cpuHistory);
+  updateMetric('memCard', 'memFill', 'memVal', 62, memHistory);
+  drawSpark('cpuChart', cpuHistory, '#3fb950');
+  drawSpark('memChart', memHistory, '#3fb950');
+  updateServices(false);
+  intervalId = setInterval(tick, 2000);
+}
+
+function restartMetrics() {
+  clearInterval(intervalId);
+  idx = 0;
+  cpuPeak = 45; memPeak = 62;
+  cpuHistory = [45]; memHistory = [62];
+  taskResult = 'pending';
+  document.getElementById('cpuInput').value = '';
+  document.getElementById('memInput').value = '';
+  document.getElementById('svcInput').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('cpuPeakBadge').style.display = 'none';
+  document.getElementById('memPeakBadge').style.display = 'none';
+  document.getElementById('cpuCard').classList.remove('peak');
+  document.getElementById('memCard').classList.remove('peak');
+  startMetrics();
+}
+
+function submitAnswer() {
+  const cpu = document.getElementById('cpuInput').value;
+  const mem = document.getElementById('memInput').value;
+  const svc = document.getElementById('svcInput').value;
+  const combined = cpu + mem + svc;
+  const msg = document.getElementById('resultMsg');
+  if (combined.includes('%') && combined.length > 20) {
+    taskResult = 'metrics_reported';
+    msg.style.color = '#3fb950';
+    msg.textContent = 'Reported! Peak CPU: 89%, Peak Memory: 82%, Cause: api-gateway (67% CPU at peak).';
+  } else {
+    taskResult = 'incomplete';
+    msg.style.color = '#f85149';
+    msg.textContent = 'Please fill in all three fields with peak CPU%, peak Memory%, and service name.';
+  }
+  msg.style.display = 'block';
+}
+
+startMetrics();
+</script>
+</body>
+</html>

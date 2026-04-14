@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Git Graph Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .git-card { background: #161b22; border: 1px solid #30363d; border-radius: 12px; width: 760px; overflow: hidden; margin-bottom: 20px; }
+  .git-header { background: #21262d; border-bottom: 1px solid #30363d; padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .git-header h2 { color: #c9d1d9; font-size: 0.95rem; display: flex; align-items: center; gap: 8px; }
+  .branch-tags { display: flex; gap: 8px; }
+  .branch-tag { padding: 3px 10px; border-radius: 20px; font-size: 0.72rem; font-weight: 700; }
+  .tag-main { background: #0c2d6b; color: #58a6ff; border: 1px solid #1f6feb; }
+  .tag-feature { background: #1b1f0a; color: #7ee787; border: 1px solid #3fb950; }
+  .git-body { padding: 20px; }
+  .git-log { font-family: monospace; }
+  .git-row { display: flex; align-items: center; gap: 12px; padding: 8px 4px; border-radius: 6px; margin-bottom: 6px; opacity: 0; transform: translateX(-10px); transition: all 0.5s ease; }
+  .git-row.visible { opacity: 1; transform: translateX(0); }
+  .graph-col { width: 80px; flex-shrink: 0; display: flex; align-items: center; }
+  .commit-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; z-index: 1; }
+  .dot-main { background: #388bfd; border: 2px solid #58a6ff; }
+  .dot-feature { background: #3fb950; border: 2px solid #7ee787; }
+  .dot-merge { background: #a371f7; border: 2px solid #d2a8ff; }
+  .graph-lines { display: flex; align-items: center; gap: 3px; height: 16px; }
+  .vline-main { width: 2px; background: #388bfd; height: 100%; }
+  .vline-feat { width: 2px; background: #3fb950; height: 100%; }
+  .branch-curve { width: 12px; height: 12px; border: 2px solid #3fb950; border-top: none; border-right: none; border-radius: 0 0 0 6px; position: relative; top: -4px; }
+  .commit-info { flex: 1; }
+  .commit-hash { color: #8b949e; font-size: 0.75rem; }
+  .commit-msg { color: #c9d1d9; font-size: 0.85rem; font-weight: 600; }
+  .commit-meta { color: #8b949e; font-size: 0.72rem; margin-top: 2px; }
+  .commit-time { color: #8b949e; font-size: 0.75rem; text-align: right; }
+  .event-log { background: #0d1117; border: 1px solid #30363d; border-radius: 8px; padding: 14px; margin-top: 16px; }
+  .event-log h3 { color: #8b949e; font-size: 0.8rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .event-entry { font-size: 0.78rem; color: #8b949e; padding: 3px 0; border-bottom: 1px solid #1c2128; display: none; }
+  .event-entry.show { display: flex; gap: 8px; align-items: center; }
+  .event-time { color: #58a6ff; font-weight: 700; min-width: 40px; }
+  .answer-box { width: 760px; background: #161b22; border: 1px solid #30363d; border-radius: 12px; padding: 20px; }
+  .answer-box label { color: #8b949e; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box textarea { width: 100%; padding: 10px 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; font-size: 0.9rem; min-height: 90px; outline: none; resize: vertical; font-family: inherit; }
+  .answer-box textarea:focus { border-color: #388bfd; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="git-card">
+  <div class="git-header">
+    <h2>📊 Source Control Graph</h2>
+    <div class="branch-tags">
+      <span class="branch-tag tag-main">main</span>
+      <span class="branch-tag tag-feature">feature/ui-refactor</span>
+    </div>
+  </div>
+  <div class="git-body">
+    <div class="git-log" id="gitLog">
+      <!-- Rows added dynamically -->
+    </div>
+    <div class="event-log">
+      <h3>Timeline</h3>
+      <div class="event-entry" id="ev0"><span class="event-time">t=0s</span><span>Initial commit on <strong style="color:#58a6ff">main</strong></span></div>
+      <div class="event-entry" id="ev1"><span class="event-time">t=4s</span><span>Created branch <strong style="color:#7ee787">feature/ui-refactor</strong> from main</span></div>
+      <div class="event-entry" id="ev2"><span class="event-time">t=8s</span><span>2 commits on <strong style="color:#7ee787">feature/ui-refactor</strong></span></div>
+      <div class="event-entry" id="ev3"><span class="event-time">t=12s</span><span>1 commit on <strong style="color:#58a6ff">main</strong> (hotfix)</span></div>
+      <div class="event-entry" id="ev4"><span class="event-time">t=16s</span><span>Merged <strong style="color:#7ee787">feature/ui-refactor</strong> → <strong style="color:#58a6ff">main</strong></span></div>
+      <div class="event-entry" id="ev5"><span class="event-time">t=20s</span><span>Final state: main has 4 commits, feature branch merged ✓</span></div>
+    </div>
+  </div>
+</div>
+
+<div class="answer-box">
+  <label for="answerTA">Describe the final branch structure:</label>
+  <textarea id="answerTA" placeholder="Describe what happened to main and feature branches, including any merges..."></textarea>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartGit()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let timers = [];
+
+const commits = [
+  { id: 'a1b2c3d', msg: 'Initial commit', branch: 'main', author: 'alice', time: '20s ago', type: 'main', phase: 0 },
+  { id: 'b2c3d4e', msg: 'Create feature branch: ui-refactor', branch: 'feature/ui-refactor', author: 'bob', time: '16s ago', type: 'feature-branch', phase: 1 },
+  { id: 'c3d4e5f', msg: 'Add new header component', branch: 'feature/ui-refactor', author: 'bob', time: '12s ago', type: 'feature', phase: 2 },
+  { id: 'd4e5f6a', msg: 'Refactor sidebar layout', branch: 'feature/ui-refactor', author: 'bob', time: '10s ago', type: 'feature', phase: 2 },
+  { id: 'e5f6a7b', msg: 'Fix: auth token expiry (hotfix)', branch: 'main', author: 'alice', time: '8s ago', type: 'main', phase: 3 },
+  { id: 'f6a7b8c', msg: "Merge branch 'feature/ui-refactor' into main", branch: 'main', author: 'alice', time: '4s ago', type: 'merge', phase: 4 },
+];
+
+function renderCommit(c, idx) {
+  const log = document.getElementById('gitLog');
+  const row = document.createElement('div');
+  row.className = 'git-row';
+  row.id = 'gitrow' + idx;
+
+  let graphHTML = '';
+  if (c.type === 'main') {
+    graphHTML = `<div class="commit-dot dot-main"></div>`;
+  } else if (c.type === 'feature-branch') {
+    graphHTML = `<div class="commit-dot dot-feature"></div>`;
+  } else if (c.type === 'feature') {
+    graphHTML = `<div style="width:16px;height:2px;background:#3fb950;margin-left:24px"></div><div class="commit-dot dot-feature"></div>`;
+  } else if (c.type === 'merge') {
+    graphHTML = `<div class="commit-dot dot-merge"></div>`;
+  }
+
+  const branchLabel = c.type === 'main' ? `<span style="background:#0c2d6b;color:#58a6ff;border:1px solid #1f6feb;padding:1px 8px;border-radius:10px;font-size:0.7rem">main</span>` :
+    c.type === 'merge' ? `<span style="background:#21134a;color:#d2a8ff;border:1px solid #a371f7;padding:1px 8px;border-radius:10px;font-size:0.7rem">merge</span>` :
+    `<span style="background:#1b1f0a;color:#7ee787;border:1px solid #3fb950;padding:1px 8px;border-radius:10px;font-size:0.7rem">feature</span>`;
+
+  row.innerHTML = `
+    <div class="graph-col">${graphHTML}</div>
+    <div class="commit-info">
+      <div style="display:flex;align-items:center;gap:8px">
+        <span class="commit-hash">${c.id}</span>
+        ${branchLabel}
+      </div>
+      <div class="commit-msg">${c.msg}</div>
+      <div class="commit-meta">${c.author} · ${c.time}</div>
+    </div>
+  `;
+  log.appendChild(row);
+  return row;
+}
+
+function showCommit(idx) {
+  const row = document.getElementById('gitrow' + idx);
+  if (row) row.classList.add('visible');
+}
+
+function showEvent(idx) {
+  document.getElementById('ev' + idx).classList.add('show');
+}
+
+function runGit() {
+  // Pre-render all rows
+  commits.forEach((c, i) => renderCommit(c, i));
+
+  // Phase 0: t=0
+  showCommit(0); showEvent(0);
+
+  // Phase 1: t=4s
+  timers.push(setTimeout(() => { showCommit(1); showEvent(1); }, 4000));
+
+  // Phase 2: t=8s
+  timers.push(setTimeout(() => { showCommit(2); showCommit(3); showEvent(2); }, 8000));
+
+  // Phase 3: t=12s
+  timers.push(setTimeout(() => { showCommit(4); showEvent(3); }, 12000));
+
+  // Phase 4: t=16s
+  timers.push(setTimeout(() => { showCommit(5); showEvent(4); }, 16000));
+
+  // Phase 5: t=20s
+  timers.push(setTimeout(() => { showEvent(5); }, 20000));
+}
+
+function restartGit() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  taskResult = 'pending';
+  document.getElementById('answerTA').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('gitLog').innerHTML = '';
+  for (let i = 0; i < 6; i++) document.getElementById('ev' + i).classList.remove('show');
+  runGit();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerTA').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('branch') || val.includes('merge')) {
+    taskResult = 'git_described';
+    msg.style.color = '#3fb950';
+    msg.textContent = 'Logged! main has 4 commits total; feature/ui-refactor was branched and merged back in.';
+  } else {
+    taskResult = 'incomplete';
+    msg.style.color = '#f85149';
+    msg.textContent = 'Please describe the branches and merges shown in the graph.';
+  }
+  msg.style.display = 'block';
+}
+
+runGit();
+</script>
+</body>
+</html>

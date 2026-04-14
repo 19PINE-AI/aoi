@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ServerWatch — Monitoring Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0f1117; color: #c9d1d9; min-height: 100vh; }
+
+  .header {
+    background: #161b22;
+    border-bottom: 1px solid #30363d;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .header .logo { font-size: 1.2rem; font-weight: 700; color: #58a6ff; }
+  .header .status { margin-left: auto; font-size: 0.85rem; color: #8b949e; }
+  .header .status span { color: #3fb950; font-weight: 600; }
+
+  .container { max-width: 1200px; margin: 22px auto; padding: 0 20px; display: flex; gap: 20px; }
+
+  /* Server grid */
+  .servers-grid { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .server-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .sc-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+  .sc-dot { width: 10px; height: 10px; border-radius: 50%; }
+  .sc-dot.ok { background: #3fb950; }
+  .sc-dot.warn { background: #d29922; }
+  .sc-dot.crit { background: #f85149; animation: blink 0.5s infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.2} }
+  .sc-name { font-size: 0.88rem; font-weight: 600; color: #e6edf3; }
+  .sc-role { font-size: 0.72rem; color: #8b949e; }
+  .sc-metrics { font-size: 0.78rem; color: #8b949e; }
+  .sc-metric-row { display: flex; justify-content: space-between; padding: 3px 0; }
+  .sc-val-ok { color: #3fb950; }
+  .sc-val-warn { color: #d29922; }
+  .sc-val-crit { color: #f85149; font-weight: 600; }
+  .sc-bar { height: 3px; border-radius: 3px; background: #21262d; margin-top: 6px; overflow: hidden; }
+  .sc-bar-fill { height: 100%; border-radius: 3px; }
+
+  /* Alert panel */
+  .alert-sidebar { width: 340px; flex-shrink: 0; }
+  .alert-sidebar h3 { font-size: 0.95rem; font-weight: 600; color: #e6edf3; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+
+  /* Alert indicator */
+  .alert-indicator {
+    background: #161b22;
+    border: 2px solid #30363d;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    margin-bottom: 16px;
+    transition: border-color 0.3s, background 0.3s;
+  }
+  .alert-indicator.critical {
+    border-color: #f85149;
+    background: #200d0d;
+    animation: alertPulse 0.5s ease infinite alternate;
+  }
+  @keyframes alertPulse {
+    from { box-shadow: 0 0 0 0 rgba(248,81,73,0.4); }
+    to { box-shadow: 0 0 0 10px rgba(248,81,73,0); }
+  }
+  .alert-indicator .ai-icon { font-size: 2.5rem; margin-bottom: 8px; }
+  .alert-indicator .ai-label { font-size: 1rem; font-weight: 700; color: #8b949e; }
+  .alert-indicator.critical .ai-label { color: #f85149; }
+  .alert-indicator .ai-sub { font-size: 0.8rem; color: #484f58; margin-top: 4px; }
+  .alert-indicator.critical .ai-sub { color: #ffa3a0; }
+
+  /* Legend card */
+  .legend-card {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .legend-card h4 { font-size: 0.85rem; font-weight: 600; color: #e6edf3; margin-bottom: 10px; }
+  .legend-row { display: flex; align-items: center; gap: 10px; font-size: 0.82rem; color: #8b949e; margin-bottom: 8px; }
+  .legend-sound {
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-weight: 700;
+    font-size: 0.75rem;
+    min-width: 60px;
+    text-align: center;
+  }
+  .ls-high { background: #2d0f0f; color: #f85149; border: 1px solid #f85149; }
+  .ls-low { background: #1b3a20; color: #3fb950; border: 1px solid #3fb950; }
+
+  /* Classification form */
+  .classify-form {
+    background: #161b22;
+    border: 1px solid #30363d;
+    border-radius: 10px;
+    padding: 18px;
+  }
+  .classify-form h4 { font-size: 0.9rem; font-weight: 600; color: #e6edf3; margin-bottom: 12px; }
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    border-radius: 7px;
+    margin-bottom: 8px;
+    cursor: pointer;
+    border: 1.5px solid #30363d;
+    transition: border-color 0.15s, background 0.15s;
+    font-size: 0.88rem;
+    color: #c9d1d9;
+  }
+  .radio-option:hover { border-color: #58a6ff; background: #1c2432; }
+  .radio-option input[type="radio"] { accent-color: #58a6ff; width: 16px; height: 16px; }
+  .radio-option.selected-critical { border-color: #f85149; background: #200d0d; }
+  .radio-option.selected-warning { border-color: #d29922; background: #1a1500; }
+
+  .text-classify {
+    width: 100%;
+    background: #0d1117;
+    border: 1.5px solid #30363d;
+    border-radius: 7px;
+    padding: 10px 12px;
+    color: #e6edf3;
+    font-size: 0.9rem;
+    outline: none;
+    margin-bottom: 10px;
+  }
+  .text-classify:focus { border-color: #58a6ff; }
+
+  .btn-classify {
+    width: 100%;
+    background: #238636;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 4px;
+  }
+  .btn-classify:hover { background: #2ea043; }
+
+  .classify-result {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 7px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    display: none;
+  }
+  .classify-result.ok { background: #1b4332; color: #6fcf97; display: block; }
+  .classify-result.err { background: #2d1212; color: #f47067; display: block; }
+
+  /* Replay button */
+  .btn-replay {
+    width: 100%;
+    background: #21262d;
+    color: #8b949e;
+    border: 1px solid #30363d;
+    border-radius: 7px;
+    padding: 8px;
+    font-size: 0.82rem;
+    cursor: pointer;
+    margin-top: 8px;
+    transition: background 0.15s;
+  }
+  .btn-replay:hover { background: #30363d; color: #e6edf3; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚡ ServerWatch</div>
+  <span style="color:#8b949e;font-size:0.85rem">Infrastructure Monitor v3.1</span>
+  <div class="status">All systems: <span>Monitoring</span> · 6 nodes online</div>
+</div>
+
+<div class="container">
+  <div class="servers-grid">
+    <!-- Server cards -->
+    <div class="server-card">
+      <div class="sc-header"><div class="sc-dot ok"></div><div><div class="sc-name">web-prod-01</div><div class="sc-role">Web Server · us-east-1</div></div></div>
+      <div class="sc-metrics">
+        <div class="sc-metric-row"><span>CPU</span><span class="sc-val-ok">34%</span></div>
+        <div class="sc-metric-row"><span>Mem</span><span class="sc-val-ok">52%</span></div>
+        <div class="sc-metric-row"><span>Req/s</span><span class="sc-val-ok">1,240</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" style="width:34%;background:#3fb950"></div></div>
+    </div>
+    <div class="server-card">
+      <div class="sc-header"><div class="sc-dot warn"></div><div><div class="sc-name">api-prod-02</div><div class="sc-role">API Server · us-east-1</div></div></div>
+      <div class="sc-metrics">
+        <div class="sc-metric-row"><span>CPU</span><span class="sc-val-warn">78%</span></div>
+        <div class="sc-metric-row"><span>Mem</span><span class="sc-val-ok">61%</span></div>
+        <div class="sc-metric-row"><span>Latency</span><span class="sc-val-warn">245ms</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" style="width:78%;background:#d29922"></div></div>
+    </div>
+    <div class="server-card" id="critServer">
+      <div class="sc-header"><div class="sc-dot ok" id="critDot"></div><div><div class="sc-name">db-primary-01</div><div class="sc-role">Database · us-east-1</div></div></div>
+      <div class="sc-metrics">
+        <div class="sc-metric-row"><span>CPU</span><span class="sc-val-ok" id="dbCpu">42%</span></div>
+        <div class="sc-metric-row"><span>Mem</span><span class="sc-val-ok">68%</span></div>
+        <div class="sc-metric-row"><span>QPS</span><span class="sc-val-ok">8,200</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" id="dbBar" style="width:42%;background:#3fb950"></div></div>
+    </div>
+    <div class="server-card">
+      <div class="sc-header"><div class="sc-dot ok"></div><div><div class="sc-name">cache-01</div><div class="sc-role">Redis Cache · us-west-2</div></div></div>
+      <div class="sc-metrics">
+        <div class="sc-metric-row"><span>CPU</span><span class="sc-val-ok">18%</span></div>
+        <div class="sc-metric-row"><span>Hit Rate</span><span class="sc-val-ok">99.2%</span></div>
+        <div class="sc-metric-row"><span>Keys</span><span class="sc-val-ok">2.1M</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" style="width:18%;background:#3fb950"></div></div>
+    </div>
+    <div class="server-card">
+      <div class="sc-header"><div class="sc-dot ok"></div><div><div class="sc-name">worker-01</div><div class="sc-role">Job Worker · eu-west-1</div></div></div>
+      <div class="sc-metrics">
+        <div class="sc-metric-row"><span>CPU</span><span class="sc-val-ok">55%</span></div>
+        <div class="sc-metric-row"><span>Jobs/hr</span><span class="sc-val-ok">3,400</span></div>
+        <div class="sc-metric-row"><span>Queue</span><span class="sc-val-ok">12</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" style="width:55%;background:#3fb950"></div></div>
+    </div>
+    <div class="server-card">
+      <div class="sc-header"><div class="sc-dot ok"></div><div><div class="sc-name">cdn-edge-04</div><div class="sc-role">CDN Edge · ap-south-1</div></div></div>
+      <div class="sc-metrics">
+        <div class="sc-metric-row"><span>CPU</span><span class="sc-val-ok">22%</span></div>
+        <div class="sc-metric-row"><span>Bandwidth</span><span class="sc-val-ok">4.2 Gbps</span></div>
+        <div class="sc-metric-row"><span>Cache Hit</span><span class="sc-val-ok">94%</span></div>
+      </div>
+      <div class="sc-bar"><div class="sc-bar-fill" style="width:22%;background:#3fb950"></div></div>
+    </div>
+  </div>
+
+  <div class="alert-sidebar">
+    <h3><span id="liveIndicator">🟢</span> Alert Monitor</h3>
+
+    <div class="alert-indicator" id="alertIndicator">
+      <div class="ai-icon" id="alertIcon">🟢</div>
+      <div class="ai-label" id="alertLabel">All Systems Normal</div>
+      <div class="ai-sub" id="alertSub">Monitoring for anomalies...</div>
+    </div>
+
+    <div class="legend-card">
+      <h4>🔊 Audio Alert Key</h4>
+      <div class="legend-row">
+        <span class="legend-sound ls-high">HIGH PITCH</span>
+        <span>3 rapid beeps → <strong style="color:#f85149">CRITICAL error</strong></span>
+      </div>
+      <div class="legend-row">
+        <span class="legend-sound ls-low">LOW PITCH</span>
+        <span>Gentle tone → <strong style="color:#d29922">WARNING</strong></span>
+      </div>
+    </div>
+
+    <div class="classify-form">
+      <h4>Classify the Alert</h4>
+      <div class="radio-option" onclick="selectOption('critical')">
+        <input type="radio" name="classify" id="optCritical" value="critical">
+        <label for="optCritical">🚨 CRITICAL ERROR</label>
+      </div>
+      <div class="radio-option" onclick="selectOption('warning')">
+        <input type="radio" name="classify" id="optWarning" value="warning">
+        <label for="optWarning">⚠️ WARNING</label>
+      </div>
+      <div style="text-align:center;font-size:0.75rem;color:#484f58;margin:6px 0">— or type below —</div>
+      <input type="text" class="text-classify" id="classifyInput" placeholder="Type CRITICAL or WARNING...">
+      <button class="btn-classify" onclick="submitClassification()">Submit Classification</button>
+      <button class="btn-replay" onclick="playHighBeep()">🔊 Replay Alert Sound</button>
+      <div class="classify-result" id="classifyResult"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let selectedOption = null;
+
+  function playHighBeep() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      // 3 rapid beeps at 1200Hz, 0.3s each
+      for (let i = 0; i < 3; i++) {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(1200, ctx.currentTime);
+        const start = ctx.currentTime + i * 0.4;
+        gain.gain.setValueAtTime(0, start);
+        gain.gain.linearRampToValueAtTime(0.5, start + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.001, start + 0.3);
+        osc.start(start);
+        osc.stop(start + 0.3);
+      }
+    } catch (e) {}
+  }
+
+  function triggerVisualAlert() {
+    const ind = document.getElementById('alertIndicator');
+    ind.classList.add('critical');
+    document.getElementById('alertIcon').textContent = '🚨';
+    document.getElementById('alertLabel').textContent = 'CRITICAL ALERT DETECTED';
+    document.getElementById('alertSub').textContent = 'db-primary-01: CPU spike detected';
+    document.getElementById('liveIndicator').textContent = '🔴';
+
+    // Update the DB server card
+    document.getElementById('critDot').className = 'sc-dot crit';
+    document.getElementById('dbCpu').textContent = '97%';
+    document.getElementById('dbCpu').className = 'sc-val-crit';
+    document.getElementById('dbBar').style.width = '97%';
+    document.getElementById('dbBar').style.background = '#f85149';
+  }
+
+  function selectOption(val) {
+    selectedOption = val;
+    document.querySelectorAll('.radio-option').forEach(el => {
+      el.classList.remove('selected-critical', 'selected-warning');
+    });
+    if (val === 'critical') {
+      document.getElementById('optCritical').checked = true;
+      document.querySelectorAll('.radio-option')[0].classList.add('selected-critical');
+    } else {
+      document.getElementById('optWarning').checked = true;
+      document.querySelectorAll('.radio-option')[1].classList.add('selected-warning');
+    }
+    document.getElementById('classifyInput').value = val.toUpperCase();
+  }
+
+  function submitClassification() {
+    const textVal = document.getElementById('classifyInput').value.trim().toLowerCase();
+    const radioVal = document.querySelector('input[name="classify"]:checked')?.value;
+    const finalVal = textVal || radioVal || '';
+    const res = document.getElementById('classifyResult');
+
+    if (finalVal.includes('critical')) {
+      taskResult = 'correct_classification';
+      res.textContent = '✓ Correct! HIGH PITCH 3-beep alert = CRITICAL ERROR';
+      res.className = 'classify-result ok';
+    } else {
+      res.textContent = '✗ Incorrect. Listen again — was it high-pitch or low-pitch?';
+      res.className = 'classify-result err';
+    }
+  }
+
+  // t=4s: Play high beep and trigger visual alert
+  setTimeout(() => {
+    playHighBeep();
+    triggerVisualAlert();
+  }, 4000);
+
+  // Enter key on input
+  document.getElementById('classifyInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') submitClassification();
+  });
+</script>
+</body>
+</html>

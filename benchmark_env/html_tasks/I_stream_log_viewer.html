@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Log Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Courier New', monospace; background: #0c0c0c; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px; }
+  .terminal-window { background: #1a1a1a; border-radius: 10px; width: 780px; overflow: hidden; margin-bottom: 20px; border: 1px solid #333; box-shadow: 0 8px 40px rgba(0,0,0,0.8); }
+  .terminal-bar { background: #2d2d2d; padding: 10px 16px; display: flex; align-items: center; gap: 8px; border-bottom: 1px solid #404040; }
+  .t-dot { width: 12px; height: 12px; border-radius: 50%; }
+  .t-dot-r { background: #ef4444; } .t-dot-y { background: #f59e0b; } .t-dot-g { background: #22c55e; }
+  .t-title { color: #9ca3af; font-size: 0.8rem; margin-left: auto; margin-right: auto; }
+  .toolbar { background: #222; border-bottom: 1px solid #333; padding: 8px 16px; display: flex; align-items: center; gap: 12px; }
+  .toolbar-label { color: #6b7280; font-size: 0.72rem; }
+  .filter-btn { background: #333; color: #9ca3af; border: 1px solid #444; border-radius: 4px; padding: 3px 10px; font-size: 0.72rem; cursor: pointer; font-family: monospace; transition: all 0.2s; }
+  .filter-btn:hover { background: #444; }
+  .filter-btn.active { background: #1d4ed8; color: #fff; border-color: #3b82f6; }
+  .filter-btn.err { background: #7f1d1d; color: #f87171; border-color: #dc2626; }
+  .log-count { margin-left: auto; color: #6b7280; font-size: 0.72rem; }
+  .log-body { background: #0c0c0c; height: 320px; overflow-y: auto; padding: 12px 0; }
+  .log-line { display: flex; gap: 0; padding: 3px 16px; font-size: 0.8rem; line-height: 1.5; border-bottom: 1px solid transparent; transition: background 0.1s; }
+  .log-line:hover { background: #1a1a1a; }
+  .log-line.error { background: rgba(127,29,29,0.3); border-bottom-color: rgba(220,38,38,0.2); animation: errorFlash 0.5s ease; }
+  @keyframes errorFlash { 0%{background:rgba(220,38,38,0.4)} 100%{background:rgba(127,29,29,0.3)} }
+  .log-ts { color: #4b5563; min-width: 210px; flex-shrink: 0; }
+  .log-level { min-width: 60px; flex-shrink: 0; font-weight: 700; }
+  .level-info  { color: #60a5fa; }
+  .level-debug { color: #6b7280; }
+  .level-warn  { color: #f59e0b; }
+  .level-error { color: #f87171; }
+  .log-msg { flex: 1; }
+  .log-msg.error-msg { color: #fca5a5; font-weight: 600; }
+  .log-msg.normal-msg { color: #d1d5db; }
+  .log-msg.debug-msg { color: #6b7280; }
+  .status-bar { background: #1a1a1a; border-top: 1px solid #333; padding: 6px 16px; display: flex; align-items: center; gap: 12px; font-size: 0.7rem; }
+  .status-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .dot-ok { background: #22c55e; animation: pulse 2s infinite; }
+  .dot-error { background: #ef4444; animation: pulse 0.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+  .status-text { color: #6b7280; }
+  .error-alert { background: #1a0000; border: 1px solid #7f1d1d; border-radius: 8px; padding: 10px 16px; margin: 0 16px 0 16px; display: none; color: #f87171; font-size: 0.78rem; }
+  .error-alert.show { display: block; }
+  .answer-box { width: 780px; background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; font-family: 'Segoe UI', sans-serif; }
+  .answer-box label { color: #9ca3af; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box textarea { width: 100%; padding: 10px 14px; background: #0c0c0c; border: 1px solid #333; border-radius: 8px; color: #d1d5db; font-size: 0.88rem; min-height: 80px; outline: none; resize: vertical; font-family: 'Courier New', monospace; }
+  .answer-box textarea:focus { border-color: #388bfd; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: #1d4ed8; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; font-family: 'Segoe UI', sans-serif; }
+  .btn-restart { background: #2d2d2d; color: #9ca3af; border: 1px solid #404040; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; font-family: 'Segoe UI', sans-serif; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; font-family: 'Segoe UI', sans-serif; }
+</style>
+</head>
+<body>
+<div class="terminal-window">
+  <div class="terminal-bar">
+    <div class="t-dot t-dot-r"></div><div class="t-dot t-dot-y"></div><div class="t-dot t-dot-g"></div>
+    <div class="t-title">application.log — live stream</div>
+  </div>
+  <div class="toolbar">
+    <span class="toolbar-label">Filter:</span>
+    <button class="filter-btn active">ALL</button>
+    <button class="filter-btn">INFO</button>
+    <button class="filter-btn">DEBUG</button>
+    <button class="filter-btn err">ERROR</button>
+    <span class="log-count" id="logCount">0 entries</span>
+  </div>
+  <div class="log-body" id="logBody"></div>
+  <div class="error-alert" id="errorAlert">⚠ ERROR event detected! Copy the error message above to the answer field below.</div>
+  <div class="status-bar">
+    <div class="status-dot" id="statusDot" style=""></div>
+    <span class="status-text" id="statusText">Streaming logs...</span>
+    <span style="margin-left:auto;color:#4b5563">app-v2.1.3 · prod</span>
+  </div>
+</div>
+
+<div class="answer-box">
+  <label for="answerTA">Copy/type the ERROR level log message:</label>
+  <textarea id="answerTA" placeholder="When an ERROR appears in the log, copy or type its message here..."></textarea>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartLog()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const logs = [
+  { ts: '2026-04-14 10:00:01', level: 'INFO',  msg: 'Application started successfully on port 3000' },
+  { ts: '2026-04-14 10:00:02', level: 'INFO',  msg: 'Loading configuration from /etc/app/config.yaml' },
+  { ts: '2026-04-14 10:00:03', level: 'DEBUG', msg: 'Processing request #4421 from 10.0.0.14' },
+  { ts: '2026-04-14 10:00:05', level: 'INFO',  msg: 'Cache warmed successfully — 1,247 keys loaded' },
+  { ts: '2026-04-14 10:00:07', level: 'ERROR', msg: 'Database connection failed: timeout after 30s' },
+  { ts: '2026-04-14 10:00:09', level: 'INFO',  msg: 'Retry attempt 1/3 — waiting 5s before reconnect' },
+];
+
+let timers = [];
+let count = 0;
+
+function addLog(entry) {
+  count++;
+  document.getElementById('logCount').textContent = count + ' entries';
+  const body = document.getElementById('logBody');
+  const line = document.createElement('div');
+  const isError = entry.level === 'ERROR';
+  line.className = 'log-line' + (isError ? ' error' : '');
+  line.innerHTML = `
+    <span class="log-ts">${entry.ts}</span>
+    <span class="log-level level-${entry.level.toLowerCase()}">${entry.level.padEnd(5)}</span>
+    <span class="log-msg ${isError ? 'error-msg' : entry.level === 'DEBUG' ? 'debug-msg' : 'normal-msg'}">${entry.msg}</span>
+  `;
+  body.appendChild(line);
+  body.scrollTop = body.scrollHeight;
+
+  if (isError) {
+    document.getElementById('statusDot').className = 'status-dot dot-error';
+    document.getElementById('statusText').textContent = 'ERROR DETECTED — action required';
+    document.getElementById('errorAlert').classList.add('show');
+  }
+}
+
+function runLog() {
+  logs.forEach((entry, i) => {
+    timers.push(setTimeout(() => addLog(entry), i * 1500 + 300));
+  });
+}
+
+function restartLog() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  count = 0;
+  taskResult = 'pending';
+  document.getElementById('answerTA').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('logBody').innerHTML = '';
+  document.getElementById('logCount').textContent = '0 entries';
+  document.getElementById('statusDot').className = 'status-dot dot-ok';
+  document.getElementById('statusText').textContent = 'Streaming logs...';
+  document.getElementById('errorAlert').classList.remove('show');
+  runLog();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerTA').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('database') && val.includes('connection')) {
+    taskResult = 'error_found';
+    msg.style.color = '#4ade80';
+    msg.textContent = 'Correct! ERROR: "Database connection failed: timeout after 30s"';
+  } else {
+    taskResult = 'incorrect';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Incorrect. Look for the ERROR level entry and copy its message.';
+  }
+  msg.style.display = 'block';
+}
+
+runLog();
+</script>
+</body>
+</html>

@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SysMon — System Monitoring Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #0a0e1a; color: #c9d1d9; min-height: 100vh; }
+
+  .header {
+    background: #0d1117;
+    border-bottom: 1px solid #21262d;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .header .logo { font-size: 1.15rem; font-weight: 700; color: #58a6ff; }
+  .header .uptime { margin-left: auto; font-size: 0.82rem; color: #8b949e; }
+  .header .uptime span { color: #3fb950; font-weight: 600; }
+
+  /* Main layout */
+  .container { max-width: 1200px; margin: 20px auto; padding: 0 20px; }
+
+  /* Metrics row */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 22px; }
+  .metric-card {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 14px 16px;
+  }
+  .metric-card .m-label { font-size: 0.75rem; color: #8b949e; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+  .metric-card .m-val { font-size: 1.6rem; font-weight: 700; }
+  .metric-card .m-bar { height: 4px; background: #21262d; border-radius: 4px; margin-top: 8px; overflow: hidden; }
+  .metric-card .m-bar-fill { height: 100%; border-radius: 4px; }
+  .m-ok { color: #3fb950; }
+  .m-warn { color: #d29922; }
+  .m-crit { color: #f85149; }
+  .bar-ok { background: #3fb950; }
+  .bar-warn { background: #d29922; }
+  .bar-crit { background: #f85149; }
+
+  /* Alert feed */
+  .layout { display: flex; gap: 20px; }
+  .alert-panel { flex: 1; }
+  .panel-title { font-size: 1rem; font-weight: 600; color: #e6edf3; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+  .panel-title .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #f85149; animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+  /* Alert card */
+  .alert-card {
+    display: none;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    animation: alertIn 0.3s ease;
+    border-left: 4px solid;
+  }
+  .alert-card.show { display: flex; align-items: flex-start; gap: 12px; }
+  .alert-card.info-alert {
+    background: #1c2938;
+    border-color: #58a6ff;
+  }
+  .alert-card.critical-alert {
+    background: #2d0f0f;
+    border-color: #f85149;
+  }
+  @keyframes alertIn {
+    from { opacity: 0; transform: translateX(-12px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .alert-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+  .alert-body { flex: 1; }
+  .alert-type { font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+  .alert-type.info { color: #58a6ff; }
+  .alert-type.critical { color: #f85149; }
+  .alert-msg { font-size: 0.9rem; color: #e6edf3; font-weight: 500; margin-bottom: 2px; }
+  .alert-ts { font-size: 0.75rem; color: #8b949e; }
+  .btn-ack {
+    background: transparent;
+    border: 1.5px solid;
+    border-radius: 6px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    flex-shrink: 0;
+    align-self: center;
+    transition: background 0.15s, color 0.15s;
+  }
+  .btn-ack.info-ack { border-color: #58a6ff; color: #58a6ff; }
+  .btn-ack.info-ack:hover { background: #58a6ff; color: #0d1117; }
+  .btn-ack.crit-ack { border-color: #f85149; color: #f85149; }
+  .btn-ack.crit-ack:hover { background: #f85149; color: #fff; }
+  .btn-ack.acked { border-color: #3fb950 !important; color: #3fb950 !important; background: transparent !important; cursor: default; }
+
+  /* Log panel */
+  .log-panel {
+    width: 280px;
+    flex-shrink: 0;
+  }
+  .log-box {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 0.78rem;
+    line-height: 1.7;
+    height: 360px;
+    overflow-y: auto;
+    color: #8b949e;
+  }
+  .log-ok { color: #3fb950; }
+  .log-warn { color: #d29922; }
+  .log-err { color: #f85149; }
+  .log-info { color: #58a6ff; }
+
+  /* Status summary */
+  .status-summary {
+    background: #161b22;
+    border: 1px solid #21262d;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-top: 16px;
+    font-size: 0.88rem;
+  }
+  .status-summary .ss-title { font-weight: 600; color: #e6edf3; margin-bottom: 10px; }
+  .ss-row { display: flex; justify-content: space-between; padding: 4px 0; color: #8b949e; border-bottom: 1px solid #21262d; }
+  .ss-row:last-child { border-bottom: none; }
+  .ss-val { font-weight: 600; color: #e6edf3; }
+  .ss-val.ok { color: #3fb950; }
+  .ss-val.crit { color: #f85149; }
+
+  /* Result banner */
+  .result-banner {
+    display: none;
+    position: fixed;
+    bottom: 20px; left: 50%; transform: translateX(-50%);
+    background: #1b4332;
+    color: #3fb950;
+    border: 1px solid #3fb950;
+    border-radius: 10px;
+    padding: 12px 28px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    z-index: 9999;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+  }
+  .result-banner.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚡ SysMon</div>
+  <span style="color:#8b949e;font-size:0.85rem">Infrastructure Monitoring</span>
+  <div class="uptime">System Uptime: <span>14d 6h 42m</span> &nbsp;|&nbsp; Nodes: <span>12 / 12</span> online</div>
+</div>
+
+<div class="container">
+  <div class="metrics">
+    <div class="metric-card">
+      <div class="m-label">CPU Usage</div>
+      <div class="m-val m-warn" id="cpuVal">72%</div>
+      <div class="m-bar"><div class="m-bar-fill bar-warn" style="width:72%"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">Memory</div>
+      <div class="m-val m-ok">58%</div>
+      <div class="m-bar"><div class="m-bar-fill bar-ok" style="width:58%"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">DB Connections</div>
+      <div class="m-val m-ok" id="dbVal">43/100</div>
+      <div class="m-bar"><div class="m-bar-fill bar-ok" style="width:43%" id="dbBar"></div></div>
+    </div>
+    <div class="metric-card">
+      <div class="m-label">Network I/O</div>
+      <div class="m-val m-ok">1.2 Gbps</div>
+      <div class="m-bar"><div class="m-bar-fill bar-ok" style="width:24%"></div></div>
+    </div>
+  </div>
+
+  <div class="layout">
+    <div class="alert-panel">
+      <div class="panel-title"><div class="live-dot"></div> Live Alert Feed</div>
+
+      <!-- Alert 1: INFO -->
+      <div class="alert-card info-alert" id="alert1">
+        <div class="alert-icon">ℹ️</div>
+        <div class="alert-body">
+          <div class="alert-type info">INFO</div>
+          <div class="alert-msg">Scheduled backup completed</div>
+          <div class="alert-ts" id="ts1">--:--:--</div>
+        </div>
+        <button class="btn-ack info-ack" onclick="ackInfo(1)">Acknowledge</button>
+      </div>
+
+      <!-- Alert 2: CRITICAL — CPU -->
+      <div class="alert-card critical-alert" id="alert2">
+        <div class="alert-icon">🚨</div>
+        <div class="alert-body">
+          <div class="alert-type critical">CRITICAL</div>
+          <div class="alert-msg">CPU usage above 95%</div>
+          <div class="alert-ts" id="ts2">--:--:--</div>
+        </div>
+        <button class="btn-ack crit-ack" id="ack2" onclick="ackCritical(2)">Acknowledge</button>
+      </div>
+
+      <!-- Alert 3: INFO -->
+      <div class="alert-card info-alert" id="alert3">
+        <div class="alert-icon">ℹ️</div>
+        <div class="alert-body">
+          <div class="alert-type info">INFO</div>
+          <div class="alert-msg">New user registered</div>
+          <div class="alert-ts" id="ts3">--:--:--</div>
+        </div>
+        <button class="btn-ack info-ack" onclick="ackInfo(3)">Acknowledge</button>
+      </div>
+
+      <!-- Alert 4: CRITICAL — DB -->
+      <div class="alert-card critical-alert" id="alert4">
+        <div class="alert-icon">🚨</div>
+        <div class="alert-body">
+          <div class="alert-type critical">CRITICAL</div>
+          <div class="alert-msg">Database connection pool exhausted</div>
+          <div class="alert-ts" id="ts4">--:--:--</div>
+        </div>
+        <button class="btn-ack crit-ack" id="ack4" onclick="ackCritical(4)">Acknowledge</button>
+      </div>
+
+      <!-- Alert 5: INFO -->
+      <div class="alert-card info-alert" id="alert5">
+        <div class="alert-icon">ℹ️</div>
+        <div class="alert-body">
+          <div class="alert-type info">INFO</div>
+          <div class="alert-msg">Daily report generated</div>
+          <div class="alert-ts" id="ts5">--:--:--</div>
+        </div>
+        <button class="btn-ack info-ack" onclick="ackInfo(5)">Acknowledge</button>
+      </div>
+    </div>
+
+    <div class="log-panel">
+      <div class="panel-title">System Log</div>
+      <div class="log-box" id="logBox">
+        <div class="log-ok">[OK] System healthy</div>
+        <div class="log-info">[INFO] Monitor started</div>
+        <div class="log-info">[INFO] Watching 12 nodes</div>
+      </div>
+      <div class="status-summary">
+        <div class="ss-title">Alert Summary</div>
+        <div class="ss-row"><span>Info Alerts</span><span class="ss-val ok" id="infoCount">0</span></div>
+        <div class="ss-row"><span>Critical Alerts</span><span class="ss-val crit" id="critCount">0</span></div>
+        <div class="ss-row"><span>Acknowledged</span><span class="ss-val ok" id="ackCountDisp">0</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="result-banner" id="resultBanner">
+  ✓ Both critical alerts acknowledged! System team notified.
+</div>
+
+<script>
+  let taskResult = 'pending';
+  let criticalCount = 0;
+  let infoCountN = 0;
+  let ackTotal = 0;
+
+  window.getTaskResult = () => criticalCount >= 2 ? 'critical_alerts_acknowledged' : taskResult;
+
+  const startTime = Date.now();
+
+  function getTS() {
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+    const s = String(elapsed % 60).padStart(2, '0');
+    return `10:32:${s}`;
+  }
+
+  function addLog(cls, msg) {
+    const lb = document.getElementById('logBox');
+    const line = document.createElement('div');
+    line.className = cls;
+    line.textContent = msg;
+    lb.appendChild(line);
+    lb.scrollTop = lb.scrollHeight;
+  }
+
+  function showAlert(id, autoDismiss) {
+    const card = document.getElementById('alert' + id);
+    document.getElementById('ts' + id).textContent = getTS();
+    card.classList.add('show');
+    if (autoDismiss) {
+      setTimeout(() => card.classList.remove('show'), 4000);
+    }
+  }
+
+  function ackInfo(id) {
+    const btn = document.querySelector(`#alert${id} .btn-ack`);
+    btn.textContent = '✓ Acknowledged';
+    btn.classList.add('acked');
+    infoCountN++;
+    ackTotal++;
+    document.getElementById('infoCount').textContent = infoCountN;
+    document.getElementById('ackCountDisp').textContent = ackTotal;
+    addLog('log-info', `[ACK] INFO alert #${id} acknowledged`);
+  }
+
+  function ackCritical(id) {
+    const btn = document.getElementById('ack' + id);
+    if (btn.classList.contains('acked')) return;
+    btn.textContent = '✓ Acknowledged';
+    btn.classList.add('acked');
+    criticalCount++;
+    ackTotal++;
+    document.getElementById('critCount').textContent = criticalCount;
+    document.getElementById('ackCountDisp').textContent = ackTotal;
+    addLog('log-err', `[ACK] CRITICAL alert #${id} acknowledged`);
+
+    if (id === 2) {
+      document.getElementById('cpuVal').textContent = '97%';
+      document.getElementById('cpuVal').className = 'm-val m-crit';
+    }
+    if (id === 4) {
+      document.getElementById('dbVal').textContent = '100/100';
+      document.getElementById('dbVal').className = 'm-val m-crit';
+      document.getElementById('dbBar').style.width = '100%';
+      document.getElementById('dbBar').className = 'm-bar-fill bar-crit';
+    }
+
+    if (criticalCount >= 2) {
+      taskResult = 'critical_alerts_acknowledged';
+      document.getElementById('resultBanner').classList.add('show');
+    }
+  }
+
+  // t=2s: Alert 1 (INFO)
+  setTimeout(() => {
+    addLog('log-info', '[INFO] Backup completed successfully');
+    showAlert(1, true);
+  }, 2000);
+
+  // t=7s: Alert 2 (CRITICAL)
+  setTimeout(() => {
+    addLog('log-err', '[CRIT] CPU spike detected: 97%');
+    showAlert(2, false); // Don't auto-dismiss critical
+  }, 7000);
+
+  // t=12s: Alert 3 (INFO)
+  setTimeout(() => {
+    addLog('log-info', '[INFO] New user signup: user@example.com');
+    showAlert(3, true);
+  }, 12000);
+
+  // t=17s: Alert 4 (CRITICAL)
+  setTimeout(() => {
+    addLog('log-err', '[CRIT] DB pool exhausted: 100/100 connections');
+    showAlert(4, false); // Don't auto-dismiss critical
+  }, 17000);
+
+  // t=22s: Alert 5 (INFO)
+  setTimeout(() => {
+    addLog('log-info', '[INFO] Daily summary report generated');
+    showAlert(5, true);
+  }, 22000);
+</script>
+</body>
+</html>

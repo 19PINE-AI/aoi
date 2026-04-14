@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>InboxPro — Email Client</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #2d3748; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* App header */
+  .app-header {
+    background: #1a365d;
+    color: #fff;
+    padding: 0 20px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-shrink: 0;
+  }
+  .header-logo { font-size: 1.1rem; font-weight: 700; color: #90cdf4; }
+  .header-search {
+    flex: 1;
+    max-width: 360px;
+    padding: 7px 12px;
+    border-radius: 8px;
+    border: none;
+    background: rgba(255,255,255,0.12);
+    color: #fff;
+    font-size: 0.85rem;
+    outline: none;
+  }
+  .header-search::placeholder { color: rgba(255,255,255,0.5); }
+  .compose-btn {
+    margin-left: auto;
+    background: #4299e1;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 7px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  /* Layout */
+  .app-layout { flex: 1; display: flex; overflow: hidden; }
+
+  /* Sidebar */
+  .sidebar {
+    width: 180px;
+    background: #fff;
+    border-right: 1px solid #e2e8f0;
+    padding: 10px 0;
+    flex-shrink: 0;
+  }
+  .sb-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    color: #4a5568;
+    cursor: pointer;
+    border-radius: 6px;
+    margin: 0 6px 2px;
+  }
+  .sb-item:hover { background: #f7fafc; }
+  .sb-item.active { background: #ebf4ff; color: #2b6cb0; font-weight: 600; }
+  .sb-count { margin-left: auto; background: #4299e1; color: #fff; border-radius: 20px; font-size: 0.65rem; font-weight: 700; padding: 1px 6px; }
+
+  /* Email list */
+  .email-list {
+    width: 320px;
+    background: #fff;
+    border-right: 1px solid #e2e8f0;
+    overflow-y: auto;
+    flex-shrink: 0;
+  }
+  .el-header {
+    padding: 14px 16px 10px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #1a202c;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    background: #fff;
+  }
+  .el-filter { font-size: 0.75rem; color: #4299e1; cursor: pointer; }
+
+  .email-item {
+    padding: 12px 16px;
+    border-bottom: 1px solid #f7fafc;
+    cursor: pointer;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .email-item:hover { background: #f7fafc; }
+  .email-item.unread { background: #f0f8ff; }
+  .email-item.selected { background: #ebf4ff; }
+  .email-item.new-flash { animation: newEmailFlash 0.5s ease; }
+  @keyframes newEmailFlash {
+    0% { background: #dbeafe; }
+    100% { background: #f0f8ff; }
+  }
+  .ei-from { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .ei-avatar {
+    width: 30px; height: 30px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.75rem; font-weight: 700; color: #fff;
+    flex-shrink: 0;
+  }
+  .ei-name { font-size: 0.88rem; font-weight: 600; color: #1a202c; flex: 1; }
+  .ei-time { font-size: 0.72rem; color: #a0aec0; }
+  .ei-subject { font-size: 0.82rem; color: #4a5568; margin-bottom: 2px; font-weight: 500; }
+  .ei-preview { font-size: 0.75rem; color: #a0aec0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 250px; }
+  .ei-unread-dot { width: 8px; height: 8px; border-radius: 50%; background: #4299e1; position: absolute; left: 6px; top: 50%; transform: translateY(-50%); }
+
+  .pitch-tag {
+    display: none;
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .pitch-tag.show { display: inline; }
+  .pt-high { background: #fde8e8; color: #c0392b; }
+  .pt-medium { background: #fef3c7; color: #b45309; }
+  .pt-low { background: #e8f5e9; color: #2e7d32; }
+
+  /* Reading pane */
+  .reading-pane {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    background: #fff;
+  }
+  .reading-pane .rp-header { margin-bottom: 20px; }
+  .reading-pane h2 { font-size: 1.2rem; font-weight: 700; color: #1a202c; margin-bottom: 8px; }
+  .rp-meta { font-size: 0.83rem; color: #718096; }
+  .rp-body { font-size: 0.9rem; color: #4a5568; line-height: 1.7; }
+  .rp-placeholder { text-align: center; padding: 60px 20px; color: #a0aec0; }
+  .rp-placeholder .rp-icon { font-size: 3rem; margin-bottom: 12px; }
+
+  /* Audio indicator */
+  .audio-pill {
+    display: none;
+    position: fixed;
+    top: 60px; right: 14px;
+    background: #1a365d;
+    color: #90cdf4;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    z-index: 500;
+    animation: pillIn 0.3s ease;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  .audio-pill.show { display: block; }
+  @keyframes pillIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  /* Answer panel */
+  .answer-panel {
+    display: none;
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: #1a365d;
+    color: #fff;
+    padding: 16px 24px;
+    z-index: 1000;
+  }
+  .answer-panel.show { display: flex; align-items: center; gap: 16px; }
+  .answer-panel h4 { font-size: 0.9rem; white-space: nowrap; }
+  .answer-radios { display: flex; gap: 12px; }
+  .answer-radio-option {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.2);
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 0.85rem;
+    transition: background 0.15s;
+  }
+  .answer-radio-option:hover { background: rgba(255,255,255,0.2); }
+  .answer-radio-option input { accent-color: #90cdf4; }
+  .btn-answer-submit {
+    background: #4299e1;
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    padding: 8px 20px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: auto;
+  }
+  .answer-result { font-size: 0.88rem; font-weight: 700; }
+  .answer-result.ok { color: #6fcf97; }
+  .answer-result.err { color: #f85149; }
+</style>
+</head>
+<body>
+
+<div class="app-header">
+  <div class="header-logo">📧 InboxPro</div>
+  <input class="header-search" placeholder="Search emails...">
+  <button class="compose-btn">✏️ Compose</button>
+</div>
+
+<div class="app-layout">
+  <div class="sidebar">
+    <div class="sb-item active">📥 Inbox <span class="sb-count" id="inboxCount">0</span></div>
+    <div class="sb-item">⭐ Starred</div>
+    <div class="sb-item">📤 Sent</div>
+    <div class="sb-item">📝 Drafts</div>
+    <div class="sb-item">🗑️ Trash</div>
+    <div style="height:1px;background:#e2e8f0;margin:8px 6px"></div>
+    <div class="sb-item">🏷️ Work</div>
+    <div class="sb-item">🏷️ Personal</div>
+    <div class="sb-item">🏷️ Finance</div>
+  </div>
+
+  <div class="email-list">
+    <div class="el-header">
+      Inbox
+      <span class="el-filter">Filter</span>
+    </div>
+
+    <!-- Existing emails -->
+    <div class="email-item" onclick="selectEmail(this, 'old1')">
+      <div class="ei-from">
+        <div class="ei-avatar" style="background:#805ad5">T</div>
+        <div class="ei-name">The Team</div>
+        <div class="ei-time">Yesterday</div>
+      </div>
+      <div class="ei-subject">Weekly digest — April 13</div>
+      <div class="ei-preview">Your weekly summary of activity and highlights across your workspace</div>
+    </div>
+    <div class="email-item" onclick="selectEmail(this, 'old2')">
+      <div class="ei-from">
+        <div class="ei-avatar" style="background:#d69e2e">N</div>
+        <div class="ei-name">Notifications</div>
+        <div class="ei-time">Apr 12</div>
+      </div>
+      <div class="ei-subject">Your invoice #4821 is ready</div>
+      <div class="ei-preview">Please review and pay your invoice before the due date</div>
+    </div>
+    <div class="email-item" onclick="selectEmail(this, 'old3')">
+      <div class="ei-from">
+        <div class="ei-avatar" style="background:#2b6cb0">S</div>
+        <div class="ei-name">System</div>
+        <div class="ei-time">Apr 11</div>
+      </div>
+      <div class="ei-subject">Security: new login from Chrome</div>
+      <div class="ei-preview">A new sign-in was detected from Chrome on macOS in New York</div>
+    </div>
+
+    <!-- New emails (inserted dynamically) -->
+    <div class="email-item unread new-flash" id="emailAlice" style="display:none" onclick="selectEmail(this, 'alice')">
+      <div class="ei-unread-dot"></div>
+      <div class="ei-from">
+        <div class="ei-avatar" style="background:#e53e3e">A</div>
+        <div class="ei-name">Alice Johnson <span class="pitch-tag pt-high" id="tagAlice">HIGH ♪</span></div>
+        <div class="ei-time" id="timeAlice"></div>
+      </div>
+      <div class="ei-subject">Re: Project Alpha launch date</div>
+      <div class="ei-preview">Hey! Can we push the launch to next Friday? The team needs a couple more days...</div>
+    </div>
+
+    <div class="email-item unread new-flash" id="emailBob" style="display:none" onclick="selectEmail(this, 'bob')">
+      <div class="ei-unread-dot"></div>
+      <div class="ei-from">
+        <div class="ei-avatar" style="background:#2b6cb0">B</div>
+        <div class="ei-name">Bob Martinez <span class="pitch-tag pt-medium" id="tagBob">MED ♪</span></div>
+        <div class="ei-time" id="timeBob"></div>
+      </div>
+      <div class="ei-subject">Budget review: Q2 numbers</div>
+      <div class="ei-preview">Hi, attached is the budget breakdown for Q2. We came in 8% under projection...</div>
+    </div>
+
+    <div class="email-item unread new-flash" id="emailCarol" style="display:none" onclick="selectEmail(this, 'carol')">
+      <div class="ei-unread-dot"></div>
+      <div class="ei-from">
+        <div class="ei-avatar" style="background:#2d6a4f">C</div>
+        <div class="ei-name">Carol Wu <span class="pitch-tag pt-low" id="tagCarol">LOW ♪</span></div>
+        <div class="ei-time" id="timeCarol"></div>
+      </div>
+      <div class="ei-subject">New partnership opportunity</div>
+      <div class="ei-preview">I wanted to reach out regarding a potential collaboration between our teams...</div>
+    </div>
+  </div>
+
+  <div class="reading-pane" id="readingPane">
+    <div class="rp-placeholder">
+      <div class="rp-icon">📧</div>
+      <div>Select an email to read</div>
+      <div style="font-size:0.8rem;margin-top:6px">3 new emails will arrive — note the order they appear</div>
+    </div>
+  </div>
+</div>
+
+<div class="audio-pill" id="audioPill">🔔 New email received!</div>
+
+<div class="answer-panel" id="answerPanel">
+  <h4>Which pitch arrived first?</h4>
+  <div class="answer-radios">
+    <label class="answer-radio-option">
+      <input type="radio" name="pitch" value="high"> 🔴 High pitch (Alice)
+    </label>
+    <label class="answer-radio-option">
+      <input type="radio" name="pitch" value="medium"> 🟡 Medium pitch (Bob)
+    </label>
+    <label class="answer-radio-option">
+      <input type="radio" name="pitch" value="low"> 🟢 Low pitch (Carol)
+    </label>
+  </div>
+  <button class="btn-answer-submit" onclick="submitAnswer()">Submit</button>
+  <span class="answer-result" id="answerResult"></span>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let inboxCount = 0;
+  let selectedId = null;
+
+  const emailContents = {
+    alice: {
+      from: 'Alice Johnson <alice@example.com>',
+      subject: 'Re: Project Alpha launch date',
+      body: `Hi Jordan,<br><br>Hope you're doing well! I wanted to check in about the Project Alpha launch timeline. The team has been working hard, but we're running into a few last-minute blockers.<br><br>Could we push the launch to next Friday, April 19? That would give us a couple more days to finalize the QA process and ensure everything is solid.<br><br>Let me know your thoughts. Happy to jump on a quick call if needed.<br><br>Thanks,<br>Alice`
+    },
+    bob: {
+      from: 'Bob Martinez <bob@example.com>',
+      subject: 'Budget review: Q2 numbers',
+      body: `Hi Jordan,<br><br>Please find attached the Q2 budget breakdown. I'm pleased to report we came in 8% under projection, largely due to the infrastructure cost savings from the cloud migration.<br><br>Key highlights:<br>• Total spend: $142,300 (projected: $154,800)<br>• Savings: $12,500<br>• Engineering: on budget<br>• Marketing: 15% under<br><br>Let's discuss in the next team sync.<br><br>Best,<br>Bob`
+    },
+    carol: {
+      from: 'Carol Wu <carol@partnerfirm.com>',
+      subject: 'New partnership opportunity',
+      body: `Dear Jordan,<br><br>I hope this message finds you well. I'm reaching out from PartnerFirm Inc. regarding an exciting collaboration opportunity that I believe could be mutually beneficial.<br><br>We've been following your company's growth and think there's strong alignment in our core markets. I'd love to schedule a brief 30-minute intro call to explore potential synergies.<br><br>Would any time next week work for you?<br><br>Best regards,<br>Carol Wu<br>Head of Partnerships, PartnerFirm Inc.`
+    },
+    old1: { from: 'The Team', subject: 'Weekly digest — April 13', body: 'Your weekly summary of activity and highlights across your workspace.' },
+    old2: { from: 'Notifications', subject: 'Your invoice #4821 is ready', body: 'Please review and pay your invoice before the due date.' },
+    old3: { from: 'System', subject: 'Security: new login from Chrome', body: 'A new sign-in was detected from Chrome on macOS in New York.' }
+  };
+
+  function selectEmail(el, id) {
+    document.querySelectorAll('.email-item').forEach(e => e.classList.remove('selected'));
+    el.classList.add('selected');
+    el.classList.remove('unread');
+    const dot = el.querySelector('.ei-unread-dot');
+    if (dot) dot.style.display = 'none';
+    selectedId = id;
+    const content = emailContents[id];
+    if (content) {
+      document.getElementById('readingPane').innerHTML = `
+        <div class="rp-header">
+          <h2>${content.subject}</h2>
+          <div class="rp-meta">From: ${content.from}</div>
+        </div>
+        <div class="rp-body">${content.body}</div>
+      `;
+    }
+  }
+
+  function getTimestamp() {
+    const now = new Date();
+    return `${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} AM`;
+  }
+
+  function playDing(freq) {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, ctx.currentTime);
+      gain.gain.setValueAtTime(0, ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.5, ctx.currentTime + 0.01);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.35);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.35);
+    } catch (e) {}
+  }
+
+  function showAudioPill(msg) {
+    const pill = document.getElementById('audioPill');
+    pill.textContent = msg;
+    pill.classList.add('show');
+    setTimeout(() => pill.classList.remove('show'), 2000);
+  }
+
+  function updateInboxCount(n) {
+    inboxCount += n;
+    document.getElementById('inboxCount').textContent = inboxCount;
+  }
+
+  function showEmail(id, tagId) {
+    const el = document.getElementById(id);
+    el.style.display = 'block';
+    document.getElementById(tagId).classList.add('show');
+    updateInboxCount(1);
+    // Move to top
+    const list = el.parentNode;
+    const header = list.querySelector('.el-header');
+    list.insertBefore(el, header.nextSibling);
+  }
+
+  // t=2s: Alice (HIGH 1200Hz)
+  setTimeout(() => {
+    document.getElementById('timeAlice').textContent = getTimestamp();
+    showEmail('emailAlice', 'tagAlice');
+    playDing(1200);
+    showAudioPill('🔔 New email from Alice (HIGH ♪)');
+  }, 2000);
+
+  // t=6s: Bob (MEDIUM 660Hz)
+  setTimeout(() => {
+    document.getElementById('timeBob').textContent = getTimestamp();
+    showEmail('emailBob', 'tagBob');
+    playDing(660);
+    showAudioPill('🔔 New email from Bob (MEDIUM ♪)');
+  }, 6000);
+
+  // t=10s: Carol (LOW 350Hz)
+  setTimeout(() => {
+    document.getElementById('timeCarol').textContent = getTimestamp();
+    showEmail('emailCarol', 'tagCarol');
+    playDing(350);
+    showAudioPill('🔔 New email from Carol (LOW ♪)');
+    // Show answer panel
+    setTimeout(() => {
+      document.getElementById('answerPanel').classList.add('show');
+    }, 1000);
+  }, 10000);
+
+  function submitAnswer() {
+    const val = document.querySelector('input[name="pitch"]:checked')?.value;
+    const res = document.getElementById('answerResult');
+    if (!val) { res.textContent = 'Please select an option.'; res.className = 'answer-result'; return; }
+    if (val === 'high') {
+      taskResult = 'first_pitch_correct';
+      res.textContent = '✓ Correct! Alice arrived first with the HIGH pitch.';
+      res.className = 'answer-result ok';
+    } else {
+      res.textContent = '✗ Incorrect. The HIGH pitch (Alice) arrived first at t=2s.';
+      res.className = 'answer-result err';
+    }
+  }
+</script>
+</body>
+</html>

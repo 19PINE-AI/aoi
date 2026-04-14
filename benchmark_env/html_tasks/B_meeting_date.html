@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meeting Recording — Conference Call</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #1c1c2e;
+    color: #e0e0e0;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #12122a;
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #2d2d5e;
+  }
+  .logo { font-size: 18px; font-weight: 700; color: #7c83fd; }
+  .rec-badge {
+    background: #c62828;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+  }
+  .rec-dot { width: 7px; height: 7px; border-radius: 50%; background: #fff; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+
+  .container {
+    flex: 1;
+    display: flex;
+    padding: 24px;
+    gap: 24px;
+    max-width: 1100px;
+    margin: 0 auto;
+    width: 100%;
+  }
+  .call-view {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .participants-row {
+    display: flex;
+    gap: 12px;
+  }
+  .p-card {
+    background: #1e1e3f;
+    border-radius: 12px;
+    padding: 20px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid #2d2d5e;
+    position: relative;
+  }
+  .p-card.talking { border-color: #7c83fd; box-shadow: 0 0 12px rgba(124,131,253,0.3); }
+  .avatar {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .p-name { font-size: 13px; color: #b0b0d0; }
+  .p-role { font-size: 11px; color: #6b6b8a; }
+  .mic-status { position: absolute; top: 8px; right: 8px; font-size: 14px; }
+
+  .progress-bar-container {
+    background: #12122a;
+    border-radius: 10px;
+    padding: 16px;
+    border: 1px solid #2d2d5e;
+  }
+  .pb-label { display: flex; justify-content: space-between; font-size: 12px; color: #6b6b8a; margin-bottom: 8px; }
+  .pb-track { background: #2d2d5e; border-radius: 4px; height: 6px; position: relative; }
+  .pb-fill { background: #7c83fd; height: 100%; border-radius: 4px; width: 0%; transition: width 1s linear; }
+  .pb-thumb {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: #7c83fd;
+    left: 0%;
+    transition: left 1s linear;
+    box-shadow: 0 0 6px rgba(124,131,253,0.6);
+  }
+
+  .right-panel {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .transcript-card {
+    background: #1e1e3f;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #2d2d5e;
+    flex: 1;
+  }
+  .transcript-card h4 { font-size: 13px; color: #7c83fd; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px; }
+  .t-content { font-size: 13px; color: #c0c0e0; line-height: 1.7; min-height: 80px; }
+  .highlight { color: #ffb300; font-weight: 600; }
+
+  .answer-card {
+    background: #1e1e3f;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid #2d2d5e;
+  }
+  .answer-card h4 { font-size: 13px; color: #7c83fd; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 1px; }
+  .field-label { font-size: 12px; color: #9090b0; margin-bottom: 5px; }
+  input[type="date"], input[type="text"] {
+    width: 100%;
+    background: #12122a;
+    border: 1px solid #3d3d6e;
+    border-radius: 6px;
+    color: #e0e0e0;
+    padding: 9px 12px;
+    font-size: 14px;
+    margin-bottom: 12px;
+    outline: none;
+  }
+  input:focus { border-color: #7c83fd; }
+  .btn-row { display: flex; gap: 8px; }
+  .btn {
+    padding: 9px 18px;
+    border-radius: 7px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #7c83fd; color: #fff; }
+  .btn-replay { background: #2d2d5e; color: #e0e0e0; }
+  .result-msg { margin-top: 10px; font-size: 13px; padding: 8px 12px; border-radius: 6px; display: none; }
+  .result-msg.success { background: #1a3a1a; color: #81c784; display: block; }
+  .result-msg.error   { background: #3a1a1a; color: #e57373; display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">&#9670; ClearCall</div>
+  <div class="rec-badge"><span class="rec-dot"></span> Recording</div>
+</header>
+
+<div class="container">
+  <div class="call-view">
+    <div class="participants-row">
+      <div class="p-card" id="p1">
+        <span class="mic-status">🎙</span>
+        <div class="avatar" style="background:#1565c0;">AM</div>
+        <div class="p-name">Alex M.</div>
+        <div class="p-role">Project Manager</div>
+      </div>
+      <div class="p-card">
+        <span class="mic-status">🔇</span>
+        <div class="avatar" style="background:#4a148c;">RJ</div>
+        <div class="p-name">Raj J.</div>
+        <div class="p-role">Engineering Lead</div>
+      </div>
+      <div class="p-card">
+        <span class="mic-status">🔇</span>
+        <div class="avatar" style="background:#1b5e20;">CL</div>
+        <div class="p-name">Claire L.</div>
+        <div class="p-role">Designer</div>
+      </div>
+      <div class="p-card">
+        <span class="mic-status">🔇</span>
+        <div class="avatar" style="background:#e65100;">NP</div>
+        <div class="p-name">Nina P.</div>
+        <div class="p-role">QA Lead</div>
+      </div>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="pb-label">
+        <span>Playing — Q2 Planning Call Recording</span>
+        <span id="time-display">0:00 / 0:30</span>
+      </div>
+      <div class="pb-track">
+        <div class="pb-fill" id="pb-fill"></div>
+        <div class="pb-thumb" id="pb-thumb"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right-panel">
+    <div class="transcript-card">
+      <h4>Transcript</h4>
+      <div class="t-content" id="t-content">
+        <span style="color:#5a5a7a; font-style:italic;">Waiting for audio...</span>
+      </div>
+    </div>
+
+    <div class="answer-card">
+      <h4>Your Answer</h4>
+      <div class="field-label">Project deadline date:</div>
+      <input type="date" id="date-input" />
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="submitAnswer()">Submit</button>
+        <button class="btn btn-replay" onclick="replayAudio()">&#9654; Replay</button>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let elapsed = 0;
+  const duration = 30;
+
+  function updateBar() {
+    const pct = Math.min((elapsed / duration) * 100, 100);
+    document.getElementById('pb-fill').style.width = pct + '%';
+    document.getElementById('pb-thumb').style.left = pct + '%';
+    const s = String(elapsed % 60).padStart(2,'0');
+    const m = Math.floor(elapsed / 60);
+    document.getElementById('time-display').textContent = `${m}:${s} / 0:30`;
+  }
+
+  const ticker = setInterval(() => {
+    if (elapsed < duration) { elapsed++; updateBar(); }
+    else clearInterval(ticker);
+  }, 1000);
+
+  function speak(text) {
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }
+
+  function startAudio() {
+    setTimeout(() => {
+      document.getElementById('p1').classList.add('talking');
+      const msg = "Don't forget, the project deadline is March fifteenth. Everyone please mark your calendars for March 15th.";
+      speak(msg);
+      document.getElementById('t-content').innerHTML =
+        `<span class="speaker" style="color:#7c83fd; font-weight:600;">Alex M.:</span> Don't forget, the project deadline is <span class="highlight">March 15th</span>. Everyone please mark your calendars.`;
+      setTimeout(() => document.getElementById('p1').classList.remove('talking'), 5000);
+    }, 4000);
+  }
+
+  function replayAudio() {
+    document.getElementById('p1').classList.add('talking');
+    speak("Don't forget, the project deadline is March fifteenth. Everyone please mark your calendars for March 15th.");
+    setTimeout(() => document.getElementById('p1').classList.remove('talking'), 5000);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('date-input').value; // yyyy-mm-dd
+    const msg = document.getElementById('result-msg');
+    const lower = val.toLowerCase();
+    if (lower.includes('03-15') || lower.includes('03/15') || lower.endsWith('-03-15') || val === '2024-03-15' || val === '2025-03-15' || val === '2026-03-15' || lower.includes('15')) {
+      taskResult = 'correct_date';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Correct! Deadline is March 15th.';
+    } else {
+      taskResult = 'wrong_date';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Check the date again.';
+    }
+  }
+
+  startAudio();
+</script>
+</body>
+</html>

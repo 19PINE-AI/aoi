@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoundPeak Store — Premium Headphones</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', Arial, sans-serif; background: #f7f8fc; color: #222; }
+
+  /* Flash sale banner */
+  .flash-banner {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #c0392b;
+    color: #fff;
+    padding: 12px 24px;
+    z-index: 9999;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    animation: flashIn 0.3s ease;
+  }
+  .flash-banner.show { display: block; }
+  .flash-banner .code-highlight {
+    background: #fff;
+    color: #c0392b;
+    padding: 2px 10px;
+    border-radius: 4px;
+    font-size: 1.05rem;
+    letter-spacing: 1px;
+    font-family: monospace;
+  }
+  .flash-banner .countdown-num {
+    display: inline-block;
+    background: rgba(0,0,0,0.3);
+    padding: 1px 8px;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    margin-left: 8px;
+  }
+  @keyframes flashIn {
+    from { opacity: 0; transform: translateY(-100%); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .expired-banner {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #555;
+    color: #ccc;
+    padding: 10px 24px;
+    z-index: 9999;
+    text-align: center;
+    font-size: 0.9rem;
+    font-style: italic;
+  }
+  .expired-banner.show { display: block; }
+
+  /* Nav */
+  .navbar {
+    background: #1a1a2e;
+    color: #fff;
+    padding: 0 32px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .nav-logo { font-size: 1.2rem; font-weight: 700; color: #7c83fd; }
+  .nav-links { display: flex; gap: 22px; margin-left: 28px; }
+  .nav-links a { color: #bbb; text-decoration: none; font-size: 0.9rem; }
+  .nav-links a:hover { color: #fff; }
+  .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+  .nav-cart {
+    background: #7c83fd;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 0.85rem;
+    cursor: pointer;
+  }
+
+  /* Product layout */
+  .container { max-width: 1050px; margin: 32px auto; padding: 0 20px; display: flex; gap: 36px; }
+
+  /* Gallery */
+  .product-gallery { flex: 1; }
+  .main-img {
+    width: 100%;
+    aspect-ratio: 1;
+    background: linear-gradient(135deg, #dde1ff 0%, #b8bfff 100%);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9rem;
+    margin-bottom: 12px;
+  }
+  .thumb-row { display: flex; gap: 10px; }
+  .thumb {
+    width: 72px; height: 72px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #e8e8ff, #c8cdff);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 2rem;
+    border: 2px solid transparent;
+    cursor: pointer;
+  }
+  .thumb.active { border-color: #7c83fd; }
+
+  /* Info */
+  .product-info { flex: 1.1; }
+  .breadcrumb { font-size: 0.78rem; color: #999; margin-bottom: 10px; }
+  .breadcrumb a { color: #7c83fd; text-decoration: none; }
+  .product-title { font-size: 1.65rem; font-weight: 700; color: #1a1a2e; margin-bottom: 6px; }
+  .product-sub { font-size: 0.9rem; color: #666; margin-bottom: 14px; }
+  .rating { display: flex; align-items: center; gap: 8px; margin-bottom: 16px; font-size: 0.88rem; color: #666; }
+  .stars { color: #f39c12; letter-spacing: -1px; }
+  .price-row { display: flex; align-items: baseline; gap: 14px; margin-bottom: 20px; }
+  .price-now { font-size: 2.2rem; font-weight: 800; color: #1a1a2e; }
+  .price-was { font-size: 1rem; color: #aaa; text-decoration: line-through; }
+  .badge-save { background: #fde8e8; color: #c0392b; padding: 3px 10px; border-radius: 20px; font-size: 0.82rem; font-weight: 700; }
+
+  .divider { height: 1px; background: #eee; margin: 18px 0; }
+
+  /* Options */
+  .opt-label { font-size: 0.85rem; font-weight: 600; color: #444; margin-bottom: 8px; }
+  .color-opts { display: flex; gap: 10px; margin-bottom: 18px; }
+  .color-swatch {
+    width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+    border: 3px solid transparent;
+    transition: border-color 0.15s;
+  }
+  .color-swatch.active { border-color: #7c83fd; }
+
+  /* Promo section */
+  .promo-section {
+    background: #fff;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 20px;
+  }
+  .promo-label { font-size: 0.82rem; font-weight: 600; color: #555; margin-bottom: 10px; }
+  .promo-row { display: flex; gap: 10px; align-items: center; }
+  .promo-input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    font-family: monospace;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    outline: none;
+  }
+  .promo-input:focus { border-color: #7c83fd; }
+  .btn-apply {
+    background: #7c83fd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 22px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .btn-apply:hover { background: #6970e8; }
+  .promo-feedback {
+    margin-top: 8px;
+    font-size: 0.84rem;
+    font-weight: 500;
+    display: none;
+  }
+  .promo-feedback.ok { color: #27ae60; display: block; }
+  .promo-feedback.err { color: #e74c3c; display: block; }
+
+  .btn-addcart {
+    width: 100%;
+    background: #1a1a2e;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    margin-bottom: 10px;
+    transition: background 0.2s;
+  }
+  .btn-addcart:hover { background: #2d2d50; }
+  .btn-buynow {
+    width: 100%;
+    background: #7c83fd;
+    color: #fff;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+  .btn-buynow:hover { background: #6970e8; }
+
+  .features { margin-top: 20px; }
+  .feature-item { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 10px; font-size: 0.88rem; color: #555; }
+  .feature-icon { color: #7c83fd; font-size: 1rem; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- Flash sale banner -->
+<div class="flash-banner" id="flashBanner">
+  ⚡ FLASH SALE — 25% OFF! Use code: <span class="code-highlight">FLASH25</span>
+  — Expires in <span class="countdown-num" id="countdownNum">3</span>s!
+</div>
+<div class="expired-banner" id="expiredBanner">
+  ⏰ Offer expired — flash sale has ended.
+</div>
+
+<nav class="navbar" id="mainNav">
+  <div class="nav-logo">🔊 SoundPeak</div>
+  <div class="nav-links">
+    <a href="#">Headphones</a>
+    <a href="#">Earbuds</a>
+    <a href="#">Speakers</a>
+    <a href="#">Accessories</a>
+    <a href="#">Sale</a>
+  </div>
+  <div class="nav-right">
+    <span style="color:#bbb;font-size:0.88rem">🔍 Search</span>
+    <button class="nav-cart">🛒 Cart (0)</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="product-gallery">
+    <div class="main-img">🎧</div>
+    <div class="thumb-row">
+      <div class="thumb active">🎧</div>
+      <div class="thumb">🎵</div>
+      <div class="thumb">📦</div>
+      <div class="thumb">🔌</div>
+    </div>
+  </div>
+
+  <div class="product-info">
+    <div class="breadcrumb">
+      <a href="#">Home</a> › <a href="#">Headphones</a> › <a href="#">Premium</a> › SoundPeak Pro X1
+    </div>
+    <div class="product-title">SoundPeak Pro X1 Wireless Headphones</div>
+    <div class="product-sub">Active Noise Cancellation · 40hr Battery · Hi-Res Audio Certified</div>
+    <div class="rating">
+      <span class="stars">★★★★½</span>
+      <span>4.7 out of 5</span>
+      <span style="color:#aaa">· 2,841 reviews</span>
+    </div>
+
+    <div class="price-row">
+      <span class="price-now" id="priceNow">$299.00</span>
+      <span class="price-was" id="priceWas"></span>
+      <span class="badge-save" id="badgeSave" style="display:none">Save 25%</span>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="opt-label">Color</div>
+    <div class="color-opts">
+      <div class="color-swatch active" style="background:#1a1a2e" title="Midnight Black"></div>
+      <div class="color-swatch" style="background:#bdc3c7" title="Silver"></div>
+      <div class="color-swatch" style="background:#7c83fd" title="Aurora Blue"></div>
+      <div class="color-swatch" style="background:#e8d5b7" title="Sand"></div>
+    </div>
+
+    <div class="promo-section">
+      <div class="promo-label">🏷️ Promo Code</div>
+      <div class="promo-row">
+        <input type="text" class="promo-input" id="promoInput" placeholder="Enter code">
+        <button class="btn-apply" onclick="applyCode()">Apply</button>
+      </div>
+      <div class="promo-feedback" id="promoFeedback"></div>
+    </div>
+
+    <button class="btn-addcart">🛒 Add to Cart</button>
+    <button class="btn-buynow">⚡ Buy Now</button>
+
+    <div class="features">
+      <div class="feature-item"><span class="feature-icon">✓</span> Industry-leading 40dB noise cancellation</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> Up to 40 hours playtime (60hrs with case)</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> Multi-device pairing (3 devices)</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> Hi-Res Audio & LDAC codec support</div>
+      <div class="feature-item"><span class="feature-icon">✓</span> Free shipping · 30-day returns</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let bannerTimer = null;
+  let countdownTimer = null;
+  let secondsLeft = 3;
+
+  function showFlashBanner() {
+    const nav = document.getElementById('mainNav');
+    const banner = document.getElementById('flashBanner');
+    banner.classList.add('show');
+    nav.style.position = 'sticky';
+
+    countdownTimer = setInterval(() => {
+      secondsLeft--;
+      document.getElementById('countdownNum').textContent = secondsLeft;
+      if (secondsLeft <= 0) {
+        clearInterval(countdownTimer);
+      }
+    }, 1000);
+
+    bannerTimer = setTimeout(() => {
+      banner.classList.remove('show');
+      document.getElementById('expiredBanner').classList.add('show');
+    }, 3000);
+  }
+
+  function applyCode() {
+    const code = document.getElementById('promoInput').value.trim();
+    const fb = document.getElementById('promoFeedback');
+
+    if (code.toLowerCase() === 'flash25') {
+      taskResult = 'code_applied';
+      fb.textContent = '✓ Code applied! You saved $74.75 — New total: $224.25';
+      fb.className = 'promo-feedback ok';
+      document.getElementById('priceNow').textContent = '$224.25';
+      document.getElementById('priceWas').textContent = '$299.00';
+      document.getElementById('badgeSave').style.display = 'inline-block';
+    } else {
+      fb.textContent = '✗ Invalid or expired promo code.';
+      fb.className = 'promo-feedback err';
+    }
+  }
+
+  // t=3s: Show flash banner
+  setTimeout(showFlashBanner, 3000);
+
+  // Keypress enter on promo input
+  document.getElementById('promoInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') applyCode();
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Animated Chart + Narration</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px; }
+  .pres-card { background: #1e293b; border-radius: 14px; width: 760px; overflow: hidden; margin-bottom: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .pres-header { background: #0f172a; border-bottom: 1px solid #334155; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .pres-header h2 { color: #f1f5f9; font-size: 0.95rem; }
+  .pres-meta { color: #64748b; font-size: 0.75rem; }
+  /* Chart area */
+  .chart-section { padding: 24px; }
+  .chart-title { color: #f1f5f9; font-size: 1rem; font-weight: 700; margin-bottom: 4px; }
+  .chart-subtitle { color: #64748b; font-size: 0.78rem; margin-bottom: 16px; }
+  canvas { display: block; width: 100%; }
+  .chart-annotations { display: flex; gap: 16px; margin-top: 12px; flex-wrap: wrap; }
+  .ann-item { background: #0f172a; border: 1px solid #334155; border-radius: 8px; padding: 8px 14px; font-size: 0.78rem; }
+  .ann-label { color: #64748b; }
+  .ann-val { color: #f1f5f9; font-weight: 700; }
+  .peak-ann { border-color: #f59e0b; }
+  .peak-ann .ann-val { color: #fbbf24; }
+  /* Audio player */
+  .audio-section { border-top: 1px solid #334155; padding: 16px 24px; }
+  .audio-section h3 { color: #64748b; font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 10px; }
+  .player-row { display: flex; align-items: center; gap: 14px; }
+  .play-btn { width: 40px; height: 40px; border-radius: 50%; background: #2563eb; border: none; color: #fff; font-size: 1rem; cursor: pointer; flex-shrink: 0; transition: background 0.2s; }
+  .play-btn:hover { background: #1d4ed8; }
+  .player-info { flex: 1; }
+  .player-track { font-size: 0.8rem; color: #c8d3f5; font-weight: 600; margin-bottom: 6px; }
+  .player-bar { height: 4px; background: #334155; border-radius: 2px; overflow: hidden; }
+  .player-fill { height: 100%; background: linear-gradient(90deg, #2563eb, #7c3aed); width: 0%; transition: width 0.4s linear; }
+  .wave-row { display: flex; align-items: center; gap: 2px; height: 16px; margin-top: 6px; }
+  .wv { width: 3px; background: #2563eb; border-radius: 1px; }
+  .player-time { color: #64748b; font-size: 0.72rem; }
+  .caption-box { background: #0f172a; border-radius: 8px; padding: 12px 16px; font-size: 0.82rem; color: #94a3b8; font-style: italic; margin-top: 12px; min-height: 60px; line-height: 1.5; }
+  /* Answer */
+  .answer-box { width: 760px; background: #1e293b; border-radius: 14px; padding: 20px; }
+  .answer-box label { color: #94a3b8; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box textarea { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #f1f5f9; font-size: 0.88rem; min-height: 90px; outline: none; resize: vertical; font-family: inherit; }
+  .answer-box textarea:focus { border-color: #2563eb; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #334155; color: #94a3b8; border: none; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="pres-card">
+  <div class="pres-header">
+    <h2>📊 Q4 Sales Performance Review</h2>
+    <div class="pres-meta">Annual Business Review · FY2025</div>
+  </div>
+
+  <div class="chart-section">
+    <div class="chart-title">Monthly Sales Revenue — FY2025</div>
+    <div class="chart-subtitle">USD thousands · animating live</div>
+    <canvas id="salesChart" height="200"></canvas>
+    <div class="chart-annotations" id="annotations"></div>
+  </div>
+
+  <div class="audio-section">
+    <h3>Speaker Narration</h3>
+    <div class="player-row">
+      <button class="play-btn" id="playBtn" onclick="playNarration()">▶</button>
+      <div class="player-info">
+        <div class="player-track">Sales Review — Annual Commentary</div>
+        <div class="player-bar"><div class="player-fill" id="playerFill"></div></div>
+        <div class="wave-row" id="waveRow"></div>
+      </div>
+      <span class="player-time" id="playerTime">0:00</span>
+    </div>
+    <div class="caption-box" id="captionBox">Click play to hear the speaker's analysis...</div>
+  </div>
+</div>
+
+<div class="answer-box">
+  <label for="answerTA">Report the chart peak (value + month) AND the conclusion mentioned by the speaker:</label>
+  <textarea id="answerTA" placeholder="Peak: November $2.8M&#10;Conclusion: ..."></textarea>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartDemo()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const values = [1.2, 1.4, 1.1, 1.6, 1.8, 2.0, 1.9, 2.2, 2.4, 2.1, 2.8, 2.5]; // Nov = peak = 2.8M
+let currentIdx = -1;
+let chartAnimId = null;
+let playerAnimId = null;
+let waveAnimId = null;
+let narrating = false;
+
+function buildWave() {
+  const wr = document.getElementById('waveRow');
+  wr.innerHTML = '';
+  for (let i = 0; i < 30; i++) {
+    const b = document.createElement('div');
+    b.className = 'wv';
+    b.style.height = '3px';
+    wr.appendChild(b);
+  }
+}
+
+function animWave(on) {
+  clearInterval(waveAnimId);
+  if (on) {
+    waveAnimId = setInterval(() => {
+      document.querySelectorAll('.wv').forEach(b => {
+        b.style.height = (1 + Math.random() * 12) + 'px';
+      });
+    }, 120);
+  } else {
+    document.querySelectorAll('.wv').forEach(b => b.style.height = '3px');
+  }
+}
+
+function drawChart() {
+  const canvas = document.getElementById('salesChart');
+  canvas.width = canvas.offsetWidth || 710;
+  const ctx = canvas.getContext('2d');
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0, 0, w, h);
+
+  const maxVal = 3.2, minVal = 0;
+  const step = w / 11;
+  const barW = step * 0.55;
+
+  // Grid
+  ctx.strokeStyle = '#1e293b';
+  ctx.lineWidth = 1;
+  for (let i = 0; i <= 4; i++) {
+    const y = h - (i / 4) * h;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(w, y);
+    ctx.stroke();
+    ctx.fillStyle = '#475569';
+    ctx.font = '9px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText('$' + (i * 0.8).toFixed(1) + 'M', 36, y + 4);
+  }
+
+  months.forEach((m, i) => {
+    if (i > currentIdx) return;
+    const val = values[i];
+    const x = i * step + step / 2 - barW / 2;
+    const barH = (val / maxVal) * h;
+    const y = h - barH;
+    const isPeak = i === 10; // November
+
+    // Bar gradient
+    const grad = ctx.createLinearGradient(x, y, x, h);
+    grad.addColorStop(0, isPeak ? '#fbbf24' : '#2563eb');
+    grad.addColorStop(1, isPeak ? '#f59e0b55' : '#2563eb55');
+    ctx.beginPath();
+    ctx.roundRect(x + 40, y, barW, barH, [4, 4, 0, 0]);
+    ctx.fillStyle = grad;
+    ctx.fill();
+
+    // Value label
+    ctx.fillStyle = isPeak ? '#fbbf24' : '#60a5fa';
+    ctx.font = 'bold 10px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText('$' + val.toFixed(1) + 'M', x + 40 + barW / 2, y - 5);
+
+    // Month label
+    ctx.fillStyle = isPeak ? '#fbbf24' : '#64748b';
+    ctx.font = isPeak ? 'bold 10px sans-serif' : '9px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(m, x + 40 + barW / 2, h + 12);
+
+    // Peak marker
+    if (isPeak) {
+      ctx.fillStyle = '#fbbf24';
+      ctx.font = 'bold 11px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('★ PEAK', x + 40 + barW / 2, y - 18);
+
+      // Update annotations
+      const anns = document.getElementById('annotations');
+      if (!document.getElementById('peakAnn')) {
+        anns.innerHTML = `
+          <div class="ann-item peak-ann" id="peakAnn"><div class="ann-label">Peak Month</div><div class="ann-val">November 2025</div></div>
+          <div class="ann-item"><div class="ann-label">Peak Value</div><div class="ann-val">$2.8M</div></div>
+          <div class="ann-item"><div class="ann-label">YoY Growth</div><div class="ann-val">+34%</div></div>
+        `;
+      }
+    }
+  });
+}
+
+function animateChart() {
+  chartAnimId = setInterval(() => {
+    currentIdx++;
+    drawChart();
+    if (currentIdx >= months.length - 1) clearInterval(chartAnimId);
+  }, 400);
+}
+
+function playNarration() {
+  if (narrating) return;
+  narrating = true;
+  document.getElementById('playBtn').textContent = '⏸';
+  document.getElementById('playBtn').disabled = true;
+  animWave(true);
+  animateChart();
+
+  const TOTAL = 14000;
+  const start = Date.now();
+  playerAnimId = setInterval(() => {
+    const el = Date.now() - start;
+    const pct = Math.min(100, el / TOTAL * 100);
+    document.getElementById('playerFill').style.width = pct + '%';
+    const s = Math.min(14, Math.floor(el / 1000));
+    document.getElementById('playerTime').textContent = `0:${s.toString().padStart(2,'0')}`;
+  }, 300);
+
+  const text = "Looking at this data, it's clear the November surge was driven by holiday shopping demand. Our conclusion: seasonal marketing is our biggest growth lever, and we should double investment for Q4 next year.";
+  document.getElementById('captionBox').textContent = '"' + text + '"';
+
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = 0.9;
+  utt.onend = () => {
+    animWave(false);
+    clearInterval(playerAnimId);
+    document.getElementById('playerFill').style.width = '100%';
+    document.getElementById('playerTime').textContent = '0:14';
+    document.getElementById('playBtn').textContent = '▶';
+    document.getElementById('playBtn').disabled = false;
+    narrating = false;
+  };
+  window.speechSynthesis.speak(utt);
+}
+
+function restartDemo() {
+  window.speechSynthesis.cancel();
+  animWave(false);
+  clearInterval(chartAnimId);
+  clearInterval(playerAnimId);
+  narrating = false;
+  currentIdx = -1;
+  taskResult = 'pending';
+  document.getElementById('answerTA').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('playerFill').style.width = '0%';
+  document.getElementById('playerTime').textContent = '0:00';
+  document.getElementById('captionBox').textContent = 'Click play to hear the speaker\'s analysis...';
+  document.getElementById('playBtn').textContent = '▶';
+  document.getElementById('playBtn').disabled = false;
+  document.getElementById('annotations').innerHTML = '';
+  drawChart();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerTA').value;
+  const msg = document.getElementById('resultMsg');
+  if (val.length > 30) {
+    taskResult = 'chart_and_narration_noted';
+    msg.style.color = '#4ade80';
+    msg.textContent = 'Correct! Peak: November $2.8M. Conclusion: Seasonal marketing is the biggest growth lever.';
+  } else {
+    taskResult = 'incomplete';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Please describe both the chart peak and the conclusion from the narration.';
+  }
+  msg.style.display = 'block';
+}
+
+buildWave();
+drawChart();
+</script>
+</body>
+</html>

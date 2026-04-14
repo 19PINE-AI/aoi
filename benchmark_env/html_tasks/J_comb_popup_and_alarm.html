@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Popup + Alarm Handler</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f0f4f8; min-height: 100vh; display: flex; flex-direction: column; }
+  /* Dashboard */
+  .dashboard { flex: 1; display: flex; flex-direction: column; }
+  .dash-header { background: #1e293b; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; }
+  .dash-header h1 { color: #f1f5f9; font-size: 1rem; font-weight: 700; }
+  .dash-meta { color: #64748b; font-size: 0.78rem; display: flex; align-items: center; gap: 12px; }
+  .dash-body { flex: 1; padding: 24px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .metric-tile { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .metric-tile h3 { font-size: 0.75rem; color: #94a3b8; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .metric-tile .value { font-size: 2rem; font-weight: 800; color: #1e293b; margin-top: 8px; }
+  .metric-tile .change { font-size: 0.75rem; margin-top: 4px; }
+  .status-section { background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); grid-column: span 3; }
+  .status-section h3 { font-size: 0.85rem; color: #475569; font-weight: 600; margin-bottom: 12px; }
+  .status-row { display: flex; align-items: center; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f1f5f9; }
+  .status-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .status-row span { font-size: 0.82rem; color: #475569; }
+
+  /* Newsletter popup (top-right) */
+  .newsletter-popup { position: fixed; top: 80px; right: 20px; background: #fff; border-radius: 16px; width: 320px; box-shadow: 0 8px 40px rgba(0,0,0,0.2); padding: 24px; z-index: 1000; display: none; animation: slideInRight 0.4s ease; border-top: 4px solid #6d28d9; }
+  @keyframes slideInRight { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
+  .newsletter-popup.show { display: block; }
+  .popup-dismiss { position: absolute; top: 12px; right: 12px; width: 24px; height: 24px; border-radius: 50%; background: #f1f5f9; border: none; cursor: pointer; color: #64748b; font-size: 0.9rem; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
+  .popup-dismiss:hover { background: #e2e8f0; }
+  .popup-icon { font-size: 2.5rem; text-align: center; margin-bottom: 12px; }
+  .popup-title { font-size: 1rem; font-weight: 700; color: #1e293b; text-align: center; margin-bottom: 6px; }
+  .popup-body { font-size: 0.82rem; color: #64748b; text-align: center; line-height: 1.5; margin-bottom: 16px; }
+  .popup-subscribe { width: 100%; background: #6d28d9; color: #fff; border: none; border-radius: 8px; padding: 10px; font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+  .popup-dismiss-text { display: block; text-align: center; margin-top: 10px; color: #94a3b8; font-size: 0.75rem; cursor: pointer; }
+
+  /* Alarm button (bottom-center) */
+  .alarm-panel { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); display: none; flex-direction: column; align-items: center; gap: 8px; z-index: 1000; }
+  .alarm-panel.show { display: flex; animation: bounce 0.5s ease; }
+  @keyframes bounce { 0%{transform:translateX(-50%) scale(0.5)} 70%{transform:translateX(-50%) scale(1.05)} 100%{transform:translateX(-50%) scale(1)} }
+  .alarm-ring { background: #dc2626; color: #fff; border: none; border-radius: 14px; padding: 16px 36px; font-size: 1rem; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(220,38,38,0.5); animation: alarmPulse 0.8s infinite; display: flex; align-items: center; gap: 10px; }
+  @keyframes alarmPulse { 0%,100%{box-shadow:0 4px 20px rgba(220,38,38,0.5)} 50%{box-shadow:0 4px 40px rgba(220,38,38,0.8)} }
+  .alarm-label { color: #fff; font-size: 0.78rem; font-weight: 600; background: rgba(220,38,38,0.2); padding: 4px 12px; border-radius: 20px; }
+
+  /* Success banner */
+  .success-banner { position: fixed; top: 16px; left: 50%; transform: translateX(-50%); background: #16a34a; color: #fff; border-radius: 12px; padding: 14px 28px; font-size: 0.95rem; font-weight: 700; z-index: 2000; display: none; animation: slideDown 0.4s ease; box-shadow: 0 4px 20px rgba(22,163,74,0.4); }
+  @keyframes slideDown { from{opacity:0;transform:translateX(-50%) translateY(-10px)} to{opacity:1;transform:translateX(-50%) translateY(0)} }
+  .success-banner.show { display: block; }
+
+  /* Controls */
+  .restart-fab { position: fixed; top: 16px; left: 16px; background: #475569; color: #fff; border: none; border-radius: 10px; padding: 8px 16px; font-size: 0.82rem; cursor: pointer; z-index: 2000; }
+</style>
+</head>
+<body>
+<button class="restart-fab" onclick="restartDemo()">↺ Restart</button>
+
+<div class="dashboard">
+  <div class="dash-header">
+    <h1>📊 Operations Dashboard</h1>
+    <div class="dash-meta">
+      <span id="elapsedTime">t=0s</span>
+      <span>Handle the popup AND alarm when they appear at t=5s</span>
+    </div>
+  </div>
+  <div class="dash-body">
+    <div class="metric-tile">
+      <h3>Active Users</h3>
+      <div class="value">2,847</div>
+      <div class="change" style="color:#16a34a">↑ +12% today</div>
+    </div>
+    <div class="metric-tile">
+      <h3>Revenue</h3>
+      <div class="value">$18.4K</div>
+      <div class="change" style="color:#16a34a">↑ +8% today</div>
+    </div>
+    <div class="metric-tile">
+      <h3>Uptime</h3>
+      <div class="value">99.9%</div>
+      <div class="change" style="color:#64748b">Last 30 days</div>
+    </div>
+    <div class="status-section">
+      <h3>System Status</h3>
+      <div class="status-row"><div class="status-dot" style="background:#22c55e"></div><span>API Gateway — Healthy</span></div>
+      <div class="status-row"><div class="status-dot" style="background:#22c55e"></div><span>Database Cluster — Healthy</span></div>
+      <div class="status-row"><div class="status-dot" style="background:#f59e0b"></div><span>CDN — Degraded performance (East)</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- Newsletter Popup -->
+<div class="newsletter-popup" id="popup">
+  <button class="popup-dismiss" id="dismissBtn" onclick="handleDismiss()">✕</button>
+  <div class="popup-icon">📧</div>
+  <div class="popup-title">Stay in the Loop!</div>
+  <div class="popup-body">Get weekly insights on system performance, best practices, and product updates delivered to your inbox.</div>
+  <button class="popup-subscribe">Subscribe to Newsletter</button>
+  <span class="popup-dismiss-text" onclick="handleDismiss()">No thanks, dismiss</span>
+</div>
+
+<!-- Alarm Panel -->
+<div class="alarm-panel" id="alarmPanel">
+  <span class="alarm-label">⚠ ALERT DETECTED</span>
+  <button class="alarm-ring" onclick="handleAlarm()">🔔 Stop Alarm</button>
+</div>
+
+<!-- Success Banner -->
+<div class="success-banner" id="successBanner">✓ Both handled! Task complete.</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let flag1 = false;
+let flag2 = false;
+let timers = [];
+let clockId = null;
+let audioCtx = null;
+let alarmNodes = [];
+let elapsed = 0;
+
+function checkComplete() {
+  if (flag1 && flag2) {
+    taskResult = 'both_handled';
+    document.getElementById('successBanner').classList.add('show');
+    stopAlarmSound();
+  }
+}
+
+function handleDismiss() {
+  flag1 = true;
+  document.getElementById('popup').classList.remove('show');
+  checkComplete();
+}
+
+function handleAlarm() {
+  flag2 = true;
+  document.getElementById('alarmPanel').classList.remove('show');
+  stopAlarmSound();
+  checkComplete();
+}
+
+function playAlarmSound() {
+  try {
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function beep() {
+      if (!audioCtx) return;
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.value = 440;
+      gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.4);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.4);
+      alarmNodes.push(osc);
+    }
+    beep();
+    const id = setInterval(() => {
+      if (flag2) { clearInterval(id); return; }
+      beep();
+    }, 600);
+    timers.push(id);
+  } catch(e) {}
+}
+
+function stopAlarmSound() {
+  if (audioCtx) {
+    try { audioCtx.close(); } catch(e) {}
+    audioCtx = null;
+  }
+}
+
+function startDemo() {
+  timers.push(setTimeout(() => {
+    document.getElementById('popup').classList.add('show');
+    document.getElementById('alarmPanel').classList.add('show');
+    playAlarmSound();
+  }, 5000));
+}
+
+function restartDemo() {
+  timers.forEach(id => { clearTimeout(id); clearInterval(id); });
+  timers = [];
+  clearInterval(clockId);
+  flag1 = false; flag2 = false;
+  elapsed = 0;
+  taskResult = 'pending';
+  stopAlarmSound();
+  document.getElementById('popup').classList.remove('show');
+  document.getElementById('alarmPanel').classList.remove('show');
+  document.getElementById('successBanner').classList.remove('show');
+  document.getElementById('elapsedTime').textContent = 't=0s';
+  startDemo();
+  clockId = setInterval(() => {
+    elapsed++;
+    document.getElementById('elapsedTime').textContent = 't=' + elapsed + 's';
+  }, 1000);
+}
+
+// Init
+startDemo();
+clockId = setInterval(() => {
+  elapsed++;
+  document.getElementById('elapsedTime').textContent = 't=' + elapsed + 's';
+}, 1000);
+</script>
+</body>
+</html>

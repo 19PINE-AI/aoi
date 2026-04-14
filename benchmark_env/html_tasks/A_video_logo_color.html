@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Getting Started with Nexus Systems — Documentation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, Arial, sans-serif; background: #ffffff; color: #202124; }
+
+  /* TOP BAR */
+  #topbar {
+    height: 64px; background: #fff; border-bottom: 1px solid #dadce0;
+    display: flex; align-items: center; padding: 0 24px; gap: 20px; position: sticky; top: 0; z-index: 50;
+  }
+  .ns-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .ns-logo-hex {
+    width: 36px; height: 36px; background: #1a73e8;
+    clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff; font-weight: 900; font-size: 14px;
+  }
+  .ns-logo-text { font-size: 18px; font-weight: 600; color: #202124; }
+  .ns-logo-text span { color: #1a73e8; }
+  #topbar nav { display: flex; gap: 0; margin-left: 32px; }
+  #topbar nav a {
+    color: #3c4043; text-decoration: none; font-size: 14px;
+    padding: 0 16px; height: 64px; display: flex; align-items: center;
+    border-bottom: 3px solid transparent;
+  }
+  #topbar nav a:hover { color: #1a73e8; }
+  #topbar nav a.active { color: #1a73e8; border-bottom-color: #1a73e8; }
+  #topbar .top-actions { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+  #topbar .btn-primary {
+    background: #1a73e8; color: #fff; padding: 8px 20px; border-radius: 6px;
+    font-size: 14px; font-weight: 500; text-decoration: none; border: none; cursor: pointer;
+  }
+
+  /* LAYOUT */
+  #wrapper { display: flex; min-height: calc(100vh - 64px); }
+
+  /* LEFT NAV */
+  #leftnav {
+    width: 260px; flex-shrink: 0; border-right: 1px solid #dadce0;
+    padding: 24px 0; position: sticky; top: 64px; height: calc(100vh - 64px); overflow-y: auto;
+  }
+  .nav-section { margin-bottom: 8px; }
+  .nav-section-title {
+    font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;
+    color: #80868b; padding: 8px 24px; margin-top: 16px;
+  }
+  .nav-item {
+    display: block; padding: 8px 24px 8px 32px; font-size: 14px;
+    color: #3c4043; text-decoration: none; cursor: pointer; border-radius: 0 24px 24px 0; margin-right: 8px;
+  }
+  .nav-item:hover { background: #f1f3f4; color: #1a73e8; }
+  .nav-item.active { background: #e8f0fe; color: #1a73e8; font-weight: 600; }
+
+  /* MAIN CONTENT */
+  #content { flex: 1; max-width: 860px; padding: 40px 48px; }
+
+  /* BREADCRUMB */
+  .breadcrumb { font-size: 13px; color: #80868b; margin-bottom: 24px; }
+  .breadcrumb a { color: #1a73e8; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  h1.page-title { font-size: 30px; font-weight: 700; color: #202124; margin-bottom: 8px; }
+  .page-subtitle { font-size: 16px; color: #5f6368; margin-bottom: 32px; }
+
+  /* INFO CALLOUT */
+  .callout {
+    background: #e8f0fe; border-left: 4px solid #1a73e8; border-radius: 0 8px 8px 0;
+    padding: 16px 20px; margin-bottom: 28px; font-size: 14px; line-height: 1.6; color: #1a1a2e;
+  }
+  .callout strong { color: #1a73e8; }
+
+  h2.section-heading { font-size: 20px; font-weight: 600; color: #202124; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid #e8eaed; }
+
+  p.body-text { font-size: 15px; line-height: 1.7; color: #3c4043; margin-bottom: 20px; }
+
+  /* VIDEO EMBED */
+  #video-wrap {
+    background: #000; border-radius: 12px; overflow: hidden; margin-bottom: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+  }
+  #logoCanvas { width: 100%; display: block; }
+  #video-footer {
+    background: #f8f9fa; border: 1px solid #dadce0; border-radius: 0 0 12px 12px;
+    padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  #replay-btn {
+    background: #1a73e8; color: #fff; border: none; padding: 7px 18px;
+    border-radius: 6px; font-size: 13px; cursor: pointer; font-weight: 500;
+  }
+  #replay-btn:hover { background: #1557b0; }
+  #video-progress-wrap { flex: 1; height: 6px; background: #dadce0; border-radius: 3px; cursor: pointer; }
+  #video-progress-fill { height: 6px; background: #1a73e8; border-radius: 3px; width: 0%; transition: width 0.1s; }
+  .video-label { font-size: 12px; color: #80868b; }
+
+  .video-caption { font-size: 13px; color: #80868b; text-align: center; margin-bottom: 28px; font-style: italic; }
+
+  /* ANSWER SECTION */
+  #answer-section {
+    background: #fff; border: 2px solid #1a73e8; border-radius: 12px;
+    padding: 24px; margin-top: 8px; margin-bottom: 32px;
+  }
+  #answer-section h3 { font-size: 16px; font-weight: 600; color: #1a73e8; margin-bottom: 6px; }
+  #answer-section .task-desc { font-size: 14px; color: #5f6368; margin-bottom: 16px; line-height: 1.5; }
+  #answer-section label { font-size: 13px; font-weight: 600; color: #3c4043; display: block; margin-bottom: 8px; }
+  #answer-section input {
+    width: 100%; padding: 11px 16px; border: 1px solid #dadce0; border-radius: 8px;
+    font-size: 15px; outline: none; color: #202124; margin-bottom: 12px;
+  }
+  #answer-section input:focus { border-color: #1a73e8; box-shadow: 0 0 0 3px rgba(26,115,232,0.15); }
+  #submit-btn {
+    background: #1a73e8; color: #fff; border: none; padding: 11px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer;
+  }
+  #submit-btn:hover { background: #1557b0; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 600; min-height: 20px; }
+  .result-ok { color: #137333; }
+  .result-err { color: #c5221f; }
+
+  /* CODE BLOCK */
+  pre {
+    background: #f8f9fa; border: 1px solid #e8eaed; border-radius: 8px;
+    padding: 20px; font-size: 13px; line-height: 1.6; overflow-x: auto; margin-bottom: 24px;
+    font-family: 'Courier New', monospace;
+  }
+
+  /* RIGHT NAV (TOC) */
+  #rightnav {
+    width: 220px; flex-shrink: 0; padding: 40px 16px; position: sticky; top: 64px;
+    height: calc(100vh - 64px); overflow-y: auto;
+  }
+  #rightnav h5 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #80868b; margin-bottom: 12px; }
+  .toc-item { font-size: 13px; color: #5f6368; display: block; padding: 4px 0; text-decoration: none; }
+  .toc-item:hover { color: #1a73e8; }
+  .toc-item.active { color: #1a73e8; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <a class="ns-logo" href="#">
+    <div class="ns-logo-hex">NS</div>
+    <div class="ns-logo-text">Nexus <span>Systems</span></div>
+  </a>
+  <nav>
+    <a href="#" class="active">Docs</a>
+    <a href="#">API</a>
+    <a href="#">Community</a>
+    <a href="#">Blog</a>
+    <a href="#">Pricing</a>
+  </nav>
+  <div class="top-actions">
+    <a href="#" style="font-size:14px;color:#3c4043;text-decoration:none;">Sign in</a>
+    <button class="btn-primary">Get Started</button>
+  </div>
+</div>
+
+<!-- WRAPPER -->
+<div id="wrapper">
+  <!-- LEFT NAV -->
+  <nav id="leftnav">
+    <div class="nav-section">
+      <div class="nav-section-title">Overview</div>
+      <a class="nav-item" href="#">Introduction</a>
+      <a class="nav-item" href="#">Quick Start</a>
+      <a class="nav-item active" href="#">Brand Identity</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Core Concepts</div>
+      <a class="nav-item" href="#">Architecture</a>
+      <a class="nav-item" href="#">Authentication</a>
+      <a class="nav-item" href="#">Data Models</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Tutorials</div>
+      <a class="nav-item" href="#">Your First Project</a>
+      <a class="nav-item" href="#">Integrations</a>
+      <a class="nav-item" href="#">Advanced Config</a>
+    </div>
+    <div class="nav-section">
+      <div class="nav-section-title">Reference</div>
+      <a class="nav-item" href="#">API Reference</a>
+      <a class="nav-item" href="#">CLI Reference</a>
+      <a class="nav-item" href="#">Changelog</a>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="content">
+    <div class="breadcrumb">
+      <a href="#">Docs</a> › <a href="#">Overview</a> › Brand Identity
+    </div>
+    <h1 class="page-title">Brand Identity &amp; Visual Guidelines</h1>
+    <p class="page-subtitle">Learn how Nexus Systems presents itself visually — including our logo, colors, and usage guidelines.</p>
+
+    <div class="callout">
+      <strong>Video Tutorial:</strong> The video below walks through our brand identity reveal from our 2024 rebrand campaign. Watch it in full before completing the comprehension task at the bottom.
+    </div>
+
+    <h2 class="section-heading">Logo Introduction Video</h2>
+    <p class="body-text">
+      Our brand identity was refreshed in early 2024 to better represent the precision and reliability at the core of Nexus Systems. The following tutorial video walks through the key elements of our visual identity, including our primary logo mark and brand color palette.
+    </p>
+
+    <!-- VIDEO -->
+    <div id="video-wrap">
+      <canvas id="logoCanvas" width="800" height="450"></canvas>
+    </div>
+    <div id="video-footer">
+      <button id="replay-btn" onclick="startAnimation()">&#9654; Replay</button>
+      <div id="video-progress-wrap"><div id="video-progress-fill"></div></div>
+      <span class="video-label">Brand Identity Tutorial — 12s</span>
+    </div>
+    <p class="video-caption">Tutorial: Nexus Systems Brand Identity Reveal (2024)</p>
+
+    <!-- ANSWER -->
+    <div id="answer-section">
+      <h3>&#127916; Comprehension Task</h3>
+      <p class="task-desc">Watch the video above. What color is the main logo shown? Type the color name below.</p>
+      <label for="answer-input">Logo color:</label>
+      <input type="text" id="answer-input" placeholder="e.g. red, green, blue…" autocomplete="off">
+      <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+      <div id="result-msg"></div>
+    </div>
+
+    <h2 class="section-heading">Color System</h2>
+    <p class="body-text">
+      Nexus Systems uses a carefully curated color palette that communicates trust, technical precision, and forward motion. Our primary brand color anchors all of our visual communications.
+    </p>
+    <pre>
+/* Nexus Systems Brand Colors */
+--ns-primary:     #1a73e8;   /* Primary brand color */
+--ns-primary-dark:#1557b0;   /* Hover / active states */
+--ns-text:        #202124;   /* Body text */
+--ns-surface:     #f8f9fa;   /* Background surface */
+--ns-border:      #dadce0;   /* Dividers and borders */
+    </pre>
+
+    <p class="body-text">
+      The hexagonal logo mark (the "NS" hex) must always appear in the primary brand color on white backgrounds, and in white on dark backgrounds. Never use alternative colors for the logo without explicit brand team approval.
+    </p>
+  </main>
+
+  <!-- RIGHT NAV -->
+  <nav id="rightnav">
+    <h5>On this page</h5>
+    <a class="toc-item active" href="#">Logo Introduction Video</a>
+    <a class="toc-item" href="#">Color System</a>
+    <a class="toc-item" href="#">Typography</a>
+    <a class="toc-item" href="#">Logo Usage</a>
+    <a class="toc-item" href="#">Downloads</a>
+  </nav>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('logoCanvas');
+  const ctx = canvas.getContext('2d');
+  const DURATION = 12000;
+  let animStart = null;
+  let animFrame = null;
+
+  function hexPath(ctx, cx, cy, r) {
+    ctx.beginPath();
+    for (let i = 0; i < 6; i++) {
+      const angle = (Math.PI / 180) * (60 * i - 30);
+      const x = cx + r * Math.cos(angle);
+      const y = cy + r * Math.sin(angle);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+  }
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (elapsed < 4000) {
+      // Phase 1: Company name intro 0-4s
+      const p = elapsed / 4000;
+      ctx.fillStyle = '#f8f9fa';
+      ctx.fillRect(0, 0, W, H);
+
+      // Grid lines (documentation feel)
+      ctx.strokeStyle = '#e8eaed';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+
+      ctx.fillStyle = '#202124';
+      ctx.font = 'bold 20px Segoe UI, Arial';
+      ctx.textAlign = 'center';
+      ctx.globalAlpha = Math.min(p * 2, 1);
+      ctx.fillText('Nexus Systems', W/2, H/2 - 40);
+      ctx.fillStyle = '#80868b';
+      ctx.font = '15px Segoe UI, Arial';
+      ctx.fillText('Brand Identity Tutorial', W/2, H/2 - 10);
+      ctx.globalAlpha = 1;
+
+      // Loading bar
+      ctx.fillStyle = '#e8eaed';
+      ctx.fillRect(W/2 - 120, H/2 + 30, 240, 4);
+      ctx.fillStyle = '#1a73e8';
+      ctx.fillRect(W/2 - 120, H/2 + 30, 240 * p, 4);
+
+    } else if (elapsed < 8000) {
+      // Phase 2: Logo reveal 4-8s — THE KEY MOMENT
+      const p = (elapsed - 4000) / 4000;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+
+      const cx = W/2, cy = H/2;
+      const maxR = 110;
+      const r = maxR * Math.min(p * 1.5, 1);
+
+      // Glow effect
+      if (p > 0.2) {
+        const grad = ctx.createRadialGradient(cx, cy, r*0.5, cx, cy, r * 2);
+        grad.addColorStop(0, 'rgba(26, 115, 232, 0.18)');
+        grad.addColorStop(1, 'rgba(26, 115, 232, 0)');
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, 0, W, H);
+      }
+
+      // Hexagon — CLEARLY BLUE #1a73e8
+      hexPath(ctx, cx, cy, r);
+      ctx.fillStyle = '#1a73e8';
+      ctx.fill();
+
+      // "NS" text inside
+      if (p > 0.4) {
+        const textAlpha = Math.min((p - 0.4) / 0.4, 1);
+        ctx.globalAlpha = textAlpha;
+        ctx.fillStyle = '#ffffff';
+        ctx.font = `bold ${Math.round(r * 0.55)}px Segoe UI, Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('NS', cx, cy);
+        ctx.textBaseline = 'alphabetic';
+        ctx.globalAlpha = 1;
+      }
+
+      // Label
+      if (p > 0.6) {
+        const labelAlpha = Math.min((p - 0.6) / 0.4, 1);
+        ctx.globalAlpha = labelAlpha;
+        ctx.fillStyle = '#202124';
+        ctx.font = 'bold 22px Segoe UI, Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Nexus Systems', cx, cy + maxR + 44);
+        ctx.fillStyle = '#1a73e8';
+        ctx.font = '15px Segoe UI, Arial';
+        ctx.fillText('Primary Logo Mark', cx, cy + maxR + 68);
+        ctx.globalAlpha = 1;
+      }
+
+      // Color label box (shows the color name clearly)
+      if (p > 0.75) {
+        const boxAlpha = Math.min((p - 0.75) / 0.25, 1);
+        ctx.globalAlpha = boxAlpha;
+        ctx.fillStyle = '#1a73e8';
+        ctx.fillRect(W - 220, H - 60, 196, 36);
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 14px Segoe UI, Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Brand Color: BLUE (#1a73e8)', W - 222 + 98, H - 36);
+        ctx.globalAlpha = 1;
+      }
+
+    } else {
+      // Phase 3: Text / description 8-12s
+      const p = (elapsed - 8000) / 4000;
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, W, H);
+
+      // Small hex logo top-left
+      hexPath(ctx, 60, 60, 36);
+      ctx.fillStyle = '#1a73e8';
+      ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText('NS', 60, 60);
+      ctx.textBaseline = 'alphabetic';
+
+      ctx.fillStyle = '#202124';
+      ctx.font = 'bold 16px Segoe UI, Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText('Nexus Systems', 108, 55);
+      ctx.fillStyle = '#80868b';
+      ctx.font = '13px Segoe UI, Arial';
+      ctx.fillText('Brand Identity Guidelines v2.0', 108, 74);
+
+      // Key text block
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#202124';
+      ctx.font = 'bold 20px Segoe UI, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Our brand colors represent', W/2, H/2 - 30);
+      ctx.fillText('trust and reliability.', W/2, H/2 + 4);
+      ctx.fillStyle = '#1a73e8';
+      ctx.font = '16px Segoe UI, Arial';
+      ctx.fillText('Primary color: Blue  ·  Hex: #1a73e8', W/2, H/2 + 42);
+      ctx.globalAlpha = 1;
+    }
+
+    document.getElementById('video-progress-fill').style.width = (Math.min(elapsed / DURATION, 1) * 100) + '%';
+
+    if (elapsed < DURATION) {
+      animFrame = requestAnimationFrame(drawFrame);
+    }
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('video-progress-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-input').value.trim().toLowerCase();
+    const msgEl = document.getElementById('result-msg');
+    if (val.includes('blue')) {
+      taskResult = 'correct_color';
+      msgEl.textContent = '✓ Correct! The main logo is blue (#1a73e8).';
+      msgEl.className = 'result-ok';
+    } else {
+      msgEl.textContent = '✗ Not quite. Watch the video carefully and observe the logo color.';
+      msgEl.className = 'result-err';
+    }
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

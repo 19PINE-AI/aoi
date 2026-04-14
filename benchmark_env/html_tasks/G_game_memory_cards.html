@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Memory Card Game</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; color: #a0c4ff; }
+  .instructions {
+    font-size: 14px;
+    color: #888;
+    margin-bottom: 20px;
+    text-align: center;
+  }
+  #previewMsg {
+    background: #e8c100;
+    color: #1a1a2e;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 10px 24px;
+    border-radius: 8px;
+    margin-bottom: 18px;
+    animation: blink 0.5s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.6} }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(4, 80px);
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .card {
+    width: 80px; height: 80px;
+    border-radius: 10px;
+    cursor: pointer;
+    position: relative;
+    perspective: 400px;
+    user-select: none;
+  }
+  .card-inner {
+    width: 100%; height: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.4s;
+    border-radius: 10px;
+  }
+  .card.flipped .card-inner { transform: rotateY(180deg); }
+  .card-front, .card-back {
+    position: absolute;
+    width: 100%; height: 100%;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backface-visibility: hidden;
+    font-size: 30px;
+  }
+  .card-back {
+    background: #16213e;
+    border: 2px solid #0f3460;
+    color: #0f3460;
+    font-size: 22px;
+  }
+  .card-front {
+    background: #0f3460;
+    border: 2px solid #a0c4ff;
+    transform: rotateY(180deg);
+  }
+  .card.selected .card-back { border-color: #f72585; }
+  .card.matched .card-front { background: #1a3a20; border-color: #3fb950; }
+  .card.wrong .card-front { background: #3a1a1a; border-color: #f72585; }
+  #statusMsg {
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 24px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .success { color: #3fb950; }
+  .error { color: #f72585; }
+  .info { color: #a0c4ff; }
+  .selection-info {
+    font-size: 13px;
+    color: #666;
+    margin-top: 4px;
+    min-height: 20px;
+  }
+  #resetBtn {
+    background: #0f3460;
+    color: #a0c4ff;
+    border: 1px solid #a0c4ff;
+    padding: 9px 24px;
+    border-radius: 8px;
+    font-size: 13px;
+    cursor: pointer;
+    margin-top: 10px;
+  }
+  #resetBtn:hover { background: #1a4a80; }
+</style>
+</head>
+<body>
+<h1>Memory Match</h1>
+<p class="instructions">Memorize the star positions, then find the matching pair!</p>
+<div id="previewMsg">MEMORIZE: Watch the star positions for 2 seconds!</div>
+<div class="grid" id="cardGrid"></div>
+<div id="statusMsg" class="info">Memorizing positions...</div>
+<div class="selection-info" id="selInfo"></div>
+<button id="resetBtn" onclick="resetGame()">Restart</button>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  // 16 cards (4x4), star pair at positions 0 and 5
+  const STAR_POSITIONS = [0, 5];
+  const CARD_COUNT = 16;
+
+  const symbols = ['🌙','🎯','💎','🔥','🌊','⚡','🎪','🎭','🌺','🎸','🚀','🦋','🎲','🍀','🌈'];
+  let cardSymbols = [];
+  let flipped = [];
+  let selected = [];
+  let gamePhase = 'preview'; // preview | play | done
+
+  function buildDeck() {
+    cardSymbols = [];
+    let symIdx = 0;
+    for (let i = 0; i < CARD_COUNT; i++) {
+      if (STAR_POSITIONS.includes(i)) {
+        cardSymbols.push('🌟');
+      } else {
+        cardSymbols.push(symbols[symIdx % symbols.length]);
+        symIdx++;
+      }
+    }
+  }
+
+  function buildGrid() {
+    const grid = document.getElementById('cardGrid');
+    grid.innerHTML = '';
+    for (let i = 0; i < CARD_COUNT; i++) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.id = 'card-' + i;
+      card.innerHTML = `
+        <div class="card-inner">
+          <div class="card-back">?</div>
+          <div class="card-front">${cardSymbols[i]}</div>
+        </div>`;
+      card.addEventListener('click', () => onCardClick(i));
+      grid.appendChild(card);
+    }
+  }
+
+  function flipCard(idx, show) {
+    const el = document.getElementById('card-' + idx);
+    if (show) el.classList.add('flipped');
+    else el.classList.remove('flipped');
+  }
+
+  function resetGame() {
+    taskResult = 'pending';
+    gamePhase = 'preview';
+    selected = [];
+    flipped = [];
+    document.getElementById('previewMsg').style.display = 'block';
+    document.getElementById('statusMsg').textContent = 'Memorizing positions...';
+    document.getElementById('statusMsg').className = 'info';
+    document.getElementById('selInfo').textContent = '';
+    buildDeck();
+    buildGrid();
+
+    // Show star positions for 2 seconds
+    STAR_POSITIONS.forEach(idx => flipCard(idx, true));
+    setTimeout(() => {
+      STAR_POSITIONS.forEach(idx => flipCard(idx, false));
+      document.getElementById('previewMsg').style.display = 'none';
+      document.getElementById('previewMsg').style.animation = 'none';
+      document.getElementById('statusMsg').textContent = 'Now click the two star positions!';
+      gamePhase = 'play';
+    }, 2000);
+  }
+
+  function onCardClick(idx) {
+    if (gamePhase !== 'play') return;
+    if (selected.includes(idx)) return;
+    if (selected.length >= 2) return;
+
+    flipCard(idx, true);
+    document.getElementById('card-' + idx).classList.add('selected');
+    selected.push(idx);
+
+    document.getElementById('selInfo').textContent = `Selected: ${selected.map(i => `Position ${i}`).join(', ')}`;
+
+    if (selected.length === 2) {
+      gamePhase = 'done';
+      const [a, b] = selected;
+      const isMatch = STAR_POSITIONS.includes(a) && STAR_POSITIONS.includes(b);
+
+      setTimeout(() => {
+        if (isMatch) {
+          taskResult = 'pair_matched';
+          document.getElementById('statusMsg').textContent = 'Correct! You found the star pair!';
+          document.getElementById('statusMsg').className = 'success';
+          document.getElementById('card-' + a).classList.add('matched');
+          document.getElementById('card-' + b).classList.add('matched');
+        } else {
+          taskResult = 'wrong_pair';
+          document.getElementById('statusMsg').textContent = 'Wrong pair! Try again.';
+          document.getElementById('statusMsg').className = 'error';
+          document.getElementById('card-' + a).classList.add('wrong');
+          document.getElementById('card-' + b).classList.add('wrong');
+        }
+      }, 300);
+    }
+  }
+
+  buildDeck();
+  buildGrid();
+
+  // Preview phase
+  STAR_POSITIONS.forEach(idx => flipCard(idx, true));
+  setTimeout(() => {
+    STAR_POSITIONS.forEach(idx => flipCard(idx, false));
+    document.getElementById('previewMsg').style.display = 'none';
+    document.getElementById('statusMsg').textContent = 'Now click the two star positions!';
+    gamePhase = 'play';
+  }, 2000);
+</script>
+</body>
+</html>

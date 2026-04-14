@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Match Game</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #1a1a2e;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    color: #e0e0e0;
+  }
+  h1 { font-size: 22px; font-weight: 700; color: #a0c4ff; margin-bottom: 6px; }
+  .desc { font-size: 14px; color: #888; margin-bottom: 20px; text-align: center; }
+  .timer-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 20px;
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .timer { color: #f0a500; font-size: 26px; }
+  .timer.urgent { color: #f72585; animation: blink 0.5s ease-in-out infinite; }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .grids-row {
+    display: flex;
+    gap: 48px;
+    align-items: flex-start;
+    margin-bottom: 24px;
+  }
+  .grid-wrap { text-align: center; }
+  .grid-label {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .tile-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 64px);
+    gap: 6px;
+  }
+  .tile {
+    width: 64px; height: 64px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 3px solid transparent;
+    transition: transform 0.1s, border-color 0.1s;
+    background: #16213e;
+  }
+  .tile:hover { transform: scale(0.95); }
+  .tile.selected { border-color: #f0f0f0; transform: scale(0.93); }
+  .tile.target { border: 3px solid transparent; cursor: default; }
+  .tile.target-colored { }
+  .pattern-tile {
+    width: 64px; height: 64px;
+    border-radius: 10px;
+    background: #16213e;
+  }
+  .pattern-tile.active { }
+  #statusMsg {
+    font-size: 16px;
+    font-weight: 600;
+    min-height: 24px;
+    margin-bottom: 12px;
+    text-align: center;
+  }
+  .success { color: #3fb950; }
+  .error { color: #f72585; }
+  .info { color: #a0c4ff; }
+  #resetBtn {
+    background: #1e3a6e;
+    color: #a0c4ff;
+    border: 1px solid #3a6aae;
+    padding: 10px 24px;
+    border-radius: 10px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+  #resetBtn:hover { background: #2a4a8e; }
+  .progress {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+  }
+</style>
+</head>
+<body>
+<h1>Color Pattern Match</h1>
+<p class="desc">Click tiles on the left to match the red L-shape pattern on the right — within 10 seconds!</p>
+<div class="timer-row">
+  <span>Time: </span>
+  <span class="timer" id="timerDisplay">10</span>
+  <span>seconds</span>
+</div>
+<div class="progress" id="progressInfo">Selected: 0 / 4</div>
+<div class="grids-row">
+  <div class="grid-wrap">
+    <div class="grid-label">Your Board (click to select)</div>
+    <div class="tile-grid" id="playerGrid"></div>
+  </div>
+  <div class="grid-wrap">
+    <div class="grid-label">Target Pattern</div>
+    <div class="tile-grid" id="targetGrid"></div>
+  </div>
+</div>
+<div id="statusMsg" class="info">Click the red tiles to match the L-shape!</div>
+<button id="resetBtn" onclick="resetGame()">Play Again</button>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  // Target: positions 0, 4, 8, 9 form an L-shape (left column top-3 + row3 col1)
+  const TARGET_POSITIONS = [0, 4, 8, 9];
+  const TARGET_COLOR = '#e74c3c'; // red
+  const GRID_SIZE = 16;
+
+  let selected = new Set();
+  let timeLeft = 10;
+  let timerInterval = null;
+  let gameOver = false;
+
+  function buildGrids() {
+    // Player grid
+    const pg = document.getElementById('playerGrid');
+    pg.innerHTML = '';
+    for (let i = 0; i < GRID_SIZE; i++) {
+      const t = document.createElement('div');
+      t.className = 'tile';
+      t.id = 'player-' + i;
+      t.addEventListener('click', () => toggleTile(i));
+      pg.appendChild(t);
+    }
+
+    // Target grid
+    const tg = document.getElementById('targetGrid');
+    tg.innerHTML = '';
+    for (let i = 0; i < GRID_SIZE; i++) {
+      const t = document.createElement('div');
+      t.className = 'tile';
+      t.style.cursor = 'default';
+      if (TARGET_POSITIONS.includes(i)) {
+        t.style.background = TARGET_COLOR;
+        t.style.boxShadow = `0 0 12px ${TARGET_COLOR}88`;
+      }
+      tg.appendChild(t);
+    }
+  }
+
+  function toggleTile(idx) {
+    if (gameOver) return;
+    const el = document.getElementById('player-' + idx);
+    if (selected.has(idx)) {
+      selected.delete(idx);
+      el.classList.remove('selected');
+      el.style.background = '#16213e';
+    } else {
+      selected.add(idx);
+      el.classList.add('selected');
+      el.style.background = TARGET_COLOR;
+    }
+    document.getElementById('progressInfo').textContent = `Selected: ${selected.size} / 4`;
+    checkMatch();
+  }
+
+  function checkMatch() {
+    if (selected.size !== TARGET_POSITIONS.length) return;
+    const isMatch = TARGET_POSITIONS.every(p => selected.has(p)) &&
+                    [...selected].every(p => TARGET_POSITIONS.includes(p));
+    if (isMatch) {
+      endGame(true);
+    }
+  }
+
+  function endGame(won) {
+    gameOver = true;
+    clearInterval(timerInterval);
+    const msg = document.getElementById('statusMsg');
+    if (won) {
+      taskResult = 'pattern_matched';
+      msg.textContent = `Pattern matched! Completed in ${10 - timeLeft}s`;
+      msg.className = 'success';
+    } else {
+      taskResult = 'timeout';
+      msg.textContent = 'Time\'s up! The pattern was: positions 0, 4, 8, 9 (L-shape).';
+      msg.className = 'error';
+    }
+  }
+
+  function startTimer() {
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      const el = document.getElementById('timerDisplay');
+      el.textContent = timeLeft;
+      if (timeLeft <= 3) el.className = 'timer urgent';
+      if (timeLeft <= 0) {
+        endGame(false);
+      }
+    }, 1000);
+  }
+
+  function resetGame() {
+    gameOver = false;
+    selected = new Set();
+    timeLeft = 10;
+    taskResult = 'pending';
+    clearInterval(timerInterval);
+    const el = document.getElementById('timerDisplay');
+    el.textContent = '10';
+    el.className = 'timer';
+    document.getElementById('progressInfo').textContent = 'Selected: 0 / 4';
+    document.getElementById('statusMsg').textContent = 'Click the red tiles to match the L-shape!';
+    document.getElementById('statusMsg').className = 'info';
+    buildGrids();
+    startTimer();
+  }
+
+  buildGrids();
+  startTimer();
+</script>
+</body>
+</html>

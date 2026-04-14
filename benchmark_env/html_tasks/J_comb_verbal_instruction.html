@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Verbal Instruction — Menu Navigation</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #1a1a2e; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .session-frame { background: #13151f; border: 2px solid #2d2d4e; border-radius: 12px; width: 740px; overflow: hidden; box-shadow: 0 12px 50px rgba(0,0,0,0.7); }
+  /* Top chrome */
+  .session-chrome { background: #0f0f1a; padding: 10px 16px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #2d2d4e; }
+  .sc-dots { display: flex; gap: 6px; }
+  .scd { width: 10px; height: 10px; border-radius: 50%; }
+  .session-label { color: #565f89; font-size: 0.75rem; margin-left: auto; }
+  .sharing-pill { background: #0c2d1a; border: 1px solid #16a34a; color: #4ade80; font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+  /* Presenter strip */
+  .presenter-strip { background: #13151f; padding: 10px 20px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #1e2030; }
+  .pres-av { width: 30px; height: 30px; border-radius: 50%; background: #2563eb; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 0.8rem; font-weight: 700; }
+  .pres-name { color: #c8d3f5; font-size: 0.82rem; font-weight: 600; }
+  .pres-role { color: #565f89; font-size: 0.7rem; }
+  .audio-ind { margin-left: auto; display: flex; align-items: center; gap: 6px; }
+  .abars { display: flex; align-items: flex-end; gap: 2px; height: 12px; }
+  .abar { width: 3px; background: #4ade80; border-radius: 1px; opacity: 0.3; }
+  /* App being shared */
+  .shared-app { background: #f0f2f5; min-height: 360px; }
+  /* App menubar */
+  .app-menubar { background: #1e1e2e; display: flex; align-items: center; height: 32px; }
+  .menu-item { padding: 0 14px; height: 100%; display: flex; align-items: center; font-size: 0.82rem; color: #c8d3f5; cursor: pointer; position: relative; transition: background 0.2s; }
+  .menu-item:hover, .menu-item.open { background: rgba(255,255,255,0.1); }
+  .menu-item.highlighted { background: #1d4ed8; color: #fff; }
+  /* Dropdown */
+  .dropdown { position: absolute; top: 100%; left: 0; background: #1e1e2e; border: 1px solid #334155; border-radius: 0 0 8px 8px; min-width: 160px; z-index: 100; display: none; box-shadow: 0 8px 24px rgba(0,0,0,0.4); }
+  .dropdown.open { display: block; }
+  .dd-item { padding: 8px 16px; font-size: 0.82rem; color: #c8d3f5; cursor: pointer; border-bottom: 1px solid #334155; display: flex; align-items: center; justify-content: space-between; transition: background 0.15s; }
+  .dd-item:last-child { border-bottom: none; }
+  .dd-item:hover { background: rgba(255,255,255,0.08); }
+  .dd-item.highlighted { background: #1d4ed8; color: #fff; }
+  .dd-shortcut { font-size: 0.68rem; color: #64748b; }
+  /* App content */
+  .app-content { padding: 40px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; }
+  .app-title { font-size: 1.5rem; font-weight: 700; color: #1e293b; margin-bottom: 8px; }
+  .app-subtitle { color: #64748b; font-size: 0.88rem; }
+  /* Caption */
+  .caption-bar { background: rgba(0,0,0,0.9); padding: 12px 20px; min-height: 50px; display: flex; align-items: center; border-top: 1px solid #2d2d4e; }
+  .caption-text { color: #fff; font-size: 0.85rem; font-style: italic; }
+  /* Result overlay */
+  .success-overlay { display: none; position: absolute; inset: 0; background: rgba(22,163,74,0.9); align-items: center; justify-content: center; font-size: 1.5rem; color: #fff; font-weight: 900; border-radius: 0; }
+  .success-overlay.show { display: flex; animation: popIn 0.4s ease; }
+  @keyframes popIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+  .app-wrap { position: relative; }
+  /* Controls */
+  .controls { background: #0a0a0f; padding: 12px 20px; display: flex; gap: 10px; align-items: center; border-top: 1px solid #1e2030; }
+  .ctrl-btn { background: #1e2030; border: 1px solid #2d2d4e; color: #8b949e; border-radius: 6px; padding: 6px 14px; font-size: 0.78rem; cursor: pointer; }
+  .result-msg { margin-left: auto; font-size: 0.82rem; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="session-frame">
+  <div class="session-chrome">
+    <div class="sc-dots"><div class="scd" style="background:#ef4444"></div><div class="scd" style="background:#f59e0b"></div><div class="scd" style="background:#22c55e"></div></div>
+    <span class="session-label">Remote Training Session</span>
+    <span class="sharing-pill">● Screen Share</span>
+  </div>
+
+  <div class="presenter-strip">
+    <div class="pres-av">TK</div>
+    <div>
+      <div class="pres-name">Taylor Kim</div>
+      <div class="pres-role">Solutions Architect · Training</div>
+    </div>
+    <div class="audio-ind" id="audioInd" style="opacity:0.3">
+      <div class="abars">
+        <div class="abar" id="pb1"></div><div class="abar" id="pb2"></div><div class="abar" id="pb3"></div><div class="abar" id="pb4"></div>
+      </div>
+      <span style="color:#4ade80;font-size:0.72rem">🎤 Speaking</span>
+    </div>
+  </div>
+
+  <div class="app-wrap">
+    <div class="shared-app">
+      <div class="app-menubar">
+        <div class="menu-item" id="fileMenu" onclick="toggleMenu()">File</div>
+        <div class="menu-item">Edit</div>
+        <div class="menu-item">View</div>
+        <div class="menu-item">Tools</div>
+        <div class="menu-item">Help</div>
+
+        <div class="dropdown" id="fileDropdown">
+          <div class="dd-item" onclick="handleMenuItem('new')">New <span class="dd-shortcut">Ctrl+N</span></div>
+          <div class="dd-item" onclick="handleMenuItem('open')">Open <span class="dd-shortcut">Ctrl+O</span></div>
+          <div class="dd-item" onclick="handleMenuItem('save')">Save <span class="dd-shortcut">Ctrl+S</span></div>
+          <div class="dd-item highlighted" id="exportItem" onclick="handleMenuItem('export')">Export <span class="dd-shortcut">Ctrl+E</span></div>
+          <div class="dd-item" onclick="handleMenuItem('print')">Print <span class="dd-shortcut">Ctrl+P</span></div>
+        </div>
+      </div>
+      <div class="app-content">
+        <div class="app-title">Document Studio</div>
+        <div class="app-subtitle">Use the File menu to navigate to the correct action</div>
+      </div>
+    </div>
+    <div class="success-overlay" id="successOverlay">✓ File → Export Selected!</div>
+  </div>
+
+  <div class="caption-bar">
+    <div class="caption-text" id="captionText">Waiting for presenter...</div>
+  </div>
+
+  <div class="controls">
+    <button class="ctrl-btn" onclick="restartDemo()">↺ Restart</button>
+    <button class="ctrl-btn">🔇 Mute</button>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let menuOpen = false;
+let timers = [];
+let waveId = null;
+
+function toggleMenu() {
+  menuOpen = !menuOpen;
+  document.getElementById('fileMenu').classList.toggle('open', menuOpen);
+  document.getElementById('fileDropdown').classList.toggle('open', menuOpen);
+}
+
+function handleMenuItem(item) {
+  document.getElementById('fileDropdown').classList.remove('open');
+  document.getElementById('fileMenu').classList.remove('open');
+  menuOpen = false;
+  if (item === 'export') {
+    taskResult = 'file_export_clicked';
+    document.getElementById('successOverlay').classList.add('show');
+    document.getElementById('resultMsg').style.display = 'inline';
+    document.getElementById('resultMsg').style.color = '#4ade80';
+    document.getElementById('resultMsg').textContent = 'Correct! File → Export clicked.';
+  } else {
+    taskResult = item + '_clicked';
+    document.getElementById('resultMsg').style.display = 'inline';
+    document.getElementById('resultMsg').style.color = '#f87171';
+    document.getElementById('resultMsg').textContent = `Wrong! Selected "${item}". Listen for the instruction again.`;
+  }
+}
+
+function animAudio(on) {
+  clearInterval(waveId);
+  document.getElementById('audioInd').style.opacity = on ? '1' : '0.3';
+  if (on) {
+    waveId = setInterval(() => {
+      ['pb1','pb2','pb3','pb4'].forEach(id => {
+        document.getElementById(id).style.height = (2 + Math.random() * 8) + 'px';
+        document.getElementById(id).style.opacity = '1';
+      });
+    }, 150);
+  }
+}
+
+function speak(text) {
+  document.getElementById('captionText').textContent = '"' + text + '"';
+  animAudio(true);
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.rate = 0.9;
+  utt.onend = () => { animAudio(false); };
+  window.speechSynthesis.speak(utt);
+
+  // Highlight file menu
+  setTimeout(() => {
+    document.getElementById('fileMenu').classList.add('highlighted');
+    setTimeout(() => document.getElementById('fileMenu').classList.remove('highlighted'), 2000);
+  }, 1500);
+}
+
+function runDemo() {
+  document.getElementById('captionText').textContent = 'Connecting to presenter...';
+  timers.push(setTimeout(() => {
+    speak("To complete today's task, please click on File, then select Export from the dropdown.");
+  }, 3000));
+}
+
+function restartDemo() {
+  timers.forEach(clearTimeout);
+  window.speechSynthesis.cancel();
+  animAudio(false);
+  timers = [];
+  taskResult = 'pending';
+  document.getElementById('successOverlay').classList.remove('show');
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('fileDropdown').classList.remove('open');
+  document.getElementById('fileMenu').classList.remove('open', 'highlighted');
+  menuOpen = false;
+  runDemo();
+}
+
+runDemo();
+</script>
+</body>
+</html>

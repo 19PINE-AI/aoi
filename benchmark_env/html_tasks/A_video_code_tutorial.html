@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Tutorial: Data Processing Functions | VideoHub</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Roboto, Arial, sans-serif; background: #0f0f0f; color: #fff; }
+
+  /* NAV */
+  #navbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: #0f0f0f; display: flex; align-items: center;
+    padding: 0 16px; z-index: 100; border-bottom: 1px solid #272727;
+  }
+  .logo { font-size: 20px; font-weight: 700; }
+  .logo .lred { color: #ff0000; }
+  .search-bar { flex: 1; max-width: 560px; margin: 0 32px; display: flex; }
+  .search-bar input { flex: 1; padding: 8px 16px; border: 1px solid #303030; background: #121212; color: #fff; border-radius: 40px 0 0 40px; font-size: 14px; outline: none; }
+  .search-bar button { padding: 8px 18px; background: #272727; border: 1px solid #303030; border-left: none; border-radius: 0 40px 40px 0; color: #aaa; cursor: pointer; }
+  .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+  .avatar { width: 32px; height: 32px; border-radius: 50%; background: #333; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; }
+
+  /* LAYOUT */
+  #layout { display: flex; margin-top: 56px; }
+  #sidebar {
+    width: 240px; min-height: calc(100vh - 56px); background: #0f0f0f;
+    padding: 12px 0; position: fixed; top: 56px; border-right: 1px solid #272727;
+  }
+  .sidebar-item { display: flex; align-items: center; gap: 24px; padding: 10px 24px; cursor: pointer; font-size: 14px; border-radius: 10px; margin: 0 8px; }
+  .sidebar-item:hover { background: #272727; }
+  .sidebar-item.active { background: #272727; font-weight: 600; }
+  .icon { font-size: 18px; width: 24px; text-align: center; }
+  .sdiv { border: none; border-top: 1px solid #272727; margin: 12px 0; }
+
+  #main { margin-left: 240px; padding: 24px; max-width: 1280px; }
+  #crow { display: flex; gap: 24px; }
+  #primary { flex: 1; min-width: 0; }
+
+  /* PLAYER */
+  #player-wrap { background: #0d1117; border-radius: 12px; overflow: hidden; position: relative; }
+  #codeCanvas { width: 100%; display: block; }
+  #replay-btn {
+    position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.8);
+    color: #fff; border: 1px solid #333; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  #replay-btn:hover { background: #1a1a1a; }
+  #pb-wrap { width: 100%; height: 4px; background: #333; }
+  #pb-fill { height: 4px; background: #ff0000; width: 0%; transition: width 0.1s; }
+
+  /* VIDEO META */
+  #video-title { font-size: 18px; font-weight: 600; margin-top: 12px; }
+  #video-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; gap: 8px; }
+  #ch-wrap { display: flex; align-items: center; gap: 12px; }
+  .ch-av { width: 40px; height: 40px; border-radius: 50%; background: #1f6feb; display: flex; align-items: center; justify-content: center; font-weight: 700; }
+  .ch-name { font-weight: 600; font-size: 14px; }
+  .ch-sub { font-size: 12px; color: #aaa; }
+  .sub-btn { background: #fff; color: #0f0f0f; border: none; padding: 8px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+  #acts { display: flex; gap: 8px; }
+  .abtn { background: #272727; border: none; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; }
+  .abtn:hover { background: #3a3a3a; }
+
+  #desc { background: #1a1a1a; border-radius: 12px; padding: 16px; margin-top: 16px; font-size: 14px; line-height: 1.6; }
+  #desc .vc { font-weight: 600; color: #eee; margin-bottom: 6px; }
+  #desc .dt { color: #aaa; }
+  #desc a { color: #3ea6ff; text-decoration: none; }
+
+  /* ANSWER */
+  #answer-section {
+    background: #0d1117; border: 1px solid #1f6feb; border-radius: 12px; padding: 24px; margin-top: 20px;
+  }
+  #answer-section h3 { font-size: 16px; margin-bottom: 6px; color: #7dd3fc; }
+  #answer-section .ap { font-size: 13px; color: #aaa; margin-bottom: 16px; }
+  #answer-section label { font-size: 13px; font-weight: 600; color: #ccc; display: block; margin-bottom: 6px; }
+  #answer-section input { width: 100%; padding: 11px 16px; border: 1px solid #30363d; background: #0a0a0a; color: #fff; border-radius: 8px; font-size: 15px; outline: none; font-family: 'Courier New', monospace; }
+  #answer-section input:focus { border-color: #1f6feb; }
+  #submit-btn { background: #1f6feb; color: #fff; border: none; padding: 11px 28px; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 12px; }
+  #submit-btn:hover { background: #1a5cd4; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 600; min-height: 20px; }
+  .rok { color: #3fb950; } .rerr { color: #f85149; }
+
+  /* COMMENTS */
+  #comments { margin-top: 24px; }
+  #comments h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+  .cmt { display: flex; gap: 12px; margin-bottom: 18px; }
+  .cmt-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .cmt-author { font-size: 13px; font-weight: 600; }
+  .cmt-time { font-size: 12px; color: #aaa; margin-left: 8px; }
+  .cmt-text { font-size: 14px; margin-top: 4px; color: #ccc; }
+
+  /* RECS */
+  #secondary { width: 360px; flex-shrink: 0; }
+  .rec { display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer; }
+  .rec-thumb { width: 168px; height: 94px; border-radius: 8px; background: #1a1a1a; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #555; font-size: 22px; }
+  .rec-title { font-size: 14px; font-weight: 500; line-height: 1.3; }
+  .rec-ch { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .rec-v { font-size: 12px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<nav id="navbar">
+  <div class="logo">▶ <span class="lred">Video</span>Hub</div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search" value="python data processing tutorial function">
+    <button>&#128269;</button>
+  </div>
+  <div class="nav-right">
+    <span style="font-size:20px;cursor:pointer;">&#128276;</span>
+    <div class="avatar">U</div>
+  </div>
+</nav>
+
+<div id="layout">
+  <aside id="sidebar">
+    <div class="sidebar-item active"><span class="icon">&#8962;</span> Home</div>
+    <div class="sidebar-item"><span class="icon">&#128293;</span> Trending</div>
+    <div class="sidebar-item"><span class="icon">&#128250;</span> Subscriptions</div>
+    <hr class="sdiv">
+    <div class="sidebar-item"><span class="icon">&#128196;</span> Library</div>
+    <div class="sidebar-item"><span class="icon">&#128336;</span> History</div>
+    <hr class="sdiv">
+    <div style="padding:10px 24px;font-size:12px;color:#aaa;font-weight:600;text-transform:uppercase;">Subscriptions</div>
+    <div class="sidebar-item"><span class="icon" style="width:22px;height:22px;border-radius:50%;background:#1f6feb;font-size:11px;display:flex;align-items:center;justify-content:center;">P</span> PythonMasters</div>
+    <div class="sidebar-item"><span class="icon" style="width:22px;height:22px;border-radius:50%;background:#3fb950;font-size:11px;display:flex;align-items:center;justify-content:center;">C</span> CodeLab</div>
+  </aside>
+
+  <main id="main">
+    <div id="crow">
+      <div id="primary">
+        <div id="player-wrap">
+          <canvas id="codeCanvas" width="854" height="480"></canvas>
+          <button id="replay-btn" onclick="startAnimation()">&#9654; Replay</button>
+          <div id="pb-wrap"><div id="pb-fill"></div></div>
+        </div>
+
+        <h1 id="video-title">Python Tutorial: Writing Clean Data Processing Functions (Beginner to Pro)</h1>
+        <div id="video-meta">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="ch-wrap">
+              <div class="ch-av">P</div>
+              <div>
+                <div class="ch-name">PythonMasters &#10003;</div>
+                <div class="ch-sub">198K subscribers</div>
+              </div>
+            </div>
+            <button class="sub-btn">Subscribe</button>
+          </div>
+          <div id="acts">
+            <button class="abtn">&#128077; 6.2K</button>
+            <button class="abtn">&#128078;</button>
+            <button class="abtn">&#8599; Share</button>
+            <button class="abtn">&#8942;</button>
+          </div>
+        </div>
+
+        <div id="desc">
+          <div class="vc">54,193 views &nbsp;·&nbsp; Feb 8, 2024</div>
+          <div class="dt">
+            In this tutorial we write a clean, idiomatic Python function for data processing. We cover list comprehensions, filtering, sorting, and naming conventions. The final function demonstrated is production-ready.<br><br>
+            Chapters:<br>
+            0:00 Intro<br>
+            0:05 Writing the function<br>
+            0:15 Function name reveal &amp; highlight<br><br>
+            Source code: <a href="#">github.com/pythonmasters/examples</a><br>
+            #Python #DataProcessing #CodingTutorial
+          </div>
+        </div>
+
+        <!-- ANSWER -->
+        <div id="answer-section">
+          <h3>&#127916; Task: Code Comprehension</h3>
+          <p class="ap">A coding tutorial plays. After it ends, write the function name demonstrated in the video.</p>
+          <label for="answer-input">Function name:</label>
+          <input type="text" id="answer-input" placeholder="function_name" autocomplete="off" spellcheck="false">
+          <br>
+          <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+          <div id="result-msg"></div>
+        </div>
+
+        <div id="comments">
+          <h3>312 Comments</h3>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#7c3aed;">A</div>
+            <div>
+              <span class="cmt-author">@anika_codes</span><span class="cmt-time">1 week ago</span>
+              <div class="cmt-text">The list comprehension for filtering in process_data is so clean. This is exactly how I'll structure mine.</div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#059669;">T</div>
+            <div>
+              <span class="cmt-author">@tom_backend</span><span class="cmt-time">2 weeks ago</span>
+              <div class="cmt-text">sorted() on the cleaned list — nice touch. Keeps it pure and testable.</div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#dc2626;">R</div>
+            <div>
+              <span class="cmt-author">@raj_ml</span><span class="cmt-time">3 weeks ago</span>
+              <div class="cmt-text">Great tutorial. I've been using a similar approach but with pandas. Good to see the stdlib way.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside id="secondary">
+        <div class="rec"><div class="rec-thumb">&#128013;</div><div><div class="rec-title">Python List Comprehensions — Full Guide</div><div class="rec-ch">PythonMasters</div><div class="rec-v">87K views · 2 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#128296;</div><div><div class="rec-title">Writing Unit Tests for Python Functions</div><div class="rec-ch">CodeLab</div><div class="rec-v">34K views · 3 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#128202;</div><div><div class="rec-title">Pandas vs Pure Python Data Processing</div><div class="rec-ch">DataEngPro</div><div class="rec-v">62K views · 5 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#9881;</div><div><div class="rec-title">Python Performance Optimization Tips</div><div class="rec-ch">PythonMasters</div><div class="rec-v">41K views · 6 months ago</div></div></div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('codeCanvas');
+  const ctx = canvas.getContext('2d');
+  const DURATION = 20000;
+  let animStart = null, animFrame = null;
+
+  // Code lines to type out
+  const codeLines = [
+    { text: 'def process_data(records):', color: '#79c0ff' },
+    { text: '    cleaned = [r for r in records if r]', color: '#f0f6fc' },
+    { text: '    return sorted(cleaned)', color: '#f0f6fc' },
+  ];
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+
+    ctx.fillStyle = '#0d1117';
+    ctx.fillRect(0, 0, W, H);
+
+    if (elapsed < 5000) {
+      // 0-5s Intro
+      const p = elapsed / 5000;
+      // Code editor chrome
+      ctx.fillStyle = '#161b22';
+      ctx.fillRect(0, 0, W, 36);
+      // Window dots
+      ['#ff5f56','#ffbd2e','#27c93f'].forEach((c,i) => {
+        ctx.fillStyle = c;
+        ctx.beginPath();
+        ctx.arc(18 + i*20, 18, 6, 0, Math.PI*2);
+        ctx.fill();
+      });
+      ctx.fillStyle = '#8b949e';
+      ctx.font = '13px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('main.py — editor', W/2, 24);
+
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#58a6ff';
+      ctx.font = 'bold 14px Courier New';
+      ctx.textAlign = 'center';
+      ctx.fillText('# Python Tutorial: Data Processing', W/2, H/2 - 32);
+      ctx.fillStyle = '#f0f6fc';
+      ctx.font = 'bold 28px Courier New';
+      ctx.fillText('Data Processing Functions', W/2, H/2 + 8);
+      ctx.fillStyle = '#8b949e';
+      ctx.font = '16px Arial';
+      ctx.fillText('by PythonMasters', W/2, H/2 + 42);
+      ctx.globalAlpha = 1;
+
+    } else if (elapsed < 15000) {
+      // 5-15s Typing code line by line
+      const p = (elapsed - 5000) / 10000;
+
+      // Full editor chrome
+      ctx.fillStyle = '#161b22';
+      ctx.fillRect(0, 0, W, 36);
+      ['#ff5f56','#ffbd2e','#27c93f'].forEach((c,i) => {
+        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(18+i*20, 18, 6, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.fillStyle = '#8b949e'; ctx.font = '13px Courier New'; ctx.textAlign = 'center';
+      ctx.fillText('tutorial_example.py', W/2, 24);
+
+      // Line numbers + code area
+      ctx.fillStyle = '#0d1117';
+      ctx.fillRect(0, 36, W, H - 36);
+
+      // Line number gutter
+      ctx.fillStyle = '#161b22';
+      ctx.fillRect(0, 36, 48, H - 36);
+
+      const baseX = 70, baseY = 100;
+      const lineH = 48;
+
+      // Syntax highlight tokens
+      const syntaxTokens = [
+        // line 0: def process_data(records):
+        [
+          { text: 'def ', color: '#ff7b72' },
+          { text: 'process_data', color: '#d2a8ff' },
+          { text: '(', color: '#f0f6fc' },
+          { text: 'records', color: '#ffa657' },
+          { text: '):', color: '#f0f6fc' },
+        ],
+        // line 1:     cleaned = [r for r in records if r]
+        [
+          { text: '    cleaned ', color: '#f0f6fc' },
+          { text: '= ', color: '#ff7b72' },
+          { text: '[', color: '#f0f6fc' },
+          { text: 'r ', color: '#79c0ff' },
+          { text: 'for ', color: '#ff7b72' },
+          { text: 'r ', color: '#79c0ff' },
+          { text: 'in ', color: '#ff7b72' },
+          { text: 'records ', color: '#ffa657' },
+          { text: 'if ', color: '#ff7b72' },
+          { text: 'r', color: '#79c0ff' },
+          { text: ']', color: '#f0f6fc' },
+        ],
+        // line 2:     return sorted(cleaned)
+        [
+          { text: '    ', color: '#f0f6fc' },
+          { text: 'return ', color: '#ff7b72' },
+          { text: 'sorted', color: '#d2a8ff' },
+          { text: '(', color: '#f0f6fc' },
+          { text: 'cleaned', color: '#79c0ff' },
+          { text: ')', color: '#f0f6fc' },
+        ],
+      ];
+
+      const totalChars = codeLines.reduce((s, l) => s + l.text.length, 0);
+      const charsToShow = Math.floor(p * totalChars * 1.1);
+      let charCount = 0;
+
+      ctx.font = 'bold 22px Courier New';
+      ctx.textAlign = 'left';
+
+      codeLines.forEach((line, li) => {
+        // Line number
+        ctx.fillStyle = '#3d444d';
+        ctx.font = '16px Courier New';
+        ctx.fillText(li + 1, 16, baseY + li * lineH);
+
+        if (charCount >= charsToShow) return;
+
+        const charsOnLine = Math.max(0, Math.min(line.text.length, charsToShow - charCount));
+        const partialText = line.text.substring(0, charsOnLine);
+
+        // Render with syntax highlighting (simplified)
+        ctx.font = 'bold 22px Courier New';
+        const tokens = syntaxTokens[li];
+        let x = baseX;
+        let rendered = 0;
+        for (const tok of tokens) {
+          if (rendered >= charsOnLine) break;
+          const toRender = Math.min(tok.text.length, charsOnLine - rendered);
+          const chunk = tok.text.substring(0, toRender);
+          ctx.fillStyle = tok.color;
+          ctx.fillText(chunk, x, baseY + li * lineH);
+          x += ctx.measureText(chunk).width;
+          rendered += toRender;
+        }
+
+        // Cursor blinking
+        if (li === Math.min(Math.floor(charsToShow / (totalChars / 3)), 2) && charsToShow < totalChars) {
+          const blink = Math.floor(elapsed / 400) % 2;
+          if (blink) {
+            ctx.fillStyle = '#f0f6fc';
+            ctx.fillRect(x, baseY + li * lineH - 18, 2, 22);
+          }
+        }
+
+        charCount += line.text.length;
+      });
+
+      // Comment above code
+      ctx.fillStyle = '#6e7681';
+      ctx.font = 'italic 18px Courier New';
+      ctx.fillText('# Core data processing function', baseX, baseY - 32);
+
+    } else {
+      // 15-20s Highlight the function name
+      const p = (elapsed - 15000) / 5000;
+
+      ctx.fillStyle = '#161b22';
+      ctx.fillRect(0, 0, W, 36);
+      ['#ff5f56','#ffbd2e','#27c93f'].forEach((c,i) => {
+        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(18+i*20, 18, 6, 0, Math.PI*2); ctx.fill();
+      });
+      ctx.fillStyle = '#8b949e'; ctx.font = '13px Courier New'; ctx.textAlign = 'center';
+      ctx.fillText('tutorial_example.py — Function Highlighted', W/2, 24);
+
+      ctx.fillStyle = '#0d1117';
+      ctx.fillRect(0, 36, W, H - 36);
+      ctx.fillStyle = '#161b22';
+      ctx.fillRect(0, 36, 48, H - 36);
+
+      const baseX = 70, baseY = 100, lineH = 48;
+
+      // Full code shown dimmed
+      ctx.globalAlpha = 0.4;
+      ctx.fillStyle = '#f0f6fc';
+      ctx.font = 'bold 22px Courier New';
+      ctx.textAlign = 'left';
+      ctx.fillText('def process_data(records):', baseX, baseY);
+      ctx.fillText('    cleaned = [r for r in records if r]', baseX, baseY + lineH);
+      ctx.fillText('    return sorted(cleaned)', baseX, baseY + lineH*2);
+      ctx.globalAlpha = 1;
+
+      // Highlight box behind "process_data"
+      const hAlpha = Math.min(p * 5, 1);
+      ctx.globalAlpha = hAlpha * 0.35;
+      ctx.fillStyle = '#ffd700';
+      // measure position of "def " then "process_data"
+      ctx.font = 'bold 22px Courier New';
+      const defWidth = ctx.measureText('def ').width;
+      const fnWidth = ctx.measureText('process_data').width;
+      ctx.fillRect(baseX + defWidth - 4, baseY - 22, fnWidth + 8, 28);
+      ctx.globalAlpha = 1;
+
+      // Big highlighted text
+      ctx.globalAlpha = hAlpha;
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 22px Courier New';
+      ctx.fillText('def ', baseX, baseY);
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 22px Courier New';
+      ctx.fillText('process_data', baseX + defWidth, baseY);
+      ctx.fillStyle = '#f0f6fc';
+      ctx.fillText('(records):', baseX + defWidth + fnWidth, baseY);
+      ctx.globalAlpha = 1;
+
+      // Callout box
+      if (p > 0.3) {
+        const boxAlpha = Math.min((p - 0.3) / 0.4, 1);
+        ctx.globalAlpha = boxAlpha;
+        ctx.fillStyle = '#1c2128';
+        ctx.strokeStyle = '#ffd700';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.roundRect(baseX, baseY + 80, 500, 100, 8);
+        ctx.fill();
+        ctx.stroke();
+        ctx.fillStyle = '#ffd700';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('⭢  Function Name:', baseX + 18, baseY + 115);
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 26px Courier New';
+        ctx.fillText('process_data', baseX + 18, baseY + 152);
+        ctx.globalAlpha = 1;
+      }
+
+      // Bottom bar
+      ctx.fillStyle = '#161b22';
+      ctx.fillRect(0, H - 36, W, 36);
+      ctx.fillStyle = '#ffd700';
+      ctx.font = 'bold 13px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('✦  Remember this function name!  ✦', W/2, H - 14);
+    }
+
+    document.getElementById('pb-fill').style.width = (Math.min(elapsed/DURATION,1)*100) + '%';
+    if (elapsed < DURATION) animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('pb-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-input').value.trim().toLowerCase();
+    const msgEl = document.getElementById('result-msg');
+    if (val.includes('process') && val.includes('data')) {
+      taskResult = 'correct_function';
+      msgEl.textContent = '✓ Correct! The function demonstrated is: process_data';
+      msgEl.className = 'rok';
+    } else {
+      msgEl.textContent = '✗ Incorrect. Watch the video until the function name is highlighted in yellow.';
+      msgEl.className = 'rerr';
+    }
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

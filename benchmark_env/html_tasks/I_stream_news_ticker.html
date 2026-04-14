@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>News Ticker</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #f8fafc; min-height: 100vh; display: flex; flex-direction: column; }
+  /* News site layout */
+  .site-header { background: #1a1a2e; padding: 0; position: sticky; top: 0; z-index: 100; }
+  .site-brand { padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #2d2d48; }
+  .brand-name { font-size: 1.5rem; font-weight: 900; color: #fff; letter-spacing: -1px; }
+  .brand-name span { color: #ef4444; }
+  .brand-nav { display: flex; gap: 20px; }
+  .brand-nav a { color: #94a3b8; font-size: 0.82rem; text-decoration: none; cursor: pointer; transition: color 0.2s; }
+  .brand-nav a:hover { color: #fff; }
+  .ticker-bar { background: #ef4444; padding: 8px 0; overflow: hidden; position: relative; }
+  .ticker-label { position: absolute; left: 0; top: 0; bottom: 0; background: #b91c1c; display: flex; align-items: center; padding: 0 16px; font-size: 0.75rem; font-weight: 900; color: #fff; letter-spacing: 1px; z-index: 2; white-space: nowrap; }
+  .ticker-content { margin-left: 110px; overflow: hidden; white-space: nowrap; }
+  .ticker-text { display: inline-block; animation: tickerScroll 20s linear infinite; color: #fff; font-size: 0.82rem; font-weight: 600; }
+  @keyframes tickerScroll { 0% { transform: translateX(100vw); } 100% { transform: translateX(-100%); } }
+  .headline-strip { background: #fff; border-bottom: 2px solid #1a1a2e; padding: 10px 24px; display: flex; align-items: center; gap: 16px; }
+  .current-headline { font-size: 0.88rem; color: #1a1a2e; font-weight: 600; flex: 1; transition: all 0.5s; padding: 6px 12px; border-radius: 6px; border-left: 3px solid #ef4444; }
+  .current-headline.breakthrough { color: #7c3aed; border-left-color: #7c3aed; background: #f5f3ff; font-weight: 700; }
+  .headline-counter { color: #94a3b8; font-size: 0.75rem; flex-shrink: 0; }
+  /* Article grid */
+  .content-area { flex: 1; padding: 24px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; max-width: 1000px; margin: 0 auto; width: 100%; }
+  .article-card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+  .article-img { height: 100px; background: linear-gradient(135deg, #e2e8f0, #cbd5e1); display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+  .article-body { padding: 12px; }
+  .article-cat { font-size: 0.65rem; font-weight: 700; color: #ef4444; text-transform: uppercase; letter-spacing: 1px; }
+  .article-title { font-size: 0.82rem; font-weight: 700; color: #1e293b; margin-top: 4px; line-height: 1.3; }
+  .article-meta { font-size: 0.7rem; color: #94a3b8; margin-top: 6px; }
+  /* Answer section */
+  .answer-strip { background: #fff; border-top: 2px solid #e2e8f0; padding: 20px 24px; }
+  .answer-strip .inner { max-width: 600px; margin: 0 auto; }
+  .answer-strip label { font-size: 0.85rem; color: #475569; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-strip input { width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.95rem; outline: none; }
+  .answer-strip input:focus { border-color: #2563eb; }
+  .btn-row { display: flex; gap: 10px; margin-top: 10px; }
+  .btn { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #e2e8f0; color: #475569; border: none; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 8px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="site-header">
+  <div class="site-brand">
+    <div class="brand-name">GLOBAL<span>WIRE</span></div>
+    <nav class="brand-nav">
+      <a>World</a><a>Tech</a><a>Science</a><a>Business</a><a>Sports</a>
+    </nav>
+  </div>
+  <div class="ticker-bar">
+    <div class="ticker-label">BREAKING</div>
+    <div class="ticker-content">
+      <span class="ticker-text" id="tickerText">Loading headlines...</span>
+    </div>
+  </div>
+</div>
+
+<div class="headline-strip">
+  <div class="current-headline" id="currentHeadline">Loading...</div>
+  <div class="headline-counter" id="headlineCounter">1 / 4</div>
+</div>
+
+<div class="content-area">
+  <div class="article-card">
+    <div class="article-img">📈</div>
+    <div class="article-body">
+      <div class="article-cat">Markets</div>
+      <div class="article-title">Tech sector leads market rally on strong earnings reports</div>
+      <div class="article-meta">2 hours ago · GlobalWire Staff</div>
+    </div>
+  </div>
+  <div class="article-card" id="breakthroughCard">
+    <div class="article-img">🔬</div>
+    <div class="article-body">
+      <div class="article-cat">Science</div>
+      <div class="article-title">AI breakthrough promises to revolutionize medical research</div>
+      <div class="article-meta">45 min ago · Science Desk</div>
+    </div>
+  </div>
+  <div class="article-card">
+    <div class="article-img">🗳️</div>
+    <div class="article-body">
+      <div class="article-cat">Politics</div>
+      <div class="article-title">Historic voter turnout recorded in local elections nationwide</div>
+      <div class="article-meta">3 hours ago · Political Correspondent</div>
+    </div>
+  </div>
+</div>
+
+<div class="answer-strip">
+  <div class="inner">
+    <label for="answerInput">What headline mentions a "breakthrough"? Type it in:</label>
+    <input type="text" id="answerInput" placeholder="Type the breakthrough headline..." />
+    <div class="btn-row">
+      <button class="btn" onclick="submitAnswer()">Submit</button>
+      <button class="btn-restart" onclick="restartTicker()">Restart</button>
+    </div>
+    <div class="result-msg" id="resultMsg"></div>
+  </div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const headlines = [
+  "Markets rise as tech sector rallies",
+  "Scientists announce AI breakthrough in protein folding",
+  "Local elections see record turnout",
+  "New trade deal signed between major economies"
+];
+
+let currentIdx = 0;
+let intervalId = null;
+
+function updateHeadline(idx) {
+  const el = document.getElementById('currentHeadline');
+  el.textContent = headlines[idx];
+  el.className = 'current-headline' + (idx === 1 ? ' breakthrough' : '');
+  document.getElementById('headlineCounter').textContent = `${idx + 1} / ${headlines.length}`;
+
+  if (idx === 1) {
+    document.getElementById('breakthroughCard').style.outline = '2px solid #7c3aed';
+    document.getElementById('breakthroughCard').style.background = '#faf5ff';
+  } else {
+    document.getElementById('breakthroughCard').style.outline = '';
+    document.getElementById('breakthroughCard').style.background = '';
+  }
+}
+
+function updateTicker() {
+  const all = headlines.join('   •   ') + '   •   ' + headlines.join('   •   ');
+  document.getElementById('tickerText').textContent = all;
+}
+
+function startTicker() {
+  updateTicker();
+  updateHeadline(0);
+  intervalId = setInterval(() => {
+    currentIdx = (currentIdx + 1) % headlines.length;
+    updateHeadline(currentIdx);
+  }, 4000);
+}
+
+function restartTicker() {
+  clearInterval(intervalId);
+  currentIdx = 0;
+  taskResult = 'pending';
+  document.getElementById('answerInput').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  startTicker();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerInput').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('breakthrough')) {
+    taskResult = 'headline_found';
+    msg.style.color = '#16a34a';
+    msg.textContent = 'Correct! The breakthrough headline: "Scientists announce AI breakthrough in protein folding"';
+  } else {
+    taskResult = 'incorrect';
+    msg.style.color = '#dc2626';
+    msg.textContent = 'Incorrect. Watch the rotating headlines for one mentioning a breakthrough.';
+  }
+  msg.style.display = 'block';
+}
+
+startTicker();
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Meeting — Action Items</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: #0f1923;
+    color: #dde1e7;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  header {
+    background: #111c27;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #1e3050;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .logo { font-size: 17px; font-weight: 700; color: #38bdf8; }
+  .meeting-title { font-size: 13px; color: #64748b; }
+  .live { color: #22c55e; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: blink 1.2s infinite; }
+  @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+
+  .body {
+    display: flex;
+    flex: 1;
+    gap: 0;
+  }
+  .left {
+    flex: 1;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .participants-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .p-tile {
+    background: #151f2e;
+    border-radius: 12px;
+    border: 2px solid #1e3050;
+    padding: 24px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+  }
+  .p-tile.active {
+    border-color: #38bdf8;
+    box-shadow: 0 0 20px rgba(56,189,248,0.2);
+  }
+  .avatar {
+    width: 60px; height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+  }
+  .p-label { font-size: 13px; color: #94a3b8; font-weight: 500; }
+  .speaking-ring {
+    position: absolute;
+    top: -3px; left: -3px; right: -3px; bottom: -3px;
+    border-radius: 14px;
+    border: 2px solid #38bdf8;
+    opacity: 0;
+    transition: opacity 0.3s;
+    pointer-events: none;
+  }
+  .p-tile.active .speaking-ring { opacity: 1; animation: ring 1s infinite; }
+  @keyframes ring { 0%,100%{opacity:0.8;} 50%{opacity:0.3;} }
+
+  .chat-log {
+    background: #111c27;
+    border-radius: 10px;
+    padding: 14px;
+    flex: 1;
+    border: 1px solid #1e3050;
+    overflow-y: auto;
+    max-height: 220px;
+  }
+  .chat-log h4 { font-size: 11px; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .chat-msg { margin-bottom: 10px; font-size: 13px; line-height: 1.5; }
+  .chat-msg .who { font-weight: 700; margin-right: 4px; }
+  .who-alice { color: #a78bfa; }
+  .who-bob   { color: #34d399; }
+  .who-carol { color: #fb923c; }
+  .chat-time { font-size: 11px; color: #4b5563; margin-left: 6px; }
+
+  .right {
+    width: 310px;
+    background: #111c27;
+    border-left: 1px solid #1e3050;
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    gap: 14px;
+  }
+  .right h4 { font-size: 12px; color: #38bdf8; text-transform: uppercase; letter-spacing: 1px; }
+  .action-tracker {
+    background: #0f1923;
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #1e3050;
+    flex: 1;
+    overflow-y: auto;
+  }
+  .action-item {
+    display: none;
+    background: #151f2e;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    border-left: 3px solid #38bdf8;
+    font-size: 12px;
+    animation: fadeIn 0.5s ease;
+  }
+  .action-item.show { display: block; }
+  @keyframes fadeIn { from{opacity:0; transform:translateY(-4px);} to{opacity:1; transform:none;} }
+  .ai-who { font-weight: 700; font-size: 11px; margin-bottom: 4px; }
+  .ai-text { color: #94a3b8; }
+
+  .answer-box textarea {
+    width: 100%;
+    background: #0f1923;
+    border: 1px solid #1e3050;
+    border-radius: 7px;
+    color: #dde1e7;
+    padding: 10px;
+    font-size: 13px;
+    resize: vertical;
+    min-height: 90px;
+    outline: none;
+    font-family: inherit;
+  }
+  .answer-box textarea:focus { border-color: #38bdf8; }
+  .btn-row { display: flex; gap: 8px; margin-top: 8px; }
+  .btn {
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn:hover { opacity: 0.85; }
+  .btn-primary { background: #0ea5e9; color: #fff; }
+  .btn-replay { background: #1e3050; color: #dde1e7; }
+  .result-msg { margin-top: 8px; font-size: 12px; padding: 7px 10px; border-radius: 6px; display: none; }
+  .result-msg.success { background: #14532d; color: #86efac; display: block; }
+  .result-msg.error   { background: #450a0a; color: #fca5a5; display: block; }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">&#9670; Nexus Meet</div>
+  <div class="meeting-title">Weekly Team Standup — Sprint Review</div>
+  <div class="live"><span class="dot"></span> Recording</div>
+</header>
+
+<div class="body">
+  <div class="left">
+    <div class="participants-grid">
+      <div class="p-tile" id="tile-alice">
+        <div class="speaking-ring"></div>
+        <div class="avatar" style="background:#7c3aed;">AL</div>
+        <div class="p-label">Alice</div>
+      </div>
+      <div class="p-tile" id="tile-bob">
+        <div class="speaking-ring"></div>
+        <div class="avatar" style="background:#059669;">BO</div>
+        <div class="p-label">Bob</div>
+      </div>
+      <div class="p-tile" id="tile-carol">
+        <div class="speaking-ring"></div>
+        <div class="avatar" style="background:#ea580c;">CA</div>
+        <div class="p-label">Carol</div>
+      </div>
+    </div>
+
+    <div class="chat-log" id="chat-log">
+      <h4>Meeting Chat</h4>
+      <div id="chat-content">
+        <div class="chat-msg" style="color:#4b5563; font-style:italic;">Meeting in progress...</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div>
+      <h4>Action Items (auto-captured)</h4>
+      <div class="action-tracker" id="action-tracker">
+        <div id="ai1" class="action-item">
+          <div class="ai-who who-alice">Alice</div>
+          <div class="ai-text">Prepare the quarterly report by Friday</div>
+        </div>
+        <div id="ai2" class="action-item">
+          <div class="ai-who who-bob">Bob</div>
+          <div class="ai-text">Schedule the client demo for next week</div>
+        </div>
+        <div id="ai3" class="action-item">
+          <div class="ai-who who-carol">Carol</div>
+          <div class="ai-text">Handle the budget review</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="answer-box">
+      <h4 style="margin-bottom:8px;">Your Notes — List Action Items</h4>
+      <textarea id="answer-ta" placeholder="List each action item and who's responsible..."></textarea>
+      <div class="btn-row">
+        <button class="btn btn-primary" onclick="submitAnswer()">Submit</button>
+        <button class="btn btn-replay" onclick="replayAll()">&#9654; Replay</button>
+      </div>
+      <div class="result-msg" id="result-msg"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const events = [
+    {
+      t: 2000,
+      tile: 'tile-alice',
+      name: 'Alice',
+      cls: 'who-alice',
+      text: "I'll prepare the quarterly report by Friday.",
+      speech: "I'll prepare the quarterly report by Friday.",
+      ai: 'ai1'
+    },
+    {
+      t: 6000,
+      tile: 'tile-bob',
+      name: 'Bob',
+      cls: 'who-bob',
+      text: "I'll schedule the client demo for next week.",
+      speech: "I'll schedule the client demo for next week.",
+      ai: 'ai2'
+    },
+    {
+      t: 10000,
+      tile: 'tile-carol',
+      name: 'Carol',
+      cls: 'who-carol',
+      text: "I can handle the budget review.",
+      speech: "I can handle the budget review.",
+      ai: 'ai3'
+    }
+  ];
+
+  let timeouts = [];
+
+  function speak(text) {
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.85;
+    window.speechSynthesis.speak(u);
+  }
+
+  function addChatMsg(name, cls, text, time) {
+    const content = document.getElementById('chat-content');
+    const first = content.querySelector('em, [style*="italic"]');
+    if (first) first.parentElement.innerHTML = '';
+    const div = document.createElement('div');
+    div.className = 'chat-msg';
+    div.innerHTML = `<span class="who ${cls}">${name}</span><span style="color:#dde1e7;">${text}</span><span class="chat-time">${time}</span>`;
+    content.appendChild(div);
+    content.scrollTop = content.scrollHeight;
+  }
+
+  function playEvent(ev, baseTime) {
+    return setTimeout(() => {
+      // activate tile
+      document.querySelectorAll('.p-tile').forEach(t => t.classList.remove('active'));
+      document.getElementById(ev.tile).classList.add('active');
+      speak(ev.speech);
+      // add chat
+      const now = new Date(Date.now() + (ev.t - baseTime));
+      const hh = String(now.getHours()).padStart(2,'0');
+      const mm = String(now.getMinutes()).padStart(2,'0');
+      addChatMsg(ev.name, ev.cls, ev.text, `${hh}:${mm}`);
+      // show action item
+      document.getElementById(ev.ai).classList.add('show');
+      // deactivate after 3s
+      setTimeout(() => document.getElementById(ev.tile).classList.remove('active'), 3000);
+    }, ev.t - baseTime);
+  }
+
+  function startAll() {
+    window.speechSynthesis.cancel();
+    const base = 0;
+    timeouts = events.map(ev => playEvent(ev, base));
+  }
+
+  function replayAll() {
+    timeouts.forEach(clearTimeout);
+    window.speechSynthesis.cancel();
+    document.querySelectorAll('.p-tile').forEach(t => t.classList.remove('active'));
+    const base = Date.now();
+    events.forEach(ev => {
+      timeouts.push(setTimeout(() => {
+        document.querySelectorAll('.p-tile').forEach(t => t.classList.remove('active'));
+        document.getElementById(ev.tile).classList.add('active');
+        speak(ev.speech);
+        setTimeout(() => document.getElementById(ev.tile).classList.remove('active'), 3000);
+      }, ev.t));
+    });
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-ta').value.toLowerCase();
+    const msg = document.getElementById('result-msg');
+    if (val.includes('report') && val.includes('demo')) {
+      taskResult = 'actions_noted';
+      msg.className = 'result-msg success';
+      msg.textContent = 'Action items noted correctly!';
+    } else {
+      taskResult = 'incomplete_actions';
+      msg.className = 'result-msg error';
+      msg.textContent = 'Missing some action items. Include both the report and demo.';
+    }
+  }
+
+  startAll();
+</script>
+</body>
+</html>

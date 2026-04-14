@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DynaCU-Bench B-001: Meeting Audio</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #1a1a2e; color: white; margin: 0; padding: 0; }
+    #meeting-ui { max-width: 1000px; margin: 0 auto; padding: 30px; }
+    .meeting-header { background: #16213e; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+    .meeting-header h1 { margin: 0; font-size: 22px; }
+    .participants { display: flex; gap: 15px; margin-top: 15px; }
+    .participant { background: #0f3460; padding: 10px 20px; border-radius: 6px; text-align: center; }
+    .participant .avatar { width: 50px; height: 50px; border-radius: 50%; margin: 0 auto 8px; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+    .controls { display: flex; gap: 10px; margin-top: 20px; }
+    .controls button { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; }
+    #transcript-area { background: #16213e; border-radius: 8px; padding: 20px; min-height: 120px; margin-top: 20px; }
+    #transcript-area h3 { margin-top: 0; color: #a0aec0; font-size: 14px; text-transform: uppercase; }
+    #transcript { font-size: 15px; line-height: 1.8; color: #e2e8f0; }
+    #url-form { background: #16213e; padding: 20px; border-radius: 8px; margin-top: 20px; }
+    #url-form h3 { margin-top: 0; }
+    #url-input { width: 70%; padding: 10px; border-radius: 4px; border: 2px solid #4a5568; background: #2d3748; color: white; font-size: 15px; }
+    #url-input.correct { border-color: #48bb78; }
+    #url-input.wrong { border-color: #fc8181; }
+    #submit-url { padding: 10px 20px; background: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 15px; margin-left: 10px; }
+    #task-result { margin-top: 15px; font-size: 16px; font-weight: bold; }
+    .speaking { border: 2px solid #48bb78; }
+  </style>
+</head>
+<body>
+  <div id="meeting-ui">
+    <div class="meeting-header">
+      <h1>📹 Team Meeting — Recording in Progress</h1>
+      <div class="participants">
+        <div class="participant" id="p-alice">
+          <div class="avatar" style="background:#e53e3e;">A</div>
+          <div>Alice (Host)</div>
+        </div>
+        <div class="participant" id="p-bob">
+          <div class="avatar" style="background:#3182ce;">B</div>
+          <div>Bob</div>
+        </div>
+        <div class="participant" id="p-carol">
+          <div class="avatar" style="background:#38a169;">C</div>
+          <div>Carol</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="transcript-area">
+      <h3>Live Transcript</h3>
+      <div id="transcript">Meeting starting...</div>
+    </div>
+
+    <div id="url-form">
+      <h3>Open the URL mentioned in the meeting:</h3>
+      <input type="text" id="url-input" placeholder="Enter the URL you heard..." />
+      <button id="submit-url" onclick="submitURL()">Navigate</button>
+      <div id="task-result" data-testid="result"></div>
+    </div>
+  </div>
+
+  <audio id="meeting-audio" autoplay></audio>
+
+  <script>
+    // Simulate meeting transcript unfolding over time
+    const transcript_lines = [
+      { t: 1000,  speaker: 'alice', text: "Good morning everyone, let's get started." },
+      { t: 3500,  speaker: 'bob',   text: "Hi Alice, hi Carol. Ready when you are." },
+      { t: 6000,  speaker: 'alice', text: "Great. Today we're reviewing the Q3 analysis." },
+      { t: 9000,  speaker: 'carol', text: "I've prepared a summary document." },
+      { t: 12000, speaker: 'alice', text: "Perfect. Please check the full report at example.com/report" },
+      { t: 15500, speaker: 'bob',   text: "Got it, opening the link now." },
+      { t: 18000, speaker: 'carol', text: "The numbers look strong this quarter." },
+    ];
+
+    const TARGET_URL = 'example.com/report';
+    let taskResult = 'pending';
+    let transcriptEl = document.getElementById('transcript');
+    let lines_shown = [];
+
+    transcript_lines.forEach(line => {
+      setTimeout(() => {
+        lines_shown.push(`<strong>${line.speaker.toUpperCase()}:</strong> ${line.text}`);
+        transcriptEl.innerHTML = lines_shown.join('<br>');
+        // Highlight speaking participant
+        document.querySelectorAll('.participant').forEach(p => p.classList.remove('speaking'));
+        document.getElementById('p-' + line.speaker)?.classList.add('speaking');
+      }, line.t);
+    });
+
+    // Generate TTS-like audio using Web Speech API (if available)
+    function speakLine(text, delay) {
+      setTimeout(() => {
+        if ('speechSynthesis' in window) {
+          const utterance = new SpeechSynthesisUtterance(text);
+          utterance.rate = 0.9;
+          window.speechSynthesis.speak(utterance);
+        }
+      }, delay);
+    }
+
+    transcript_lines.forEach(line => speakLine(line.text, line.t));
+
+    function submitURL() {
+      const input = document.getElementById('url-input').value.trim().toLowerCase();
+      const resultEl = document.getElementById('task-result');
+
+      if (input.includes('example.com/report') || input.includes('example.com%2freport')) {
+        taskResult = 'correct_url';
+        document.getElementById('url-input').className = 'correct';
+        resultEl.textContent = '✓ SUCCESS: Correct URL entered — example.com/report';
+        resultEl.setAttribute('data-result', 'correct_url');
+        resultEl.style.color = '#48bb78';
+      } else if (input.length > 0) {
+        taskResult = 'wrong_url';
+        document.getElementById('url-input').className = 'wrong';
+        resultEl.textContent = `✗ Wrong URL: "${input}" — expected example.com/report`;
+        resultEl.setAttribute('data-result', 'wrong_url');
+        resultEl.style.color = '#fc8181';
+      }
+    }
+
+    window.getTaskResult = () => taskResult;
+    window.getTranscriptText = () => lines_shown.join(' ');
+  </script>
+</body>
+</html>

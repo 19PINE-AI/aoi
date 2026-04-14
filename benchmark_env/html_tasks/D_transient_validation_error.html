@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account — SignupPro</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0,0,0,0.18);
+    width: 100%;
+    max-width: 480px;
+    padding: 36px 40px;
+  }
+
+  .card-header { text-align: center; margin-bottom: 28px; }
+  .logo { font-size: 1.6rem; font-weight: 800; color: #667eea; letter-spacing: -0.5px; }
+  .logo span { color: #764ba2; }
+  .card-title { font-size: 1.4rem; font-weight: 700; color: #1a1a2e; margin-top: 8px; }
+  .card-sub { font-size: 0.88rem; color: #777; margin-top: 4px; }
+
+  .form-group { margin-bottom: 18px; }
+  label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+  }
+  label .req { color: #e74c3c; margin-left: 2px; }
+  input[type="text"],
+  input[type="email"],
+  input[type="tel"],
+  input[type="password"] {
+    width: 100%;
+    padding: 11px 14px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    color: #222;
+    background: #fafafa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  input:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102,126,234,0.12);
+    background: #fff;
+  }
+  input.error-field {
+    border-color: #e74c3c !important;
+    box-shadow: 0 0 0 3px rgba(231,76,60,0.10) !important;
+  }
+  input.success-field {
+    border-color: #27ae60 !important;
+    box-shadow: 0 0 0 3px rgba(39,174,96,0.10) !important;
+  }
+
+  .row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+  .btn-submit {
+    width: 100%;
+    padding: 13px;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    letter-spacing: 0.3px;
+    margin-top: 6px;
+    transition: opacity 0.2s;
+  }
+  .btn-submit:hover { opacity: 0.9; }
+
+  .footer-text { text-align: center; font-size: 0.82rem; color: #999; margin-top: 16px; }
+  .footer-text a { color: #667eea; text-decoration: none; }
+
+  /* Error banner */
+  .error-banner {
+    display: none;
+    background: #fde8e8;
+    border: 1.5px solid #f5c2c2;
+    border-left: 4px solid #e74c3c;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 0.9rem;
+    color: #c0392b;
+    font-weight: 500;
+    animation: slideDown 0.3s ease;
+  }
+  .error-banner.show { display: flex; align-items: center; gap: 8px; }
+
+  @keyframes slideDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Success banner */
+  .success-banner {
+    display: none;
+    background: #e8f8f0;
+    border: 1.5px solid #a9dfbf;
+    border-left: 4px solid #27ae60;
+    border-radius: 8px;
+    padding: 12px 16px;
+    margin-bottom: 18px;
+    font-size: 0.9rem;
+    color: #1e8449;
+    font-weight: 500;
+  }
+  .success-banner.show { display: flex; align-items: center; gap: 8px; }
+
+  .password-hint { font-size: 0.78rem; color: #aaa; margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="card-header">
+    <div class="logo">Signup<span>Pro</span></div>
+    <div class="card-title">Create Your Account</div>
+    <div class="card-sub">Join 50,000+ professionals. It's free to start.</div>
+  </div>
+
+  <div class="error-banner" id="errorBanner">
+    <span>⚠️</span>
+    <span id="errorMsg">Validation Error: Email address is required</span>
+  </div>
+  <div class="success-banner" id="successBanner">
+    <span>✅</span>
+    <span>Account created successfully! Welcome aboard.</span>
+  </div>
+
+  <form id="signupForm" onsubmit="submitForm(event)" novalidate>
+    <div class="row-2">
+      <div class="form-group">
+        <label>First Name <span class="req">*</span></label>
+        <input type="text" id="firstName" value="Jordan" placeholder="First name">
+      </div>
+      <div class="form-group">
+        <label>Last Name <span class="req">*</span></label>
+        <input type="text" id="lastName" value="Mitchell" placeholder="Last name">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Email Address <span class="req">*</span></label>
+      <input type="email" id="email" value="" placeholder="you@example.com" id="email">
+    </div>
+
+    <div class="form-group">
+      <label>Phone Number <span class="req">*</span></label>
+      <input type="tel" id="phone" value="+1 (555) 234-7890" placeholder="+1 (555) 000-0000">
+    </div>
+
+    <div class="form-group">
+      <label>Password <span class="req">*</span></label>
+      <input type="password" id="password" value="Secure#Pass99" placeholder="Create a strong password">
+      <div class="password-hint">Minimum 8 characters, at least one number and symbol</div>
+    </div>
+
+    <button type="submit" class="btn-submit" id="btnSubmit">Create Account →</button>
+  </form>
+
+  <div class="footer-text">
+    Already have an account? <a href="#">Sign in</a> &nbsp;·&nbsp;
+    By signing up you agree to our <a href="#">Terms</a> and <a href="#">Privacy Policy</a>.
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  let errorTimer = null;
+  let submitCount = 0;
+
+  function submitForm(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email');
+    const errorBanner = document.getElementById('errorBanner');
+    const successBanner = document.getElementById('successBanner');
+
+    // Hide any existing banners
+    errorBanner.classList.remove('show');
+    successBanner.classList.remove('show');
+    email.classList.remove('error-field', 'success-field');
+
+    clearTimeout(errorTimer);
+
+    if (!email.value.trim()) {
+      // Show validation error
+      email.classList.add('error-field');
+      errorBanner.classList.add('show');
+      document.getElementById('errorMsg').textContent = '⚠️ Validation Error: Email address is required';
+
+      // Auto-dismiss after 3s
+      errorTimer = setTimeout(() => {
+        errorBanner.classList.remove('show');
+        email.classList.remove('error-field');
+      }, 3000);
+
+    } else {
+      // Email filled — success
+      email.classList.add('success-field');
+      successBanner.classList.add('show');
+      taskResult = 'email_field_fixed';
+      document.getElementById('btnSubmit').textContent = '✓ Account Created!';
+      document.getElementById('btnSubmit').style.background = '#27ae60';
+    }
+  }
+</script>
+</body>
+</html>

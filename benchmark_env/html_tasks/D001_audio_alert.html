@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>DynaCU-Bench D-001: Audio Alert</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f7fafc; margin: 0; padding: 20px; }
+    #workspace { max-width: 900px; margin: 0 auto; }
+    #editor { background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 30px; min-height: 300px; margin-bottom: 20px; }
+    #editor h2 { color: #2d3748; margin-top: 0; }
+    textarea { width: 100%; height: 200px; border: 1px solid #e2e8f0; border-radius: 4px; padding: 10px; font-size: 14px; resize: vertical; box-sizing: border-box; }
+    #calendar-panel { display: none; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 20px; }
+    #calendar-panel h2 { color: #2d3748; margin-top: 0; }
+    .calendar-event { background: #ebf8ff; border-left: 4px solid #3182ce; padding: 12px 16px; margin: 10px 0; border-radius: 4px; }
+    .event-title { font-weight: bold; font-size: 16px; color: #2c5282; }
+    .event-time { color: #4a5568; font-size: 13px; margin-top: 4px; }
+    #event-note-form { margin-top: 20px; }
+    #event-note-form input { width: 70%; padding: 10px; border: 2px solid #e2e8f0; border-radius: 4px; font-size: 15px; }
+    #event-note-form input.correct { border-color: #48bb78; }
+    #event-note-form button { padding: 10px 20px; background: #3182ce; color: white; border: none; border-radius: 4px; cursor: pointer; margin-left: 10px; font-size: 15px; }
+    #task-result { margin-top: 15px; font-size: 16px; font-weight: bold; }
+    /* Alarm overlay */
+    #alarm-overlay {
+      display: none; position: fixed; top: 20px; right: 20px;
+      background: #fff; border: 2px solid #e53e3e; border-radius: 8px;
+      padding: 20px 24px; box-shadow: 0 4px 20px rgba(229,62,62,0.3);
+      z-index: 9999; min-width: 280px;
+    }
+    #alarm-overlay .alarm-icon { font-size: 32px; text-align: center; }
+    #alarm-overlay h3 { margin: 8px 0; color: #e53e3e; }
+    #alarm-overlay p { margin: 0; color: #4a5568; font-size: 14px; }
+    #open-calendar-btn { background: #e53e3e; color: white; border: none; padding: 8px 18px; border-radius: 4px; cursor: pointer; margin-top: 12px; font-size: 14px; }
+    #taskbar { background: #2d3748; color: white; padding: 8px 20px; position: fixed; bottom: 0; left: 0; right: 0; display: flex; gap: 15px; }
+    #taskbar button { background: #4a5568; color: white; border: none; padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: 13px; }
+    #taskbar button:hover { background: #718096; }
+  </style>
+</head>
+<body>
+  <div id="workspace">
+    <div id="editor">
+      <h2>📄 Document Editor — Quarterly Report</h2>
+      <textarea id="doc-text">Q3 Financial Summary
+
+Revenue: $2.4M (+18% YoY)
+Operating costs: $1.6M
+Net profit: $0.8M
+
+Key highlights:
+- European expansion on track
+- New product launch scheduled for Q4
+- Customer retention at 94%
+</textarea>
+    </div>
+
+    <div id="calendar-panel">
+      <h2>📅 Calendar</h2>
+      <div class="calendar-event">
+        <div class="event-title" id="event-title">Team Standup</div>
+        <div class="event-time">⏰ 10:00 AM — 10:15 AM | Daily</div>
+        <div class="event-time">📍 Meeting Room 4B</div>
+      </div>
+      <div id="event-note-form">
+        <p>Note the event title:</p>
+        <input type="text" id="event-note" placeholder="Enter event title..." />
+        <button onclick="submitEventNote()">Submit</button>
+        <div id="task-result" data-testid="result"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Alarm overlay — appears at t=8s -->
+  <div id="alarm-overlay">
+    <div class="alarm-icon">⏰</div>
+    <h3>Calendar Reminder</h3>
+    <p>Your meeting starts in 5 minutes</p>
+    <button id="open-calendar-btn" onclick="openCalendar()">Open Calendar</button>
+  </div>
+
+  <!-- Taskbar -->
+  <div id="taskbar">
+    <button onclick="switchToEditor()">📄 Document Editor</button>
+    <button id="calendar-btn" onclick="openCalendar()">📅 Calendar</button>
+  </div>
+
+  <script>
+    let taskResult = 'pending';
+    let alarmHeard = false;
+
+    // Show alarm at t=8 seconds
+    setTimeout(() => {
+      document.getElementById('alarm-overlay').style.display = 'block';
+      playAlarmSound();
+    }, 8000);
+
+    // Auto-dismiss alarm after 5 seconds if not clicked
+    setTimeout(() => {
+      const alarm = document.getElementById('alarm-overlay');
+      if (alarm.style.display !== 'none') {
+        alarm.style.display = 'none';
+        if (taskResult === 'pending') {
+          taskResult = 'alarm_missed';
+        }
+      }
+    }, 13000);
+
+    function playAlarmSound() {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        function beep(freq, start, dur) {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.frequency.value = freq;
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + start);
+          osc.stop(ctx.currentTime + start + dur);
+          gain.gain.setValueAtTime(0.3, ctx.currentTime + start);
+          gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + start + dur);
+        }
+        // Triple beep pattern (classic calendar alarm)
+        beep(660, 0.0, 0.3);
+        beep(660, 0.4, 0.3);
+        beep(660, 0.8, 0.3);
+        alarmHeard = true;
+      } catch(e) { console.log('Audio not available:', e); }
+    }
+
+    function openCalendar() {
+      document.getElementById('alarm-overlay').style.display = 'none';
+      document.getElementById('editor').style.display = 'none';
+      document.getElementById('calendar-panel').style.display = 'block';
+    }
+
+    function switchToEditor() {
+      document.getElementById('editor').style.display = 'block';
+      document.getElementById('calendar-panel').style.display = 'none';
+    }
+
+    function submitEventNote() {
+      const note = document.getElementById('event-note').value.trim();
+      const result = document.getElementById('task-result');
+      const TARGET = 'Team Standup';
+
+      if (note.toLowerCase().includes('standup') || note.toLowerCase().includes('stand up')) {
+        taskResult = 'correct_event';
+        document.getElementById('event-note').className = 'correct';
+        result.textContent = `✓ SUCCESS: Correct event title noted — "${note}"`;
+        result.setAttribute('data-result', 'correct_event');
+        result.style.color = '#38a169';
+      } else {
+        taskResult = 'wrong_event';
+        result.textContent = `✗ Wrong: "${note}" — expected "Team Standup"`;
+        result.setAttribute('data-result', 'wrong_event');
+        result.style.color = '#e53e3e';
+      }
+    }
+
+    window.getTaskResult = () => taskResult;
+    window.isCalendarOpen = () => document.getElementById('calendar-panel').style.display !== 'none';
+  </script>
+</body>
+</html>

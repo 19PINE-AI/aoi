@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Diff Viewer</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0d1117; display: flex; align-items: center; justify-content: center; min-height: 100vh; flex-direction: column; padding: 20px; }
+  .diff-container { width: 760px; background: #161b22; border: 1px solid #30363d; border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+  .diff-header { background: #21262d; border-bottom: 1px solid #30363d; padding: 12px 20px; display: flex; align-items: center; justify-content: space-between; }
+  .diff-header h3 { color: #c9d1d9; font-size: 0.9rem; }
+  .change-badge { background: #1c2128; border: 1px solid #30363d; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; color: #8b949e; }
+  .diff-stats { display: flex; gap: 12px; align-items: center; }
+  .stat-add { color: #3fb950; font-size: 0.85rem; font-weight: 700; }
+  .stat-rem { color: #f85149; font-size: 0.85rem; font-weight: 700; }
+  .diff-body { font-family: 'Courier New', monospace; font-size: 0.82rem; }
+  .diff-file { border-bottom: 1px solid #30363d; }
+  .diff-file-header { background: #1c2128; padding: 8px 16px; color: #8b949e; font-size: 0.78rem; border-bottom: 1px solid #30363d; }
+  .diff-line { display: flex; align-items: stretch; min-height: 22px; }
+  .diff-line .ln { width: 50px; padding: 2px 10px; color: #484f58; font-size: 0.78rem; text-align: right; flex-shrink: 0; border-right: 1px solid #30363d; user-select: none; }
+  .diff-line .code { padding: 2px 14px; flex: 1; white-space: pre; color: #c9d1d9; }
+  .diff-line.add { background: rgba(63,185,80,0.1); }
+  .diff-line.add .code { color: #3fb950; }
+  .diff-line.add .ln { background: rgba(63,185,80,0.08); }
+  .diff-line.rem { background: rgba(248,81,73,0.1); }
+  .diff-line.rem .code { color: #f85149; }
+  .diff-line.rem .ln { background: rgba(248,81,73,0.08); }
+  .diff-line.ctx .code { color: #8b949e; }
+  .diff-change { display: none; }
+  .diff-change.visible { display: block; animation: fadeIn 0.4s ease; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
+  .change-label { background: #21262d; border: 1px solid #30363d; color: #8b949e; font-size: 0.78rem; padding: 6px 16px; display: flex; align-items: center; gap: 8px; }
+  .change-label .num { background: #2563eb; color: #fff; border-radius: 50%; width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; }
+  .timeline { display: flex; gap: 8px; align-items: center; padding: 14px 0; margin-bottom: 4px; }
+  .tl-dot { width: 28px; height: 28px; border-radius: 50%; background: #30363d; color: #8b949e; display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; flex-shrink: 0; transition: all 0.4s; }
+  .tl-dot.active { background: #2563eb; color: #fff; }
+  .tl-dot.done { background: #3fb950; color: #fff; }
+  .tl-line { flex: 1; height: 2px; background: #30363d; }
+  .answer-box { width: 760px; background: #161b22; border: 1px solid #30363d; border-radius: 10px; padding: 20px; }
+  .answer-box label { color: #8b949e; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box textarea { width: 100%; padding: 10px 14px; background: #0d1117; border: 1px solid #30363d; border-radius: 8px; color: #c9d1d9; font-size: 0.9rem; min-height: 80px; outline: none; resize: vertical; font-family: inherit; }
+  .answer-box textarea:focus { border-color: #388bfd; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #21262d; color: #8b949e; border: 1px solid #30363d; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="diff-container">
+  <div class="diff-header">
+    <h3>Code Review — 3 Changes</h3>
+    <div class="diff-stats">
+      <div class="timeline" id="timeline" style="margin-bottom:0;gap:6px">
+        <div class="tl-dot" id="td0">1</div>
+        <div class="tl-line"></div>
+        <div class="tl-dot" id="td1">2</div>
+        <div class="tl-line"></div>
+        <div class="tl-dot" id="td2">3</div>
+      </div>
+    </div>
+  </div>
+  <div class="diff-body" id="diffBody">
+    <!-- Change 1 -->
+    <div class="diff-change" id="change0">
+      <div class="change-label"><span class="num">1</span> Add import statement at top of file</div>
+      <div class="diff-file">
+        <div class="diff-file-header">src/utils/api.js</div>
+        <div class="diff-line ctx"><span class="ln">1</span><span class="code"> import axios from 'axios';</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+import { Logger } from './logger';</span></div>
+        <div class="diff-line ctx"><span class="ln">2</span><span class="code"> import { config } from '../config';</span></div>
+        <div class="diff-line ctx"><span class="ln">3</span><span class="code"> </span></div>
+      </div>
+    </div>
+    <!-- Change 2 -->
+    <div class="diff-change" id="change1">
+      <div class="change-label"><span class="num">2</span> Rename variable <code style="background:#30363d;padding:1px 5px;border-radius:3px">userData</code> → <code style="background:#30363d;padding:1px 5px;border-radius:3px">userRecord</code> throughout</div>
+      <div class="diff-file">
+        <div class="diff-file-header">src/services/user.js — 3 occurrences</div>
+        <div class="diff-line ctx"><span class="ln">12</span><span class="code"> async function processUser(id) &#123;</span></div>
+        <div class="diff-line rem"><span class="ln">-</span><span class="code">-  const userData = await fetchUser(id);</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+  const userRecord = await fetchUser(id);</span></div>
+        <div class="diff-line ctx"><span class="ln">14</span><span class="code"> </span></div>
+        <div class="diff-line rem"><span class="ln">-</span><span class="code">-  validateUserData(userData);</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+  validateUserData(userRecord);</span></div>
+        <div class="diff-line ctx"><span class="ln">16</span><span class="code"> </span></div>
+        <div class="diff-line rem"><span class="ln">-</span><span class="code">-  return formatResponse(userData);</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+  return formatResponse(userRecord);</span></div>
+        <div class="diff-line ctx"><span class="ln">18</span><span class="code"> &#125;</span></div>
+      </div>
+    </div>
+    <!-- Change 3 -->
+    <div class="diff-change" id="change2">
+      <div class="change-label"><span class="num">3</span> Add new function at bottom of file</div>
+      <div class="diff-file">
+        <div class="diff-file-header">src/services/user.js</div>
+        <div class="diff-line ctx"><span class="ln">42</span><span class="code"> module.exports = &#123; processUser &#125;;</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+function archiveUser(userId) &#123;</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+  return db.archive('users', userId);</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+&#125;</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+</span></div>
+        <div class="diff-line add"><span class="ln">+</span><span class="code">+module.exports = &#123; processUser, archiveUser &#125;;</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="answer-box">
+  <label for="answerTA">Describe the second change:</label>
+  <textarea id="answerTA" placeholder="What was the second change in the diff?"></textarea>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartDiff()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+let timers = [];
+
+function runDiff() {
+  document.getElementById('change0').classList.add('visible');
+  document.getElementById('td0').classList.add('active');
+
+  timers.push(setTimeout(() => {
+    document.getElementById('change1').classList.add('visible');
+    document.getElementById('td0').classList.remove('active');
+    document.getElementById('td0').classList.add('done');
+    document.getElementById('td1').classList.add('active');
+  }, 5000));
+
+  timers.push(setTimeout(() => {
+    document.getElementById('change2').classList.add('visible');
+    document.getElementById('td1').classList.remove('active');
+    document.getElementById('td1').classList.add('done');
+    document.getElementById('td2').classList.add('active');
+  }, 10000));
+
+  timers.push(setTimeout(() => {
+    document.getElementById('td2').classList.remove('active');
+    document.getElementById('td2').classList.add('done');
+  }, 12000));
+}
+
+function restartDiff() {
+  timers.forEach(clearTimeout);
+  timers = [];
+  taskResult = 'pending';
+  document.getElementById('answerTA').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  ['change0','change1','change2'].forEach(id => document.getElementById(id).classList.remove('visible'));
+  ['td0','td1','td2'].forEach(id => {
+    document.getElementById(id).classList.remove('active','done');
+  });
+  runDiff();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerTA').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('rename') || val.includes('variable')) {
+    taskResult = 'diff_described';
+    msg.style.color = '#3fb950';
+    msg.textContent = 'Correct! The second change was renaming the variable userData to userRecord.';
+  } else {
+    taskResult = 'incorrect';
+    msg.style.color = '#f85149';
+    msg.textContent = 'Incorrect. Look carefully at the second change in the diff.';
+  }
+  msg.style.display = 'block';
+}
+
+runDiff();
+</script>
+</body>
+</html>

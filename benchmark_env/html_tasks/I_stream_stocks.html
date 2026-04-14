@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live Stock Dashboard</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0a0a0f; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 24px; }
+  .dashboard { width: 780px; }
+  .dash-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .dash-header h1 { color: #f1f5f9; font-size: 1.2rem; font-weight: 700; }
+  .market-status { display: flex; align-items: center; gap: 8px; background: #0d1117; border: 1px solid #1e2030; border-radius: 8px; padding: 6px 14px; }
+  .market-dot { width: 8px; height: 8px; border-radius: 50%; background: #22c55e; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.5} }
+  .market-text { color: #4ade80; font-size: 0.78rem; font-weight: 700; }
+  .market-time { color: #475569; font-size: 0.72rem; }
+  .stock-grid { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+  .stock-card { background: #13151f; border: 1px solid #1e2030; border-radius: 12px; padding: 16px 20px; display: flex; align-items: center; gap: 20px; transition: all 0.4s; }
+  .stock-card.dropping { border-color: #dc2626; background: #1c0a0a; animation: shakeRed 0.5s; }
+  @keyframes shakeRed { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-4px)} 75%{transform:translateX(4px)} }
+  .stock-card.alert { border-color: #dc2626; background: #1c0a0a; }
+  .stock-ticker { width: 60px; }
+  .ticker-sym { color: #c8d3f5; font-size: 1.1rem; font-weight: 800; font-family: monospace; }
+  .ticker-name { color: #565f89; font-size: 0.68rem; margin-top: 2px; }
+  .stock-price { flex: 1; }
+  .price-val { font-size: 1.5rem; font-weight: 700; color: #c8d3f5; font-family: monospace; transition: color 0.3s; }
+  .price-val.up { color: #4ade80; }
+  .price-val.down { color: #f87171; }
+  .price-prev { color: #565f89; font-size: 0.72rem; margin-top: 2px; }
+  .stock-change { text-align: right; }
+  .change-val { font-size: 1rem; font-weight: 700; font-family: monospace; }
+  .change-up { color: #4ade80; }
+  .change-down { color: #f87171; }
+  .change-neutral { color: #565f89; }
+  .change-bar { height: 4px; width: 80px; border-radius: 2px; margin-top: 6px; overflow: hidden; background: #1e2030; }
+  .change-fill { height: 100%; border-radius: 2px; transition: width 0.5s; }
+  .alert-banner { background: #3d0f0a; border: 2px solid #dc2626; border-radius: 10px; padding: 14px 20px; margin-bottom: 16px; display: none; align-items: center; gap: 12px; animation: flashIn 0.5s; }
+  @keyframes flashIn { from{opacity:0;transform:scale(0.95)} to{opacity:1;transform:scale(1)} }
+  .alert-banner.show { display: flex; }
+  .alert-icon { font-size: 1.5rem; }
+  .alert-text { color: #f87171; font-size: 0.9rem; }
+  .alert-text strong { color: #fff; font-size: 1rem; }
+  .answer-box { width: 780px; background: #13151f; border: 1px solid #1e2030; border-radius: 12px; padding: 20px; }
+  .answer-box label { color: #8b949e; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box input { width: 100%; padding: 10px 14px; background: #0a0a0f; border: 1px solid #1e2030; border-radius: 8px; color: #c8d3f5; font-size: 0.95rem; outline: none; font-family: monospace; }
+  .answer-box input:focus { border-color: #388bfd; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: #238636; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #1e2030; color: #8b949e; border: 1px solid #30363d; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="dashboard">
+  <div class="dash-header">
+    <h1>📊 Live Market Dashboard</h1>
+    <div class="market-status">
+      <div class="market-dot"></div>
+      <span class="market-text">MARKET OPEN</span>
+      <span class="market-time" id="marketTime">14:32:07 EST</span>
+    </div>
+  </div>
+
+  <div class="stock-grid" id="stockGrid">
+    <!-- rendered by JS -->
+  </div>
+
+  <div class="alert-banner" id="alertBanner">
+    <span class="alert-icon">⚠️</span>
+    <div class="alert-text">
+      <strong>NVDA — SIGNIFICANT DROP DETECTED</strong><br>
+      Price dropped more than 5% from opening ($620.00 → $583.00 = −5.97%)
+    </div>
+  </div>
+</div>
+
+<div class="answer-box">
+  <label for="answerInput">Which stock dropped more than 5%?</label>
+  <input type="text" id="answerInput" placeholder="Enter the ticker symbol..." />
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartStocks()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const stocks = [
+  { sym: 'AAPL', name: 'Apple Inc.', base: 195.00, changes: [0.4, -0.3, 0.8, -0.2, 0.5, 0.3] },
+  { sym: 'MSFT', name: 'Microsoft', base: 385.00, changes: [-0.5, 0.7, -0.3, 0.9, -0.4, 0.2] },
+  { sym: 'NVDA', name: 'NVIDIA Corp', base: 620.00, changes: [-1.2, -2.4, -0.8, -32.0, -0.5, 0.3] }, // big drop at index 3 (t=12s, 4th update)
+  { sym: 'TSLA', name: 'Tesla Inc.', base: 180.00, changes: [0.8, -0.9, 1.2, -0.6, 0.4, -0.3] },
+  { sym: 'GOOGL', name: 'Alphabet Inc.', base: 165.00, changes: [-0.2, 0.5, -0.7, 0.4, 0.6, -0.1] },
+];
+
+let currentPrices = stocks.map(s => s.base);
+let updateIdx = 0;
+let intervalId = null;
+let timeInterval = null;
+let alertShown = false;
+
+function formatPrice(p) {
+  return '$' + p.toFixed(2);
+}
+
+function getPctChange(current, base) {
+  return ((current - base) / base * 100);
+}
+
+function renderStocks() {
+  const grid = document.getElementById('stockGrid');
+  grid.innerHTML = '';
+  stocks.forEach((s, i) => {
+    const price = currentPrices[i];
+    const pct = getPctChange(price, s.base);
+    const isDown = pct < 0;
+    const isUp = pct > 0;
+    const isBigDrop = pct < -5;
+
+    const card = document.createElement('div');
+    card.className = 'stock-card' + (isBigDrop ? ' alert' : '');
+    card.id = 'scard' + i;
+
+    const fillPct = Math.min(100, Math.abs(pct) * 10);
+
+    card.innerHTML = `
+      <div class="stock-ticker">
+        <div class="ticker-sym">${s.sym}</div>
+        <div class="ticker-name">${s.name}</div>
+      </div>
+      <div class="stock-price">
+        <div class="price-val ${isBigDrop ? 'down' : isDown ? 'down' : isUp ? 'up' : ''}">${formatPrice(price)}</div>
+        <div class="price-prev">Open: ${formatPrice(s.base)}</div>
+      </div>
+      <div class="stock-change">
+        <div class="change-val ${isBigDrop ? 'change-down' : isDown ? 'change-down' : isUp ? 'change-up' : 'change-neutral'}">
+          ${pct >= 0 ? '+' : ''}${pct.toFixed(2)}%
+        </div>
+        <div class="change-bar">
+          <div class="change-fill" style="width:${fillPct}%;background:${isDown ? '#ef4444' : '#22c55e'}"></div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+
+    if (isBigDrop && !alertShown) {
+      alertShown = true;
+      document.getElementById('alertBanner').classList.add('show');
+    }
+  });
+}
+
+function tick() {
+  if (updateIdx >= stocks[0].changes.length) {
+    clearInterval(intervalId);
+    return;
+  }
+  stocks.forEach((s, i) => {
+    currentPrices[i] = parseFloat((currentPrices[i] + s.changes[updateIdx]).toFixed(2));
+  });
+  updateIdx++;
+  renderStocks();
+}
+
+function updateClock() {
+  const now = new Date();
+  document.getElementById('marketTime').textContent =
+    now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZoneName: 'short' });
+}
+
+function startStocks() {
+  renderStocks();
+  intervalId = setInterval(tick, 3000);
+  timeInterval = setInterval(updateClock, 1000);
+}
+
+function restartStocks() {
+  clearInterval(intervalId);
+  clearInterval(timeInterval);
+  updateIdx = 0;
+  alertShown = false;
+  currentPrices = stocks.map(s => s.base);
+  taskResult = 'pending';
+  document.getElementById('answerInput').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  document.getElementById('alertBanner').classList.remove('show');
+  startStocks();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerInput').value.toLowerCase();
+  const msg = document.getElementById('resultMsg');
+  if (val.includes('nvda')) {
+    taskResult = 'stock_identified';
+    msg.style.color = '#4ade80';
+    msg.textContent = 'Correct! NVDA dropped from $620.00 to $583.00 (−5.97%), exceeding the 5% threshold.';
+  } else {
+    taskResult = 'incorrect';
+    msg.style.color = '#f87171';
+    msg.textContent = 'Incorrect. Monitor the % change column for a drop exceeding 5%.';
+  }
+  msg.style.display = 'block';
+}
+
+startStocks();
+</script>
+</body>
+</html>

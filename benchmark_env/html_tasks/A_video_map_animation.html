@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>European Market Expansion Q3 Update — Global Correspondent</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Georgia, 'Times New Roman', serif; background: #f5f5f0; color: #1a1a1a; }
+
+  /* MASTHEAD */
+  #masthead {
+    background: #1a1a1a; color: #fff; padding: 0; border-bottom: 4px solid #d32f2f;
+  }
+  #masthead-top {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 40px; border-bottom: 1px solid #333;
+  }
+  .pub-date { font-family: Arial, sans-serif; font-size: 12px; color: #999; }
+  .brand { font-size: 28px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; }
+  .brand span { color: #d32f2f; }
+  .masthead-tagline { font-family: Arial, sans-serif; font-size: 12px; color: #999; font-style: italic; }
+  #nav-bar {
+    display: flex; gap: 0; padding: 0 40px;
+    font-family: Arial, sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  #nav-bar a { color: #ccc; text-decoration: none; padding: 12px 16px; display: block; }
+  #nav-bar a:hover { color: #fff; background: #333; }
+  #nav-bar a.active { color: #fff; border-bottom: 3px solid #d32f2f; }
+
+  /* LAYOUT */
+  #page { max-width: 1140px; margin: 0 auto; padding: 32px 24px; }
+  #two-col { display: flex; gap: 40px; }
+  #article { flex: 1; min-width: 0; }
+
+  /* ARTICLE HEADER */
+  .section-tag { font-family: Arial, sans-serif; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #d32f2f; margin-bottom: 12px; }
+  h1.headline { font-size: 32px; font-weight: 700; line-height: 1.25; margin-bottom: 12px; }
+  .deck { font-size: 17px; line-height: 1.5; color: #444; margin-bottom: 16px; border-left: 3px solid #d32f2f; padding-left: 14px; }
+  .byline { font-family: Arial, sans-serif; font-size: 13px; color: #666; margin-bottom: 24px; }
+  .byline strong { color: #333; }
+
+  /* VIDEO */
+  #video-card {
+    background: #000; border-radius: 4px; overflow: hidden; margin-bottom: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+  }
+  #mapCanvas { width: 100%; display: block; }
+  #vid-controls {
+    background: #111; padding: 8px 14px; display: flex; align-items: center; gap: 12px;
+  }
+  #vid-play { background: #d32f2f; border: none; color: #fff; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; font-size: 13px; font-weight: 700; }
+  #vid-prog-wrap { flex: 1; height: 3px; background: #333; }
+  #vid-prog-fill { height: 3px; background: #d32f2f; width: 0%; }
+  #vid-label { font-family: Arial, sans-serif; font-size: 12px; color: #888; }
+  .video-caption { font-family: Arial, sans-serif; font-size: 12px; color: #777; text-align: center; margin-bottom: 24px; font-style: italic; }
+
+  /* ARTICLE BODY */
+  .article-text { font-size: 16px; line-height: 1.75; color: #222; margin-bottom: 16px; }
+  .pull-quote {
+    font-size: 20px; font-style: italic; color: #1a1a1a;
+    border-top: 2px solid #1a1a1a; border-bottom: 2px solid #1a1a1a;
+    padding: 16px 0; margin: 24px 0; line-height: 1.4;
+  }
+
+  /* ANSWER */
+  #answer-section {
+    background: #fff; border: 2px solid #d32f2f; border-radius: 4px;
+    padding: 24px; margin: 24px 0; font-family: Arial, sans-serif;
+  }
+  #answer-section h3 { font-size: 16px; font-weight: 700; color: #d32f2f; margin-bottom: 6px; font-family: Arial, sans-serif; }
+  #answer-section .ap { font-size: 14px; color: #555; margin-bottom: 16px; }
+  #answer-section label { font-size: 13px; font-weight: 700; color: #333; display: block; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
+  #answer-section input { width: 100%; padding: 11px 16px; border: 1px solid #ccc; border-radius: 4px; font-size: 15px; outline: none; font-family: Arial, sans-serif; color: #1a1a1a; }
+  #answer-section input:focus { border-color: #d32f2f; }
+  #submit-btn { background: #d32f2f; color: #fff; border: none; padding: 11px 28px; border-radius: 4px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 12px; font-family: Arial, sans-serif; text-transform: uppercase; letter-spacing: 0.5px; }
+  #submit-btn:hover { background: #b71c1c; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 700; min-height: 20px; font-family: Arial, sans-serif; }
+  .rok { color: #2e7d32; } .rerr { color: #c62828; }
+
+  /* SIDEBAR */
+  #sidebar { width: 280px; flex-shrink: 0; }
+  .sidebar-widget { margin-bottom: 28px; }
+  .widget-title { font-family: Arial, sans-serif; font-size: 13px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; border-bottom: 2px solid #1a1a1a; padding-bottom: 8px; margin-bottom: 14px; }
+  .widget-item { padding: 10px 0; border-bottom: 1px solid #e0e0e0; cursor: pointer; }
+  .widget-item:last-child { border-bottom: none; }
+  .wi-tag { font-family: Arial, sans-serif; font-size: 11px; font-weight: 700; text-transform: uppercase; color: #d32f2f; letter-spacing: 0.5px; }
+  .wi-title { font-size: 14px; line-height: 1.4; margin-top: 2px; font-weight: 600; }
+  .wi-meta { font-family: Arial, sans-serif; font-size: 12px; color: #888; margin-top: 2px; }
+  .wi-title:hover { color: #d32f2f; }
+
+  /* FOOTER */
+  #footer {
+    background: #1a1a1a; color: #999; text-align: center;
+    padding: 20px; font-family: Arial, sans-serif; font-size: 12px; margin-top: 40px;
+    border-top: 4px solid #d32f2f;
+  }
+</style>
+</head>
+<body>
+
+<!-- MASTHEAD -->
+<div id="masthead">
+  <div id="masthead-top">
+    <span class="pub-date">Monday, April 14, 2026</span>
+    <div class="brand">Global <span>Correspondent</span></div>
+    <span class="masthead-tagline">The world in perspective since 1987</span>
+  </div>
+  <nav id="nav-bar">
+    <a href="#">World</a>
+    <a href="#" class="active">Business</a>
+    <a href="#">Markets</a>
+    <a href="#">Technology</a>
+    <a href="#">Analysis</a>
+    <a href="#">Video</a>
+  </nav>
+</div>
+
+<!-- PAGE -->
+<div id="page">
+  <div id="two-col">
+    <!-- ARTICLE -->
+    <article id="article">
+      <div class="section-tag">Business · European Markets</div>
+      <h1 class="headline">Two Countries Drive European Market Surge in Q3 as Expansion Accelerates</h1>
+      <p class="deck">An animated market analysis shows which European markets are outperforming expectations — and the results are concentrated in unexpected places.</p>
+      <div class="byline">By <strong>Clara Hoffmann</strong> &nbsp;|&nbsp; Global Correspondent &nbsp;|&nbsp; April 14, 2026</div>
+
+      <!-- VIDEO -->
+      <div id="video-card">
+        <canvas id="mapCanvas" width="800" height="450"></canvas>
+      </div>
+      <div id="vid-controls">
+        <button id="vid-play" onclick="startAnimation()">&#9654;</button>
+        <div id="vid-prog-wrap"><div id="vid-prog-fill"></div></div>
+        <span id="vid-label">European Market Expansion — Q3 Update · 15s</span>
+      </div>
+      <p class="video-caption">Animated explainer: European Market Expansion — Q3 2026 Update. Source: Global Correspondent Research.</p>
+
+      <!-- ANSWER -->
+      <div id="answer-section">
+        <h3>&#127916; Task: Explainer Video Comprehension</h3>
+        <p class="ap">Watch the animated explainer above. Which two countries are highlighted on the map? Type them below.</p>
+        <label for="answer-input">The two highlighted countries:</label>
+        <input type="text" id="answer-input" placeholder="e.g. Country A and Country B" autocomplete="off">
+        <br>
+        <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+        <div id="result-msg"></div>
+      </div>
+
+      <p class="article-text">
+        Quarterly analysis from the Global Correspondent Research desk reveals a striking pattern of concentration in the European expansion data released this week. Of the 27 EU member states surveyed, growth metrics are being driven by a narrow cluster of economies with particularly strong fundamentals.
+      </p>
+
+      <div class="pull-quote">
+        "The Q3 figures confirm what many analysts had suspected — European expansion is not uniform. It is driven by specific markets with specific characteristics."
+      </div>
+
+      <p class="article-text">
+        Manufacturing output, consumer spending indices, and cross-border trade flows all point to the same two nations as the loci of outperformance. Analysts cite a combination of policy stability, export competitiveness, and labor market resilience as the key differentiating factors.
+      </p>
+
+      <p class="article-text">
+        The implications for capital allocation across the eurozone are significant. Portfolio managers at several major asset management firms have confirmed to Global Correspondent that they are actively overweighting exposure to the highlighted markets heading into Q4.
+      </p>
+    </article>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar">
+      <div class="sidebar-widget">
+        <div class="widget-title">Related Stories</div>
+        <div class="widget-item">
+          <div class="wi-tag">Markets</div>
+          <div class="wi-title">ECB Policy Shift Rattles Bond Markets Across the Eurozone</div>
+          <div class="wi-meta">2 hours ago</div>
+        </div>
+        <div class="widget-item">
+          <div class="wi-tag">Business</div>
+          <div class="wi-title">Q2 Earnings Season Beats Expectations in Western Europe</div>
+          <div class="wi-meta">5 hours ago</div>
+        </div>
+        <div class="widget-item">
+          <div class="wi-tag">Analysis</div>
+          <div class="wi-title">The New Geography of European Manufacturing</div>
+          <div class="wi-meta">Yesterday</div>
+        </div>
+        <div class="widget-item">
+          <div class="wi-tag">World</div>
+          <div class="wi-title">Trade Agreements Reshape Supply Chains Across the Continent</div>
+          <div class="wi-meta">2 days ago</div>
+        </div>
+      </div>
+
+      <div class="sidebar-widget">
+        <div class="widget-title">Most Read</div>
+        <div class="widget-item">
+          <div class="wi-title">1. Global Inflation Expectations Shift After Fed Statement</div>
+          <div class="wi-meta">Business · 4.2K reads</div>
+        </div>
+        <div class="widget-item">
+          <div class="wi-title">2. The Race to Electrify European Transport Corridors</div>
+          <div class="wi-meta">Technology · 3.8K reads</div>
+        </div>
+        <div class="widget-item">
+          <div class="wi-title">3. Why Nearshoring Is Reshaping European Industry</div>
+          <div class="wi-meta">Business · 3.1K reads</div>
+        </div>
+      </div>
+
+      <div class="sidebar-widget">
+        <div class="widget-title">Newsletter</div>
+        <p style="font-size:13px;color:#555;margin-bottom:12px;">Get the Global Correspondent morning briefing — business, markets, and geopolitics.</p>
+        <input type="email" placeholder="Your email" style="width:100%;padding:9px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;margin-bottom:8px;">
+        <button style="width:100%;background:#1a1a1a;color:#fff;border:none;padding:10px;border-radius:4px;font-weight:700;cursor:pointer;font-size:14px;text-transform:uppercase;letter-spacing:0.5px;">Subscribe</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<div id="footer">© 2026 Global Correspondent. All rights reserved. · Privacy · Terms · Advertise · Contact</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('mapCanvas');
+  const ctx = canvas.getContext('2d');
+  const DURATION = 15000;
+  let animStart = null, animFrame = null;
+
+  // Simplified Europe outline: rough country shapes as polygon arrays [x%, y%]
+  // Coordinates are % of canvas W/H for simplicity
+  const W = 800, H = 450;
+
+  // Define simplified country shapes (rough polygon outlines on a Europe-like map view)
+  const countries = {
+    // Western/Central Europe silhouettes — simplified boxes/polygons
+    france: {
+      name: 'France',
+      poly: [ [0.18,0.28],[0.28,0.22],[0.32,0.30],[0.30,0.42],[0.22,0.48],[0.16,0.44],[0.14,0.36] ],
+      labelX: 0.23, labelY: 0.36,
+    },
+    germany: {
+      name: 'Germany',
+      poly: [ [0.34,0.18],[0.44,0.16],[0.48,0.24],[0.46,0.34],[0.38,0.38],[0.32,0.34],[0.32,0.26] ],
+      labelX: 0.40, labelY: 0.27,
+    },
+    // Other countries for map fill
+    spain: {
+      name: 'Spain',
+      poly: [ [0.10,0.44],[0.22,0.46],[0.22,0.58],[0.16,0.64],[0.08,0.60],[0.06,0.50] ],
+      labelX: 0.15, labelY: 0.54,
+    },
+    italy: {
+      name: 'Italy',
+      poly: [ [0.32,0.42],[0.38,0.38],[0.42,0.46],[0.44,0.58],[0.38,0.66],[0.34,0.62],[0.30,0.52] ],
+      labelX: 0.37, labelY: 0.52,
+    },
+    uk: {
+      name: 'UK',
+      poly: [ [0.14,0.12],[0.22,0.10],[0.24,0.22],[0.18,0.26],[0.12,0.22] ],
+      labelX: 0.18, labelY: 0.18,
+    },
+    poland: {
+      name: 'Poland',
+      poly: [ [0.46,0.14],[0.58,0.14],[0.60,0.26],[0.50,0.30],[0.44,0.26] ],
+      labelX: 0.52, labelY: 0.22,
+    },
+    sweden: {
+      name: 'Sweden',
+      poly: [ [0.38,0.02],[0.46,0.00],[0.50,0.10],[0.46,0.18],[0.38,0.16],[0.34,0.08] ],
+      labelX: 0.42, labelY: 0.09,
+    },
+    czechia: {
+      name: 'Czechia',
+      poly: [ [0.44,0.26],[0.52,0.24],[0.54,0.32],[0.46,0.34] ],
+      labelX: 0.49, labelY: 0.29,
+    },
+    austria: {
+      name: 'Austria',
+      poly: [ [0.38,0.34],[0.46,0.32],[0.48,0.38],[0.40,0.40] ],
+      labelX: 0.43, labelY: 0.36,
+    },
+    netherlands: {
+      name: 'NL',
+      poly: [ [0.26,0.14],[0.32,0.14],[0.32,0.20],[0.26,0.20] ],
+      labelX: 0.29, labelY: 0.17,
+    },
+    belgium: {
+      name: 'BE',
+      poly: [ [0.24,0.20],[0.30,0.20],[0.30,0.26],[0.24,0.26] ],
+      labelX: 0.27, labelY: 0.23,
+    },
+    switzerland: {
+      name: 'CH',
+      poly: [ [0.28,0.34],[0.34,0.32],[0.36,0.38],[0.30,0.40] ],
+      labelX: 0.32, labelY: 0.36,
+    },
+  };
+
+  function pX(p) { return p * W; }
+  function pY(p) { return p * H; }
+
+  function drawCountry(country, fillColor, strokeColor, alpha) {
+    ctx.globalAlpha = alpha;
+    ctx.beginPath();
+    country.poly.forEach(([px, py], i) => {
+      if (i === 0) ctx.moveTo(pX(px), pY(py));
+      else ctx.lineTo(pX(px), pY(py));
+    });
+    ctx.closePath();
+    ctx.fillStyle = fillColor;
+    ctx.fill();
+    ctx.strokeStyle = strokeColor;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.globalAlpha = 1;
+  }
+
+  function drawLabel(country, color, fontSize, bold) {
+    ctx.fillStyle = color;
+    ctx.font = `${bold?'bold ':' '}${fontSize}px Arial`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(country.name, pX(country.labelX), pY(country.labelY));
+    ctx.textBaseline = 'alphabetic';
+  }
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+
+    ctx.clearRect(0, 0, W, H);
+
+    if (elapsed < 5000) {
+      // 0-5s: Title card
+      const p = elapsed / 5000;
+      ctx.fillStyle = '#1a3a5c';
+      ctx.fillRect(0, 0, W, H);
+      // Grid lines
+      ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < W; x += 40) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 40) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#d32f2f';
+      ctx.font = 'bold 14px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('GLOBAL CORRESPONDENT · ANIMATED EXPLAINER', W/2, 80);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 30px Georgia';
+      ctx.fillText('European Market Expansion', W/2, H/2 - 18);
+      ctx.fillStyle = '#90caf9';
+      ctx.font = '20px Georgia';
+      ctx.fillText('Q3 Update — Market Analysis', W/2, H/2 + 22);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '14px Arial';
+      ctx.fillText('Source: Global Correspondent Research Desk', W/2, H/2 + 62);
+      ctx.globalAlpha = 1;
+
+    } else if (elapsed < 10000) {
+      // 5-10s: Map with highlighted countries
+      const p = (elapsed - 5000) / 5000;
+
+      // Ocean background
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, '#b0d4e8');
+      grad.addColorStop(1, '#c8e0ef');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      // Draw all background countries first
+      const bgCountries = ['spain','italy','uk','poland','sweden','czechia','austria','netherlands','belgium','switzerland'];
+      bgCountries.forEach(k => drawCountry(countries[k], '#d4c9a8', '#b0a07a', 0.9));
+
+      // Pulse animation for highlighted countries
+      const pulse = 0.6 + 0.4 * Math.sin(elapsed / 300);
+      const highlightAlpha = Math.min((p) * 3, 1);
+
+      // GERMANY — highlighted in red
+      drawCountry(countries.germany, `rgba(211,47,47,${0.75 * pulse})`, '#b71c1c', highlightAlpha);
+
+      // FRANCE — highlighted in red
+      drawCountry(countries.france, `rgba(211,47,47,${0.75 * pulse})`, '#b71c1c', highlightAlpha);
+
+      // Labels for all background countries
+      bgCountries.forEach(k => {
+        ctx.globalAlpha = 0.7;
+        drawLabel(countries[k], '#5a4a28', 11, false);
+        ctx.globalAlpha = 1;
+      });
+
+      // Prominent labels for highlighted countries
+      ctx.globalAlpha = highlightAlpha;
+      // Germany label + arrow
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 18px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('GERMANY', pX(countries.germany.labelX), pY(countries.germany.labelY));
+      // France label
+      ctx.fillText('FRANCE', pX(countries.france.labelX), pY(countries.france.labelY));
+      ctx.globalAlpha = 1;
+
+      // Legend
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      ctx.fillRect(W - 200, 16, 184, 60);
+      ctx.strokeStyle = '#ccc';
+      ctx.lineWidth = 1;
+      ctx.strokeRect(W - 200, 16, 184, 60);
+      ctx.fillStyle = '#d32f2f';
+      ctx.fillRect(W - 192, 28, 16, 12);
+      ctx.fillStyle = '#333';
+      ctx.font = 'bold 13px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText('Highlighted market', W - 170, 40);
+      ctx.fillStyle = '#d4c9a8';
+      ctx.fillRect(W - 192, 50, 16, 12);
+      ctx.strokeStyle = '#b0a07a';
+      ctx.strokeRect(W - 192, 50, 16, 12);
+      ctx.fillStyle = '#333';
+      ctx.fillText('Other EU market', W - 170, 62);
+
+      // Title overlay
+      ctx.fillStyle = '#1a3a5c';
+      ctx.fillRect(0, H - 52, W, 52);
+      ctx.fillStyle = '#d32f2f';
+      ctx.font = 'bold 12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('Q3 2026 · EUROPEAN MARKET EXPANSION', W/2, H - 32);
+      ctx.fillStyle = '#fff';
+      ctx.font = '14px Arial';
+      ctx.fillText('Highlighted: Top-performing markets by growth index', W/2, H - 12);
+
+    } else {
+      // 10-15s: Text overlay with country names clearly stated
+      const p = (elapsed - 10000) / 5000;
+
+      // Keep map visible but dimmed
+      const grad = ctx.createLinearGradient(0, 0, 0, H);
+      grad.addColorStop(0, '#b0d4e8');
+      grad.addColorStop(1, '#c8e0ef');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, W, H);
+
+      const bgCountries2 = ['spain','italy','uk','poland','sweden','czechia','austria','netherlands','belgium','switzerland'];
+      ctx.globalAlpha = 0.4;
+      bgCountries2.forEach(k => drawCountry(countries[k], '#d4c9a8', '#b0a07a', 0.9));
+      drawCountry(countries.germany, '#d32f2f', '#b71c1c', 0.9);
+      drawCountry(countries.france, '#d32f2f', '#b71c1c', 0.9);
+      ctx.globalAlpha = 1;
+
+      // Dark overlay for text readability
+      ctx.fillStyle = 'rgba(26, 58, 92, 0.82)';
+      ctx.fillRect(60, 60, W - 120, H - 120);
+
+      ctx.globalAlpha = Math.min(p * 5, 1);
+      ctx.fillStyle = '#d32f2f';
+      ctx.font = 'bold 15px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('KEY MARKETS — Q3 FINDINGS', W/2, 110);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 34px Georgia';
+      ctx.fillText('Germany and France', W/2, H/2 - 10);
+      ctx.fillStyle = '#90caf9';
+      ctx.font = '18px Georgia';
+      ctx.fillText('show strongest growth', W/2, H/2 + 30);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '14px Arial';
+      ctx.fillText('"Key markets: Germany and France show strongest growth" — GC Research', W/2, H/2 + 72);
+      ctx.globalAlpha = 1;
+    }
+
+    document.getElementById('vid-prog-fill').style.width = (Math.min(elapsed/DURATION,1)*100)+'%';
+    if (elapsed < DURATION) animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('vid-prog-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-input').value.trim().toLowerCase();
+    const msgEl = document.getElementById('result-msg');
+    const hasGermany = val.includes('germany');
+    const hasFrance = val.includes('france');
+    if (hasGermany || hasFrance) {
+      taskResult = 'correct_countries';
+      msgEl.textContent = '✓ Correct! The two highlighted countries are Germany and France.';
+      msgEl.className = 'rok';
+    } else {
+      msgEl.textContent = '✗ Incorrect. Watch the map animation carefully and look for the red-highlighted countries.';
+      msgEl.className = 'rerr';
+    }
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LaunchPad — Product Onboarding</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: linear-gradient(160deg, #e8eeff 0%, #f5f0ff 100%);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 32px 20px;
+  }
+
+  .page-header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+  .logo { font-size: 2rem; font-weight: 900; color: #5540d0; letter-spacing: -1px; }
+  .logo span { color: #7c3aed; }
+  .tagline { font-size: 1rem; color: #7b7fa0; margin-top: 6px; }
+
+  /* Progress bar */
+  .progress-wrap { width: 100%; max-width: 580px; margin-bottom: 28px; }
+  .progress-label { display: flex; justify-content: space-between; font-size: 0.82rem; color: #7b7fa0; margin-bottom: 6px; }
+  .progress-bar { height: 8px; background: #d8d8ff; border-radius: 8px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #5540d0, #7c3aed); border-radius: 8px; width: 0%; transition: width 0.5s ease; }
+
+  /* Checklist card */
+  .card {
+    background: #fff;
+    border-radius: 18px;
+    box-shadow: 0 8px 40px rgba(85,64,208,0.12);
+    width: 100%;
+    max-width: 580px;
+    overflow: hidden;
+  }
+  .card-header {
+    background: linear-gradient(135deg, #5540d0, #7c3aed);
+    color: #fff;
+    padding: 24px 28px;
+  }
+  .card-header h2 { font-size: 1.3rem; font-weight: 700; margin-bottom: 4px; }
+  .card-header p { font-size: 0.88rem; color: rgba(255,255,255,0.75); }
+  .card-body { padding: 24px 28px; }
+
+  /* Checklist items */
+  .checklist-item {
+    display: none;
+    align-items: center;
+    gap: 16px;
+    padding: 16px;
+    border-radius: 10px;
+    margin-bottom: 12px;
+    border: 2px solid #e8e8ff;
+    background: #fafaff;
+    position: relative;
+    animation: itemSlide 0.4s ease;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .checklist-item.visible { display: flex; }
+  .checklist-item:hover { border-color: #7c3aed; background: #f3f0ff; }
+  .checklist-item.checked {
+    border-color: #6fcf97;
+    background: #f0fff8;
+    cursor: default;
+  }
+  .checklist-item.missed {
+    border-color: #fca5a5;
+    background: #fff5f5;
+    cursor: default;
+  }
+  .checklist-item.active-window {
+    border-color: #7c3aed;
+    background: #f3f0ff;
+    animation: itemPulse 0.8s ease-in-out infinite alternate;
+  }
+
+  @keyframes itemSlide {
+    from { opacity: 0; transform: translateX(-16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes itemPulse {
+    from { box-shadow: 0 0 0 0 rgba(124,58,237,0.2); }
+    to { box-shadow: 0 0 0 6px rgba(124,58,237,0); }
+  }
+
+  .check-box {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    border: 2px solid #d8d8ff;
+    background: #fff;
+    color: #bbb;
+    transition: all 0.2s;
+  }
+  .checklist-item.checked .check-box { background: #6fcf97; border-color: #6fcf97; color: #fff; font-size: 1rem; }
+  .checklist-item.missed .check-box { background: #ef4444; border-color: #ef4444; color: #fff; font-size: 1rem; }
+  .checklist-item.active-window .check-box { border-color: #7c3aed; color: #7c3aed; }
+
+  .item-content { flex: 1; }
+  .item-title { font-size: 0.95rem; font-weight: 600; color: #1a1a2e; margin-bottom: 2px; }
+  .checklist-item.checked .item-title { color: #218a4f; }
+  .checklist-item.missed .item-title { color: #b91c1c; text-decoration: line-through; }
+  .item-desc { font-size: 0.8rem; color: #9ca3af; }
+
+  .item-timer {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #7c3aed;
+    min-width: 28px;
+    text-align: center;
+  }
+  .checklist-item.checked .item-timer { color: #6fcf97; }
+  .checklist-item.missed .item-timer { color: #ef4444; }
+
+  /* Result section */
+  .result-section {
+    display: none;
+    padding: 0 28px 24px;
+    text-align: center;
+  }
+  .result-section.show { display: block; }
+  .result-icon { font-size: 3rem; margin-bottom: 10px; }
+  .result-title { font-size: 1.3rem; font-weight: 700; margin-bottom: 6px; }
+  .result-sub { font-size: 0.9rem; color: #7b7fa0; }
+  .result-ok { color: #218a4f; }
+  .result-partial { color: #d97706; }
+
+  /* Countdown timer for active item */
+  .window-notice {
+    position: fixed;
+    top: 16px; right: 16px;
+    background: #fff;
+    border: 2px solid #7c3aed;
+    border-radius: 10px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #5540d0;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 4px 16px rgba(85,64,208,0.2);
+  }
+  .window-notice.show { display: block; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <div class="logo">Launch<span>Pad</span> 🚀</div>
+  <div class="tagline">Complete your onboarding to unlock all features</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Onboarding Progress</span>
+    <span id="progressText">0 / 5 completed</span>
+  </div>
+  <div class="progress-bar">
+    <div class="progress-fill" id="progressFill"></div>
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header">
+    <h2>👋 Welcome to LaunchPad!</h2>
+    <p>Complete each step as it appears. Click the checkbox within 2 seconds of each item appearing.</p>
+  </div>
+  <div class="card-body">
+    <!-- 5 checklist items -->
+    <div class="checklist-item" id="item1" onclick="checkItem(1)">
+      <div class="check-box" id="box1">☐</div>
+      <div class="item-content">
+        <div class="item-title">Complete your profile</div>
+        <div class="item-desc">Add your name, photo, and bio</div>
+      </div>
+      <div class="item-timer" id="timer1">2s</div>
+    </div>
+
+    <div class="checklist-item" id="item2" onclick="checkItem(2)">
+      <div class="check-box" id="box2">☐</div>
+      <div class="item-content">
+        <div class="item-title">Connect your first integration</div>
+        <div class="item-desc">Link Slack, GitHub, or another tool</div>
+      </div>
+      <div class="item-timer" id="timer2">2s</div>
+    </div>
+
+    <div class="checklist-item" id="item3" onclick="checkItem(3)">
+      <div class="check-box" id="box3">☐</div>
+      <div class="item-content">
+        <div class="item-title">Invite team members</div>
+        <div class="item-desc">Collaborate with up to 10 teammates</div>
+      </div>
+      <div class="item-timer" id="timer3">2s</div>
+    </div>
+
+    <div class="checklist-item" id="item4" onclick="checkItem(4)">
+      <div class="check-box" id="box4">☐</div>
+      <div class="item-content">
+        <div class="item-title">Set up notifications</div>
+        <div class="item-desc">Choose how you'd like to be alerted</div>
+      </div>
+      <div class="item-timer" id="timer4">2s</div>
+    </div>
+
+    <div class="checklist-item" id="item5" onclick="checkItem(5)">
+      <div class="check-box" id="box5">☐</div>
+      <div class="item-content">
+        <div class="item-title">Launch your first project</div>
+        <div class="item-desc">Create and publish your initial project</div>
+      </div>
+      <div class="item-timer" id="timer5">2s</div>
+    </div>
+  </div>
+
+  <div class="result-section" id="resultSection">
+    <div class="result-icon" id="resultIcon">🎉</div>
+    <div class="result-title" id="resultTitle"></div>
+    <div class="result-sub" id="resultSub"></div>
+  </div>
+</div>
+
+<div class="window-notice" id="windowNotice">
+  ⚡ Click now! Window closes in <span id="windowTimer">2</span>s
+</div>
+
+<script>
+  let taskResult = 'pending';
+  let checkedCount = 0;
+  const totalItems = 5;
+  const itemStates = [null, null, null, null, null]; // 0-indexed
+  const windowMs = 2000;
+  let activeItem = null;
+  let windowTimeout = null;
+  let countdownInterval = null;
+
+  window.getTaskResult = () => checkedCount >= 5 ? 'all_5_checked' : `checked_${checkedCount}`;
+
+  // Schedule: t=1s, 4s, 7s, 10s, 13s
+  const schedule = [1000, 4000, 7000, 10000, 13000];
+
+  function updateProgress() {
+    const pct = (checkedCount / totalItems) * 100;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('progressText').textContent = `${checkedCount} / ${totalItems} completed`;
+  }
+
+  function showItem(n) {
+    activeItem = n;
+    const item = document.getElementById('item' + n);
+    item.classList.add('visible', 'active-window');
+    document.getElementById('windowNotice').classList.add('show');
+
+    let secsLeft = 2;
+    document.getElementById('windowTimer').textContent = secsLeft;
+    document.getElementById('timer' + n).textContent = secsLeft + 's';
+
+    countdownInterval = setInterval(() => {
+      secsLeft--;
+      if (secsLeft <= 0) {
+        clearInterval(countdownInterval);
+      } else {
+        document.getElementById('windowTimer').textContent = secsLeft;
+        document.getElementById('timer' + n).textContent = secsLeft + 's';
+      }
+    }, 1000);
+
+    windowTimeout = setTimeout(() => {
+      missItem(n);
+    }, windowMs);
+  }
+
+  function checkItem(n) {
+    if (activeItem !== n) return; // Not the active item
+    if (itemStates[n - 1] !== null) return; // Already handled
+
+    clearTimeout(windowTimeout);
+    clearInterval(countdownInterval);
+    activeItem = null;
+
+    itemStates[n - 1] = 'checked';
+    checkedCount++;
+
+    const item = document.getElementById('item' + n);
+    item.classList.remove('active-window');
+    item.classList.add('checked');
+    document.getElementById('box' + n).textContent = '✓';
+    document.getElementById('timer' + n).textContent = '✓';
+    document.getElementById('windowNotice').classList.remove('show');
+
+    updateProgress();
+
+    if (checkedCount >= 5) {
+      taskResult = 'all_5_checked';
+      showResult();
+    }
+  }
+
+  function missItem(n) {
+    clearInterval(countdownInterval);
+    activeItem = null;
+
+    if (itemStates[n - 1] !== null) return;
+    itemStates[n - 1] = 'missed';
+
+    const item = document.getElementById('item' + n);
+    item.classList.remove('active-window');
+    item.classList.add('missed');
+    document.getElementById('box' + n).textContent = '⊘';
+    document.getElementById('timer' + n).textContent = '✗';
+    document.getElementById('windowNotice').classList.remove('show');
+  }
+
+  function showResult() {
+    // Show after a brief delay
+    setTimeout(() => {
+      const rs = document.getElementById('resultSection');
+      rs.classList.add('show');
+      if (checkedCount >= 5) {
+        document.getElementById('resultIcon').textContent = '🎉';
+        document.getElementById('resultTitle').textContent = 'Onboarding Complete!';
+        document.getElementById('resultTitle').className = 'result-title result-ok';
+        document.getElementById('resultSub').textContent = 'All 5 steps completed. You\'re ready to launch!';
+      } else {
+        document.getElementById('resultIcon').textContent = '⚠️';
+        document.getElementById('resultTitle').textContent = `${checkedCount}/5 Steps Completed`;
+        document.getElementById('resultTitle').className = 'result-title result-partial';
+        document.getElementById('resultSub').textContent = 'Some steps were missed. You can retry from your settings.';
+      }
+    }, 500);
+  }
+
+  // Schedule items
+  schedule.forEach((ms, i) => {
+    const n = i + 1;
+    setTimeout(() => showItem(n), ms);
+  });
+
+  // After last item window closes + 1s, show result if not all done
+  setTimeout(() => {
+    if (checkedCount < 5) showResult();
+  }, schedule[4] + windowMs + 1000);
+</script>
+</body>
+</html>

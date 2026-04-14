@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DataVault 3.0 — Full Review (2026) | SoftwareReviewHub</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: Roboto, Arial, sans-serif; background: #0f0f0f; color: #fff; }
+
+  /* NAV */
+  #navbar {
+    position: fixed; top: 0; left: 0; right: 0; height: 56px;
+    background: #0f0f0f; display: flex; align-items: center;
+    padding: 0 16px; z-index: 100; border-bottom: 1px solid #272727;
+  }
+  .logo { font-size: 20px; font-weight: 700; color: #ff6600; }
+  .logo span { color: #fff; font-weight: 400; }
+  .search-bar { flex: 1; max-width: 560px; margin: 0 32px; display: flex; }
+  .search-bar input {
+    flex: 1; padding: 8px 16px; border: 1px solid #303030; background: #121212;
+    color: #fff; border-radius: 40px 0 0 40px; font-size: 14px; outline: none;
+  }
+  .search-bar button {
+    padding: 8px 18px; background: #272727; border: 1px solid #303030;
+    border-left: none; border-radius: 0 40px 40px 0; color: #aaa; cursor: pointer;
+  }
+  .nav-right { margin-left: auto; display: flex; gap: 16px; align-items: center; }
+  .avatar {
+    width: 32px; height: 32px; border-radius: 50%; background: #ff6600;
+    display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700;
+  }
+
+  /* LAYOUT */
+  #layout { display: flex; margin-top: 56px; }
+  #sidebar {
+    width: 240px; min-height: calc(100vh - 56px); background: #0f0f0f;
+    padding: 12px 0; position: fixed; top: 56px; border-right: 1px solid #272727;
+  }
+  .sidebar-item {
+    display: flex; align-items: center; gap: 24px; padding: 10px 24px;
+    cursor: pointer; font-size: 14px; border-radius: 10px; margin: 0 8px;
+  }
+  .sidebar-item:hover { background: #272727; }
+  .sidebar-item.active { background: #272727; font-weight: 600; }
+  .icon { font-size: 18px; width: 24px; text-align: center; }
+  .sidebar-divider { border: none; border-top: 1px solid #272727; margin: 12px 0; }
+
+  #main { margin-left: 240px; padding: 24px; max-width: 1260px; }
+  #content-row { display: flex; gap: 24px; }
+  #primary { flex: 1; min-width: 0; }
+
+  /* PLAYER */
+  #player-wrap { background: #000; border-radius: 12px; overflow: hidden; position: relative; }
+  #reviewCanvas { width: 100%; display: block; background: #000; }
+  #replay-btn {
+    position: absolute; bottom: 12px; right: 12px; background: rgba(0,0,0,0.7);
+    color: #fff; border: none; padding: 6px 14px; border-radius: 6px; cursor: pointer; font-size: 13px;
+  }
+  #pb-wrap { width: 100%; height: 4px; background: #555; }
+  #pb-fill { height: 4px; background: #ff6600; width: 0%; transition: width 0.2s; }
+
+  /* META */
+  #video-title { font-size: 19px; font-weight: 600; margin-top: 12px; line-height: 1.3; }
+  #video-meta { display: flex; align-items: center; justify-content: space-between; margin-top: 12px; flex-wrap: wrap; gap: 8px; }
+  #ch-info { display: flex; align-items: center; gap: 12px; }
+  .ch-avatar {
+    width: 40px; height: 40px; border-radius: 50%; background: #ff6600;
+    display: flex; align-items: center; justify-content: center; font-weight: 700;
+  }
+  .ch-name { font-weight: 600; font-size: 14px; }
+  .ch-subs { font-size: 12px; color: #aaa; }
+  .sub-btn { background: #fff; color: #0f0f0f; border: none; padding: 8px 18px; border-radius: 20px; font-weight: 600; cursor: pointer; font-size: 14px; }
+  #actions { display: flex; gap: 8px; }
+  .act-btn { background: #272727; border: none; color: #fff; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-size: 13px; }
+  .act-btn:hover { background: #3a3a3a; }
+
+  #desc-box { background: #272727; border-radius: 12px; padding: 16px; margin-top: 16px; font-size: 14px; line-height: 1.6; }
+  #desc-box .vc { font-weight: 600; color: #eee; }
+  #desc-box .dt { font-size: 13px; color: #aaa; margin-top: 8px; }
+
+  /* ANSWER */
+  #answer-section {
+    background: #1a1a1a; border: 1px solid #ff6600; border-radius: 12px; padding: 24px; margin-top: 20px;
+  }
+  #answer-section h3 { font-size: 16px; margin-bottom: 6px; color: #ffcc99; }
+  #answer-section .task-p { font-size: 13px; color: #aaa; margin-bottom: 20px; }
+  .field-group { margin-bottom: 16px; }
+  .field-group label { display: block; font-size: 13px; font-weight: 600; color: #ccc; margin-bottom: 6px; }
+  .field-group input {
+    width: 100%; padding: 11px 16px; border: 1px solid #333; background: #0d0d0d;
+    color: #fff; border-radius: 8px; font-size: 15px; outline: none;
+  }
+  .field-group input:focus { border-color: #ff6600; }
+  #submit-btn {
+    background: #ff6600; color: #fff; border: none; padding: 12px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;
+  }
+  #submit-btn:hover { background: #e55a00; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 600; min-height: 20px; }
+  .rok { color: #4caf50; } .rerr { color: #f44336; }
+
+  /* COMMENTS */
+  #comments { margin-top: 24px; }
+  #comments h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; }
+  .cmt { display: flex; gap: 12px; margin-bottom: 18px; }
+  .cmt-av { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; flex-shrink: 0; }
+  .cmt-author { font-size: 13px; font-weight: 600; }
+  .cmt-time { font-size: 12px; color: #aaa; margin-left: 8px; }
+  .cmt-text { font-size: 14px; margin-top: 4px; color: #ccc; }
+
+  /* RECOMMENDATIONS */
+  #secondary { width: 360px; flex-shrink: 0; }
+  .rec { display: flex; gap: 8px; margin-bottom: 16px; cursor: pointer; }
+  .rec-thumb { width: 168px; height: 94px; border-radius: 8px; background: #272727; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: #555; font-size: 22px; }
+  .rec-title { font-size: 14px; font-weight: 500; line-height: 1.3; }
+  .rec-ch { font-size: 12px; color: #aaa; margin-top: 4px; }
+  .rec-v { font-size: 12px; color: #aaa; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="logo">▶ <span>VideoHub</span></div>
+  <div class="search-bar">
+    <input type="text" placeholder="Search" value="datavault 3.0 review 2026">
+    <button>&#128269;</button>
+  </div>
+  <div class="nav-right">
+    <span style="font-size:20px;">&#128276;</span>
+    <div class="avatar">U</div>
+  </div>
+</nav>
+
+<div id="layout">
+  <aside id="sidebar">
+    <div class="sidebar-item active"><span class="icon">&#8962;</span> Home</div>
+    <div class="sidebar-item"><span class="icon">&#128293;</span> Trending</div>
+    <div class="sidebar-item"><span class="icon">&#128250;</span> Subscriptions</div>
+    <hr class="sidebar-divider">
+    <div class="sidebar-item"><span class="icon">&#128196;</span> Library</div>
+    <div class="sidebar-item"><span class="icon">&#128336;</span> History</div>
+    <div class="sidebar-item"><span class="icon">&#9654;</span> Your videos</div>
+    <hr class="sidebar-divider">
+    <div style="padding:10px 24px;font-size:12px;color:#aaa;font-weight:600;text-transform:uppercase;">Subscriptions</div>
+    <div class="sidebar-item"><span class="icon" style="width:22px;height:22px;border-radius:50%;background:#ff6600;font-size:11px;display:flex;align-items:center;justify-content:center;">S</span> SoftReview</div>
+    <div class="sidebar-item"><span class="icon" style="width:22px;height:22px;border-radius:50%;background:#1a73e8;font-size:11px;display:flex;align-items:center;justify-content:center;">T</span> TechByte</div>
+  </aside>
+
+  <main id="main">
+    <div id="content-row">
+      <div id="primary">
+        <div id="player-wrap">
+          <canvas id="reviewCanvas" width="854" height="480"></canvas>
+          <button id="replay-btn" onclick="startAnimation()">&#9654; Replay</button>
+          <div id="pb-wrap"><div id="pb-fill"></div></div>
+        </div>
+
+        <h1 id="video-title">DataVault 3.0 — Full Review: Features, Pricing &amp; Release Date (2026)</h1>
+        <div id="video-meta">
+          <div style="display:flex;align-items:center;gap:16px;">
+            <div id="ch-info">
+              <div class="ch-avatar">SR</div>
+              <div>
+                <div class="ch-name">SoftwareReviewHub &#10003;</div>
+                <div class="ch-subs">312K subscribers</div>
+              </div>
+            </div>
+            <button class="sub-btn">Subscribe</button>
+          </div>
+          <div id="actions">
+            <button class="act-btn">&#128077; 8.4K</button>
+            <button class="act-btn">&#128078;</button>
+            <button class="act-btn">&#8599; Share</button>
+            <button class="act-btn">&#8942;</button>
+          </div>
+        </div>
+
+        <div id="desc-box">
+          <div class="vc">31,840 views &nbsp;·&nbsp; March 2, 2026</div>
+          <div class="dt">
+            In this video, we do a deep dive into DataVault 3.0 — the latest release from DataCorp. We cover all major features, the annual pricing, and the official release date. Whether you're upgrading or evaluating for the first time, this is everything you need to know.<br><br>
+            Chapters:<br>
+            0:00 Introduction<br>
+            0:05 Feature Overview<br>
+            0:10 Pricing<br>
+            0:15 Release Date &amp; Availability<br>
+            0:20 Summary
+          </div>
+        </div>
+
+        <!-- ANSWER -->
+        <div id="answer-section">
+          <h3>&#127916; Task: Multi-Fact Extraction</h3>
+          <p class="task-p">Watch the software review tutorial above and fill in the three facts shown in the video.</p>
+          <div class="field-group">
+            <label for="inp-name">Product Name:</label>
+            <input type="text" id="inp-name" placeholder="e.g. SoftwareName X.0" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label for="inp-price">Price (as shown):</label>
+            <input type="text" id="inp-price" placeholder="e.g. $X/year" autocomplete="off">
+          </div>
+          <div class="field-group">
+            <label for="inp-date">Release Date (as shown):</label>
+            <input type="text" id="inp-date" placeholder="e.g. Month YYYY" autocomplete="off">
+          </div>
+          <button id="submit-btn" onclick="submitAnswer()">Submit All Facts</button>
+          <div id="result-msg"></div>
+        </div>
+
+        <div id="comments">
+          <h3>186 Comments</h3>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#9c27b0;">P</div>
+            <div>
+              <span class="cmt-author">@priya_devs</span><span class="cmt-time">1 week ago</span>
+              <div class="cmt-text">Finally upgraded from 2.x. The new indexing engine alone is worth the price.</div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#2196f3;">K</div>
+            <div>
+              <span class="cmt-author">@kevin_infra</span><span class="cmt-time">2 weeks ago</span>
+              <div class="cmt-text">Solid review as always. The $299/year is competitive given what you get.</div>
+            </div>
+          </div>
+          <div class="cmt">
+            <div class="cmt-av" style="background:#4caf50;">L</div>
+            <div>
+              <span class="cmt-author">@lisa_techops</span><span class="cmt-time">3 weeks ago</span>
+              <div class="cmt-text">Been waiting for this release since last year. March 2026 can't come soon enough!</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside id="secondary">
+        <div class="rec"><div class="rec-thumb">&#128190;</div><div><div class="rec-title">DataVault 2.0 vs 3.0 — Migration Guide</div><div class="rec-ch">SoftwareReviewHub</div><div class="rec-v">9.1K views · 1 month ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#128202;</div><div><div class="rec-title">Best Data Management Tools 2026</div><div class="rec-ch">TechByte</div><div class="rec-v">44K views · 2 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#9881;</div><div><div class="rec-title">How to Configure DataVault for Enterprise</div><div class="rec-ch">EnterpriseIT</div><div class="rec-v">17K views · 3 months ago</div></div></div>
+        <div class="rec"><div class="rec-thumb">&#128274;</div><div><div class="rec-title">Database Security Best Practices 2026</div><div class="rec-ch">SecureCloud</div><div class="rec-v">28K views · 4 months ago</div></div></div>
+      </aside>
+    </div>
+  </main>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('reviewCanvas');
+  const ctx = canvas.getContext('2d');
+  const DURATION = 25000;
+  let animStart = null, animFrame = null;
+
+  function easeOut(t) { return 1 - (1-t)*(1-t); }
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    const elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    if (elapsed < 5000) {
+      // 0-5s Title card
+      const p = elapsed / 5000;
+      ctx.fillStyle = '#0a0a0a';
+      ctx.fillRect(0, 0, W, H);
+      // animated scan line
+      const scanY = (elapsed % 2000) / 2000 * H;
+      ctx.fillStyle = 'rgba(255,102,0,0.05)';
+      ctx.fillRect(0, scanY - 2, W, 4);
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#ff6600';
+      ctx.font = 'bold 16px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('SOFTWARE REVIEW HUB', W/2, 80);
+      ctx.fillStyle = '#fff';
+      ctx.font = 'bold 48px Arial';
+      ctx.fillText('DataVault 3.0', W/2, H/2 - 20);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '22px Arial';
+      ctx.fillText('Full Review', W/2, H/2 + 24);
+      ctx.globalAlpha = 1;
+
+    } else if (elapsed < 10000) {
+      // 5-10s Features
+      const p = (elapsed - 5000) / 5000;
+      ctx.fillStyle = '#111';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#ff6600';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'left';
+      ctx.fillText('FEATURE OVERVIEW', 60, 70);
+      ctx.strokeStyle = '#ff6600';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(60, 80); ctx.lineTo(400, 80); ctx.stroke();
+      const features = [
+        '✦  Advanced encrypted storage engine',
+        '✦  Real-time cross-platform sync',
+        '✦  AI-powered deduplication',
+        '✦  Role-based access control',
+        '✦  Audit log & compliance reports',
+      ];
+      features.forEach((f, i) => {
+        const fp = Math.max(0, Math.min((p - i*0.15) / 0.2, 1));
+        ctx.globalAlpha = fp;
+        ctx.fillStyle = '#eee';
+        ctx.font = '19px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(f, 60, 130 + i * 56);
+        ctx.globalAlpha = 1;
+      });
+
+    } else if (elapsed < 15000) {
+      // 10-15s Price — $299/year
+      const p = (elapsed - 10000) / 5000;
+      ctx.fillStyle = '#071a0a';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#4caf50';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('PRICING', W/2, 80);
+      ctx.strokeStyle = '#4caf50';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(W/2-60, 92); ctx.lineTo(W/2+60, 92); ctx.stroke();
+      ctx.fillStyle = '#fff';
+      ctx.font = '18px Arial';
+      ctx.fillText('DataVault 3.0 — Annual License', W/2, 148);
+      // Big price
+      ctx.fillStyle = '#4caf50';
+      ctx.font = 'bold 88px Arial';
+      ctx.fillText('$299', W/2, H/2 + 20);
+      ctx.fillStyle = '#4caf50';
+      ctx.font = 'bold 28px Arial';
+      ctx.fillText('/year', W/2, H/2 + 62);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '16px Arial';
+      ctx.fillText('Per seat · includes all updates', W/2, H/2 + 98);
+      ctx.globalAlpha = 1;
+
+    } else if (elapsed < 20000) {
+      // 15-20s Release date
+      const p = (elapsed - 15000) / 5000;
+      ctx.fillStyle = '#0a0a18';
+      ctx.fillRect(0, 0, W, H);
+      // Stars
+      for (let i = 0; i < 40; i++) {
+        const sx = (i * 137 + 50) % W;
+        const sy = (i * 97 + 30) % H;
+        ctx.fillStyle = `rgba(255,255,255,${0.2 + (i%3)*0.15})`;
+        ctx.fillRect(sx, sy, 2, 2);
+      }
+      ctx.globalAlpha = Math.min(p * 3, 1);
+      ctx.fillStyle = '#7c93ff';
+      ctx.font = 'bold 20px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('AVAILABILITY', W/2, 80);
+      ctx.fillStyle = '#fff';
+      ctx.font = '22px Arial';
+      ctx.fillText('DataVault 3.0 officially ships:', W/2, H/2 - 40);
+      ctx.fillStyle = '#ffcc00';
+      ctx.font = 'bold 60px Arial';
+      ctx.fillText('March 2026', W/2, H/2 + 30);
+      ctx.fillStyle = '#aaa';
+      ctx.font = '16px Arial';
+      ctx.fillText('Available on Windows · macOS · Linux · Cloud', W/2, H/2 + 72);
+      ctx.globalAlpha = 1;
+
+    } else {
+      // 20-25s Summary — all 3 facts together
+      const p = (elapsed - 20000) / 5000;
+      ctx.fillStyle = '#0f0f0f';
+      ctx.fillRect(0, 0, W, H);
+      ctx.globalAlpha = Math.min(p * 4, 1);
+
+      ctx.fillStyle = '#ff6600';
+      ctx.font = 'bold 22px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('SUMMARY', W/2, 60);
+
+      const facts = [
+        ['Product Name', 'DataVault 3.0', '#fff'],
+        ['Price', '$299/year', '#4caf50'],
+        ['Release Date', 'March 2026', '#ffcc00'],
+      ];
+      facts.forEach(([label, value, color], i) => {
+        const y = 140 + i * 110;
+        ctx.fillStyle = '#1a1a1a';
+        ctx.fillRect(80, y - 40, W - 160, 80);
+        ctx.fillStyle = '#666';
+        ctx.font = '14px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(label, 100, y - 14);
+        ctx.fillStyle = color;
+        ctx.font = 'bold 28px Arial';
+        ctx.fillText(value, 100, y + 24);
+      });
+      ctx.globalAlpha = 1;
+    }
+
+    document.getElementById('pb-fill').style.width = (Math.min(elapsed/DURATION,1)*100)+'%';
+    if (elapsed < DURATION) animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    document.getElementById('pb-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const name = document.getElementById('inp-name').value.trim().toLowerCase();
+    const price = document.getElementById('inp-price').value.trim().toLowerCase();
+    const date = document.getElementById('inp-date').value.trim().toLowerCase();
+    const msgEl = document.getElementById('result-msg');
+    if (name.includes('datavault') && price.includes('299')) {
+      taskResult = 'correct_facts';
+      msgEl.textContent = '✓ Correct! All facts verified: DataVault 3.0, $299, March 2026.';
+      msgEl.className = 'rok';
+    } else {
+      msgEl.textContent = '✗ Some facts are missing or incorrect. Watch all sections of the video carefully.';
+      msgEl.className = 'rerr';
+    }
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Installation Guide — Arcturus Platform | Docs</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Inter', system-ui, sans-serif; background: #f6f7fb; color: #1e1e2e; }
+
+  /* HEADER */
+  #header {
+    background: #1e1e2e; color: #fff; padding: 0 32px;
+    height: 58px; display: flex; align-items: center; gap: 20px;
+  }
+  #header .brand { font-size: 20px; font-weight: 700; color: #89b4fa; }
+  #header .brand-sub { font-size: 14px; color: #6c7086; margin-left: 4px; }
+  #header nav { display: flex; gap: 20px; margin-left: 32px; }
+  #header nav a { color: #cdd6f4; font-size: 14px; text-decoration: none; }
+  #header nav a:hover { color: #89b4fa; }
+  #header .header-right { margin-left: auto; display: flex; gap: 12px; align-items: center; }
+  .gh-btn {
+    background: #313244; color: #cdd6f4; padding: 7px 16px; border-radius: 6px;
+    font-size: 13px; text-decoration: none; display: flex; align-items: center; gap: 6px;
+  }
+
+  /* PAGE WRAPPER */
+  #page { display: flex; min-height: calc(100vh - 58px); }
+
+  /* SIDENAV */
+  #sidenav {
+    width: 260px; flex-shrink: 0; background: #1e1e2e; padding: 24px 0;
+    border-right: 1px solid #313244;
+  }
+  .snav-group { margin-bottom: 4px; }
+  .snav-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6c7086; padding: 12px 24px 6px; }
+  .snav-item { display: block; padding: 8px 24px 8px 32px; font-size: 13px; color: #a6adc8; text-decoration: none; }
+  .snav-item:hover { background: #313244; color: #cdd6f4; }
+  .snav-item.active { background: #313244; color: #89b4fa; border-left: 3px solid #89b4fa; padding-left: 29px; }
+
+  /* CONTENT */
+  #content { flex: 1; padding: 40px 56px; max-width: 900px; }
+  .breadcrumb { font-size: 13px; color: #9399b2; margin-bottom: 20px; }
+  .breadcrumb a { color: #89b4fa; text-decoration: none; }
+  h1.title { font-size: 28px; font-weight: 700; color: #cdd6f4; margin-bottom: 8px; }
+  .subtitle { font-size: 15px; color: #9399b2; margin-bottom: 28px; line-height: 1.5; }
+
+  .info-box {
+    background: #1e2030; border: 1px solid #45475a; border-left: 4px solid #89b4fa;
+    border-radius: 0 8px 8px 0; padding: 16px 20px; margin-bottom: 28px; font-size: 14px; color: #cdd6f4; line-height: 1.6;
+  }
+
+  h2.sh { font-size: 18px; font-weight: 600; color: #cdd6f4; margin-bottom: 14px; border-bottom: 1px solid #313244; padding-bottom: 8px; }
+
+  /* VIDEO PLAYER */
+  #player-container {
+    background: #11111b; border-radius: 12px; overflow: hidden; margin-bottom: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  #stepsCanvas { width: 100%; display: block; }
+  #player-bar {
+    background: #181825; padding: 10px 16px; display: flex; align-items: center; gap: 12px;
+  }
+  #play-btn {
+    background: #89b4fa; border: none; color: #1e1e2e; width: 32px; height: 32px;
+    border-radius: 50%; font-size: 13px; cursor: pointer; font-weight: 700; display: flex; align-items: center; justify-content: center;
+  }
+  #prog-wrap { flex: 1; height: 4px; background: #313244; border-radius: 2px; }
+  #prog-fill { height: 4px; background: #89b4fa; border-radius: 2px; width: 0%; transition: width 0.1s; }
+  #timer { color: #6c7086; font-size: 12px; font-family: monospace; }
+  .cap { font-size: 13px; color: #6c7086; text-align: center; margin-bottom: 32px; }
+
+  /* STEPS OVERVIEW */
+  .steps-list { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+  .step-item {
+    background: #1e2030; border: 1px solid #313244; border-radius: 10px;
+    padding: 16px 20px; display: flex; gap: 16px; align-items: flex-start;
+  }
+  .step-num {
+    width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 14px; color: #1e1e2e;
+  }
+  .step-body h4 { font-size: 15px; font-weight: 600; color: #cdd6f4; margin-bottom: 4px; }
+  .step-body p { font-size: 13px; color: #9399b2; line-height: 1.5; }
+
+  /* ANSWER */
+  #answer-section {
+    background: #1e2030; border: 1px solid #89b4fa; border-radius: 12px; padding: 24px; margin-bottom: 32px;
+  }
+  #answer-section h3 { font-size: 16px; font-weight: 600; color: #89b4fa; margin-bottom: 6px; }
+  #answer-section .ap { font-size: 14px; color: #9399b2; margin-bottom: 16px; }
+  #answer-section label { font-size: 13px; font-weight: 600; color: #cdd6f4; display: block; margin-bottom: 8px; }
+  #answer-section textarea {
+    width: 100%; padding: 12px 16px; border: 1px solid #45475a; background: #11111b;
+    color: #cdd6f4; border-radius: 8px; font-size: 14px; outline: none;
+    font-family: inherit; resize: vertical; min-height: 80px;
+  }
+  #answer-section textarea:focus { border-color: #89b4fa; }
+  #submit-btn {
+    background: #89b4fa; color: #1e1e2e; border: none; padding: 11px 28px;
+    border-radius: 8px; font-size: 15px; font-weight: 700; cursor: pointer; margin-top: 12px;
+  }
+  #submit-btn:hover { background: #74c7ec; }
+  #result-msg { margin-top: 12px; font-size: 14px; font-weight: 600; min-height: 20px; }
+  .rok { color: #a6e3a1; } .rerr { color: #f38ba8; }
+
+  /* RIGHT TOC */
+  #toc { width: 200px; flex-shrink: 0; padding: 40px 16px; }
+  #toc h5 { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #6c7086; margin-bottom: 12px; }
+  .toc-link { display: block; font-size: 13px; color: #9399b2; padding: 4px 0; text-decoration: none; }
+  .toc-link:hover { color: #89b4fa; }
+  .toc-link.active { color: #89b4fa; font-weight: 600; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header id="header">
+  <div class="brand">Arcturus <span class="brand-sub">Platform</span></div>
+  <nav>
+    <a href="#">Docs</a>
+    <a href="#">Guides</a>
+    <a href="#">API</a>
+    <a href="#">Community</a>
+  </nav>
+  <div class="header-right">
+    <a href="#" class="gh-btn">&#9733; GitHub</a>
+    <a href="#" style="background:#89b4fa;color:#1e1e2e;padding:7px 16px;border-radius:6px;font-size:13px;font-weight:600;text-decoration:none;">Sign in</a>
+  </div>
+</header>
+
+<!-- PAGE -->
+<div id="page">
+  <!-- SIDENAV -->
+  <nav id="sidenav">
+    <div class="snav-group">
+      <div class="snav-label">Getting Started</div>
+      <a class="snav-item" href="#">Overview</a>
+      <a class="snav-item" href="#">Quick Start</a>
+      <a class="snav-item active" href="#">Installation</a>
+      <a class="snav-item" href="#">Configuration</a>
+    </div>
+    <div class="snav-group">
+      <div class="snav-label">Core Concepts</div>
+      <a class="snav-item" href="#">Architecture</a>
+      <a class="snav-item" href="#">Pipelines</a>
+      <a class="snav-item" href="#">Connectors</a>
+    </div>
+    <div class="snav-group">
+      <div class="snav-label">Deployment</div>
+      <a class="snav-item" href="#">Docker</a>
+      <a class="snav-item" href="#">Kubernetes</a>
+      <a class="snav-item" href="#">Cloud</a>
+    </div>
+    <div class="snav-group">
+      <div class="snav-label">Reference</div>
+      <a class="snav-item" href="#">CLI</a>
+      <a class="snav-item" href="#">API Reference</a>
+      <a class="snav-item" href="#">Changelog</a>
+    </div>
+  </nav>
+
+  <!-- CONTENT -->
+  <main id="content">
+    <div class="breadcrumb"><a href="#">Docs</a> › <a href="#">Getting Started</a> › Installation</div>
+    <h1 class="title">Installation Guide</h1>
+    <p class="subtitle">Follow the 3-step process to get Arcturus Platform running on your system. This guide includes a video walkthrough of each step.</p>
+
+    <div class="info-box">
+      <strong>Video Walkthrough:</strong> The demo below covers all three installation steps in order. Watch the complete video before submitting the task below.
+    </div>
+
+    <h2 class="sh">Video: 3-Step Installation Demo</h2>
+
+    <div id="player-container">
+      <canvas id="stepsCanvas" width="800" height="450"></canvas>
+    </div>
+    <div id="player-bar">
+      <button id="play-btn" onclick="startAnimation()">&#9654;</button>
+      <div id="prog-wrap"><div id="prog-fill"></div></div>
+      <span id="timer">0:00 / 0:18</span>
+    </div>
+    <p class="cap">Arcturus Platform — Installation Walkthrough (18s)</p>
+
+    <h2 class="sh">Installation Steps (Reference)</h2>
+    <div class="steps-list">
+      <div class="step-item">
+        <div class="step-num" style="background:#89b4fa;">1</div>
+        <div class="step-body">
+          <h4>Download</h4>
+          <p>Download the Arcturus Platform installer from the official releases page. Choose the binary for your operating system.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num" style="background:#cba6f7;">2</div>
+        <div class="step-body">
+          <h4>Install</h4>
+          <p>Run the installer package. The setup wizard guides you through license agreement, installation directory, and component selection.</p>
+        </div>
+      </div>
+      <div class="step-item">
+        <div class="step-num" style="background:#a6e3a1;">3</div>
+        <div class="step-body">
+          <h4>Configure</h4>
+          <p>Open the configuration panel and set your environment variables, database connection, and initial workspace settings.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ANSWER -->
+    <div id="answer-section">
+      <h3>&#127916; Task: Step Identification</h3>
+      <p class="ap">Watch the demo video above. It shows a 3-step installation process. Summarize the three steps you observed (separated by commas or new lines).</p>
+      <label for="answer-input">Your answer:</label>
+      <textarea id="answer-input" placeholder="e.g. step 1, step 2, step 3"></textarea>
+      <br>
+      <button id="submit-btn" onclick="submitAnswer()">Submit Answer</button>
+      <div id="result-msg"></div>
+    </div>
+  </main>
+
+  <!-- TOC -->
+  <nav id="toc">
+    <h5>On this page</h5>
+    <a class="toc-link active" href="#">Video Walkthrough</a>
+    <a class="toc-link" href="#">Installation Steps</a>
+    <a class="toc-link" href="#">Prerequisites</a>
+    <a class="toc-link" href="#">Troubleshooting</a>
+    <a class="toc-link" href="#">Next Steps</a>
+  </nav>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const canvas = document.getElementById('stepsCanvas');
+  const ctx = canvas.getContext('2d');
+  const STEP_DUR = 6000;
+  const TOTAL = 18000;
+  let animStart = null, animFrame = null;
+
+  const steps = [
+    {
+      label: 'STEP 1',
+      name: 'Download',
+      bg: '#0a1628',
+      accent: '#89b4fa',
+      icon: (ctx, cx, cy, p) => {
+        // Download arrow icon animation
+        ctx.strokeStyle = '#89b4fa';
+        ctx.lineWidth = 4;
+        ctx.lineCap = 'round';
+        // Arrow shaft
+        ctx.beginPath();
+        ctx.moveTo(cx, cy - 50);
+        ctx.lineTo(cx, cy + 10 * p);
+        ctx.stroke();
+        // Arrowhead
+        if (p > 0.4) {
+          const ap = (p - 0.4) / 0.6;
+          ctx.beginPath();
+          ctx.moveTo(cx - 24 * ap, cy - 18 + 28 * p);
+          ctx.lineTo(cx, cy + 10 * p);
+          ctx.lineTo(cx + 24 * ap, cy - 18 + 28 * p);
+          ctx.stroke();
+        }
+        // Base line (download tray)
+        if (p > 0.6) {
+          const lp = (p - 0.6) / 0.4;
+          ctx.beginPath();
+          ctx.moveTo(cx - 40*lp, cy + 30);
+          ctx.lineTo(cx + 40*lp, cy + 30);
+          ctx.stroke();
+        }
+      }
+    },
+    {
+      label: 'STEP 2',
+      name: 'Install',
+      bg: '#150a28',
+      accent: '#cba6f7',
+      icon: (ctx, cx, cy, p) => {
+        // Installation wizard / window
+        ctx.strokeStyle = '#cba6f7';
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        // Window frame
+        const w = 80 * Math.min(p*2, 1), h = 60 * Math.min(p*2, 1);
+        ctx.strokeRect(cx - w/2, cy - h/2 - 10, w, h);
+        // Progress bar inside
+        if (p > 0.5) {
+          const fp = (p - 0.5) / 0.5;
+          ctx.fillStyle = '#cba6f7';
+          ctx.fillRect(cx - 28, cy + 4, 56 * fp, 8);
+          ctx.strokeRect(cx - 28, cy + 4, 56, 8);
+        }
+        // Checkmark
+        if (p > 0.85) {
+          const cp = (p - 0.85) / 0.15;
+          ctx.strokeStyle = '#a6e3a1';
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(cx - 16*cp, cy - 16);
+          ctx.lineTo(cx - 4, cy - 4);
+          ctx.lineTo(cx + 20*cp, cy - 24);
+          ctx.stroke();
+        }
+      }
+    },
+    {
+      label: 'STEP 3',
+      name: 'Configure',
+      bg: '#0a1a10',
+      accent: '#a6e3a1',
+      icon: (ctx, cx, cy, p) => {
+        // Gear icon
+        ctx.strokeStyle = '#a6e3a1';
+        ctx.lineWidth = 3;
+        const r = 28 * Math.min(p * 2, 1);
+        const angle = elapsed / 1200;
+        // Outer gear teeth
+        for (let i = 0; i < 8; i++) {
+          const a = (Math.PI * 2 / 8) * i + angle;
+          const x1 = cx + (r) * Math.cos(a);
+          const y1 = cy + (r) * Math.sin(a);
+          const x2 = cx + (r + 12) * Math.cos(a);
+          const y2 = cy + (r + 12) * Math.sin(a);
+          ctx.beginPath();
+          ctx.moveTo(x1, y1); ctx.lineTo(x2, y2);
+          ctx.stroke();
+        }
+        ctx.beginPath();
+        ctx.arc(cx, cy, r, 0, Math.PI * 2);
+        ctx.stroke();
+        // Center circle
+        ctx.beginPath();
+        ctx.arc(cx, cy, r * 0.4, 0, Math.PI * 2);
+        ctx.fillStyle = '#a6e3a1';
+        ctx.fill();
+      }
+    }
+  ];
+
+  let elapsed = 0;
+
+  function drawFrame(ts) {
+    if (!animStart) animStart = ts;
+    elapsed = ts - animStart;
+    const W = canvas.width, H = canvas.height;
+    ctx.clearRect(0, 0, W, H);
+
+    const stepIdx = Math.min(Math.floor(elapsed / STEP_DUR), 2);
+    const stepT = (elapsed - stepIdx * STEP_DUR) / STEP_DUR;
+    const step = steps[stepIdx];
+
+    // Background
+    ctx.fillStyle = step.bg;
+    ctx.fillRect(0, 0, W, H);
+
+    // Subtle grid
+    ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+    ctx.lineWidth = 1;
+    for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
+    for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
+
+    // Step label badge (top-left)
+    const badgeAlpha = Math.min(stepT * 5, 1);
+    ctx.globalAlpha = badgeAlpha;
+    ctx.fillStyle = step.accent;
+    ctx.beginPath();
+    ctx.roundRect(24, 24, 110, 36, 18);
+    ctx.fill();
+    ctx.fillStyle = '#1e1e2e';
+    ctx.font = 'bold 16px Inter, Arial';
+    ctx.textAlign = 'left';
+    ctx.fillText(step.label, 38, 48);
+    ctx.globalAlpha = 1;
+
+    // Step number (3 indicators top-right)
+    for (let i = 0; i < 3; i++) {
+      ctx.beginPath();
+      ctx.arc(W - 40 - (2-i)*28, 42, 10, 0, Math.PI*2);
+      ctx.fillStyle = i <= stepIdx ? step.accent : '#313244';
+      ctx.fill();
+      ctx.fillStyle = i <= stepIdx ? '#1e1e2e' : '#6c7086';
+      ctx.font = 'bold 11px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(i+1, W - 40 - (2-i)*28, 47);
+    }
+
+    // Icon animation (center-left area)
+    const cx = W * 0.32, cy = H * 0.48;
+    step.icon(ctx, cx, cy, stepT);
+
+    // Big title text
+    ctx.globalAlpha = Math.min(stepT * 3, 1);
+    ctx.fillStyle = '#fff';
+    ctx.font = `bold 58px Inter, Arial`;
+    ctx.textAlign = 'center';
+    ctx.fillText(step.name, W * 0.65, H * 0.42);
+    ctx.fillStyle = step.accent;
+    ctx.font = '20px Inter, Arial';
+    ctx.fillText('Arcturus Platform', W * 0.65, H * 0.42 + 44);
+    ctx.globalAlpha = 1;
+
+    // Progress bar at bottom
+    const totalProg = Math.min(elapsed / TOTAL, 1);
+    ctx.fillStyle = '#313244';
+    ctx.fillRect(0, H - 4, W, 4);
+    ctx.fillStyle = step.accent;
+    ctx.fillRect(0, H - 4, W * totalProg, 4);
+
+    document.getElementById('prog-fill').style.width = (totalProg * 100) + '%';
+    const secs = Math.min(Math.floor(elapsed / 1000), 18);
+    document.getElementById('timer').textContent = `0:${String(secs).padStart(2,'0')} / 0:18`;
+
+    if (elapsed < TOTAL) {
+      animFrame = requestAnimationFrame(drawFrame);
+    } else {
+      // End state
+      ctx.fillStyle = '#11111b';
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = '#a6e3a1';
+      ctx.font = 'bold 32px Inter, Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText('✓ Installation Complete', W/2, H/2 - 10);
+      ctx.fillStyle = '#9399b2';
+      ctx.font = '16px Arial';
+      ctx.fillText('Steps: Download → Install → Configure', W/2, H/2 + 30);
+    }
+  }
+
+  function startAnimation() {
+    if (animFrame) cancelAnimationFrame(animFrame);
+    animStart = null;
+    elapsed = 0;
+    document.getElementById('prog-fill').style.width = '0%';
+    animFrame = requestAnimationFrame(drawFrame);
+  }
+
+  function submitAnswer() {
+    const val = document.getElementById('answer-input').value.trim().toLowerCase();
+    const msgEl = document.getElementById('result-msg');
+    const keywords = ['download', 'install', 'config'];
+    const matched = keywords.filter(k => val.includes(k));
+    if (matched.length >= 2) {
+      taskResult = 'steps_described';
+      msgEl.textContent = '✓ Correct! Steps identified: Download, Install, Configure.';
+      msgEl.className = 'rok';
+    } else {
+      msgEl.textContent = '✗ Incomplete. Watch the full video and identify all three steps.';
+      msgEl.className = 'rerr';
+    }
+  }
+
+  window.addEventListener('load', startAnimation);
+</script>
+</body>
+</html>

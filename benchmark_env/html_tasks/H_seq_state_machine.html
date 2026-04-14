@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>State Machine Diagram</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Segoe UI', sans-serif; background: #0f172a; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+  .sm-card { background: #1e293b; border-radius: 14px; width: 760px; padding: 28px; margin-bottom: 20px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); }
+  .sm-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .sm-header h2 { color: #f1f5f9; font-size: 1.1rem; }
+  .current-state-display { background: #0f172a; border: 1px solid #334155; border-radius: 10px; padding: 10px 20px; text-align: center; }
+  .cs-label { font-size: 0.72rem; color: #64748b; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .cs-value { font-size: 1.1rem; color: #38bdf8; font-weight: 700; margin-top: 2px; }
+  .cs-time { font-size: 0.72rem; color: #64748b; margin-top: 2px; }
+  svg { display: block; width: 100%; }
+  .state-circle { fill: #1e3a5f; stroke: #3b82f6; stroke-width: 2; transition: all 0.5s; }
+  .state-circle.active { fill: #1d4ed8; stroke: #60a5fa; stroke-width: 3; filter: drop-shadow(0 0 10px rgba(59,130,246,0.8)); }
+  .state-circle.visited { fill: #0c3326; stroke: #22c55e; stroke-width: 2; }
+  .state-text { fill: #93c5fd; font-size: 11px; font-weight: 700; transition: fill 0.5s; }
+  .state-text.active { fill: #fff; }
+  .state-text.visited { fill: #4ade80; }
+  .edge-line { stroke: #334155; stroke-width: 2; fill: none; marker-end: url(#arrowGray); transition: stroke 0.5s; }
+  .edge-line.active { stroke: #3b82f6; stroke-width: 3; marker-end: url(#arrowBlue); }
+  .transition-history { margin-top: 20px; border-top: 1px solid #334155; padding-top: 16px; }
+  .transition-history h3 { color: #94a3b8; font-size: 0.8rem; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .transition-list { display: flex; flex-wrap: wrap; gap: 6px; }
+  .transition-tag { background: #0f172a; border: 1px solid #334155; border-radius: 20px; padding: 3px 12px; font-size: 0.75rem; color: #64748b; }
+  .transition-tag.done { border-color: #22c55e; color: #4ade80; }
+  .transition-tag.current { border-color: #3b82f6; color: #60a5fa; background: #1e3a5f; }
+  .answer-box { width: 760px; background: #1e293b; border-radius: 14px; box-shadow: 0 8px 40px rgba(0,0,0,0.5); padding: 20px; }
+  .answer-box label { color: #94a3b8; font-size: 0.85rem; font-weight: 600; display: block; margin-bottom: 8px; }
+  .answer-box textarea { width: 100%; padding: 10px 14px; background: #0f172a; border: 1px solid #334155; border-radius: 8px; color: #e2e8f0; font-size: 0.9rem; min-height: 90px; outline: none; resize: vertical; font-family: inherit; }
+  .answer-box textarea:focus { border-color: #3b82f6; }
+  .btn-row { display: flex; gap: 10px; margin-top: 12px; }
+  .btn { background: #2563eb; color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-restart { background: #334155; color: #94a3b8; border: none; border-radius: 8px; padding: 10px 18px; font-size: 0.85rem; cursor: pointer; }
+  .result-msg { font-size: 0.85rem; margin-top: 10px; font-weight: 600; display: none; }
+</style>
+</head>
+<body>
+<div class="sm-card">
+  <div class="sm-header">
+    <h2>State Machine Diagram</h2>
+    <div class="current-state-display">
+      <div class="cs-label">Current State</div>
+      <div class="cs-value" id="csValue">Idle</div>
+      <div class="cs-time" id="csTime">t=0.0s</div>
+    </div>
+  </div>
+
+  <svg viewBox="0 0 700 220" height="220">
+    <defs>
+      <marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#334155"/>
+      </marker>
+      <marker id="arrowBlue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto">
+        <path d="M 0 0 L 10 5 L 0 10 z" fill="#3b82f6"/>
+      </marker>
+    </defs>
+
+    <!-- Edges (drawn before nodes so nodes appear on top) -->
+    <line id="e01" class="edge-line" x1="70" y1="110" x2="105" y2="110"/>
+    <line id="e12" class="edge-line" x1="157" y1="110" x2="195" y2="110"/>
+    <line id="e23" class="edge-line" x1="247" y1="110" x2="285" y2="110"/>
+    <line id="e34" class="edge-line" x1="337" y1="110" x2="375" y2="110"/>
+    <line id="e45" class="edge-line" x1="427" y1="110" x2="465" y2="110"/>
+    <line id="e56" class="edge-line" x1="517" y1="110" x2="555" y2="110"/>
+    <line id="e67" class="edge-line" x1="607" y1="110" x2="645" y2="110"/>
+
+    <!-- State nodes -->
+    <g id="n0"><circle class="state-circle active" cx="40" cy="110" r="30"/><text class="state-text active" x="40" y="107" text-anchor="middle">Idle</text></g>
+    <g id="n1"><circle class="state-circle" cx="130" cy="110" r="30"/><text class="state-text" x="130" y="107" text-anchor="middle">Init</text></g>
+    <g id="n2"><circle class="state-circle" cx="220" cy="110" r="30"/><text class="state-text" x="220" y="106" text-anchor="middle">Load-</text><text class="state-text" x="220" y="119" text-anchor="middle">ing</text></g>
+    <g id="n3"><circle class="state-circle" cx="310" cy="110" r="30"/><text class="state-text" x="310" y="106" text-anchor="middle">Con-</text><text class="state-text" x="310" y="119" text-anchor="middle">nect.</text></g>
+    <g id="n4"><circle class="state-circle" cx="400" cy="110" r="30"/><text class="state-text" x="400" y="106" text-anchor="middle">Con-</text><text class="state-text" x="400" y="119" text-anchor="middle">nected</text></g>
+    <g id="n5"><circle class="state-circle" cx="490" cy="110" r="30"/><text class="state-text" x="490" y="107" text-anchor="middle">Active</text></g>
+    <g id="n6"><circle class="state-circle" cx="580" cy="110" r="30"/><text class="state-text" x="580" y="106" text-anchor="middle">Drain-</text><text class="state-text" x="580" y="119" text-anchor="middle">ing</text></g>
+    <g id="n7"><circle class="state-circle" cx="665" cy="110" r="30"/><text class="state-text" x="665" y="107" text-anchor="middle">Stop-</text><text class="state-text" x="665" y="119" text-anchor="middle">ped</text></g>
+  </svg>
+
+  <div class="transition-history">
+    <h3>Transition History</h3>
+    <div class="transition-list" id="transitionList">
+      <span class="transition-tag current">Idle</span>
+      <span class="transition-tag" id="tt1">Init</span>
+      <span class="transition-tag" id="tt2">Loading</span>
+      <span class="transition-tag" id="tt3">Connecting</span>
+      <span class="transition-tag" id="tt4">Connected</span>
+      <span class="transition-tag" id="tt5">Active</span>
+      <span class="transition-tag" id="tt6">Draining</span>
+      <span class="transition-tag" id="tt7">Stopped</span>
+    </div>
+  </div>
+</div>
+
+<div class="answer-box">
+  <label for="answerTA">Describe the state transition sequence:</label>
+  <textarea id="answerTA" placeholder="List all states in order: Idle → Init → Loading → ..."></textarea>
+  <div class="btn-row">
+    <button class="btn" onclick="submitAnswer()">Submit</button>
+    <button class="btn-restart" onclick="restartSM()">Restart</button>
+  </div>
+  <div class="result-msg" id="resultMsg"></div>
+</div>
+
+<script>
+let taskResult = 'pending';
+window.getTaskResult = () => taskResult;
+
+const states = ['Idle','Init','Loading','Connecting','Connected','Active','Draining','Stopped'];
+let timers = [];
+let elapsed = 0;
+let tickTimer = null;
+
+function activateNode(idx) {
+  for (let i = 0; i < 8; i++) {
+    const circle = document.querySelector('#n' + i + ' circle');
+    const texts = document.querySelectorAll('#n' + i + ' text');
+    if (i < idx) {
+      circle.className.baseVal = 'state-circle visited';
+      texts.forEach(t => t.className.baseVal = 'state-text visited');
+    } else if (i === idx) {
+      circle.className.baseVal = 'state-circle active';
+      texts.forEach(t => t.className.baseVal = 'state-text active');
+    } else {
+      circle.className.baseVal = 'state-circle';
+      texts.forEach(t => t.className.baseVal = 'state-text');
+    }
+  }
+  for (let i = 0; i < 7; i++) {
+    const edge = document.getElementById('e' + i + '' + (i+1));
+    edge.className.baseVal = i < idx ? 'edge-line active' : 'edge-line';
+  }
+  document.getElementById('csValue').textContent = states[idx];
+
+  // Update transition tags
+  for (let i = 0; i < 8; i++) {
+    if (i === 0) {
+      const el = document.querySelector('.transition-list .transition-tag');
+      el.className = i < idx ? 'transition-tag done' : (i === idx ? 'transition-tag current' : 'transition-tag');
+    } else {
+      const el = document.getElementById('tt' + i);
+      el.className = i < idx ? 'transition-tag done' : (i === idx ? 'transition-tag current' : 'transition-tag');
+    }
+  }
+}
+
+function runSM() {
+  elapsed = 0;
+  activateNode(0);
+  tickTimer = setInterval(() => {
+    elapsed += 0.1;
+    document.getElementById('csTime').textContent = 't=' + elapsed.toFixed(1) + 's';
+  }, 100);
+
+  for (let i = 1; i < 8; i++) {
+    timers.push(setTimeout(() => activateNode(i), i * 2500));
+  }
+}
+
+function restartSM() {
+  timers.forEach(clearTimeout);
+  clearInterval(tickTimer);
+  timers = [];
+  taskResult = 'pending';
+  document.getElementById('answerTA').value = '';
+  document.getElementById('resultMsg').style.display = 'none';
+  runSM();
+}
+
+function submitAnswer() {
+  const val = document.getElementById('answerTA').value;
+  const msg = document.getElementById('resultMsg');
+  if (val.length > 50) {
+    taskResult = 'sequence_described';
+    msg.style.color = '#22c55e';
+    msg.textContent = 'Logged! Sequence: Idle → Init → Loading → Connecting → Connected → Active → Draining → Stopped.';
+  } else {
+    taskResult = 'too_short';
+    msg.style.color = '#f85149';
+    msg.textContent = 'Please describe all 8 states in the transition sequence.';
+  }
+  msg.style.display = 'block';
+}
+
+runSM();
+</script>
+</body>
+</html>

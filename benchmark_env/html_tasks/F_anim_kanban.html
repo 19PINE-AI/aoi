@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kanban Board</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #f5f7fb;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+  }
+  h1 { font-size: 20px; font-weight: 700; color: #1a1a2e; margin-bottom: 4px; }
+  .subtitle { font-size: 13px; color: #888; margin-bottom: 20px; }
+  .timer-info {
+    font-size: 12px;
+    color: #aaa;
+    margin-bottom: 16px;
+    background: #fff;
+    padding: 8px 20px;
+    border-radius: 20px;
+    border: 1px solid #e0e0e0;
+  }
+  .board {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 24px;
+    align-items: flex-start;
+  }
+  .column {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    width: 200px;
+    min-height: 300px;
+    overflow: hidden;
+  }
+  .col-header {
+    padding: 14px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid transparent;
+  }
+  .col-todo .col-header { background: #f0f4ff; color: #4361ee; border-color: #4361ee; }
+  .col-progress .col-header { background: #fff8e1; color: #f59e0b; border-color: #f59e0b; }
+  .col-done .col-header { background: #f0fff4; color: #2e7d32; border-color: #2e7d32; }
+  .col-count {
+    display: inline-block;
+    background: currentColor;
+    opacity: 0.15;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    font-size: 11px;
+    font-weight: 700;
+    text-align: center;
+    line-height: 20px;
+    margin-left: 6px;
+  }
+  .col-body { padding: 12px; min-height: 200px; }
+  .card {
+    background: #fff;
+    border: 1px solid #e8ecf4;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 8px;
+    font-size: 13px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    transition: all 0.4s ease;
+    cursor: default;
+  }
+  .card .card-id {
+    display: inline-block;
+    background: #4361ee;
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    margin-right: 6px;
+  }
+  .card.moving {
+    opacity: 0.4;
+    transform: scale(0.95);
+    border-color: #f59e0b;
+  }
+  .card-name { color: #333; font-weight: 600; }
+  .card-tag {
+    font-size: 10px;
+    color: #999;
+    margin-top: 4px;
+  }
+  .answer-area {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    padding: 20px 24px;
+    width: 640px;
+  }
+  .answer-area label { font-size: 13px; font-weight: 600; color: #333; display: block; margin-bottom: 8px; }
+  textarea {
+    width: 100%;
+    height: 90px;
+    border: 1.5px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    padding: 10px 12px;
+    resize: vertical;
+    outline: none;
+    font-family: inherit;
+  }
+  textarea:focus { border-color: #4361ee; }
+  .btn-row { display: flex; gap: 10px; margin-top: 10px; align-items: center; }
+  button {
+    background: #4361ee;
+    color: #fff;
+    border: none;
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  button:hover { background: #3451d1; }
+  #feedback { font-size: 13px; font-weight: 600; min-height: 18px; }
+  .correct { color: #2e7d32; }
+  .wrong { color: #c62828; }
+  .moving-notice {
+    font-size: 12px;
+    color: #f59e0b;
+    font-style: italic;
+    animation: blink 0.8s ease-in-out infinite;
+  }
+  @keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+</style>
+</head>
+<body>
+<h1>Sprint Kanban Board</h1>
+<p class="subtitle">Watch cards animate between states — report final positions</p>
+<div class="timer-info" id="timerInfo">Animation running — t=0s</div>
+<div class="board">
+  <div class="column col-todo">
+    <div class="col-header">To Do <span class="col-count">2</span></div>
+    <div class="col-body" id="col-todo"></div>
+  </div>
+  <div class="column col-progress">
+    <div class="col-header">In Progress <span class="col-count">1</span></div>
+    <div class="col-body" id="col-progress"></div>
+  </div>
+  <div class="column col-done">
+    <div class="col-header">Done <span class="col-count">2</span></div>
+    <div class="col-body" id="col-done"></div>
+  </div>
+</div>
+
+<div class="answer-area">
+  <label>Final state of each item (A-E):</label>
+  <textarea id="answer" placeholder="Example: A=Done, B=Done, C=Done, D=Done, E=Done"></textarea>
+  <div class="btn-row">
+    <button onclick="submitAnswer()">Submit</button>
+    <div id="feedback"></div>
+    <div id="movingNotice" class="moving-notice" style="display:none;margin-left:auto">Card moving...</div>
+  </div>
+</div>
+
+<script>
+  let taskResult = 'pending';
+  window.getTaskResult = () => taskResult;
+
+  const cards = [
+    { id: 'A', name: 'Feature Auth', tag: 'feature' },
+    { id: 'B', name: 'Bug Fix',      tag: 'bug' },
+    { id: 'C', name: 'Docs Update',  tag: 'docs' },
+    { id: 'D', name: 'Performance',  tag: 'optimization' },
+    { id: 'E', name: 'Testing',      tag: 'qa' },
+  ];
+
+  // State: 'todo' | 'progress' | 'done'
+  let state = {
+    A: 'todo', B: 'todo', C: 'progress', D: 'done', E: 'done'
+  };
+
+  function renderBoard() {
+    ['todo', 'progress', 'done'].forEach(col => {
+      document.getElementById('col-' + col).innerHTML = '';
+    });
+    cards.forEach(card => {
+      const col = state[card.id];
+      const el = document.createElement('div');
+      el.className = 'card';
+      el.id = 'card-' + card.id;
+      el.innerHTML = `<span class="card-id">${card.id}</span><span class="card-name">${card.name}</span><div class="card-tag">${card.tag}</div>`;
+      document.getElementById('col-' + col).appendChild(el);
+    });
+  }
+
+  function moveCard(id, newState, notice) {
+    const el = document.getElementById('card-' + id);
+    if (el) el.className = 'card moving';
+    document.getElementById('movingNotice').style.display = 'block';
+    setTimeout(() => {
+      state[id] = newState;
+      renderBoard();
+      document.getElementById('movingNotice').style.display = 'none';
+    }, 600);
+  }
+
+  renderBoard();
+
+  let elapsed = 0;
+  const timerInfo = document.getElementById('timerInfo');
+
+  const schedule = [
+    { t: 4,  action: () => moveCard('A', 'progress') },
+    { t: 8,  action: () => moveCard('B', 'done') },
+    { t: 12, action: () => moveCard('C', 'done') },
+    { t: 16, action: () => moveCard('A', 'done') },
+  ];
+
+  let fired = [false, false, false, false];
+  const ticker = setInterval(() => {
+    elapsed++;
+    timerInfo.textContent = `Animation running — t=${elapsed}s ${elapsed >= 16 ? '(FINAL STATE)' : ''}`;
+    schedule.forEach((s, i) => {
+      if (!fired[i] && elapsed >= s.t) {
+        fired[i] = true;
+        s.action();
+      }
+    });
+    if (elapsed >= 20) clearInterval(ticker);
+  }, 1000);
+
+  function submitAnswer() {
+    const val = document.getElementById('answer').value.trim();
+    const fb = document.getElementById('feedback');
+    if (val.length > 40) {
+      taskResult = 'kanban_reported';
+      fb.textContent = 'Report submitted! All cards end in Done.';
+      fb.className = 'correct';
+    } else {
+      taskResult = 'too_short';
+      fb.textContent = 'Please describe the final state of all 5 items.';
+      fb.className = 'wrong';
+    }
+  }
+</script>
+</body>
+</html>
