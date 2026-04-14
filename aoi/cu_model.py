@@ -45,6 +45,7 @@ Available actions:
   click(x, y)              — click at pixel coordinates (e.g. click(640, 360))
   type("text")             — type text into the focused input (auto-finds first visible input)
   fill(#id, "text")        — fill a specific input by its HTML id attribute
+  select(#id, "value")     — choose an option in a <select> dropdown by its value
   triple_click(x, y)       — select all text at coordinates (for replacing text)
   key(Enter)               — press a keyboard key (Enter, Tab, Escape, ctrl+a, etc.)
   scroll(down, 300)        — scroll the page (up/down, pixels)

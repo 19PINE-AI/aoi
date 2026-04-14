@@ -257,18 +257,20 @@ class BrowserEvaluator:
 
             # If no audio found from explicit variables, wait for the
             # SpeechSynthesis monkey-patch to capture sequential utterances.
-            # Pages chain utterances via onend callbacks with 1-2s delays.
+            # The monkey-patch fires onend with proportional timing (~3 wps),
+            # so gaps between utterances can be 6-10s.  Use a 12s stability
+            # threshold to avoid truncating chains prematurely.
             if not audio_texts:
                 prev_count = 0
                 stable_ticks = 0
-                for _poll in range(30):  # up to 15 seconds
+                for _poll in range(120):  # up to 60 seconds
                     time.sleep(0.5)
                     captured = env._page.evaluate(
                         'window.__capturedUtterances ? window.__capturedUtterances.slice() : []')
                     cur_count = len(captured) if captured else 0
                     if cur_count > 0 and cur_count == prev_count:
                         stable_ticks += 1
-                        if stable_ticks >= 6:  # 3s with no new utterances
+                        if stable_ticks >= 24:  # 12s with no new utterances
                             audio_texts = captured
                             break
                     else:

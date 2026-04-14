@@ -113,10 +113,15 @@ class BrowserEnvironment:
                     if (utterance && utterance.text) {
                         window.__capturedUtterances.push(utterance.text);
                     }
-                    // Fire onend callback quickly so sequential utterances chain
-                    // fast — we only need to capture text, not actually play audio
+                    // Fire onend with timing proportional to text length.
+                    // This preserves page timing for tasks that use onend
+                    // to trigger interactive elements (timers, Q&A, forms).
+                    // ~3 words/sec at typical TTS rate.
                     if (utterance && utterance.onend) {
-                        setTimeout(() => utterance.onend(new Event('end')), 50);
+                        const words = utterance.text ? utterance.text.split(/\s+/).length : 0;
+                        const rate = utterance.rate || 1.0;
+                        const ms = Math.max(100, (words / (3.0 * rate)) * 1000);
+                        setTimeout(() => utterance.onend(new Event('end')), ms);
                     }
                 };
             """)
@@ -371,6 +376,13 @@ class BrowserEnvironment:
                 self._page.fill(sel, text)
                 return ActionResult(True, action_text)
 
+            # --- select(selector, "value") — choose <select> dropdown option ---
+            m = re.match(r'select\s*\(\s*(\S+?)\s*,\s*(.+?)\s*\)', action, re.IGNORECASE)
+            if m:
+                sel, value = m.group(1), m.group(2).strip().strip("'\"")
+                self._page.select_option(sel, value)
+                return ActionResult(True, action_text)
+
             # --- type "X" into Y / type("X") / enter "X" ---
             # Handles both: type "text" and type("text")
             m = re.match(r'(?:type|enter|input)\s*\(\s*["\']([^"\']+)["\']\s*(?:,\s*[^)]+)?\s*\)', action, re.IGNORECASE)
@@ -475,8 +487,8 @@ class BrowserEnvironment:
                 result = self._page.evaluate(code)
                 return ActionResult(True, f"js: {result}")
 
-            # --- scroll ---
-            m = re.match(r'scroll\s+(up|down)\s+(\d+)', action_lower)
+            # --- scroll --- scroll up 300 / scroll(down, 300) / scroll(down,300)
+            m = re.match(r'scroll\s*\(?\s*(up|down)\s*,?\s*(\d+)\s*\)?', action_lower)
             if m:
                 direction = m.group(1)
                 amount = int(m.group(2))

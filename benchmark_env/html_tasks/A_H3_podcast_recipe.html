@@ -86,11 +86,11 @@
 
   // Expected answers (order-independent matching)
   const expected = [
-    { ing: 'tomato', qty: '2' },
-    { ing: 'garlic', qty: '3' },
-    { ing: 'basil', qty: '1' },
-    { ing: 'cream', qty: 'half' },
-    { ing: 'olive oil', qty: '2' }
+    { ing: 'tomato', qty: ['2'] },
+    { ing: 'garlic', qty: ['3'] },
+    { ing: 'basil', qty: ['1'] },
+    { ing: 'cream', qty: ['half', '1/2', '0.5'] },
+    { ing: 'olive oil', qty: ['2'] }
   ];
 
   function startAudio() {
@@ -141,7 +141,8 @@
     let matched = 0;
     for (const exp of expected) {
       for (const ent of entries) {
-        if (ent.ing.includes(exp.ing) && ent.qty.includes(exp.qty)) {
+        const qtyMatch = exp.qty.some(q => ent.qty.includes(q));
+        if (ent.ing.includes(exp.ing) && qtyMatch) {
           matched++;
           break;
         }

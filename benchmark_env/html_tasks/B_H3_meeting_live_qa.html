@@ -244,9 +244,9 @@
     speakForSlide(0);
   }
 
-  // Q1 send
-  document.getElementById('send1').addEventListener('click', () => {
-    if (q1Expired) return;
+  // Q1 answer check — both Send button click and input change
+  function checkQ1() {
+    if (q1Expired || q1Answered) return;
     const val = document.getElementById('answer1').value.toLowerCase().trim();
     if (val.includes('supply chain') || val.includes('delay')) {
       q1Answered = true;
@@ -254,11 +254,13 @@
       document.getElementById('q1Status').textContent = 'Answered!';
       document.getElementById('q1Status').style.color = '#34a853';
     }
-  });
+  }
+  document.getElementById('send1').addEventListener('click', checkQ1);
+  document.getElementById('answer1').addEventListener('input', checkQ1);
 
-  // Q2 send
-  document.getElementById('send2').addEventListener('click', () => {
-    if (q2Expired) return;
+  // Q2 answer check — both Send button click and input change
+  function checkQ2() {
+    if (q2Expired || q2Answered) return;
     const val = document.getElementById('answer2').value.toLowerCase().trim();
     if (val.includes('2.3') || val.includes('two point three')) {
       q2Answered = true;
@@ -266,7 +268,9 @@
       document.getElementById('q2Status').textContent = 'Answered!';
       document.getElementById('q2Status').style.color = '#34a853';
     }
-  });
+  }
+  document.getElementById('send2').addEventListener('click', checkQ2);
+  document.getElementById('answer2').addEventListener('input', checkQ2);
 
   function updateClock() {
     const now = new Date();
@@ -275,7 +279,13 @@
   setInterval(updateClock, 1000); updateClock();
 
   window.getTaskResult = function() {
-    if (q1Answered && q2Answered) return 'both_answered_in_time';
+    // Also check input values directly (like B-H1) — fill() triggers
+    // input events that set flags, but as a fallback check values too
+    const v1 = document.getElementById('answer1').value.toLowerCase().trim();
+    const v2 = document.getElementById('answer2').value.toLowerCase().trim();
+    const a1ok = q1Answered || ((v1.includes('supply chain') || v1.includes('delay')) && !q1Expired);
+    const a2ok = q2Answered || ((v2.includes('2.3') || v2.includes('two point three')) && !q2Expired);
+    if (a1ok && a2ok) return 'both_answered_in_time';
     return 'incorrect';
   };
 

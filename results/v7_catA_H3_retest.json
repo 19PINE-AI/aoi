@@ -1,0 +1,165 @@
+[
+  {
+    "task_id": "A-H3",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "all_ingredients_correct",
+    "steps_taken": 13,
+    "total_time_s": 148.8234212398529,
+    "total_model_latency_ms": 35829.378843307495,
+    "total_obs_overhead_ms": 45598.23393821716,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 252)",
+        "narration": "The podcast is playing showing Chef's Table Podcast Episode 67 about Classic Tomato Basil Soup with a shopping list form below.",
+        "audio_text": "Make sure they're ripe and firm. Next, grab three cloves of garlic.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 5778.478145599365,
+        "model_latency_ms": 4877.526521682739,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "narration": "The podcast is currently playing (showing pause button \u275a\u275a) with 3 ingredients heard so far - Roma tomatoes (2 lbs), garlic (3 cloves), and fresh basil leaves (1 cup), but I need to hear all 5 ingredie",
+        "audio_text": "You'll also need 1 cup of fresh basil leaves. Don't use dried.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3546.539068222046,
+        "model_latency_ms": 3554.1141033172607,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 252)",
+        "narration": "All 5 ingredients have been heard from the audio transcript, and the podcast has finished playing (showing 0:40/0:40).",
+        "audio_text": "heavy cream for that rich, velvety finish. And finally, two tablespoons of olive oil.",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 4024.8165130615234,
+        "model_latency_ms": 2616.09148979187,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 4,
+        "action": "fill(#ing1, \"Roma tomatoes\")",
+        "narration": "The podcast has finished playing (0:40/0:40) and all 5 ingredients have been heard, so now I need to fill in the shopping list form.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3732.3553562164307,
+        "model_latency_ms": 4036.698818206787,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 5,
+        "action": "fill(#qty1, \"2 lbs\")",
+        "narration": "The form now shows \"Roma tomatoes\" filled in the first ingredient field, with all other fields still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3772.5539207458496,
+        "model_latency_ms": 2836.3678455352783,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 6,
+        "action": "fill(#ing2, \"garlic\")",
+        "narration": "The form shows \"Roma tomatoes\" and \"2 lbs\" filled in the first row, with all other ingredient fields still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3769.834041595459,
+        "model_latency_ms": 2216.364622116089,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 7,
+        "action": "fill(#qty2, \"3 cloves\")",
+        "narration": "The form shows \"Roma tomatoes\" with \"2 lbs\" in row 1, and \"garlic\" filled in row 2 with the quantity field still empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3762.8188133239746,
+        "model_latency_ms": 2254.394769668579,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 8,
+        "action": "fill(#ing3, \"fresh basil leaves\")",
+        "narration": "The form now shows rows 1 and 2 filled, with rows 3-5 still empty, needing basil leaves, heavy cream, and olive oil.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3446.096420288086,
+        "model_latency_ms": 2622.652530670166,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 9,
+        "action": "fill(#qty3, \"1 cup\")",
+        "narration": "Row 3 shows \"fresh basil leaves\" filled in but the quantity field is still empty, and rows 4-5 remain unfilled.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 3102.494239807129,
+        "model_latency_ms": 2434.966564178467,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 10,
+        "action": "fill(#ing4, \"heavy cream\")",
+        "narration": "Rows 1-3 are filled with tomatoes, garlic, and basil; rows 4-5 are still empty and need heavy cream and olive oil.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2997.697114944458,
+        "model_latency_ms": 1957.2138786315918,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 11,
+        "action": "fill(#qty4, \"1/2 cup\")",
+        "narration": "Row 4 shows \"heavy cream\" filled in with the quantity field still empty, and row 5 remains completely empty.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2853.0004024505615,
+        "model_latency_ms": 2145.9553241729736,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 12,
+        "action": "fill(#ing5, \"olive oil\")",
+        "narration": "Row 5 is still empty and needs olive oil with 2 tablespoons as the final ingredient.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2541.2676334381104,
+        "model_latency_ms": 1909.4808101654053,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 13,
+        "action": "fill(#qty5, \"2 tablespoons\")",
+        "narration": "Row 5 now shows \"olive oil\" filled in but the quantity field is still empty, needing \"2 tablespoons\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2270.28226852417,
+        "model_latency_ms": 2367.551565170288,
+        "success": true,
+        "result_val": "all_ingredients_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  }
+]

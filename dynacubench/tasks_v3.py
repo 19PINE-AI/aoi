@@ -335,7 +335,7 @@ def _cat_b() -> list[Task]:
             dom_success_value="minutes_submitted",
             llm_rubric=LLMRubric(
                 criteria="The agent must produce meeting minutes capturing decisions, next steps, and owners discussed across slides and audio.",
-                key_facts=["migrate to v3 API", "Alice owns design review", "launch date April 28", "budget approved at $1.4M"],
+                key_facts=["revenue grew to $15.1M", "mobile app v2 in June", "45 new hires priority backend and ML", "Acme Corp expanded 3x"],
                 scoring="partial",
             ),
             duration_s=240.0,
