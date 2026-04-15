@@ -27,6 +27,7 @@ from dataclasses import dataclass, field, asdict
 from pathlib import Path
 from typing import Optional
 
+import random
 import numpy as np
 from PIL import Image
 
@@ -171,10 +172,12 @@ class BrowserEvaluator:
         use_keyframes = self.observation_mode in (
             "aoi_visual", "aoi_visual_only", "aoi_visual_asr", "aoi_full",
             "aoi_interactive", "pixel_diff", "uniform_1fps", "uniform_3fps",
+            "random_keyframes",
         )
         if use_keyframes:
-            theta = 0.0 if self.observation_mode.startswith("uniform") else self.clip_theta
-            px_thresh = self.pixel_threshold if self.observation_mode != "uniform_1fps" else 0.0
+            no_clip = self.observation_mode.startswith("uniform") or self.observation_mode == "random_keyframes"
+            theta = 0.0 if no_clip else self.clip_theta
+            px_thresh = 0.0 if self.observation_mode in ("uniform_1fps", "random_keyframes") else self.pixel_threshold
             self._keyframe_extractor = KeyframeExtractor(
                 theta=theta,
                 pixel_threshold=px_thresh,
@@ -433,6 +436,10 @@ class BrowserEvaluator:
                 keyframes = []
                 if self._keyframe_extractor:
                     keyframes = self._keyframe_extractor.get_and_reset()
+                    # Random keyframes: subsample to match AOI budget (~1 frame/step avg)
+                    if self.observation_mode == "random_keyframes" and len(keyframes) > 1:
+                        n_keep = max(1, random.randint(0, 2))  # 0-2, avg ~1
+                        keyframes = random.sample(keyframes, min(n_keep, len(keyframes)))
 
                 # 3. Audio (real PulseAudio → Whisper pipeline)
                 two_layer = self._capture_audio(env, self.step_interval_s)
