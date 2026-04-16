@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click the Correct Link</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-width: 600px; width: 100%; padding: 32px; }
+  .card h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 20px; }
+  .instructions { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 14px; color: #3730a3; line-height: 1.6; }
+  .nav-menu { list-style: none; margin-bottom: 20px; }
+  .nav-menu li { margin-bottom: 8px; }
+  .nav-menu a { display: block; padding: 14px 20px; font-size: 16px; color: #4f46e5; text-decoration: none; border: 1px solid #e5e5e5; border-radius: 8px; transition: all 0.2s; }
+  .nav-menu a:hover { background: #f8f7ff; border-color: #4f46e5; }
+  .nav-menu a.clicked { background: #ecfdf5; border-color: #10b981; color: #065f46; }
+  .status { margin-top: 12px; font-size: 14px; color: #888; min-height: 20px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Task: Click a Link</h1>
+  <div class="instructions">
+    Click the link labeled <strong>"Account Settings"</strong> from the navigation menu below.
+  </div>
+  <ul class="nav-menu">
+    <li><a href="#" data-link="dashboard">Dashboard</a></li>
+    <li><a href="#" data-link="profile">My Profile</a></li>
+    <li><a href="#" data-link="settings">Account Settings</a></li>
+    <li><a href="#" data-link="billing">Billing History</a></li>
+    <li><a href="#" data-link="support">Help & Support</a></li>
+  </ul>
+  <div class="status" id="status"></div>
+</div>
+<script>
+(function() {
+  var clickedLink = null;
+  document.querySelectorAll('.nav-menu a').forEach(function(link) {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.querySelectorAll('.nav-menu a').forEach(function(l) { l.classList.remove('clicked'); });
+      link.classList.add('clicked');
+      clickedLink = link.getAttribute('data-link');
+      document.getElementById('status').textContent = 'You clicked: ' + link.textContent;
+    });
+  });
+  window.getTaskResult = function() {
+    if (clickedLink === 'settings') return 'link_correct';
+    if (clickedLink) return 'wrong_link';
+    return 'no_click';
+  };
+})();
+</script>
+</body>
+</html>

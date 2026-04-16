@@ -110,6 +110,22 @@ class EvalResult:
         d["steps"] = [asdict(s) for s in self.steps]
         return d
 
+    @classmethod
+    def from_dict(cls, d: dict) -> "EvalResult":
+        steps = [StepLog(**s) for s in d.get("steps", [])]
+        return cls(
+            task_id=d["task_id"], category=d["category"], difficulty=d["difficulty"],
+            model_name=d["model_name"], observation_mode=d["observation_mode"],
+            success=d["success"], result_val=d["result_val"],
+            steps_taken=d["steps_taken"], total_time_s=d["total_time_s"],
+            total_model_latency_ms=d["total_model_latency_ms"],
+            total_obs_overhead_ms=d["total_obs_overhead_ms"],
+            steps=steps, error=d.get("error"),
+            eval_type=d.get("eval_type", "dom"),
+            llm_score=d.get("llm_score"), llm_reason=d.get("llm_reason"),
+            final_score=d.get("final_score", 0.0),
+        )
+
 
 class BrowserEvaluator:
     """

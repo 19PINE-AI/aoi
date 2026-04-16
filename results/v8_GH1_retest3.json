@@ -1,0 +1,66 @@
+[
+  {
+    "task_id": "G-H1",
+    "category": "G_phone",
+    "difficulty": "hard",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "both_correct_but_slow",
+    "steps_taken": 4,
+    "total_time_s": 46.18668723106384,
+    "total_model_latency_ms": 10659.23523902893,
+    "total_obs_overhead_ms": 12149.654626846313,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#resp2, \"90210\")",
+        "narration": "The screen shows Question 1 (Account Number) has \"Time up\" in red, while Question 2 (Zip Code) has 16 seconds remaining - I need to fill in the zip code field now.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 5006.588459014893,
+        "model_latency_ms": 2220.9417819976807,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "fill(#resp1, \"4829-7753\")",
+        "narration": "The zip code field already has \"90210\" filled in with 11 seconds remaining, and Question 1 shows \"Time up\" in red.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2241.9703006744385,
+        "model_latency_ms": 3377.4361610412598,
+        "success": false,
+        "result_val": "both_correct_but_slow"
+      },
+      {
+        "step": 3,
+        "action": "fill(#resp2, \"90210\")",
+        "narration": "Both fields are filled - account number \"4829-7753\" shows \"Time up\" in red, and zip code \"90210\" shows only 5 seconds remaining.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2451.0371685028076,
+        "model_latency_ms": 2285.3472232818604,
+        "success": false,
+        "result_val": "both_correct_but_slow"
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "narration": "Both questions now show \"Time up\" in red, with the zip code field (90210) also timed out, indicating both responses were submitted but the timers expired.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2450.058698654175,
+        "model_latency_ms": 2775.51007270813,
+        "success": false,
+        "result_val": "both_correct_but_slow"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  }
+]

@@ -1,0 +1,1321 @@
+\documentclass[11pt]{article}
+
+% ── ArXiv preprint style ──
+\usepackage[margin=1in]{geometry}
+\usepackage{natbib}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{hyperref}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage{multirow}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+\usepackage{subcaption}
+\usepackage{tablefootnote}
+\usepackage{colortbl}
+\usepackage{pifont}  % for \ding symbols
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc,decorations.pathreplacing,patterns,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots,fillbetween}
+\usepackage{tcolorbox}
+\tcbuselibrary{skins,breakable}
+
+% ── Compact lists ──
+\setlist{nosep,leftmargin=*}
+
+% ── Color palette (NeurIPS-style, colorblind-friendly) ──
+\definecolor{bestcolor}{HTML}{E8F5E9}
+\definecolor{gaincolor}{HTML}{1B5E20}
+\definecolor{cStandard}{HTML}{BF616A}   % muted red
+\definecolor{cAOI}{HTML}{5E81AC}        % steel blue
+\definecolor{cDelta}{HTML}{A3BE8C}      % sage green
+\definecolor{cVisual}{HTML}{D08770}     % muted orange
+\definecolor{cASR}{HTML}{B48EAD}        % muted purple
+\definecolor{cNarr}{HTML}{88C0D0}       % light blue
+\definecolor{cAccent}{HTML}{EBCB8B}     % warm yellow
+\definecolor{cGray}{HTML}{4C566A}       % dark gray
+\definecolor{cLightGray}{HTML}{D8DEE9}  % light gray
+
+\title{The Agent Observation Interface:\\Adaptive Multimodal Perception for Computer-Use Agents}
+
+\author{
+  Anonymous Authors\\
+  \texttt{anonymous@example.com}
+}
+
+\begin{document}
+
+\maketitle
+
+% ════════════════════════════════════════════════════════════
+\begin{abstract}
+% ════════════════════════════════════════════════════════════
+Current computer-use (CU) agents---closed-source and open-source alike---observe the world through periodic static screenshots and have no audio perception.
+This makes them unable to handle dynamic visual content (video playback, animations, transient UI events) or any audio-driven interaction (meetings, notifications, spoken instructions).
+We introduce the \textbf{Agent Observation Interface (AOI)}, a lightweight, model-agnostic perception layer that sits between continuous screen and audio streams and any existing image-based CU model.
+The AOI has three components, each scaling to zero overhead for static, silent desktop work:
+(1)~inter-step keyframe capture that provides the CU model with additional frames from between its action steps,
+(2)~volume-gated audio scene understanding that transcribes speech only when audio is present, and
+(3)~CU-model-generated visual narration that converts ephemeral keyframe images into persistent text for long-term context.
+With zero model retraining, the AOI enables existing CU agents to handle video content, audio events, animated pages, and transient UI elements they previously could not perceive.
+We introduce \textbf{DynaCU-Bench}, a benchmark of 100 browser-based tasks across 10 categories that specifically require dynamic visual and/or audio perception.
+Five diverse CU models---Claude Sonnet~4.6, GPT-5.4, Gemini~2.5 Flash, EvoCUA-32B, and Fara-7B---equipped with the AOI achieve absolute gains of +17 to +48 percentage points over their standard screenshot-based baselines, with the strongest configuration reaching 82\% task success.
+\end{abstract}
+
+% ════════════════════════════════════════════════════════════
+\section{Introduction}
+\label{sec:intro}
+% ════════════════════════════════════════════════════════════
+
+Computer-use (CU) agents have advanced rapidly.
+On OSWorld~\citep{osworld}, scores have climbed from 12.24\% (GPT-4V, April 2024) to 88.3\% (Claude Sonnet~5, April 2026), surpassing the human baseline of 72.4\%.
+A diverse ecosystem now spans closed-source systems---Claude Computer Use~\citep{anthropic2024claude}, OpenAI CUA~\citep{openai2025cua}, Gemini~2.5~CU~\citep{gemini25cu}, Surfer~2~\citep{surfer2}---and open-source models---UI-TARS-2~\citep{uitars2}, OpenCUA~\citep{opencua}, Fara-7B~\citep{fara7b}, CoAct-1~\citep{coact}.
+These agents can operate real desktops: filling forms, navigating websites, editing documents, and using professional software.
+
+\textbf{The blind spot.}
+All these agents share a fundamental architectural limitation: they observe the world through \emph{discrete static screenshots} taken every 3--5 seconds, and they are entirely deaf.
+Between screenshots, the agent is completely blind.
+This makes current CU agents incapable of understanding video content playing on screen, catching transient UI events that appear and auto-dismiss between observations, hearing meeting speech or notification sounds, or perceiving animations that convey information.
+A comprehensive survey of 87 CU agents~\citep{cusurvey} does not even identify the observation modality as a gap.
+Quantitative evidence of this limitation is mounting: GUI-World~\citep{guiworld} shows video LLMs fail on all temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; and CUA-Suite~\citep{cuasuite} demonstrates the richness of temporal dynamics that screenshot-based agents entirely miss across 55 hours of desktop recordings.
+
+\textbf{Why existing approaches fall short.}
+Retraining CU models on video data is expensive, model-specific, and undemonstrated at scale.
+Using video-native models (Gemini) amounts to brute-force frame sampling that wastes tokens on redundant static frames.
+Native real-time multimodal models (Gemini~3.1 Flash Live~\citep{geminilive}) work but lock users into a single provider, offer no selective perception, and require API migration.
+General control frameworks like Cradle~\citep{cradle} include pixel-level frame differencing but lack audio perception, visual narration, and the structured observation record.
+
+\textbf{Our approach.}
+Just as SWE-agent~\citep{sweagent} showed that the agent--computer \emph{action} interface dramatically affects agent performance, we show that the \emph{observation} interface is equally critical and equally underexplored.
+We decouple observation from action: observation runs continuously and adaptively in the background; action remains discrete.
+The bridge is the \textbf{Agent Observation Interface (AOI)}, a lightweight perception layer that converts continuous screen and audio streams into the sparse images and text that existing CU models already accept.
+
+\textbf{Contributions.}
+\begin{enumerate}
+  \item We identify the \textbf{observation interface} as a critical but overlooked bottleneck in CU agents, complementary to the action interface studied by SWE-agent.
+  \item We introduce the \textbf{AOI}, a model-agnostic perception layer with three components: inter-step keyframe capture, volume-gated audio scene understanding, and CU-model-generated visual narration. All three scale to zero overhead when the environment is static and silent.
+  \item We introduce \textbf{DynaCU-Bench}, a benchmark of 100 browser-based tasks across 10 categories that specifically require dynamic visual and/or audio perception.
+  \item We demonstrate that five CU models equipped with the AOI and \textbf{zero retraining} achieve absolute gains of +17 to +48 percentage points on dynamic tasks.
+\end{enumerate}
+
+% ════════════════════════════════════════════════════════════
+\section{Background: The CU Agent Loop}
+\label{sec:background}
+% ════════════════════════════════════════════════════════════
+
+All current CU agents follow the same observe--reason--act loop:
+\begin{equation}
+  \texttt{repeat:}\quad s_t \leftarrow \text{Screenshot}(),\quad a_t \leftarrow \text{CU\_Model}(s_t, \tau),\quad \text{Execute}(a_t),\quad \text{Wait}(\delta)
+  \label{eq:culoop}
+\end{equation}
+where $\tau$ is the trajectory history and $\delta$ is a post-action buffer (typically 500\,ms).
+The interval between observations is determined by model inference time + action execution + buffer, typically 3--5 seconds total.
+Everything that occurs between screenshots---visual changes, audio events, transient UI elements---is invisible to the agent.
+
+Some models support multi-image input through screenshot history (UI-TARS: up to 5 images, Claude CU: ${\sim}10$), but all images are post-action screenshots from prior steps.
+None captures what happens \emph{between} steps.
+
+Four categories of content are systematically missed:
+(i)~\emph{transient UI events}---toast notifications and dialogs that appear and vanish within one observation interval;
+(ii)~\emph{continuous visual media}---video playback, animated tutorials, transitioning slides;
+(iii)~\emph{audio events}---meeting speech, notification sounds, error alerts;
+(iv)~\emph{periodic visual noise}---loading spinners and blinking cursors that should be \emph{ignored} but trigger false positives in naive frame differencing.
+
+% ════════════════════════════════════════════════════════════
+\section{System Design}
+\label{sec:design}
+% ════════════════════════════════════════════════════════════
+
+The AOI sits between the environment and any existing CU model.
+It observes the entire interval between agent steps and provides the CU model with additional keyframes, audio descriptions, and accumulated text context---all in the standard image + text format that every CU model already accepts.
+For static, silent tasks, the AOI produces nothing and behavior is identical to the standard loop.
+For dynamic tasks, the CU model receives strictly more information.
+No retraining is needed.
+
+\subsection{Architecture Overview}
+
+The AOI has three components, all governed by one principle---\textbf{scales to zero}: every component has a fast gate that short-circuits processing when there is nothing to perceive.
+
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Inter-step keyframe capture}: continuous screen sampling at ${\sim}3$\,Hz with gating to suppress redundant frames. Produces 0--5 keyframe images per step.
+  \item \textbf{Volume-gated audio observer}: RMS energy gate followed by ASR (Whisper large-v3). Produces a text transcription per step, only when audio is present.
+  \item \textbf{Visual narration context}: the CU model itself generates a brief text description of new visual information as a side-output of each inference call. These narrations accumulate in the trajectory and persist after keyframe images are pruned from context.
+\end{enumerate}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    box/.style={draw, rounded corners=3pt, minimum height=1cm, align=center, font=\footnotesize},
+    env/.style={box, fill=cLightGray!50, draw=cGray!70},
+    gate/.style={box, fill=cAccent!30, draw=cAccent!80},
+    proc/.style={box, fill=cAOI!12, draw=cAOI!70},
+    obs/.style={box, fill=white, draw=cAOI!60, minimum width=2.8cm, minimum height=2.2cm},
+    mdl/.style={box, fill=cDelta!18, draw=cDelta!80!black, minimum width=2.2cm, minimum height=1cm},
+    arr/.style={->, thick, cGray!80},
+    harr/.style={->, very thick, cAOI!80},
+    lbl/.style={font=\scriptsize, text=cGray},
+  ]
+  % ── Left: Standard CU Agent ──
+  \node[font=\small\bfseries, text=cStandard] at (1.6, 4.0) {Standard CU Agent};
+
+  % Timeline with screenshots
+  \draw[thick, cGray!40] (0, 2.4) -- (3.2, 2.4);
+  \foreach \x in {0, 1.07, 2.13, 3.2} {
+    \draw[thick, cStandard!80] (\x, 2.25) -- (\x, 2.55);
+    \draw[cGray!50, fill=cLightGray!60] (\x-0.2, 2.65) rectangle (\x+0.2, 3.1);
+  }
+  \node[font=\scriptsize, text=cGray] at (1.6, 2.0) {screenshots, $\sim$3--5\,s apart};
+
+  % Blind gaps with X marks
+  \foreach \x/\t in {0.53/video, 1.6/audio, 2.66/toast} {
+    \node[font=\scriptsize, text=cStandard] at (\x, 3.25) {\ding{55}};
+    \node[font=\scriptsize, text=cStandard] at (\x, 3.55) {\t};
+  }
+
+  % Model
+  \node[mdl] (sm) at (1.6, 0.6) {CU Model};
+  \draw[arr] (1.6, 1.7) -- (sm.north) node[midway, right, lbl] {1 image/step};
+  \draw[arr, cDelta!70!black, very thick] (sm.south) -- ++(0,-0.5) node[below, font=\scriptsize\bfseries, text=cDelta!70!black] {action};
+
+  % ── Divider ──
+  \draw[very thick, cLightGray] (4.0, -0.8) -- (4.0, 4.3);
+
+  % ── Right: AOI Pipeline ──
+
+  % Input streams
+  \node[env] (scr) at (5.1, 2.9) {Screen {\scriptsize($\sim$3\,Hz)}};
+  \node[env, fill=cASR!10, draw=cASR!50] (aud) at (5.1, 1.1) {Audio {\scriptsize(16\,kHz)}};
+
+  % Gates
+  \node[gate] (pg) at (7.1, 2.9) {Pixel Gate};
+  \node[gate, fill=cASR!15, draw=cASR!60] (rg) at (7.1, 1.1) {RMS Gate};
+
+  \draw[arr] (scr) -- (pg);
+  \draw[arr] (aud) -- (rg);
+
+  % Gate sublabels below
+  \node[font=\scriptsize, text=cGray, anchor=north] at (7.1, 2.35) {$\Delta_\text{px}\!<\!1\%$? skip};
+  \node[font=\scriptsize, text=cGray, anchor=north] at (7.1, 0.55) {silence? skip};
+
+  % Processors
+  \node[proc] (clip) at (9.4, 2.9) {CLIP-ViT-B/16};
+  \node[proc, fill=cASR!8, draw=cASR!60] (wh) at (9.4, 1.1) {Whisper v3};
+
+  \draw[arr] (pg) -- (clip);
+  \draw[arr] (rg) -- (wh);
+
+  % Processor sublabels below
+  \node[font=\scriptsize, text=cGray, anchor=north] at (9.4, 2.35) {$d\!>\!\theta$? capture};
+  \node[font=\scriptsize, text=cGray, anchor=north] at (9.4, 0.55) {transcribe};
+
+  % Observation Record
+  \node[obs] (orec) at (12.1, 2.0) {};
+  \node[font=\footnotesize\bfseries, text=cAOI!80!black] at (12.1, 2.85) {Observation Record};
+  \node[font=\scriptsize, text=cGray, align=left, anchor=west] at (10.95, 1.85) {%
+    \textcolor{cAOI}{\rule{4pt}{4pt}} keyframe images (0--5)\\[1.5pt]
+    \textcolor{cASR}{\rule{4pt}{4pt}} audio transcript\\[1.5pt]
+    \textcolor{cNarr}{\rule{4pt}{4pt}} narrations from prior steps\\[1.5pt]
+    \textcolor{cGray}{\rule{4pt}{4pt}} post-action screenshot};
+
+  \draw[harr] (clip.east) -- ++(0.3,0) |- ([yshift=4pt]orec.west);
+  \draw[harr, cASR!70] (wh.east) -- ++(0.3,0) |- ([yshift=-4pt]orec.west);
+
+  % CU Model
+  \node[mdl, minimum width=2.6cm] (cm) at (12.1, -0.3) {CU Model {\scriptsize(any existing)}};
+  \draw[harr, very thick] (orec.south) -- (cm.north)
+    node[midway, right=2pt, lbl] {images + text};
+
+  % Narration feedback loop
+  \draw[harr, cNarr, thick, rounded corners=4pt]
+    (cm.east) -- ++(0.55,0) |- ([yshift=-10pt]orec.east)
+    node[pos=0.22, right, font=\scriptsize, text=cNarr] {narration};
+
+  % Action output
+  \draw[arr, very thick, cDelta!70!black] (cm.south) -- ++(0, -0.5)
+    node[below, font=\scriptsize\bfseries, text=cDelta!70!black] {action + narration};
+
+  % Brace annotation for gates
+  \draw[thick, decorate, decoration={brace, amplitude=3pt, mirror}]
+    (5.8, -0.15) -- (10.5, -0.15) node[midway, below=4pt, font=\scriptsize, text=cGray, align=center]
+    {$<$1\,ms per gate check $\to$ scales to zero on static content};
+
+  % ── AOI bounding box ──
+  \begin{scope}[on background layer]
+    \node[draw=cAOI!40, line width=1.2pt, dashed, rounded corners=6pt, fill=cAOI!2,
+          inner xsep=8pt, inner ysep=10pt,
+          fit=(scr)(aud)(pg)(rg)(clip)(wh)(orec)(cm),
+          label={[font=\footnotesize\bfseries, text=cAOI!70!black, anchor=south]above:Agent Observation Interface (AOI)}] {};
+  \end{scope}
+
+\end{tikzpicture}
+\caption{\textbf{Standard CU agents vs.\ AOI-equipped agents.}
+\emph{Left:} Current agents observe through periodic screenshots (${\sim}$3--5\,s apart) and are blind and deaf between observations---missing video, audio, and transient UI events (\ding{55}).
+\emph{Right:} The AOI continuously monitors screen and audio streams through fast gates ($<$1\,ms) that skip processing for static, silent content.
+When gates fire, keyframe extraction (shown here with optional CLIP filtering; see Section~\ref{sec:ablation}) and Whisper ASR produce images and text for the observation record.
+Visual narrations feed back as persistent text memory.
+The AOI wraps any existing CU model with zero retraining.}
+\label{fig:architecture}
+\end{figure*}
+
+\subsection{Inter-Step Keyframe Capture}
+\label{sec:keyframes}
+
+Between agent steps, the screen may change (a video plays, a dialog appears, a slide transitions) or stay static.
+The AOI continuously samples the screen at ${\sim}3$\,Hz and selects a subset of frames to include as keyframe images in the observation record (up to 5 per step).
+Multiple selection strategies are possible---uniform fixed-rate sampling, pixel-level differencing, random sampling, or semantic filtering via CLIP embeddings~\citep{clip}.
+We evaluate all four in Section~\ref{sec:ablation} and find that all converge to similar accuracy, so the default implementation uses simple pixel-change gating: if fewer than 1\% of pixels changed since the last captured frame, the sample is skipped (cost: ${<}1$\,ms on CPU).
+For static screens, no keyframes are produced and the component has zero overhead.
+
+\subsection{Volume-Gated Audio Observation}
+\label{sec:audio}
+
+Current CU agents have zero audio perception.
+They cannot hear meeting speech, notification sounds, or error alerts.
+Pure ASR models (Whisper) transcribe speech but produce nothing for non-speech audio events.
+
+\textbf{Volume gate.}
+In most computer use---file editing, form filling, silent web browsing---there is no audio.
+Computing RMS energy of the audio buffer is sub-millisecond.
+If below the silence threshold, the audio model call is skipped entirely.
+Cost: ${\sim}0$\,ms for the majority of steps.
+
+When audio is present, we use Whisper large-v3~\citep{whisper} for speech transcription, operating on 16\,kHz mono audio captured from the system audio output via PulseAudio virtual devices.
+The audio buffer spans the full inter-step interval including the post-action buffer, capturing action feedback sounds (click confirmations, error beeps).
+
+\textbf{Overlapping windows.}
+Agent step boundaries are determined by model inference latency, not by speech content.
+A typical 3.5-second audio chunk captures ${\sim}8$--9 words at normal speaking rate, almost always falling mid-sentence.
+To resolve boundary artifacts, the audio buffer includes ${\sim}3.5$ seconds of overlap from the previous interval, providing acoustic continuity across step boundaries.
+
+\subsection{Visual Narration for Long-Term Context}
+\label{sec:narration}
+
+CU models retain only the most recent images in context.
+Keyframes from earlier steps are pruned.
+For tasks spanning many steps, the agent loses all visual memory of earlier content.
+Audio transcriptions persist naturally as text in the trajectory, but visual observations have no analogous persistence.
+
+At each step, the CU model outputs both an action and a brief visual narration---a text description of what is visually new in the current keyframes.
+This narration is generated in the same inference call that produces the action (zero additional compute) and persists indefinitely in the trajectory, even after the corresponding images are pruned.
+Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations are generated by the CU model itself (no separate captioner) and are task-relevant rather than generic.
+
+\subsection{Observation Record}
+\label{sec:obsrecord}
+
+At each step, the CU model receives a structured document combining text context from recent prior steps (audio transcriptions, visual narrations, actions taken) and raw observations from the current interval (new audio transcription, any captured keyframe images, and the post-action screenshot).
+For static, silent tasks, this document contains only the post-action screenshot---identical to the standard loop.
+Figure~\ref{fig:obsrecord} shows a concrete example.
+
+\begin{figure}[t]
+\centering
+\begin{tcolorbox}[
+  colback=gray!3, colframe=black!40,
+  title={\small\bfseries Observation Record --- Step $N$ (Meeting Task B-E1)},
+  fonttitle=\small, coltitle=white, colbacktitle=black!60,
+  width=0.95\textwidth, boxrule=0.4pt,
+]
+\ttfamily\scriptsize
+\textcolor{blue!70!black}{\# CONTEXT --- text from prior steps (no images)}\\[2pt]
+\textbf{Step N-1} (t $\approx$ 18.5--22.0\,s):\\
+\quad AUDIO: ``Here's the team. As you can see we\\
+\qquad have strong cross-functional coverage.''\\
+\quad VISUAL: ``Meeting slide shows Project Team\\
+\qquad with 6 members listed in a grid.''\\
+\quad ACTION: wait()\\[4pt]
+%
+\textcolor{blue!70!black}{\# NEW --- current interval observations}\\[2pt]
+\textbf{Step N} (t $\approx$ 22.0--25.5\,s):\\
+\quad AUDIO: ``And I want to mention, we've moved\\
+\qquad the launch date to April 28th.\\
+\qquad Please update your calendars.''\\[2pt]
+\quad \textcolor{gray}{[IMAGE: post-action screenshot]}\\[4pt]
+%
+\textcolor{blue!70!black}{\# TASK}\\
+\quad Read the meeting slides and listen to the\\
+\quad discussion. What is the new launch date?\\
+\quad Enter it in the Launch Date field.
+\end{tcolorbox}
+\caption{Example observation record sent to the CU model at step $N$ of a meeting task.
+The \textbf{context} section provides text from prior steps (audio transcriptions and visual narrations persist after images are pruned).
+The \textbf{new} section contains the current audio transcription and the post-action screenshot (image).
+In this case, no keyframes were captured (the slide did not change), so only the screenshot is included as an image.
+The task instruction is appended at the end.}
+\label{fig:obsrecord}
+\end{figure}
+
+% ════════════════════════════════════════════════════════════
+\section{Implementation}
+\label{sec:implementation}
+% ════════════════════════════════════════════════════════════
+
+The AOI is implemented in Python (${\sim}2{,}600$ lines) as a modular layer that wraps any CU model.
+Screen capture uses a headless browser (Playwright) at ${\sim}3$\,Hz.
+Audio capture and injection use PulseAudio virtual devices (virtual speaker and monitor source) at 16\,kHz mono.
+CLIP-ViT-B/16 runs on GPU (${\sim}150$\,MB VRAM).
+Whisper large-v3 runs as a separate HTTP service on CPU to avoid GPU contention with the CU model.
+Audio synthesis for benchmark tasks uses the Web Speech API (\texttt{speechSynthesis}).
+
+CU models are accessed through their native APIs.
+Cloud models (Claude Sonnet~4.6, GPT-5.4, Gemini~2.5 Flash) use HTTP APIs.
+Local models (EvoCUA-32B, Fara-7B) are served via vLLM with 4-bit quantization on a single NVIDIA RTX PRO 6000 (96\,GB VRAM).
+
+% ════════════════════════════════════════════════════════════
+\section{DynaCU-Bench}
+\label{sec:benchmark}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Design Principles}
+
+Existing CU benchmarks (OSWorld, WebArena) consist entirely of tasks solvable from static screenshots.
+We introduce \textbf{DynaCU-Bench}, a benchmark of 100 browser-based tasks that specifically require dynamic visual and/or audio perception---tasks that are unsolvable from static screenshots alone.
+
+Design principles:
+(i)~tasks must \emph{require} temporal visual or audio perception;
+(ii)~tasks represent realistic computer-use scenarios, not artificial constructs;
+(iii)~tasks execute in a reproducible headless browser environment;
+(iv)~tasks cover all four dynamic content categories from Section~\ref{sec:background};
+(v)~tasks include difficulty stratification (3 easy, 4 medium, 3 hard per category).
+
+\subsection{Task Categories}
+
+DynaCU-Bench spans 10 categories across three capability axes: audio perception~(A), visual-temporal perception~(V), and real-time interaction~(I). Each category has 10 tasks.
+
+\begin{table}[t]
+\centering
+\caption{DynaCU-Bench task categories.
+A = audio perception, V = visual-temporal perception, I = real-time interaction.
+Each category contains 3 easy, 4 medium, and 3 hard tasks.}
+\label{tab:categories}
+\small
+\begin{tabular}{@{}llcp{6.8cm}@{}}
+\toprule
+\textbf{Cat.} & \textbf{Domain} & \textbf{Axes} & \textbf{Description} \\
+\midrule
+A & Podcast comprehension & A & Listen to audio narration, extract facts or answer questions \\
+B & Meeting participation & A+V+I & Follow meeting with slides and speech, take notes or act \\
+C & Video/screencast & V & Watch terminal recordings or IDE demos with auto-advancing frames \\
+D & Carousel/animation & V & Perceive CSS transitions, rotating content, product carousels \\
+E & Live dashboard & V & Monitor real-time updating dashboards with \texttt{setInterval} changes \\
+F & Transient UI events & V & Respond to toast notifications, auto-dismissing banners \\
+G & Phone/voice call & A+I & Listen to \texttt{speechSynthesis} calls and respond \\
+H & Interview/voice & A+I & Answer questions via \texttt{SpeechRecognition}, complete interviews \\
+I & Collaborative editing & V+I & Handle remote changes in collaborative document editors \\
+J & Browser games & V+I & Play interactive games requiring temporal attention \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Evaluation Protocol}
+
+Each task executes in a headless Chromium browser (Playwright) with PulseAudio virtual devices for audio I/O.
+Audio content is delivered via the Web Speech API (\texttt{speechSynthesis}) with edge-TTS for high-quality voices.
+Agent audio input is injected into a virtual microphone via \texttt{pacat}.
+
+Three evaluation modes are used:
+\emph{DOM-based} (93 tasks): a deterministic JavaScript function \texttt{getTaskResult()} returns the expected value;
+\emph{LLM-judged} (1 task): a judge model scores the agent's response against a rubric;
+\emph{Hybrid} (6 tasks): DOM gate (did the agent act?) combined with LLM quality assessment.
+All tasks allow a maximum of 15 agent steps.
+
+% ════════════════════════════════════════════════════════════
+\section{Evaluation}
+\label{sec:eval}
+% ════════════════════════════════════════════════════════════
+
+\subsection{Setup}
+
+\textbf{CU models.}
+We evaluate five models spanning the capability and scale spectrum:
+(i)~Claude Sonnet~4.6 \citep{anthropic2024claude} (closed-source, OSWorld~72.5\%);
+(ii)~GPT-5.4 \citep{openai2025cua} (closed-source, OSWorld~75.0\%);
+(iii)~Gemini 2.5~Flash \citep{gemini25cu} (closed-source);
+(iv)~EvoCUA-32B (open-source, 32B);
+(v)~Fara-7B \citep{fara7b} (open-source, 7B).
+
+\textbf{Observation configurations.}
+We compare 8 observation modes:
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Standard}: one screenshot per step, no audio (current paradigm baseline).
+  \item \textbf{Uniform 1\,FPS}: capture at fixed 1\,FPS, feed recent $N$ frames.
+  \item \textbf{Uniform 3\,FPS}: capture at fixed 3\,FPS, feed recent $N$ frames.
+  \item \textbf{Pixel-diff}: capture when pixel change ratio exceeds threshold, no CLIP filtering.
+  \item \textbf{Random keyframes}: randomly sample the same number of frames as our method.
+  \item \textbf{AOI (visual only)}: adaptive keyframes (CLIP-based), no audio.
+  \item \textbf{AOI (visual + ASR)}: adaptive keyframes + Whisper speech transcription.
+  \item \textbf{AOI (full)}: adaptive keyframes + Whisper ASR + visual narration.
+\end{enumerate}
+Ablation configurations (2)--(7) are evaluated with Claude Sonnet~4.6; the full AOI and standard baseline are evaluated with all five models.
+
+\subsection{Main Results}
+
+\begin{table}[t]
+\centering
+\caption{DynaCU-Bench results: task success rate (\%) across all observation configurations.
+\textbf{Bold} indicates the best result per model. $\Delta$ shows absolute gain over standard baseline.
+All ablation modes tested with Claude Sonnet~4.6.
+``Claude 4.6'' abbreviates Claude Sonnet~4.6 throughout tables and figures.}
+\label{tab:main}
+\small
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Claude 4.6} & \textbf{GPT-5.4} & \textbf{Gemini 2.5} & \textbf{EvoCUA-32B} & \textbf{Fara-7B} \\
+\midrule
+Standard (screenshot) & 38 & 37 & 21 & 18 & 17 \\
+\midrule
+Uniform 1\,FPS & 58 & --- & --- & --- & --- \\
+Uniform 3\,FPS & 56 & --- & --- & --- & --- \\
+Pixel-diff only & 58 & --- & --- & --- & --- \\
+Random keyframes & 56 & --- & --- & --- & --- \\
+\midrule
+AOI (visual only) & 58 & --- & --- & --- & --- \\
+AOI (visual + ASR) & 64 & --- & --- & --- & --- \\
+\rowcolor{bestcolor}
+\textbf{AOI (full)} & \textbf{82} & \textbf{57} & \textbf{69} & \textbf{55} & \textbf{34} \\
+\midrule
+\textcolor{gaincolor}{$\Delta$ (AOI full $-$ standard)} & \textcolor{gaincolor}{+44} & \textcolor{gaincolor}{+20} & \textcolor{gaincolor}{+48} & \textcolor{gaincolor}{+37} & \textcolor{gaincolor}{+17} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=5.5cm,
+    ybar,
+    bar width=9pt,
+    ymin=0, ymax=112,
+    ylabel={Task Success (\%)},
+    ylabel style={font=\small},
+    symbolic x coords={Claude 4.6, GPT-5.4, Gemini 2.5, EvoCUA-32B, Fara-7B},
+    xtick=data,
+    xticklabel style={font=\scriptsize},
+    ytick={0,20,40,60,80,100},
+    yticklabel style={font=\small},
+    legend style={at={(0.98,0.97)}, anchor=north east, font=\scriptsize,
+                  draw=cGray!30, fill=white, fill opacity=0.9},
+    grid=major,
+    major grid style={cLightGray!60},
+    axis line style={cGray},
+    tick style={cGray},
+    enlarge x limits=0.15,
+    nodes near coords,
+    nodes near coords style={font=\tiny\bfseries, /pgf/number format/fixed},
+    every node near coord/.append style={above=2pt},
+    clip=false,
+]
+% Standard bars
+\addplot[fill=cStandard!70, draw=cStandard!90] coordinates
+    {(Claude 4.6, 38) (GPT-5.4, 37) (Gemini 2.5, 21) (EvoCUA-32B, 18) (Fara-7B, 17)};
+\addplot[fill=cAOI!70, draw=cAOI!90] coordinates
+    {(Claude 4.6, 82) (GPT-5.4, 57) (Gemini 2.5, 69) (EvoCUA-32B, 55) (Fara-7B, 34)};
+\legend{Standard, AOI (full)}
+
+% Delta annotations — positioned well above AOI nodes near coords labels
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
+    at (axis cs:Claude 4.6, 99) {$\Delta$+44};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
+    at (axis cs:GPT-5.4, 74) {$\Delta$+20};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
+    at (axis cs:Gemini 2.5, 86) {$\Delta$+48};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
+    at (axis cs:EvoCUA-32B, 72) {$\Delta$+37};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
+    at (axis cs:Fara-7B, 51) {$\Delta$+17};
+
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Main results on DynaCU-Bench (100 tasks).}
+The AOI produces large gains across all five CU models without any retraining.
+Green numbers show absolute improvement in percentage points.
+Gemini~2.5 Flash shows the largest absolute gain (+48\,pp) and relative gain ($3.3\times$), while Claude achieves the highest absolute score (82\%).}
+\label{fig:mainresults}
+\end{figure}
+
+Table~\ref{tab:main} and Figure~\ref{fig:mainresults} present the main results.
+The AOI produces large, consistent gains across all five models.
+\emph{Note on statistical power:} Each configuration is evaluated once on 100 binary-outcome tasks (no repeated trials), so small differences (e.g., 56\% vs.\ 58\%, a 2-task gap) are within sampling noise. We focus interpretation on large, consistent effects across models rather than fine-grained rankings between ablation modes.
+
+\textbf{Claude Sonnet~4.6} improves from 38\% to 82\% (+44 pp) with the full AOI.
+This is the strongest absolute result.
+The ablation modes reveal that all inter-step visual capture methods converge to 56--58\% (a +18--20\,pp gain from additional frames alone, regardless of selection method), adding ASR reaches 64\%, and visual narration provides the largest single-component gain, reaching 82\%.
+The +18\,pp gap between visual+ASR and full AOI demonstrates that \emph{retaining} visual information as text is as important as \emph{capturing} it.
+
+\textbf{GPT-5.4} improves from 37\% to 57\% (+20\,pp).
+The gain is consistent with Claude's but the absolute ceiling is lower, suggesting GPT-5.4's CU capabilities are the binding constraint once perception is adequate.
+
+\textbf{Gemini 2.5 Flash} scores 21\% on the standard baseline despite being a video-native model with built-in streaming capabilities.
+This confirms that video-native architectures do not automatically solve the observation problem---the standard CU agent loop still constrains Gemini to periodic screenshots.
+With the AOI, Gemini improves to 69\% (+48\,pp)---the largest absolute gain of any model tested, demonstrating that a video-native model benefits even more from structured observation than text-centric models.
+
+\textbf{EvoCUA-32B} improves from 18\% to 55\% ($3\times$ improvement, +37\,pp).
+This open-source 32B model, which barely functions on dynamic tasks without the AOI, becomes competitive with GPT-5.4's AOI-equipped performance.
+
+\textbf{Fara-7B} improves from 17\% to 34\% (+17\,pp), doubling its score.
+As the smallest model (7B parameters), it is most constrained by reasoning capacity, but still benefits substantially from improved perception.
+
+\begin{figure}[t]
+\centering
+\begin{tcolorbox}[
+  colback=white, colframe=black!50,
+  title={\small\bfseries Task B-E1: Meeting --- ``What is the new launch date?''},
+  fonttitle=\small, coltitle=white, colbacktitle=black!70,
+  width=\textwidth, boxrule=0.5pt,
+]
+\small
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{Standard (screenshot-only)} --- \textcolor{red}{\textbf{FAIL}}\\[2pt]
+\textcolor{gray}{\scriptsize 15 steps, 51.2\,s}
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- sees static slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item[\vdots]
+  \item[15.] \texttt{fill(\#launchDate, ``TBD'')} \textcolor{red}{\scriptsize \texttimes\ guesses}
+\end{enumerate}
+\vspace{4pt}
+\textcolor{red}{\scriptsize Agent never hears the spoken date.}\\
+\textcolor{red}{\scriptsize Waits 15 steps, then guesses.}
+\end{minipage}%
+\hfill\vrule\hfill%
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{AOI (full)} --- \textcolor{green!50!black}{\textbf{PASS}}\\[2pt]
+\textcolor{gray}{\scriptsize 2 steps, 26.2\,s}
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{wait()}\\
+    {\scriptsize \textbf{Audio:} ``Here's the team. As you can see we have strong cross-functional coverage.''}\\
+    {\scriptsize \textbf{Narration:} ``Meeting slide shows Project Team with 6 members.''}
+  \item \texttt{fill(\#launchDate, ``April 28th'')} \textcolor{green!50!black}{\scriptsize \checkmark}\\
+    {\scriptsize \textbf{Audio:} ``We've moved the launch date to April 28th. Please update.''}\\
+    {\scriptsize \textbf{Narration:} ``Audio announced the new launch date.''}
+\end{enumerate}
+\vspace{4pt}
+\textcolor{green!50!black}{\scriptsize Agent hears ``April 28th'' and fills the form immediately.}
+\end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\begin{tcolorbox}[
+  colback=white, colframe=black!50,
+  title={\small\bfseries Task C-E1: Video --- ``What was the first command in the terminal recording?''},
+  fonttitle=\small, coltitle=white, colbacktitle=black!70,
+  width=\textwidth, boxrule=0.5pt,
+]
+\small
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{Standard} --- \textcolor{green!50!black}{\textbf{PASS}} (6 steps)\\[2pt]
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- recording playing}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- missed first command}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- scrolling through}
+  \item \texttt{wait()}
+  \item \texttt{wait()}
+  \item \texttt{fill(\ldots)} \textcolor{green!50!black}{\scriptsize \checkmark\ lucky timing}
+\end{enumerate}
+\end{minipage}%
+\hfill\vrule\hfill%
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{AOI} --- \textcolor{green!50!black}{\textbf{PASS}} (1 step)\\[2pt]
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{fill(\#answerInput, ``git clone \ldots'')} \textcolor{green!50!black}{\scriptsize \checkmark}\\
+    {\scriptsize \textbf{Narration:} ``The terminal recording shows the first command was git clone\ldots''}
+\end{enumerate}
+\vspace{4pt}
+\textcolor{green!50!black}{\scriptsize Narration captures the command from the recording immediately.}
+\end{minipage}
+\end{tcolorbox}
+\caption{Trajectory comparison on two representative tasks.
+\textbf{Top:} Meeting task (B-E1) where the launch date is spoken aloud.
+The standard agent cannot hear it and guesses after 15 futile \texttt{wait()} steps.
+The AOI agent transcribes the audio, hears ``April 28th,'' and acts in 2 steps.
+\textbf{Bottom:} Video task (C-E1) where the answer appears in a terminal recording.
+The standard agent needs 6 steps with lucky timing; the AOI agent's narration captures the content in 1 step.}
+\label{fig:trajectories}
+\end{figure}
+
+\subsection{Per-Category Analysis}
+
+\begin{table}[t]
+\centering
+\caption{Per-category task success (pass/10) for standard vs.\ AOI full across all five models.
+Categories are grouped by primary perception axis:
+A = audio, V = visual-temporal, I = real-time interaction.}
+\label{tab:percategory}
+\small
+\setlength{\tabcolsep}{2.8pt}
+\begin{tabular}{@{}ll cc cc cc cc cc@{}}
+\toprule
+& & \multicolumn{2}{c}{\textbf{Claude 4.6}} & \multicolumn{2}{c}{\textbf{GPT-5.4}} & \multicolumn{2}{c}{\textbf{Gemini 2.5}} & \multicolumn{2}{c}{\textbf{EvoCUA-32B}} & \multicolumn{2}{c}{\textbf{Fara-7B}} \\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}\cmidrule(lr){7-8}\cmidrule(lr){9-10}\cmidrule(lr){11-12}
+\textbf{Cat.} & \textbf{Axes} & Std & AOI & Std & AOI & Std & AOI & Std & AOI & Std & AOI \\
+\midrule
+A\,(Podcast) & A & 0 & \textbf{9} & 0 & 3 & 0 & \textbf{8} & 0 & \textbf{8} & 0 & 3 \\
+B\,(Meeting) & A+V+I & 2 & \textbf{10} & 2 & 3 & 2 & \textbf{8} & 1 & 6 & 1 & 5 \\
+C\,(Video) & V & 4 & \textbf{9} & 5 & \textbf{8} & 5 & 6 & 3 & 6 & 3 & 5 \\
+D\,(Carousel) & V & 4 & \textbf{9} & 6 & 7 & 4 & 7 & 3 & 4 & 1 & 3 \\
+E\,(Dashboard) & V & 8 & 8 & 6 & \textbf{9} & 1 & \textbf{9} & 2 & 4 & 2 & 2 \\
+F\,(Transient) & V & 4 & \textbf{9} & 2 & \textbf{8} & 0 & \textbf{9} & 0 & 5 & 4 & 3 \\
+G\,(Phone) & A+I & 1 & \textbf{9} & 1 & 4 & 0 & \textbf{8} & 0 & \textbf{8} & 1 & 4 \\
+H\,(Interview) & A+I & 7 & \textbf{9} & 6 & 7 & 5 & 7 & 6 & \textbf{8} & 1 & 3 \\
+I\,(Collab) & V+I & 3 & \textbf{8} & 4 & 5 & 2 & 6 & 2 & 5 & 2 & 4 \\
+J\,(Games) & V+I & 5 & 2 & 5 & 3 & 2 & 1 & 1 & 1 & 2 & 2 \\
+\midrule
+\textbf{Total} & & 38 & \textbf{82} & 37 & \textbf{57} & 21 & \textbf{69} & 18 & \textbf{55} & 17 & \textbf{34} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure*}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\textwidth,
+    height=5.5cm,
+    ybar,
+    bar width=5pt,
+    ymin=0, ymax=11,
+    ylabel={Tasks Passed (out of 10)},
+    ylabel style={font=\small},
+    symbolic x coords={A\,Pod., B\,Meet., C\,Video, D\,Carousel, E\,Dash., F\,Trans., G\,Phone, H\,Interv., I\,Collab, J\,Games},
+    xtick=data,
+    xticklabel style={font=\scriptsize, rotate=30, anchor=east},
+    ytick={0,2,4,6,8,10},
+    yticklabel style={font=\small},
+    legend style={at={(0.99,0.97)}, anchor=north east, font=\scriptsize,
+                  draw=cGray!30, fill=white, fill opacity=0.92,
+                  legend columns=2, column sep=6pt},
+    grid=major,
+    major grid style={cLightGray!60},
+    axis line style={cGray},
+    tick style={cGray},
+    enlarge x limits=0.06,
+]
+% Claude Standard
+\addplot[fill=cStandard!50, draw=cStandard!80] coordinates
+    {(A\,Pod., 0) (B\,Meet., 2) (C\,Video, 4) (D\,Carousel, 4) (E\,Dash., 8)
+     (F\,Trans., 4) (G\,Phone, 1) (H\,Interv., 7) (I\,Collab, 3) (J\,Games, 5)};
+% Claude AOI
+\addplot[fill=cAOI!65, draw=cAOI!90] coordinates
+    {(A\,Pod., 9) (B\,Meet., 10) (C\,Video, 9) (D\,Carousel, 9) (E\,Dash., 8)
+     (F\,Trans., 9) (G\,Phone, 9) (H\,Interv., 9) (I\,Collab, 8) (J\,Games, 2)};
+% EvoCUA Standard
+\addplot[fill=cAccent!50, draw=cAccent!90] coordinates
+    {(A\,Pod., 0) (B\,Meet., 1) (C\,Video, 3) (D\,Carousel, 3) (E\,Dash., 2)
+     (F\,Trans., 0) (G\,Phone, 0) (H\,Interv., 6) (I\,Collab, 2) (J\,Games, 1)};
+% EvoCUA AOI
+\addplot[fill=cDelta!55, draw=cDelta!90] coordinates
+    {(A\,Pod., 8) (B\,Meet., 6) (C\,Video, 6) (D\,Carousel, 4) (E\,Dash., 4)
+     (F\,Trans., 5) (G\,Phone, 8) (H\,Interv., 8) (I\,Collab, 5) (J\,Games, 1)};
+\legend{Claude Std, Claude AOI, EvoCUA Std, EvoCUA AOI}
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Per-category results for Claude Sonnet~4.6 and EvoCUA-32B.}
+Audio-dependent categories (A, B, G) show the largest gains---from near-zero to 6--10/10.
+Visual-temporal categories (C, D, F) improve consistently.
+Category~J (games) is the exception: real-time action latency, not perception, is the bottleneck.
+Category~E (dashboard) shows minimal change for Claude because current values are visible in single screenshots.}
+\label{fig:percategory}
+\end{figure*}
+
+Table~\ref{tab:percategory} and Figure~\ref{fig:percategory} reveal category-level patterns:
+
+\textbf{Audio categories (A, B, G) show the largest gains.}
+Standard baselines score 0--2/10 on podcast, meeting, and phone tasks across all models---these tasks are impossible without audio perception.
+The AOI unlocks 3--10/10 depending on the model, with Claude achieving near-perfect scores (9/10 or 10/10).
+
+\textbf{Visual-temporal categories (C, D, F) benefit consistently.}
+Video, carousel, and transient UI tasks improve by 2--7 points across models.
+Category~E (dashboard) shows smaller gains because dashboard tasks often have sufficient information in single screenshots---the dynamic updates are periodic and the current value is always visible.
+
+\textbf{Category~J (games) is an exception.}
+Browser games require not just perception but fast, precise motor actions and strategic planning.
+The AOI provides better perception but does not accelerate the agent's action latency, which is the binding constraint for real-time games.
+Claude's score drops from 5 to 2 with the AOI.
+Category~J has the highest step count (118 steps, 11.8 per task) and high keyframe density (0.55 KF/step; Table~\ref{tab:perstep}), resulting in substantial observation overhead: CLIP encoding and keyframe processing add ${\sim}2$--3\,s per step on top of the model's ${\sim}3$\,s inference latency, roughly doubling the agent's effective reaction time.
+For time-sensitive game tasks where actions must occur within specific windows, this added latency causes the agent to miss deadlines it would otherwise meet.
+This confirms that the AOI is designed for human-paced computer use, not real-time interactive applications.
+
+\textbf{EvoCUA-32B shows disproportionate gains on audio tasks.}
+The model jumps from 0/10 to 8/10 on both podcast (A) and phone (G) categories, suggesting that audio perception particularly benefits models whose visual grounding is weaker.
+
+\subsection{Difficulty Breakdown}
+
+\begin{table}[t]
+\centering
+\caption{Task success by difficulty level (standard $\to$ AOI full).
+Easy: 30 tasks (3 per category). Medium: 40 tasks (4 per category). Hard: 30 tasks (3 per category).}
+\label{tab:difficulty}
+\small
+\begin{tabular}{@{}l ccc ccc@{}}
+\toprule
+& \multicolumn{3}{c}{\textbf{Standard}} & \multicolumn{3}{c}{\textbf{AOI Full}} \\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+\textbf{Model} & Easy & Med & Hard & Easy & Med & Hard \\
+\midrule
+Claude 4.6 & 17/30 & 15/40 & 6/30 & \textbf{28}/30 & \textbf{34}/40 & \textbf{20}/30 \\
+GPT-5.4 & 15/30 & 17/40 & 5/30 & 21/30 & 26/40 & 10/30 \\
+Gemini 2.5 & 10/30 & 9/40 & 2/30 & 24/30 & 33/40 & 12/30 \\
+EvoCUA-32B & 6/30 & 8/40 & 4/30 & 20/30 & 26/40 & 9/30 \\
+Fara-7B & 9/30 & 5/40 & 3/30 & 19/30 & 11/40 & 4/30 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:difficulty} shows that the AOI lifts all difficulty levels.
+For Claude, easy task success rises from 57\% to 93\%, medium from 38\% to 85\%, and hard from 20\% to 67\%.
+The pattern is consistent across models: the AOI unlocks perception-gated tasks at every difficulty, but hard tasks remain challenging because they require both perception \emph{and} sophisticated reasoning.
+Fara-7B's small gain on medium/hard (5$\to$11, 3$\to$4) compared to its large gain on easy (9$\to$19) suggests that reasoning capacity, not perception, becomes the bottleneck for the 7B model on harder tasks.
+
+\subsection{Ablation: Observation Mode Analysis}
+\label{sec:ablation}
+
+\begin{table}[t]
+\centering
+\caption{Ablation study on Claude Sonnet~4.6: contribution of each AOI component.
+All configurations include per-category breakdown for categories most affected.}
+\label{tab:ablation}
+\small
+\begin{tabular}{@{}l c ccccc@{}}
+\toprule
+\textbf{Mode} & \textbf{Total} & \textbf{A} & \textbf{B} & \textbf{C} & \textbf{G} & \textbf{H} \\
+& /100 & \multicolumn{5}{c}{(pass/10, selected categories)} \\
+\midrule
+Standard & 38 & 0 & 2 & 4 & 1 & 7 \\
+\midrule
+Uniform 1\,FPS & 58 & 0 & 4 & \textbf{10} & 1 & 8 \\
+Uniform 3\,FPS & 56 & 2 & 5 & 8 & 1 & 7 \\
+Pixel-diff & 58 & 1 & 5 & 9 & 1 & 8 \\
+Random keyframes & 56 & 1 & 6 & 8 & 1 & 8 \\
+AOI visual only & 58 & 1 & 5 & 9 & 1 & 8 \\
+\midrule
+AOI visual + ASR & 64 & 1 & 4 & \textbf{10} & 4 & \textbf{9} \\
+\textbf{AOI full} & \textbf{82} & \textbf{9} & \textbf{10} & 9 & \textbf{9} & \textbf{9} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=5.2cm,
+    ybar,
+    bar width=20pt,
+    ymin=0, ymax=98,
+    ylabel={Task Success (\%)},
+    ylabel style={font=\small},
+    symbolic x coords={Screenshot, {+Keyframes}, {+ASR}, {+Narration}},
+    xtick={Screenshot, {+Keyframes}, {+ASR}, {+Narration}},
+    xticklabels={Screenshot, +Keyframes, +ASR, +Narration},
+    xticklabel style={font=\small},
+    ytick={0,20,40,60,80},
+    yticklabel style={font=\small},
+    grid=major,
+    major grid style={cLightGray!60},
+    axis line style={cGray},
+    tick style={cGray},
+    enlarge x limits=0.22,
+    nodes near coords,
+    nodes near coords style={font=\small\bfseries, /pgf/number format/fixed},
+    every node near coord/.append style={above=1pt},
+]
+\addplot[fill=cStandard!60, draw=cStandard!80] coordinates {(Screenshot, 38)};
+\addplot[fill=cVisual!60, draw=cVisual!80] coordinates {({+Keyframes}, 58)};
+\addplot[fill=cASR!60, draw=cASR!80] coordinates {({+ASR}, 64)};
+\addplot[fill=cAOI!70, draw=cAOI!90] coordinates {({+Narration}, 82)};
+
+% Delta annotations inside the axis using axis cs
+\draw[->, thick, cDelta!70!black]
+  (axis cs:Screenshot, 42) -- (axis cs:{+Keyframes}, 54)
+  node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black, sloped] {+20\,pp};
+\draw[->, thick, cDelta!70!black]
+  (axis cs:{+Keyframes}, 62) -- (axis cs:{+ASR}, 61)
+  node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black] {+6\,pp};
+\draw[->, thick, cDelta!70!black]
+  (axis cs:{+ASR}, 68) -- (axis cs:{+Narration}, 78)
+  node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black, sloped] {+18\,pp};
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Ablation: progressive contribution of each AOI component} (Claude Sonnet~4.6).
+Inter-step keyframes provide +20\,pp (any selection method achieves this; see Table~\ref{tab:ablation}).
+ASR adds +6\,pp (hearing speech and sounds).
+Visual narration adds +18\,pp---the largest single-component gain---demonstrating that \emph{retaining} visual information as persistent text is as important as \emph{capturing} it.}
+\label{fig:ablation}
+\end{figure}
+
+Table~\ref{tab:ablation} and Figure~\ref{fig:ablation} reveal the contribution of each AOI component:
+
+\textbf{Selection method does not affect accuracy (56--58\%).}
+We evaluated five visual-only keyframe strategies:
+(a)~\emph{Uniform 1\,FPS}: capture at a fixed rate;
+(b)~\emph{Uniform 3\,FPS}: higher fixed rate;
+(c)~\emph{Pixel-diff}: capture when $>$1\% of pixels change;
+(d)~\emph{Random}: randomly sample the same number of frames as adaptive methods;
+(e)~\emph{CLIP-based adaptive}: two-stage filter (pixel gate $\to$ CLIP-ViT-B/16 cosine distance exceeding threshold $\theta$; Algorithm~\ref{alg:keyframe}).
+All five converge to a narrow performance band of 56--58\%.
+This is a key finding: the dominant factor for visual perception is capturing \emph{any} inter-step frames, not \emph{how} they are selected.
+The +18--20\,pp gain over the single-screenshot baseline comes from breaking the agent's blindness between steps, regardless of whether frames are chosen uniformly, randomly, or adaptively.
+This result simplifies the practical recommendation: practitioners can use whatever keyframe strategy fits their latency and compute budget.
+
+\begin{algorithm}[t]
+\caption{CLIP-Based Adaptive Keyframe Extraction}
+\label{alg:keyframe}
+\begin{algorithmic}[1]
+\REQUIRE Screen sample $x_t$, anchor embedding $e_\text{anchor}$, pixel threshold $\alpha$, CLIP threshold $\theta$
+\STATE $\Delta_\text{px} \leftarrow \text{PixelChangeRatio}(x_t, x_\text{prev})$
+\IF{$\Delta_\text{px} < \alpha$}
+  \RETURN \textsc{Skip} \COMMENT{Stage 1: no pixel change}
+\ENDIF
+\STATE $e_t \leftarrow \text{CLIP}(x_t)$
+\STATE $d \leftarrow 1 - \cos(e_t, e_\text{anchor})$
+\IF{$d > \theta$}
+  \STATE $e_\text{anchor} \leftarrow e_t$ \COMMENT{Re-anchor}
+  \RETURN \textsc{CaptureKeyframe}($x_t$, $t$)
+\ENDIF
+\RETURN \textsc{Skip} \COMMENT{Stage 2: below semantic threshold}
+\end{algorithmic}
+\end{algorithm}
+
+\textbf{Adding ASR (+6\,pp).}
+Whisper speech transcription lifts performance from 58\% to 64\%.
+The gain concentrates on audio-dependent categories (G: 1$\to$4, H: 8$\to$9).
+Categories A and B show minimal improvement because podcast and meeting comprehension require understanding the \emph{content} of speech over multiple steps, not just detecting that speech occurred.
+
+\textbf{Full AOI (+18\,pp over visual+ASR).}
+The full AOI with visual narration reaches 82\%.
+The large gap from 64\% to 82\% demonstrates that visual narration---converting ephemeral keyframe images into persistent text---is critical for tasks requiring recall of earlier observations.
+The improvement is especially pronounced on podcast (A: 1$\to$9) and meeting (B: 4$\to$10) tasks, where narration enables the agent to accumulate information across many steps.
+
+\emph{Caveat:} This gain may conflate two effects: (a) the persistent text memory that survives keyframe pruning, and (b) a chain-of-thought effect from the narration generation itself, which forces the model to explicitly reason about visual content before selecting an action.
+Disentangling these effects would require an ablation where the model generates narrations but they are discarded rather than retained---we leave this to future work.
+
+% ════════════════════════════════════════════════════════════
+\section{Analysis}
+\label{sec:analysis}
+% ════════════════════════════════════════════════════════════
+
+\subsection{CLIP Threshold Sensitivity}
+\label{sec:theta}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=4.8cm,
+    xlabel={CLIP Distance Threshold ($\theta$)},
+    ylabel={Success Rate (\%)},
+    xlabel style={font=\small},
+    ylabel style={font=\small},
+    xmin=1, xmax=7,
+    ymin=70, ymax=100,
+    xtick={1, 2, 3, 4, 5, 6},
+    xticklabels={0.02, 0.04, 0.08, 0.12, 0.20, 0.30},
+    xticklabel style={font=\small},
+    ytick={70, 75, 80, 85, 90, 95, 100},
+    yticklabel style={font=\small},
+    grid=major,
+    major grid style={cLightGray!60},
+    axis line style={cGray},
+    tick style={cGray},
+    % Shaded band for 80-90%
+    fill between/on layer={axis background},
+]
+% Shaded robustness band
+\addplot[name path=upper, draw=none] coordinates {(0.5, 90) (7, 90)};
+\addplot[name path=lower, draw=none] coordinates {(0.5, 80) (7, 80)};
+\addplot[fill=cDelta!15] fill between[of=upper and lower];
+
+% Main line (mapped to 1-6 x positions for even spacing)
+\addplot[very thick, cAOI, mark=*, mark size=3pt, mark options={fill=cAOI}]
+    coordinates {(1, 82.5) (2, 85.0) (3, 90.0) (4, 80.0) (5, 82.5) (6, 85.0)};
+
+% Default marker
+\node[font=\scriptsize, text=cStandard!80!black, fill=white, inner sep=1pt, rounded corners=1pt]
+    at (axis cs:2, 89) {default};
+\draw[->, thin, cStandard!70] (axis cs:2, 88) -- (axis cs:2, 85.5);
+
+% 15x range annotation
+\draw[<->, thick, cGray!60] (axis cs:1, 73) -- (axis cs:6, 73);
+\node[font=\scriptsize, text=cGray, fill=white, inner sep=1pt] at (axis cs:3.5, 73) {$15\times$ range};
+
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{CLIP threshold ($\theta$) sensitivity} on 40 visual tasks (categories C--F) with Claude Sonnet~4.6.
+Performance remains within an 80--90\% band (shaded) across a $15\times$ range of $\theta$, from 0.02 (capturing minor changes) to 0.30 (only major visual shifts).
+The bimodal distribution of CLIP distances---near-zero for unchanged content, large for meaningful changes---makes the method naturally insensitive to $\theta$.}
+\label{fig:theta}
+\end{figure}
+
+Figure~\ref{fig:theta} shows the CLIP threshold $\theta$ sweep across a 15$\times$ range from 0.02 to 0.30, evaluated on the 40 visual tasks (categories C--F) where keyframe selection is relevant.
+Success rate remains within an 80--90\% band throughout, demonstrating that for practitioners who choose the CLIP-based variant, threshold selection is not critical.
+There is no cliff: even at $\theta = 0.30$ (very aggressive filtering that captures only major visual changes), performance remains at 85\%.
+At $\theta = 0.02$ (very sensitive, capturing small changes), performance is 82.5\%---slightly lower, likely because additional low-relevance keyframes dilute the model's attention.
+The slight peak at $\theta = 0.08$ (90\%) suggests a mild sweet spot, but the practical implication is that any reasonable value of $\theta$ will work.
+
+\subsection{Per-Step Observation Statistics}
+\label{sec:perstep}
+
+\begin{table}[t]
+\centering
+\caption{Per-step observation statistics for Claude Sonnet~4.6 + AOI full, broken down by task category.
+\%\,KF = percentage of steps where at least one keyframe was captured.
+KF/Step = average keyframes per step.
+\%\,Audio = percentage of steps with audio transcription.
+Audio-heavy categories (A, B, G, H) show 27--74\% audio activation.
+Visually dynamic categories (D, J) average 0.55--1.38 keyframes per step.
+Static categories (G, H) produce zero keyframes---the pixel and CLIP gates correctly suppress extraction when only audio changes.}
+\label{tab:perstep}
+\small
+\begin{tabular}{@{}ll rrrr rr@{}}
+\toprule
+\textbf{Cat.} & \textbf{Domain} & \textbf{Steps} & \textbf{\%\,KF} & \textbf{Tot.\ KF} & \textbf{KF/Step} & \textbf{\%\,Audio} \\
+\midrule
+A & Podcast & 35 & 8.6 & 3 & 0.09 & 42.9 \\
+B & Meeting & 34 & 50.0 & 18 & 0.53 & 73.5 \\
+C & Video & 39 & 28.2 & 12 & 0.31 & 2.6 \\
+D & Carousel & 61 & 60.7 & 84 & 1.38 & 0.0 \\
+E & Dashboard & 52 & 28.8 & 18 & 0.35 & 0.0 \\
+F & Transient & 38 & 15.8 & 7 & 0.18 & 0.0 \\
+G & Phone & 38 & 0.0 & 0 & 0.00 & 26.3 \\
+H & Interview & 27 & 0.0 & 0 & 0.00 & 37.0 \\
+I & Collab & 39 & 10.3 & 4 & 0.10 & 17.9 \\
+J & Games & 118 & 36.4 & 65 & 0.55 & 0.0 \\
+\midrule
+\textbf{All} & & \textbf{481} & \textbf{28.3} & \textbf{211} & \textbf{0.44} & \textbf{14.1} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=5cm,
+    xbar stacked,
+    bar width=10pt,
+    xmin=0, xmax=100,
+    xlabel={Percentage of steps (\%)},
+    xlabel style={font=\small},
+    symbolic y coords={J\,Games, I\,Collab, H\,Interv., G\,Phone, F\,Trans., E\,Dash., D\,Carousel, C\,Video, B\,Meeting, A\,Podcast},
+    ytick=data,
+    yticklabel style={font=\small},
+    xticklabel style={font=\small},
+    legend style={at={(0.98,0.03)}, anchor=south east, font=\scriptsize,
+                  draw=cGray!30, fill=white, fill opacity=0.92,
+                  legend columns=3, column sep=4pt},
+    grid=major,
+    major grid style={cLightGray!40},
+    axis line style={cGray},
+    tick style={cGray},
+    enlarge y limits=0.08,
+]
+% Keyframes only (no audio)
+\addplot[fill=cAOI!65, draw=cAOI!80] coordinates
+    {(0,A\,Podcast) (23.5,B\,Meeting) (25.6,C\,Video) (60.7,D\,Carousel) (28.8,E\,Dash.) (15.8,F\,Trans.) (0,G\,Phone) (0,H\,Interv.) (2.6,I\,Collab) (36.4,J\,Games)};
+% Audio only (no keyframes)
+\addplot[fill=cASR!60, draw=cASR!80] coordinates
+    {(34.3,A\,Podcast) (0,B\,Meeting) (2.6,C\,Video) (0,D\,Carousel) (0,E\,Dash.) (0,F\,Trans.) (26.3,G\,Phone) (37.0,H\,Interv.) (10.3,I\,Collab) (0,J\,Games)};
+% Both
+\addplot[fill=cNarr!60, draw=cNarr!80] coordinates
+    {(8.6,A\,Podcast) (26.5,B\,Meeting) (0,C\,Video) (0,D\,Carousel) (0,E\,Dash.) (0,F\,Trans.) (0,G\,Phone) (0,H\,Interv.) (7.7,I\,Collab) (0,J\,Games)};
+% Silent + static (neither)
+\addplot[fill=cLightGray!50, draw=cLightGray!80] coordinates
+    {(57.1,A\,Podcast) (50.0,B\,Meeting) (71.8,C\,Video) (39.3,D\,Carousel) (71.2,E\,Dash.) (84.2,F\,Trans.) (73.7,G\,Phone) (63.0,H\,Interv.) (79.5,I\,Collab) (63.6,J\,Games)};
+\legend{Visual KF, Audio, Both, Idle (gates skip)}
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Observation activity per category.}
+Stacked bars show the percentage of steps where each observation channel fires.
+The gray ``idle'' portion represents steps where both gates suppress processing---the AOI does nothing beyond sub-millisecond gate checks.
+Categories naturally cluster: D~(carousel) is highly visual, G/H~(phone/\allowbreak{}interview) are audio-only, B~(meeting) uses both channels.
+On average, 57.6\% of steps are idle---confirming the ``scales to zero'' design.}
+\label{fig:obsactivity}
+\end{figure}
+
+Table~\ref{tab:perstep} and Figure~\ref{fig:obsactivity} show the per-step observation statistics for the AOI.
+The data confirms the ``scales to zero'' design:
+audio-only categories (G, H) produce zero keyframes, while visual-only categories (D, E, F, J) produce zero audio activations.
+Category~D (carousel) has the highest keyframe density at 1.38 per step because carousel animations produce frequent visual changes.
+Category~A (podcast) has the lowest keyframe rate (0.09) because podcast tasks involve a mostly static UI with audio content.
+Overall, only 28.3\% of steps produce keyframes and 14.1\% activate audio processing---the gates are effective at suppressing unnecessary computation.
+
+\subsection{Efficiency}
+
+\begin{table}[t]
+\centering
+\caption{Efficiency statistics across observation configurations.
+Avg Steps = mean steps per task (lower is better---fewer steps means faster task completion).
+Obs Overhead = total observation processing time per task, including screenshot capture (${\sim}2$\,s/step baseline for both standard and AOI) plus CLIP encoding, keyframe selection, and audio processing for AOI configurations.}
+\label{tab:efficiency}
+\small
+\begin{tabular}{@{}l cc cc@{}}
+\toprule
+\textbf{Configuration} & \textbf{Avg Steps} & \textbf{Avg Time (s)} & \textbf{Model Lat.\ (s)} & \textbf{Obs Over.\ (s)} \\
+\midrule
+\multicolumn{5}{l}{\emph{Claude Sonnet~4.6}} \\
+\quad Standard & 10.7 & 40.6 & 26.3 & 2.5 \\
+\quad AOI full & \textbf{4.8} & 46.2 & 15.2 & 12.0 \\
+\midrule
+\multicolumn{5}{l}{\emph{GPT-5.4}} \\
+\quad Standard & 10.0 & 26.6 & 14.4 & 2.4 \\
+\quad AOI full & \textbf{7.6} & 50.6 & 11.2 & 17.8 \\
+\midrule
+\multicolumn{5}{l}{\emph{Gemini 2.5 Flash}} \\
+\quad Standard & 11.5 & 55.3 & 40.4 & 2.6 \\
+\quad AOI full & \textbf{5.4} & 61.9 & 20.6 & 20.6 \\
+\midrule
+\multicolumn{5}{l}{\emph{EvoCUA-32B}} \\
+\quad Standard & 9.3 & 117.0 & 99.0 & 2.3 \\
+\quad AOI full & \textbf{5.3} & 113.9 & 72.0 & 22.6 \\
+\midrule
+\multicolumn{5}{l}{\emph{Fara-7B}} \\
+\quad Standard & 13.4 & 35.1 & 24.0 & 2.5 \\
+\quad AOI full & \textbf{9.3} & 90.7 & 17.0 & 31.6 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:efficiency} reveals an important pattern: the AOI reduces the number of steps needed to complete tasks despite adding per-step observation overhead.
+Claude uses 4.8 steps on average with AOI vs.\ 10.7 without---fewer than half as many steps.
+This occurs because better perception leads to more informed actions, reducing trial-and-error exploration.
+
+The observation overhead (12--32\,s per task) is offset by reduced model inference costs from fewer steps.
+For Claude, total task time increases modestly (40.6\,s $\to$ 46.2\,s) despite the per-step overhead, because the step count drops by 55\%.
+For Gemini~2.5 Flash, step count drops from 11.5 to 5.4 (53\% reduction), with total time increasing modestly from 55.3\,s to 61.9\,s.
+For EvoCUA-32B, total time actually \emph{decreases} (117.0\,s $\to$ 113.9\,s) because the model's high inference latency (${\sim}10$\,s/step) makes step reduction dominant.
+
+\subsection{Static Task Verification}
+\label{sec:static}
+
+A key design claim is that the AOI ``scales to zero'' on static, silent desktop work---adding no unnecessary overhead when the screen is static and no audio is present.
+We verify this with 10 purely static HTML tasks (reading text, clicking buttons, filling forms, navigating links) containing no animations, timers, video, or audio.
+
+\begin{table}[t]
+\centering
+\caption{Static task verification.
+On 10 purely static tasks, the AOI extracts zero keyframes and zero audio segments, confirming that the pixel gate and volume gate correctly suppress observation when no dynamic content is present.
+The AOI does not degrade performance on static work.}
+\label{tab:static}
+\small
+\begin{tabular}{@{}l cc cc@{}}
+\toprule
+\textbf{Mode} & \textbf{Pass/10} & \textbf{Avg Steps} & \textbf{Total KF} & \textbf{Audio Seg.} \\
+\midrule
+Standard & 7 & 3.5 & 0 & 0 \\
+AOI full & \textbf{9} & \textbf{1.7} & 0 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:static} confirms the design property:
+across all 17 AOI steps on static content, the pixel gate detected no meaningful screen changes (total keyframes = 0) and the volume gate detected no audio (audio segments = 0).
+The observation pipeline runs but produces empty observations, adding only the fixed sampling cost (${\sim}2$\,s per step for screenshot capture and CLIP embedding) with no keyframe images inserted into the context.
+The AOI configuration scores 9/10 vs.\ 7/10 for standard mode and uses fewer steps (1.7 vs.\ 3.5 average).
+Since no additional observations are injected, this improvement likely stems from the AOI's structured observation record prompt format rather than from the perception layer itself---a confound we note but do not attempt to disentangle, as the primary purpose of this experiment is verifying the ``scales to zero'' gate behavior.
+
+\subsection{Failure Modes}
+
+We identify three systematic failure modes:
+
+\textbf{Fast visual transitions.}
+Events shorter than ${\sim}300$\,ms (one sample interval at 3\,Hz) may fall entirely between samples and be missed.
+This primarily affects game tasks (category J) where targets appear briefly.
+
+\textbf{Context window limits.}
+On keyframe-heavy tasks (categories D, E with many visual changes), accumulated keyframe images can exceed the CU model's context window.
+We observed context overflow errors at 8,192 tokens for local models on some hard tasks.
+This is a model-side constraint, not an AOI limitation.
+
+\textbf{Reasoning bottleneck.}
+For smaller models (Fara-7B), improved perception does not help with tasks requiring multi-step reasoning, arithmetic, or complex instruction following.
+The AOI provides better \emph{inputs} but cannot improve the model's reasoning over those inputs.
+
+% ════════════════════════════════════════════════════════════
+\section{Related Work}
+\label{sec:related}
+% ════════════════════════════════════════════════════════════
+
+\textbf{Computer-use agents.}
+The CU agent landscape spans closed-source systems~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source models~\citep{uitars2,opencua,fara7b,guiowl,coact}.
+Agent~S3~\citep{agents3} was the first open-source agent to surpass the human baseline on OSWorld.
+A comprehensive survey~\citep{cusurvey} classifies 87 agents and 33 datasets, identifying six gaps---but does not identify the observation modality limitation.
+All of these agents operate through the screenshot--reason--act loop.
+None addresses dynamic visual content or audio perception.
+
+\textbf{Real-time multimodal models.}
+Gemini~3.1 Flash Live~\citep{geminilive} processes continuous audio/video/text streams in real time.
+This monolithic approach embeds continuous perception into a specific model.
+Our work is complementary: model-agnostic adaptive perception as an external layer.
+Flash Live bundles perception with reasoning in a single model; the AOI decouples them, allowing any CU model to benefit.
+
+\textbf{Video understanding for GUI.}
+GUI-World~\citep{guiworld}, VideoWebArena~\citep{videowebarena}, CUA-Suite~\citep{cuasuite}, and Gaia2~\citep{gaia2} identify the observation problem through benchmarking.
+MemGUI-Bench~\citep{memguibench} reveals memory gaps in GUI agents.
+These benchmarks identify the problem but do not propose solutions compatible with existing CU agents.
+
+\textbf{Keyframe selection.}
+VideoTree~\citep{videotree} and AKS~\citep{aks} use CLIP-based frame selection for offline video QA.
+Apollo~\citep{apollo} finds that FPS sampling outperforms uniform sampling and identifies optimal token budgets.
+All prior work targets offline video understanding; our contribution is real-time observation filtering for CU agents, where the two-stage design is critical for ${<}10$\,ms latency.
+
+\textbf{Adaptive middleware for GUI agents.}
+Cradle~\citep{cradle} includes frame difference analysis for games---the closest predecessor to the AOI's perception layer---but uses pixel-level differencing without semantic filtering and has no audio processing.
+ScreenLLM~\citep{screenllm} captures stateful screen schemas with keyframe extraction, complementing visual narration but without audio or adaptive observation.
+StreamAgent~\citep{streamagent} and Dispider~\citep{dispider} separate perception from response generation for streaming video, paralleling the AOI's architecture, but neither addresses CU agent observation.
+
+\textbf{Structured agent interfaces.}
+WebMCP~\citep{webmcp} proposes structured AI--website interactions via declarative APIs.
+Where WebMCP requires website cooperation, the AOI enables perception on arbitrary, unmodified web content.
+
+% ════════════════════════════════════════════════════════════
+\section{Limitations}
+\label{sec:limitations}
+% ════════════════════════════════════════════════════════════
+
+\textbf{Action latency is unsolved.}
+The AOI extends perception but does not accelerate decision-making.
+CU models still require 1--5 seconds per inference step, making the approach unsuitable for real-time games or fast interactive applications (as evidenced by category J results).
+
+\textbf{Temporal resolution floor.}
+Sampling at ${\sim}3$\,Hz means events shorter than ${\sim}300$\,ms may be missed.
+For human-paced computer use (meetings, web browsing, presentations), this resolution is sufficient.
+For high-speed visual content, information is irretrievably lost.
+
+\textbf{Narration quality is bounded by the CU model.}
+Long-term visual memory depends on the CU model producing accurate text descriptions.
+Errors---a misread number, a hallucinated UI element---are permanently encoded in the trajectory.
+
+\textbf{Audio limited to speech transcription.}
+Our implementation uses Whisper for speech-only ASR rather than a multimodal audio model.
+Non-speech audio events (notification sounds, alert beeps) are not transcribed.
+A multimodal audio model (e.g., Qwen3 Omni) could extend coverage to the full audio scene.
+
+\textbf{Benchmark scope.}
+DynaCU-Bench tasks execute in a controlled browser environment with synthesized audio.
+Performance on real-world dynamic content (live video calls, real YouTube, native desktop applications) may differ.
+
+% ════════════════════════════════════════════════════════════
+\section{Conclusion}
+\label{sec:conclusion}
+% ════════════════════════════════════════════════════════════
+
+Computer-use agents cannot perceive dynamic content because their observation is limited to periodic static screenshots and they have no audio perception.
+We show this is an \emph{observation problem, not a model problem}, and introduce the Agent Observation Interface---a model-agnostic perception layer that is transparent for static tasks, adaptive for dynamic content, and compatible with any existing CU model without retraining.
+On DynaCU-Bench, five diverse CU agents equipped with the AOI achieve absolute gains of +17 to +48 percentage points, with the strongest configuration reaching 82\% task success.
+A key finding is that keyframe selection method does not significantly affect accuracy: all strategies converge to ${\sim}58$\%, indicating that the critical factor is capturing \emph{any} inter-step frames, not how they are selected.
+The largest single contributor to the full system's gains is visual narration (+18\,pp), demonstrating that \emph{retaining} visual information as persistent text is as important as \emph{capturing} it.
+The bottleneck in computer-use agents has been reasoning and action; we show that observation is equally critical and introduce a practical solution.
+
+% ════════════════════════════════════════════════════════════
+\bibliographystyle{plainnat}
+\bibliography{references}
+% ════════════════════════════════════════════════════════════
+
+\newpage
+
+% ════════════════════════════════════════════════════════════
+\appendix
+\section{Full Per-Category Results}
+\label{app:fullresults}
+% ════════════════════════════════════════════════════════════
+
+\begin{table}[h]
+\centering
+\caption{Complete per-category results for all 8 observation configurations tested with Claude Sonnet~4.6.}
+\label{tab:fullablation}
+\small
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}l cccccccccc c@{}}
+\toprule
+\textbf{Mode} & A & B & C & D & E & F & G & H & I & J & \textbf{Total} \\
+\midrule
+Standard & 0 & 2 & 4 & 4 & 8 & 4 & 1 & 7 & 3 & 5 & 38 \\
+Uniform 1\,FPS & 0 & 4 & 10 & 8 & 9 & 8 & 1 & 8 & 6 & 4 & 58 \\
+Uniform 3\,FPS & 2 & 5 & 8 & 8 & 8 & 8 & 1 & 7 & 6 & 3 & 56 \\
+Pixel-diff & 1 & 5 & 9 & 7 & 9 & 8 & 1 & 8 & 6 & 4 & 58 \\
+Random keyframes & 1 & 6 & 8 & 6 & 9 & 8 & 1 & 8 & 6 & 3 & 56 \\
+AOI visual & 1 & 5 & 9 & 7 & 8 & 9 & 1 & 8 & 6 & 4 & 58 \\
+AOI visual+ASR & 1 & 4 & 10 & 9 & 9 & 9 & 4 & 9 & 6 & 3 & 64 \\
+\textbf{AOI full} & \textbf{9} & \textbf{10} & \textbf{9} & \textbf{9} & \textbf{8} & \textbf{9} & \textbf{9} & \textbf{9} & \textbf{8} & 2 & \textbf{82} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+% ════════════════════════════════════════════════════════════
+\section{DynaCU-Bench Task List}
+\label{app:tasklist}
+% ════════════════════════════════════════════════════════════
+
+Each of the 100 tasks is identified by a category letter (A--J) and a difficulty-indexed ID.
+Easy tasks: E1, E2, E3. Medium tasks: M1, M2, M3, M4. Hard tasks: H1, H2, H3.
+
+Example tasks by category:
+\begin{itemize}
+  \item \textbf{A-E1} (Podcast, Easy): Listen to a podcast segment and identify the guest's name.
+  \item \textbf{B-M2} (Meeting, Medium): During a meeting with slides, count the number of items in a presented chart.
+  \item \textbf{C-H1} (Video, Hard): Watch a terminal recording and describe the full workflow demonstrated.
+  \item \textbf{D-M4} (Carousel, Medium): Identify a specific product name from a rotating carousel.
+  \item \textbf{E-E3} (Dashboard, Easy): Read the current warning level from a live-updating dashboard.
+  \item \textbf{F-E2} (Transient UI, Easy): Click ``Accept'' on a cookie consent banner before it auto-dismisses.
+  \item \textbf{G-M1} (Phone, Medium): Follow spoken instructions during a simulated phone call.
+  \item \textbf{H-H2} (Interview, Hard): Complete a multi-question spoken interview with scoring.
+  \item \textbf{I-M2} (Collab, Medium): Resolve a conflict in a collaborative document when a remote edit arrives.
+  \item \textbf{J-E2} (Games, Easy): Complete 3 rounds of a simple reaction-time game.
+\end{itemize}
+
+All tasks are implemented as self-contained HTML files with embedded JavaScript for task logic, audio synthesis, and evaluation.
+The complete benchmark (100 HTML files, evaluation scripts, and task definitions) will be released publicly.
+
+% ════════════════════════════════════════════════════════════
+\section{CLIP Threshold Calibration}
+\label{app:theta}
+% ════════════════════════════════════════════════════════════
+
+The default threshold $\theta = 0.04$ was calibrated empirically.
+Web UI events such as modal dialogs appearing produce cosine distances of ${\sim}0.08$; video scene cuts produce distances of ${\sim}0.15$--$0.25$; loading spinners and cursor blinks produce distances of ${\sim}0.005$--$0.02$.
+Setting $\theta = 0.04$ captures all meaningful UI changes while filtering most periodic noise.
+
+As shown in Figure~\ref{fig:theta}, the method is robust across a wide range: any $\theta \in [0.02, 0.30]$ produces success rates within 80--90\%.
+This insensitivity arises because CLIP embeddings produce a bimodal distribution of distances: semantically unchanged frames cluster near zero, while meaningful changes produce large distances, with relatively few samples in between.
+
+% ════════════════════════════════════════════════════════════
+\section{Implementation Details}
+\label{app:implementation}
+% ════════════════════════════════════════════════════════════
+
+\textbf{Software.}
+Python 3.11, Playwright 1.49 for browser automation, PulseAudio 16.1 for audio I/O, edge-TTS for high-quality speech synthesis, OpenAI CLIP ViT-B/16 for keyframe extraction, Whisper large-v3 for speech transcription, vLLM 0.19.0 for local model serving.
+
+\textbf{Hardware.}
+All experiments run on a single machine with an NVIDIA RTX PRO 6000 Blackwell GPU (96\,GB VRAM), 192\,GB RAM.
+Cloud models (Claude, GPT-5.4, Gemini~2.5 Flash) are accessed via HTTP APIs.
+Local models (EvoCUA-32B, Fara-7B) are served via vLLM with 4-bit quantization (\texttt{bitsandbytes}).
+Whisper runs on CPU to avoid GPU contention.
+
+\textbf{Hyperparameters.}
+Screen capture rate: ${\sim}3$\,Hz.
+Pixel change threshold ($\alpha$): 1\%.
+CLIP distance threshold ($\theta$): 0.04.
+Maximum keyframes per step: 5.
+Audio buffer: 70\,s ring buffer at 16\,kHz mono.
+Post-action wait: 2.0\,s.
+Maximum steps per task: 15.
+
+\end{document}

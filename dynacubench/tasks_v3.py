@@ -1,5 +1,5 @@
 """
-DynaCU-Bench v3 — 10 Categories x 10 Tasks = 100 Total
+DynaCU-Bench v3 — 11 Categories (10 dynamic + 1 static baseline) = 110 Total
 
 Redesigned benchmark grounded in realistic browser activities.
 Every task passes the test: "Would a human actually do this in a browser?"
@@ -18,6 +18,7 @@ Categories:
   H: Voice Interview (Outbound)    — audio + real-time + audio output
   I: Collaborative Editing         — audio + visual-temporal + real-time
   J: Interactive Game              — visual-temporal + real-time
+  S: Static Baseline               — no dynamic content (zero-overhead verification)
 
 Difficulty tiers:
   Easy   — single axis (a or b alone), passive observe then act
@@ -49,6 +50,7 @@ class TaskCategory(Enum):
     H_INTERVIEW     = "H_interview"
     I_COLLAB        = "I_collab"
     J_GAME          = "J_game"
+    S_STATIC        = "S_static"
 
 
 class TaskDifficulty(Enum):
@@ -123,7 +125,7 @@ class Task:
 
 
 # ══════════════════════════════════════════════════════════════════════
-# Task definitions: 10 categories x 10 tasks = 100
+# Task definitions: 11 categories, 110 tasks
 # ══════════════════════════════════════════════════════════════════════
 
 def _cat_a() -> list[Task]:
@@ -1261,12 +1263,118 @@ def _cat_j() -> list[Task]:
     ]
 
 
+def _cat_s() -> list[Task]:
+    """Category S: Static — zero-overhead baseline (no dynamic content)."""
+    return [
+        Task(
+            "S-E1", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Read the green heading on the page and type its exact text into the answer box. Click Submit.",
+            "Quarterly Revenue Report",
+            html_file="S_E1_read_heading.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="heading_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E2", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Click the button labeled 'Confirm Order'.",
+            "Confirm Order",
+            html_file="S_E2_click_button.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="button_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E3", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "From the shipping method dropdown, select 'Express Shipping (2-3 days)' and click Submit.",
+            "express",
+            html_file="S_E3_select_dropdown.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="dropdown_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E4", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Fill in the contact form with Name: 'Jane Peterson' and Email: 'jane.peterson@example.com'. Click Submit.",
+            {"name": "Jane Peterson", "email": "jane.peterson@example.com"},
+            html_file="S_E4_contact_form.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="form_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E5", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Check the 'I agree to the terms and conditions' checkbox and click Submit.",
+            "checkbox_submitted",
+            html_file="S_E5_checkbox_submit.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="checkbox_submitted",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E6", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Look at the product table. Find the price of 'Wireless Mouse' and type it into the answer box. Click Submit.",
+            "$34.50",
+            html_file="S_E6_read_table.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="table_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E7", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Click the link labeled 'Account Settings' from the navigation menu.",
+            "Account Settings",
+            html_file="S_E7_click_link.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="link_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E8", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Count the number of items in the shopping list and type the count into the answer box. Click Submit.",
+            "7",
+            html_file="S_E8_count_items.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="count_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E9", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Read the reference code in the Source field and type the exact same text into the Destination field. Click Submit.",
+            "TXN-2024-08-ALPHA",
+            html_file="S_E9_copy_text.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="copy_correct",
+            duration_s=30.0,
+        ),
+        Task(
+            "S-E10", TaskCategory.S_STATIC, TaskDifficulty.EASY,
+            "Read the paragraph about the Greenfield Community Library. Answer the question: Who founded it? Type the answer and click Submit.",
+            "Margaret Thornton",
+            html_file="S_E10_read_paragraph.html",
+            eval_type=EvalType.DOM,
+            axes=[],
+            dom_success_value="answer_correct",
+            duration_s=30.0,
+        ),
+    ]
+
+
 # ══════════════════════════════════════════════════════════════════════
 # Benchmark entry point
 # ══════════════════════════════════════════════════════════════════════
 
 class DynaCUBenchV3:
-    """DynaCU-Bench v3: 100 tasks across 10 perceptual categories."""
+    """DynaCU-Bench v3: 110 tasks across 11 categories (10 dynamic + 1 static baseline)."""
 
     def __init__(self, html_tasks_dir: Path = Path("benchmark_env/html_tasks")):
         self.html_tasks_dir = html_tasks_dir
@@ -1277,6 +1385,7 @@ class DynaCUBenchV3:
         for cat_fn in [
             _cat_a, _cat_b, _cat_c, _cat_d, _cat_e,
             _cat_f, _cat_g, _cat_h, _cat_i, _cat_j,
+            _cat_s,
         ]:
             self.tasks.extend(cat_fn())
 

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Count List Items</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-width: 600px; width: 100%; padding: 32px; }
+  .card h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 20px; }
+  .instructions { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 14px; color: #3730a3; line-height: 1.6; }
+  .shopping-list { background: #fffbeb; border: 1px solid #f59e0b; border-radius: 10px; padding: 20px 24px; margin-bottom: 24px; }
+  .shopping-list h3 { font-size: 16px; color: #92400e; margin-bottom: 12px; }
+  .shopping-list ul { list-style: disc; padding-left: 22px; }
+  .shopping-list li { font-size: 15px; color: #78350f; padding: 4px 0; }
+  label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 6px; }
+  input[type="text"] { width: 100%; padding: 12px 16px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; outline: none; }
+  input:focus { border-color: #4f46e5; }
+  .submit-btn { margin-top: 16px; padding: 12px 28px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .submit-btn:hover { background: #4338ca; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Task: Count List Items</h1>
+  <div class="instructions">
+    Count the number of items in the shopping list below and type the count into the answer box. Then click Submit.
+  </div>
+  <div class="shopping-list">
+    <h3>Weekly Shopping List</h3>
+    <ul>
+      <li>Whole wheat bread</li>
+      <li>Organic milk (1 gallon)</li>
+      <li>Free-range eggs (dozen)</li>
+      <li>Bananas</li>
+      <li>Chicken breast</li>
+      <li>Brown rice</li>
+      <li>Olive oil</li>
+    </ul>
+  </div>
+  <label for="answerBox">Number of items:</label>
+  <input type="text" id="answerBox" placeholder="Enter the count" autocomplete="off">
+  <button class="submit-btn" id="submitBtn">Submit</button>
+</div>
+<script>
+(function() {
+  let submitted = false;
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+  window.getTaskResult = function() {
+    var val = document.getElementById('answerBox').value.trim();
+    if (val === '7') return 'count_correct';
+    if (val) return 'incorrect';
+    return 'empty';
+  };
+})();
+</script>
+</body>
+</html>

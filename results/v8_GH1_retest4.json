@@ -1,0 +1,44 @@
+[
+  {
+    "task_id": "G-H1",
+    "category": "G_phone",
+    "difficulty": "hard",
+    "model_name": "claude-sonnet-4-6",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "both_responded_in_time",
+    "steps_taken": 2,
+    "total_time_s": 35.20870518684387,
+    "total_model_latency_ms": 4527.246952056885,
+    "total_obs_overhead_ms": 7364.79640007019,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#resp1, \"4829-7753\")",
+        "narration": "The screen shows a National Bank Account Verification call with account number 4829-7753 and zip code 90210 visible, with two response fields for account number and zip code.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 4839.317798614502,
+        "model_latency_ms": 2265.3276920318604,
+        "success": false,
+        "result_val": "incorrect"
+      },
+      {
+        "step": 2,
+        "action": "fill(#resp2, \"90210\")",
+        "narration": "Question 1 has been filled with \"4829-7753\" and Question 2 for Zip Code is now visible and waiting for input.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2525.4786014556885,
+        "model_latency_ms": 2261.9192600250244,
+        "success": true,
+        "result_val": "both_responded_in_time"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  }
+]

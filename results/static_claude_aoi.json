@@ -1,0 +1,389 @@
+[
+  {
+    "task_id": "S-E1",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "heading_correct",
+    "steps_taken": 1,
+    "total_time_s": 15.362975358963013,
+    "total_model_latency_ms": 2226.797103881836,
+    "total_obs_overhead_ms": 5022.588014602661,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#answerBox, \"Quarterly Revenue Report\")",
+        "narration": "I can see a webpage with the task \"Read the Heading\" that contains a green heading \"Quarterly Revenue Report\" and an answer input box below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 5022.588014602661,
+        "model_latency_ms": 2226.797103881836,
+        "success": true,
+        "result_val": "heading_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E2",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "button_correct",
+    "steps_taken": 1,
+    "total_time_s": 12.633760690689087,
+    "total_model_latency_ms": 2489.553213119507,
+    "total_obs_overhead_ms": 2062.5739097595215,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(777, 226)",
+        "narration": "The screen shows a task interface with four buttons arranged in a 2x2 grid, with \"Confirm Order\" clearly visible in the top-right position.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2062.5739097595215,
+        "model_latency_ms": 2489.553213119507,
+        "success": true,
+        "result_val": "button_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E3",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": false,
+    "result_val": "no_selection",
+    "steps_taken": 6,
+    "total_time_s": 34.462069034576416,
+    "total_model_latency_ms": 11576.310634613037,
+    "total_obs_overhead_ms": 13250.026226043701,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 268)",
+        "narration": "The screen shows a dropdown form with \"Shipping Method:\" label and a dropdown currently set to \"-- Choose shipping method --\" with a Submit button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2078.2320499420166,
+        "model_latency_ms": 2272.7184295654297,
+        "success": false,
+        "result_val": "no_selection"
+      },
+      {
+        "step": 2,
+        "action": "click(503, 361)",
+        "narration": "The dropdown menu has opened to reveal four shipping options including \"Express Shipping (2-3 days)\" which is the second option in the list.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2262.777805328369,
+        "model_latency_ms": 1981.6367626190186,
+        "success": false,
+        "result_val": "no_selection"
+      },
+      {
+        "step": 3,
+        "action": "click(640, 268)",
+        "narration": "The dropdown menu has closed and the form is back to its original state showing \"-- Choose shipping method --\" in the dropdown.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2176.494598388672,
+        "model_latency_ms": 1882.415771484375,
+        "success": false,
+        "result_val": "no_selection"
+      },
+      {
+        "step": 4,
+        "action": "click(503, 361)",
+        "narration": "The dropdown menu is now open, showing four shipping options including \"Express Shipping (2-3 days)\" as the second option in the list.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2258.7454319000244,
+        "model_latency_ms": 1813.8365745544434,
+        "success": false,
+        "result_val": "no_selection"
+      },
+      {
+        "step": 5,
+        "action": "click(640, 268)",
+        "narration": "The dropdown menu has closed and the form shows the default \"-- Choose shipping method --\" selection again.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2187.8647804260254,
+        "model_latency_ms": 1733.5374355316162,
+        "success": false,
+        "result_val": "no_selection"
+      },
+      {
+        "step": 6,
+        "action": "click(503, 361)",
+        "narration": "The dropdown menu is now open showing all four shipping options including \"Express Shipping (2-3 days)\" as the second option in the list.",
+        "audio_text": "",
+        "n_keyframes": 1,
+        "obs_overhead_ms": 2285.9115600585938,
+        "model_latency_ms": 1892.1656608581543,
+        "success": false,
+        "result_val": "no_selection"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "S-E4",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "form_correct",
+    "steps_taken": 2,
+    "total_time_s": 16.406993627548218,
+    "total_model_latency_ms": 3633.7199211120605,
+    "total_obs_overhead_ms": 4362.500905990601,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#nameInput, \"Jane Peterson\")",
+        "narration": "I can see a contact form with empty input fields for \"Full Name\" and \"Email Address\" and a Submit button below them.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2093.740463256836,
+        "model_latency_ms": 2076.7579078674316,
+        "success": false,
+        "result_val": "partial"
+      },
+      {
+        "step": 2,
+        "action": "fill(#emailInput, \"jane.peterson@example.com\")",
+        "narration": "The name field is now filled with \"Jane Peterson\" and the email field remains empty with placeholder text \"Enter email address\".",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2268.7604427337646,
+        "model_latency_ms": 1556.962013244629,
+        "success": true,
+        "result_val": "form_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E5",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "checkbox_submitted",
+    "steps_taken": 2,
+    "total_time_s": 16.228237867355347,
+    "total_model_latency_ms": 3534.80863571167,
+    "total_obs_overhead_ms": 4319.695949554443,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(382, 372)",
+        "narration": "I can see a form with an unchecked checkbox labeled \"I agree to the terms and conditions\" and a Submit button below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2076.2031078338623,
+        "model_latency_ms": 1806.8041801452637,
+        "success": false,
+        "result_val": "checked_not_submitted"
+      },
+      {
+        "step": 2,
+        "action": "click(431, 423)",
+        "narration": "The checkbox is now checked (showing a blue checkmark) and the Submit button is visible and ready to be clicked.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2243.492841720581,
+        "model_latency_ms": 1728.0044555664062,
+        "success": true,
+        "result_val": "checkbox_submitted"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E6",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "table_correct",
+    "steps_taken": 1,
+    "total_time_s": 12.405268907546997,
+    "total_model_latency_ms": 2203.549861907959,
+    "total_obs_overhead_ms": 2084.488868713379,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#answerBox, \"$34.50\")",
+        "narration": "I can see a product table with various items including a Wireless Mouse priced at $34.50, and there's an input box below for entering the price.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2084.488868713379,
+        "model_latency_ms": 2203.549861907959,
+        "success": true,
+        "result_val": "table_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E7",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "link_correct",
+    "steps_taken": 1,
+    "total_time_s": 11.893784046173096,
+    "total_model_latency_ms": 1711.3754749298096,
+    "total_obs_overhead_ms": 2070.996046066284,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 360)",
+        "narration": "The screen shows a navigation menu with 5 links including \"Account Settings\" which is the third option in the list.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2070.996046066284,
+        "model_latency_ms": 1711.3754749298096,
+        "success": true,
+        "result_val": "link_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E8",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "count_correct",
+    "steps_taken": 1,
+    "total_time_s": 12.563806533813477,
+    "total_model_latency_ms": 2404.2232036590576,
+    "total_obs_overhead_ms": 2066.0033226013184,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#answerBox, \"7\")",
+        "narration": "I can see a shopping list with 7 items (whole wheat bread, organic milk, free-range eggs, bananas, chicken breast, brown rice, and olive oil) and an input field to enter the count.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2066.0033226013184,
+        "model_latency_ms": 2404.2232036590576,
+        "success": true,
+        "result_val": "count_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E9",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "copy_correct",
+    "steps_taken": 1,
+    "total_time_s": 12.67218804359436,
+    "total_model_latency_ms": 2492.77663230896,
+    "total_obs_overhead_ms": 2091.773271560669,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#destField, \"TXN-2024-08-ALPHA\")",
+        "narration": "The page shows a text copying task with a source field containing \"TXN-2024-08-ALPHA\" and an empty destination field below it.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2091.773271560669,
+        "model_latency_ms": 2492.77663230896,
+        "success": true,
+        "result_val": "copy_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "S-E10",
+    "category": "S_static",
+    "difficulty": "easy",
+    "model_name": "claude-sonnet-4-20250514",
+    "observation_mode": "aoi_full",
+    "success": true,
+    "result_val": "answer_correct",
+    "steps_taken": 1,
+    "total_time_s": 12.438687562942505,
+    "total_model_latency_ms": 2253.476142883301,
+    "total_obs_overhead_ms": 2084.89727973938,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#answerBox, \"Margaret Thornton\")",
+        "narration": "The screen shows a reading comprehension task with a paragraph about the Greenfield Community Library and a question asking who founded it, with an empty text input box and Submit button below.",
+        "audio_text": "",
+        "n_keyframes": 0,
+        "obs_overhead_ms": 2084.89727973938,
+        "model_latency_ms": 2253.476142883301,
+        "success": true,
+        "result_val": "answer_correct"
+      }
+    ],
+    "error": null,
+    "eval_type": "dom",
+    "llm_score": null,
+    "llm_reason": null,
+    "final_score": 1.0
+  }
+]

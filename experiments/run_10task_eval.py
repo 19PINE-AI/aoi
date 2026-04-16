@@ -41,9 +41,30 @@ def _cleanup_audio():
     time.sleep(0.5)
 
 
-def run_eval(model_name: str, mode: str, task_ids: list[str], max_steps: int = 15):
+def run_eval(model_name: str, mode: str, task_ids: list[str], max_steps: int = 15,
+             output_file: str = None):
     bench = DynaCUBenchV3(html_tasks_dir=Path("benchmark_env/html_tasks"))
-    tasks = [bench.get_task(tid) for tid in task_ids]
+
+    # Resume support: load existing results and skip completed tasks
+    existing_results = []
+    completed_ids = set()
+    if output_file and Path(output_file).exists():
+        try:
+            with open(output_file) as f:
+                existing_data = json.load(f)
+            existing_results = existing_data
+            completed_ids = {r["task_id"] for r in existing_data}
+            logger.info("Resuming: %d tasks already completed, skipping them", len(completed_ids))
+        except (json.JSONDecodeError, KeyError):
+            logger.warning("Could not parse existing output file, starting fresh")
+
+    remaining_ids = [tid for tid in task_ids if tid not in completed_ids]
+    if not remaining_ids:
+        logger.info("All %d tasks already completed!", len(task_ids))
+        return [EvalResult.from_dict(r) for r in existing_results]
+
+    logger.info("Running %d remaining tasks (of %d total)", len(remaining_ids), len(task_ids))
+    tasks = [bench.get_task(tid) for tid in remaining_ids]
 
     results = []
     for task in tasks:
@@ -63,7 +84,16 @@ def run_eval(model_name: str, mode: str, task_ids: list[str], max_steps: int = 1
         logger.info("  %s: steps=%d, result=%s, time=%.1fs",
                      status, result.steps_taken, result.result_val, result.total_time_s)
 
-    return results
+        # Incremental save after each task
+        if output_file:
+            all_data = existing_results + [r.to_dict() for r in results]
+            Path(output_file).parent.mkdir(parents=True, exist_ok=True)
+            with open(output_file, "w") as f:
+                json.dump(all_data, f, indent=2)
+
+    # Combine existing + new results
+    all_results = [EvalResult.from_dict(r) for r in existing_results] + results
+    return all_results
 
 
 def main():
@@ -102,7 +132,8 @@ def main():
             print("  python -m aoi.whisper_service --model large-v3")
             sys.exit(1)
 
-    results = run_eval(args.model, args.mode, task_ids, args.max_steps)
+    out_file = args.output or f"results/{args.model}_{args.mode}_10tasks.json"
+    results = run_eval(args.model, args.mode, task_ids, args.max_steps, output_file=out_file)
 
     # Summary
     n_pass = sum(1 for r in results if r.success)
@@ -114,12 +145,6 @@ def main():
         s = "PASS" if r.success else "FAIL"
         print(f"  {r.task_id:8s} {r.category:15s} {s:4s} | steps={r.steps_taken:2d} | val={r.result_val}")
     print(f"{'='*60}")
-
-    # Save
-    out_file = args.output or f"results/{args.model}_{args.mode}_10tasks.json"
-    Path(out_file).parent.mkdir(parents=True, exist_ok=True)
-    with open(out_file, "w") as f:
-        json.dump([r.to_dict() for r in results], f, indent=2)
     print(f"Results saved to {out_file}")
 
 

@@ -1,0 +1,186 @@
+\relax 
+\providecommand\hyper@newdestlabel[2]{}
+\providecommand\HyperFirstAtBeginDocument{\AtBeginDocument}
+\HyperFirstAtBeginDocument{\ifx\hyper@anchor\@undefined
+\global\let\oldcontentsline\contentsline
+\gdef\contentsline#1#2#3#4{\oldcontentsline{#1}{#2}{#3}}
+\global\let\oldnewlabel\newlabel
+\gdef\newlabel#1#2{\newlabelxx{#1}#2}
+\gdef\newlabelxx#1#2#3#4#5#6{\oldnewlabel{#1}{{#2}{#3}}}
+\AtEndDocument{\ifx\hyper@anchor\@undefined
+\let\contentsline\oldcontentsline
+\let\newlabel\oldnewlabel
+\fi}
+\fi}
+\global\let\hyper@last\relax 
+\gdef\HyperFirstAtBeginDocument#1{#1}
+\providecommand\HyField@AuxAddToFields[1]{}
+\providecommand\HyField@AuxAddToCoFields[2]{}
+\citation{osworld}
+\citation{anthropic2024claude}
+\citation{openai2025cua}
+\citation{gemini25cu}
+\citation{surfer2}
+\citation{uitars2}
+\citation{opencua}
+\citation{fara7b}
+\citation{coact}
+\citation{cusurvey}
+\citation{guiworld}
+\citation{videowebarena}
+\citation{videogamebench}
+\citation{cuasuite}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\newlabel{sec:intro}{{1}{1}{Introduction}{section.1}{}}
+\citation{geminilive}
+\citation{cradle}
+\citation{sweagent}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background: The CU Agent Loop}{2}{section.2}\protected@file@percent }
+\newlabel{sec:background}{{2}{2}{Background: The CU Agent Loop}{section.2}{}}
+\newlabel{eq:culoop}{{1}{2}{Background: The CU Agent Loop}{equation.2.1}{}}
+\citation{clip}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces \textbf  {Standard CU agents vs.\ AOI-equipped agents.} \emph  {Left:} Current agents observe through periodic screenshots (${\sim }$3--5\,s apart) and are blind and deaf between observations---missing video, audio, and transient UI events ({\fontfamily  {pzd}\fontencoding  {U}\fontseries  {m}\fontshape  {n}\selectfont  \char 55}). \emph  {Right:} The AOI continuously monitors screen and audio streams through fast gates ($<$1\,ms) that skip processing for static, silent content. When gates fire, keyframe extraction (shown here with optional CLIP filtering; see Section\nobreakspace  {}\ref  {sec:ablation}) and Whisper ASR produce images and text for the observation record. Visual narrations feed back as persistent text memory. The AOI wraps any existing CU model with zero retraining.\relax }}{3}{figure.caption.1}\protected@file@percent }
+\providecommand*\caption@xref[2]{\@setref\relax\@undefined{#1}}
+\newlabel{fig:architecture}{{1}{3}{\textbf {Standard CU agents vs.\ AOI-equipped agents.} \emph {Left:} Current agents observe through periodic screenshots (${\sim }$3--5\,s apart) and are blind and deaf between observations---missing video, audio, and transient UI events (\ding {55}). \emph {Right:} The AOI continuously monitors screen and audio streams through fast gates ($<$1\,ms) that skip processing for static, silent content. When gates fire, keyframe extraction (shown here with optional CLIP filtering; see Section~\ref {sec:ablation}) and Whisper ASR produce images and text for the observation record. Visual narrations feed back as persistent text memory. The AOI wraps any existing CU model with zero retraining.\relax }{figure.caption.1}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}System Design}{3}{section.3}\protected@file@percent }
+\newlabel{sec:design}{{3}{3}{System Design}{section.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Architecture Overview}{3}{subsection.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Inter-Step Keyframe Capture}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{sec:keyframes}{{3.2}{3}{Inter-Step Keyframe Capture}{subsection.3.2}{}}
+\citation{whisper}
+\citation{llovi}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Volume-Gated Audio Observation}{4}{subsection.3.3}\protected@file@percent }
+\newlabel{sec:audio}{{3.3}{4}{Volume-Gated Audio Observation}{subsection.3.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Visual Narration for Long-Term Context}{4}{subsection.3.4}\protected@file@percent }
+\newlabel{sec:narration}{{3.4}{4}{Visual Narration for Long-Term Context}{subsection.3.4}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.5}Observation Record}{4}{subsection.3.5}\protected@file@percent }
+\newlabel{sec:obsrecord}{{3.5}{4}{Observation Record}{subsection.3.5}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{4}{section.4}\protected@file@percent }
+\newlabel{sec:implementation}{{4}{4}{Implementation}{section.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Example observation record sent to the CU model at step $N$ of a meeting task. The \textbf  {context} section provides text from prior steps (audio transcriptions and visual narrations persist after images are pruned). The \textbf  {new} section contains the current audio transcription and the post-action screenshot (image). In this case, no keyframes were captured (the slide did not change), so only the screenshot is included as an image. The task instruction is appended at the end.\relax }}{5}{figure.caption.2}\protected@file@percent }
+\newlabel{fig:obsrecord}{{2}{5}{Example observation record sent to the CU model at step $N$ of a meeting task. The \textbf {context} section provides text from prior steps (audio transcriptions and visual narrations persist after images are pruned). The \textbf {new} section contains the current audio transcription and the post-action screenshot (image). In this case, no keyframes were captured (the slide did not change), so only the screenshot is included as an image. The task instruction is appended at the end.\relax }{figure.caption.2}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}DynaCU-Bench}{5}{section.5}\protected@file@percent }
+\newlabel{sec:benchmark}{{5}{5}{DynaCU-Bench}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Design Principles}{5}{subsection.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Task Categories}{5}{subsection.5.2}\protected@file@percent }
+\citation{anthropic2024claude}
+\citation{openai2025cua}
+\citation{gemini25cu}
+\citation{fara7b}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces DynaCU-Bench task categories. A = audio perception, V = visual-temporal perception, I = real-time interaction. Each category contains 3 easy, 4 medium, and 3 hard tasks.\relax }}{6}{table.caption.3}\protected@file@percent }
+\newlabel{tab:categories}{{1}{6}{DynaCU-Bench task categories. A = audio perception, V = visual-temporal perception, I = real-time interaction. Each category contains 3 easy, 4 medium, and 3 hard tasks.\relax }{table.caption.3}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Evaluation Protocol}{6}{subsection.5.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {6}Evaluation}{6}{section.6}\protected@file@percent }
+\newlabel{sec:eval}{{6}{6}{Evaluation}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Setup}{6}{subsection.6.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces DynaCU-Bench results: task success rate (\%) across all observation configurations. \textbf  {Bold} indicates the best result per model. $\Delta $ shows absolute gain over standard baseline. All ablation modes tested with Claude Sonnet\nobreakspace  {}4.6. ``Claude 4.6'' abbreviates Claude Sonnet\nobreakspace  {}4.6 throughout tables and figures.\relax }}{7}{table.caption.4}\protected@file@percent }
+\newlabel{tab:main}{{2}{7}{DynaCU-Bench results: task success rate (\%) across all observation configurations. \textbf {Bold} indicates the best result per model. $\Delta $ shows absolute gain over standard baseline. All ablation modes tested with Claude Sonnet~4.6. ``Claude 4.6'' abbreviates Claude Sonnet~4.6 throughout tables and figures.\relax }{table.caption.4}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces \textbf  {Main results on DynaCU-Bench (100 tasks).} The AOI produces large gains across all five CU models without any retraining. Green numbers show absolute improvement in percentage points. Gemini\nobreakspace  {}2.5 Flash shows the largest absolute gain (+48\,pp) and relative gain ($3.3\times $), while Claude achieves the highest absolute score (82\%).\relax }}{7}{figure.caption.5}\protected@file@percent }
+\newlabel{fig:mainresults}{{3}{7}{\textbf {Main results on DynaCU-Bench (100 tasks).} The AOI produces large gains across all five CU models without any retraining. Green numbers show absolute improvement in percentage points. Gemini~2.5 Flash shows the largest absolute gain (+48\,pp) and relative gain ($3.3\times $), while Claude achieves the highest absolute score (82\%).\relax }{figure.caption.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Main Results}{7}{subsection.6.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Per-category task success (pass/10) for standard vs.\ AOI full across all five models. Categories are grouped by primary perception axis: A = audio, V = visual-temporal, I = real-time interaction.\relax }}{8}{table.caption.7}\protected@file@percent }
+\newlabel{tab:percategory}{{3}{8}{Per-category task success (pass/10) for standard vs.\ AOI full across all five models. Categories are grouped by primary perception axis: A = audio, V = visual-temporal, I = real-time interaction.\relax }{table.caption.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.3}Per-Category Analysis}{8}{subsection.6.3}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Trajectory comparison on two representative tasks. \textbf  {Top:} Meeting task (B-E1) where the launch date is spoken aloud. The standard agent cannot hear it and guesses after 15 futile \texttt  {wait()} steps. The AOI agent transcribes the audio, hears ``April 28th,'' and acts in 2 steps. \textbf  {Bottom:} Video task (C-E1) where the answer appears in a terminal recording. The standard agent needs 6 steps with lucky timing; the AOI agent's narration captures the content in 1 step.\relax }}{9}{figure.caption.6}\protected@file@percent }
+\newlabel{fig:trajectories}{{4}{9}{Trajectory comparison on two representative tasks. \textbf {Top:} Meeting task (B-E1) where the launch date is spoken aloud. The standard agent cannot hear it and guesses after 15 futile \texttt {wait()} steps. The AOI agent transcribes the audio, hears ``April 28th,'' and acts in 2 steps. \textbf {Bottom:} Video task (C-E1) where the answer appears in a terminal recording. The standard agent needs 6 steps with lucky timing; the AOI agent's narration captures the content in 1 step.\relax }{figure.caption.6}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {5}{\ignorespaces \textbf  {Per-category results for Claude Sonnet\nobreakspace  {}4.6 and EvoCUA-32B.} Audio-dependent categories (A, B, G) show the largest gains---from near-zero to 6--10/10. Visual-temporal categories (C, D, F) improve consistently. Category\nobreakspace  {}J (games) is the exception: real-time action latency, not perception, is the bottleneck. Category\nobreakspace  {}E (dashboard) shows minimal change for Claude because current values are visible in single screenshots.\relax }}{10}{figure.caption.8}\protected@file@percent }
+\newlabel{fig:percategory}{{5}{10}{\textbf {Per-category results for Claude Sonnet~4.6 and EvoCUA-32B.} Audio-dependent categories (A, B, G) show the largest gains---from near-zero to 6--10/10. Visual-temporal categories (C, D, F) improve consistently. Category~J (games) is the exception: real-time action latency, not perception, is the bottleneck. Category~E (dashboard) shows minimal change for Claude because current values are visible in single screenshots.\relax }{figure.caption.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Task success by difficulty level (standard $\to $ AOI full). Easy: 30 tasks (3 per category). Medium: 40 tasks (4 per category). Hard: 30 tasks (3 per category).\relax }}{10}{table.caption.9}\protected@file@percent }
+\newlabel{tab:difficulty}{{4}{10}{Task success by difficulty level (standard $\to $ AOI full). Easy: 30 tasks (3 per category). Medium: 40 tasks (4 per category). Hard: 30 tasks (3 per category).\relax }{table.caption.9}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.4}Difficulty Breakdown}{10}{subsection.6.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.5}Ablation: Observation Mode Analysis}{10}{subsection.6.5}\protected@file@percent }
+\newlabel{sec:ablation}{{6.5}{10}{Ablation: Observation Mode Analysis}{subsection.6.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces Ablation study on Claude Sonnet\nobreakspace  {}4.6: contribution of each AOI component. All configurations include per-category breakdown for categories most affected.\relax }}{11}{table.caption.10}\protected@file@percent }
+\newlabel{tab:ablation}{{5}{11}{Ablation study on Claude Sonnet~4.6: contribution of each AOI component. All configurations include per-category breakdown for categories most affected.\relax }{table.caption.10}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {6}{\ignorespaces \textbf  {Ablation: progressive contribution of each AOI component} (Claude Sonnet\nobreakspace  {}4.6). Inter-step keyframes provide +20\,pp (any selection method achieves this; see Table\nobreakspace  {}\ref  {tab:ablation}). ASR adds +6\,pp (hearing speech and sounds). Visual narration adds +18\,pp---the largest single-component gain---demonstrating that \emph  {retaining} visual information as persistent text is as important as \emph  {capturing} it.\relax }}{11}{figure.caption.11}\protected@file@percent }
+\newlabel{fig:ablation}{{6}{11}{\textbf {Ablation: progressive contribution of each AOI component} (Claude Sonnet~4.6). Inter-step keyframes provide +20\,pp (any selection method achieves this; see Table~\ref {tab:ablation}). ASR adds +6\,pp (hearing speech and sounds). Visual narration adds +18\,pp---the largest single-component gain---demonstrating that \emph {retaining} visual information as persistent text is as important as \emph {capturing} it.\relax }{figure.caption.11}{}}
+\@writefile{loa}{\contentsline {algorithm}{\numberline {1}{\ignorespaces CLIP-Based Adaptive Keyframe Extraction\relax }}{12}{algorithm.1}\protected@file@percent }
+\newlabel{alg:keyframe}{{1}{12}{CLIP-Based Adaptive Keyframe Extraction\relax }{algorithm.1}{}}
+\@writefile{lof}{\contentsline {figure}{\numberline {7}{\ignorespaces \textbf  {CLIP threshold ($\theta $) sensitivity} on 40 visual tasks (categories C--F) with Claude Sonnet\nobreakspace  {}4.6. Performance remains within an 80--90\% band (shaded) across a $15\times $ range of $\theta $, from 0.02 (capturing minor changes) to 0.30 (only major visual shifts). The bimodal distribution of CLIP distances---near-zero for unchanged content, large for meaningful changes---makes the method naturally insensitive to $\theta $.\relax }}{12}{figure.caption.12}\protected@file@percent }
+\newlabel{fig:theta}{{7}{12}{\textbf {CLIP threshold ($\theta $) sensitivity} on 40 visual tasks (categories C--F) with Claude Sonnet~4.6. Performance remains within an 80--90\% band (shaded) across a $15\times $ range of $\theta $, from 0.02 (capturing minor changes) to 0.30 (only major visual shifts). The bimodal distribution of CLIP distances---near-zero for unchanged content, large for meaningful changes---makes the method naturally insensitive to $\theta $.\relax }{figure.caption.12}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {7}Analysis}{12}{section.7}\protected@file@percent }
+\newlabel{sec:analysis}{{7}{12}{Analysis}{section.7}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.1}CLIP Threshold Sensitivity}{12}{subsection.7.1}\protected@file@percent }
+\newlabel{sec:theta}{{7.1}{12}{CLIP Threshold Sensitivity}{subsection.7.1}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.2}Per-Step Observation Statistics}{12}{subsection.7.2}\protected@file@percent }
+\newlabel{sec:perstep}{{7.2}{12}{Per-Step Observation Statistics}{subsection.7.2}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces Per-step observation statistics for Claude Sonnet\nobreakspace  {}4.6 + AOI full, broken down by task category. \%\,KF = percentage of steps where at least one keyframe was captured. KF/Step = average keyframes per step. \%\,Audio = percentage of steps with audio transcription. Audio-heavy categories (A, B, G, H) show 27--74\% audio activation. Visually dynamic categories (D, J) average 0.55--1.38 keyframes per step. Static categories (G, H) produce zero keyframes---the pixel and CLIP gates correctly suppress extraction when only audio changes.\relax }}{13}{table.caption.13}\protected@file@percent }
+\newlabel{tab:perstep}{{6}{13}{Per-step observation statistics for Claude Sonnet~4.6 + AOI full, broken down by task category. \%\,KF = percentage of steps where at least one keyframe was captured. KF/Step = average keyframes per step. \%\,Audio = percentage of steps with audio transcription. Audio-heavy categories (A, B, G, H) show 27--74\% audio activation. Visually dynamic categories (D, J) average 0.55--1.38 keyframes per step. Static categories (G, H) produce zero keyframes---the pixel and CLIP gates correctly suppress extraction when only audio changes.\relax }{table.caption.13}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.3}Efficiency}{13}{subsection.7.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.4}Static Task Verification}{13}{subsection.7.4}\protected@file@percent }
+\newlabel{sec:static}{{7.4}{13}{Static Task Verification}{subsection.7.4}{}}
+\citation{anthropic2024claude,openai2025cua,gemini25cu,surfer2}
+\citation{uitars2,opencua,fara7b,guiowl,coact}
+\citation{agents3}
+\citation{cusurvey}
+\citation{geminilive}
+\@writefile{lof}{\contentsline {figure}{\numberline {8}{\ignorespaces \textbf  {Observation activity per category.} Stacked bars show the percentage of steps where each observation channel fires. The gray ``idle'' portion represents steps where both gates suppress processing---the AOI does nothing beyond sub-millisecond gate checks. Categories naturally cluster: D\nobreakspace  {}(carousel) is highly visual, G/H\nobreakspace  {}(phone/\allowbreak  {}interview) are audio-only, B\nobreakspace  {}(meeting) uses both channels. On average, 57.6\% of steps are idle---confirming the ``scales to zero'' design.\relax }}{14}{figure.caption.14}\protected@file@percent }
+\newlabel{fig:obsactivity}{{8}{14}{\textbf {Observation activity per category.} Stacked bars show the percentage of steps where each observation channel fires. The gray ``idle'' portion represents steps where both gates suppress processing---the AOI does nothing beyond sub-millisecond gate checks. Categories naturally cluster: D~(carousel) is highly visual, G/H~(phone/\allowbreak {}interview) are audio-only, B~(meeting) uses both channels. On average, 57.6\% of steps are idle---confirming the ``scales to zero'' design.\relax }{figure.caption.14}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {7.5}Failure Modes}{14}{subsection.7.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {8}Related Work}{14}{section.8}\protected@file@percent }
+\newlabel{sec:related}{{8}{14}{Related Work}{section.8}{}}
+\citation{guiworld}
+\citation{videowebarena}
+\citation{cuasuite}
+\citation{gaia2}
+\citation{memguibench}
+\citation{videotree}
+\citation{aks}
+\citation{apollo}
+\citation{cradle}
+\citation{screenllm}
+\citation{streamagent}
+\citation{dispider}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Efficiency statistics across observation configurations. Avg Steps = mean steps per task (lower is better---fewer steps means faster task completion). Obs Overhead = total observation processing time per task, including screenshot capture (${\sim }2$\,s/step baseline for both standard and AOI) plus CLIP encoding, keyframe selection, and audio processing for AOI configurations.\relax }}{15}{table.caption.15}\protected@file@percent }
+\newlabel{tab:efficiency}{{7}{15}{Efficiency statistics across observation configurations. Avg Steps = mean steps per task (lower is better---fewer steps means faster task completion). Obs Overhead = total observation processing time per task, including screenshot capture (${\sim }2$\,s/step baseline for both standard and AOI) plus CLIP encoding, keyframe selection, and audio processing for AOI configurations.\relax }{table.caption.15}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Static task verification. On 10 purely static tasks, the AOI extracts zero keyframes and zero audio segments, confirming that the pixel gate and volume gate correctly suppress observation when no dynamic content is present. The AOI does not degrade performance on static work.\relax }}{15}{table.caption.16}\protected@file@percent }
+\newlabel{tab:static}{{8}{15}{Static task verification. On 10 purely static tasks, the AOI extracts zero keyframes and zero audio segments, confirming that the pixel gate and volume gate correctly suppress observation when no dynamic content is present. The AOI does not degrade performance on static work.\relax }{table.caption.16}{}}
+\citation{webmcp}
+\bibstyle{plainnat}
+\bibdata{references}
+\bibcite{guiowl}{{1}{2025}{{Alibaba}}{{}}}
+\bibcite{anthropic2024claude}{{2}{2024}{{Anthropic}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {9}Limitations}{16}{section.9}\protected@file@percent }
+\newlabel{sec:limitations}{{9}{16}{Limitations}{section.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {10}Conclusion}{16}{section.10}\protected@file@percent }
+\newlabel{sec:conclusion}{{10}{16}{Conclusion}{section.10}{}}
+\bibcite{apollo}{{3}{2025}{{Apollo Team}}{{}}}
+\bibcite{cradle}{{4}{2025}{{BAAI}}{{}}}
+\bibcite{uitars2}{{5}{2025}{{ByteDance}}{{}}}
+\bibcite{guiworld}{{6}{2025}{{Chen et~al.}}{{}}}
+\bibcite{dispider}{{7}{2025}{{Dispider Team}}{{}}}
+\bibcite{gaia2}{{8}{2026}{{Gaia Team}}{{}}}
+\bibcite{gemini25cu}{{9}{2025}{{Google}}{{}}}
+\bibcite{geminilive}{{10}{2026}{{Google}}{{}}}
+\bibcite{webmcp}{{11}{2026}{{Google and Microsoft}}{{}}}
+\bibcite{surfer2}{{12}{2025}{{H Company}}{{}}}
+\bibcite{videowebarena}{{13}{2025}{{Jang et~al.}}{{}}}
+\bibcite{memguibench}{{14}{2026}{{MemGUI Team}}{{}}}
+\bibcite{fara7b}{{15}{2025}{{Microsoft}}{{}}}
+\bibcite{openai2025cua}{{16}{2025}{{OpenAI}}{{}}}
+\bibcite{clip}{{17}{2021}{{Radford et~al.}}{{Radford, Kim, Hallacy, Ramesh, Goh, Agarwal, Sastry, Askell, Mishkin, Clark, et~al.}}}
+\bibcite{whisper}{{18}{2023}{{Radford et~al.}}{{Radford, Kim, Xu, Brockman, McLeavey, and Sutskever}}}
+\bibcite{coact}{{19}{2025}{{Salesforce}}{{}}}
+\bibcite{screenllm}{{20}{2025}{{ScreenLLM Team}}{{}}}
+\bibcite{cuasuite}{{21}{2026}{{ServiceNow}}{{}}}
+\bibcite{agents3}{{22}{2025}{{Simular AI}}{{}}}
+\bibcite{streamagent}{{23}{2026}{{StreamAgent Team}}{{}}}
+\bibcite{aks}{{24}{2025}{{Tang et~al.}}{{}}}
+\bibcite{opencua}{{25}{2025{a}}{{Wang et~al.}}{{}}}
+\bibcite{cusurvey}{{26}{2025{b}}{{Wang et~al.}}{{}}}
+\bibcite{videotree}{{27}{2025{c}}{{Wang et~al.}}{{}}}
+\bibcite{osworld}{{28}{2024}{{Xie et~al.}}{{}}}
+\bibcite{sweagent}{{29}{2024}{{Yang et~al.}}{{}}}
+\bibcite{llovi}{{30}{2024}{{Zhang et~al.}}{{}}}
+\bibcite{videogamebench}{{31}{2025}{{Zhang et~al.}}{{}}}
+\@writefile{toc}{\contentsline {section}{\numberline {A}Full Per-Category Results}{19}{appendix.A}\protected@file@percent }
+\newlabel{app:fullresults}{{A}{19}{Full Per-Category Results}{appendix.A}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Complete per-category results for all 8 observation configurations tested with Claude Sonnet\nobreakspace  {}4.6.\relax }}{19}{table.caption.18}\protected@file@percent }
+\newlabel{tab:fullablation}{{9}{19}{Complete per-category results for all 8 observation configurations tested with Claude Sonnet~4.6.\relax }{table.caption.18}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {B}DynaCU-Bench Task List}{19}{appendix.B}\protected@file@percent }
+\newlabel{app:tasklist}{{B}{19}{DynaCU-Bench Task List}{appendix.B}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {C}CLIP Threshold Calibration}{19}{appendix.C}\protected@file@percent }
+\newlabel{app:theta}{{C}{19}{CLIP Threshold Calibration}{appendix.C}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {D}Implementation Details}{20}{appendix.D}\protected@file@percent }
+\newlabel{app:implementation}{{D}{20}{Implementation Details}{appendix.D}{}}
+\gdef \@abspage@last{20}

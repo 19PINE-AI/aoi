@@ -1,0 +1,10 @@
+{
+  "0.3": {
+    "theta": 0.3,
+    "passed": 34,
+    "total": 40,
+    "success_rate": 0.85,
+    "avg_steps": 5.35,
+    "avg_time": 35.722386449575424
+  }
+}
