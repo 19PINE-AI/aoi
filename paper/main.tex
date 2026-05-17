@@ -58,22 +58,21 @@
 \begin{abstract}
 % ════════════════════════════════════════════════════════════
 \textbf{The interface, not the model.}
-Just as SWE-agent~\citep{sweagent} showed that the agent-computer \emph{action} interface is a critical and underexplored design axis for software-engineering agents, we show that the \emph{observation} interface is equally critical for computer-use (CU) agents---and that getting it right unlocks dynamic computer use from any existing CU model without retraining.
-Current CU agents---closed-source and open-source alike---observe the world through periodic static screenshots taken every 3--5\,s and have no audio perception, leaving them unable to handle video playback, animations, transient UI events, meetings, notifications, or spoken instructions.
-We introduce the \textbf{Agent Observation Interface (AOI)}, a lightweight, model-agnostic perception layer that decouples observation from action: observation runs continuous and adaptive in the background; action stays discrete.
-The AOI has three gated components: (1)~inter-step keyframe capture, (2)~volume-gated audio scene understanding, and (3)~CU-model-generated visual narration that converts ephemeral keyframes into persistent text.
-On static, silent content the gates produce nothing and behaviour is identical to the standard loop.
+SWE-agent~\citep{sweagent} showed that the agent-computer \emph{action} interface is an underexplored design axis for software-engineering agents.  We show the same for the \emph{observation} interface in computer-use (CU) agents: getting it right unlocks dynamic computer use from any existing CU model without retraining.
+Current CU agents---closed and open-source alike---observe the world through periodic screenshots every 3--5\,s and have no audio perception, leaving them blind to video playback, animations, transient UI events, meetings, notifications, and spoken instructions.
+We introduce the \textbf{Agent Observation Interface (AOI)}, a model-agnostic perception layer that decouples observation (continuous, adaptive) from action (discrete).
+Its three gated components---inter-step keyframe capture, volume-gated audio scene understanding, and CU-model-generated visual narration that persists as text---produce nothing on static, silent content, reducing the AOI to the standard loop.
 
 \textbf{Results.}
-We introduce \textbf{DynaCU-Bench}, a benchmark of 100 dynamic browser tasks across 10 categories plus 50 static tasks for zero-overhead verification.
-Six CU models---Claude Sonnet~4.6, GPT-5.4, Gemini~2.5~Flash, Grok-4, EvoCUA-32B, and Fara-7B---equipped with the AOI achieve absolute gains of +17 to +48 percentage points over their screenshot-only baselines (paired McNemar $p<10^{-3}$ for every model), with the strongest configuration reaching 82\% on Claude Sonnet~4.6 (seed~1; 3-seed mean 78.7\%, std~3.1\,pp; Section~\ref{sec:variance}).
-On a balanced 12-task audio-focused subset, AOI~full (12/12) substantially outperforms two production streaming baselines---the OpenAI Realtime API~\citep{openairealtime} (3/12) and Gemini~Live~\citep{geminilive} (0/12)---both adapted to drive the same browser environment, with an adapter-sanity check showing the failures are content-driven rather than infrastructural.
+We introduce \textbf{DynaCU-Bench}: 100 dynamic browser tasks across 10 categories plus a 50-task static set for zero-overhead verification.
+Six CU models---Claude Sonnet~4.6, GPT-5.4, Gemini~2.5~Flash, Grok-4, EvoCUA-32B, Fara-7B---gain +17 to +48\,pp over their screenshot-only baselines (paired McNemar $p<10^{-3}$ for every model); the strongest reaches 82\% on Claude Sonnet~4.6 (seed~1; 3-seed mean 78.7\%, std 3.1\,pp; \S\ref{sec:variance}).
+On a 12-task audio-focused subset, AOI~full (12/12) beats two production streaming baselines---OpenAI Realtime~\citep{openairealtime} (3/12) and Gemini~Live~\citep{geminilive} (0/12)---both adapted to drive the same browser; an adapter sanity check rules out infrastructural failure.
 
 \textbf{Two surprises about the observation interface.}
-A controlled ablation finds that \emph{selection doesn't matter, capture does}: four inter-step keyframe selection strategies (uniform, random, pixel-difference, and CLIP) are statistically indistinguishable (pairwise McNemar $p>0.5$, ${\sim}58\%$ each), a finding we replicate on the open-source Qwen3-VL-32B vision model.
-ASR adds +6\,pp, and the largest single-component gain comes from \emph{persistent text memory}: a narration-discarded ablation isolates a significant $+8$\,pp contribution from retaining narration after keyframes are pruned ($p=0.039$ at $N{=}100$), plus a directional but underpowered $+10$\,pp from inference-time chain-of-thought during narration generation ($p=0.12$; reaching $p<0.05$ at this effect size would require $N{\sim}300$).
-A direct \texttt{standard\_structured} control decomposes each cloud model's gain into a prompt-format component and a perception-only component; for the cloud models predating Gemini~3 both contribute positively (Claude: $+25$\,pp perception vs.\ $+19$\,pp prompt-format; Gemini~2.5~Flash: $+23$\,pp vs.\ $+25$\,pp).  For Gemini~3~Flash the headline residual collapses to $+9$\,pp ($p=0.18$, not significant at $N{=}100$).  A four-way decomposition (\texttt{standard}/\texttt{standard\_audio}/\texttt{aoi\_audio}/\texttt{aoi\_full}, 100 tasks each) explains this without invoking internalised perception: on Gemini~3 the AOI's three components have sign-separated effects---audio $+12$\,pp, structured scaffold $+9$\,pp (positive net, bi-directional per category), keyframes $\mathbf{-12}$\,pp.  Replacing the default keyframe-bearing bundle with \texttt{aoi\_audio} (audio$+$scaffold, no keyframes) reaches $57/100$, a $+21$\,pp recovery and $+12$\,pp above \texttt{aoi\_full}.  Implication: the keyframe component is the first AOI element we observe crossing from net-positive to net-negative across model generations, and component selection must therefore become per-model rather than a fixed bundle.
-Together, these results sharpen the central design hypothesis: the observation interface is a separable, mechanism-driven design axis along which models converge unevenly \emph{and unevenly per component}.  The AOI's residual gain remains a diagnostic of where a model has slack---now with the additional caveat that the slack may live in any subset of (audio, structured presentation, keyframe imagery, action-policy compatibility), and the optimal AOI configuration is itself a per-model design choice.
+\emph{Selection doesn't matter, capture does}: four inter-step keyframe selection strategies (uniform, random, pixel-difference, CLIP) are statistically indistinguishable (pairwise McNemar $p>0.5$, ${\sim}58\%$ each), replicated on the open-source Qwen3-VL-32B vision model.
+ASR adds +6\,pp, and the largest single-component gain comes from \emph{persistent text memory}: a narration-discarded ablation isolates a significant $+8$\,pp contribution from retaining narration after keyframes are pruned ($p=0.039$ at $N{=}100$), plus a directional $+10$\,pp from inference-time chain-of-thought during narration ($p=0.12$; confirming at $p<0.05$ would require $N{\sim}300$).
+A \texttt{standard\_structured} control decomposes each cloud model's gain into prompt-format and perception components; for models predating Gemini~3 both contribute positively (Claude: $+25$\,pp perception vs.\ $+19$\,pp prompt; Gemini~2.5~Flash: $+23$ vs.\ $+25$).  On Gemini~3~Flash the headline residual collapses to $+9$\,pp ($p=0.18$).  A four-way decomposition (\texttt{standard}/\texttt{standard\_audio}/\texttt{aoi\_audio}/\texttt{aoi\_full}) shows this is not internalised perception but sign-separated component effects: audio $+12$\,pp, structured scaffold $+9$\,pp (bi-directional per category), keyframes $\mathbf{-12}$\,pp.  Replacing the default bundle with \texttt{aoi\_audio} (no keyframes) reaches $57/100$, a $+21$\,pp recovery and $+12$\,pp above \texttt{aoi\_full}.
+Implication: the observation interface is a separable design axis along which models converge unevenly \emph{and unevenly per component}.  Keyframe imagery is the first AOI element we observe crossing from net-positive to net-negative across model generations, so component selection must become per-model rather than a fixed bundle.
 \end{abstract}
 
 % ════════════════════════════════════════════════════════════
@@ -82,42 +81,40 @@ Together, these results sharpen the central design hypothesis: the observation i
 % ════════════════════════════════════════════════════════════
 
 \textbf{The agent-computer observation interface as a design axis.}
-SWE-agent~\citep{sweagent} made a contribution that, in retrospect, was not a new model: it was a careful design of the agent-computer \emph{action} interface---which commands a language model is given to act on a codebase, how their inputs and outputs are formatted, what feedback they return.
-Their finding was sharp: small changes there dramatically affect what a fixed model can accomplish, and the action interface is therefore a separable, underexplored design axis.
+SWE-agent~\citep{sweagent}'s core contribution was not a new model but a careful design of the agent-computer \emph{action} interface---which commands the model is given, how inputs and outputs are formatted, what feedback they return.  Small changes there dramatically affect what a fixed model can accomplish, making the action interface a separable, underexplored design axis.
 We make the analogous argument for the \emph{observation} interface in computer-use (CU) agents.
-Today, every CU agent we are aware of---closed-source~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source~\citep{uitars2,opencua,fara7b,coact}---ties observation to action: one screenshot per action step.
-We argue this conflation is a design choice, not a necessity, and that decoupling observation (continuous, adaptive) from action (discrete) is the single change that unlocks dynamic computer use from any existing CU model with zero retraining.
+Every CU agent we are aware of---closed-source~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source~\citep{uitars2,opencua,fara7b,coact}---ties observation to action: one screenshot per action step.
+We argue that decoupling observation (continuous, adaptive) from action (discrete) is the single change that unlocks dynamic computer use from any existing CU model with zero retraining.
 
 \textbf{The current state.}
-On OSWorld~\citep{osworld}, screenshot-based agents have moved from sub-10\% completion at the benchmark's introduction to over 50\% in 2025 (Surfer~2~\citep{surfer2}: 50.7\% under their cross-platform harness; UI-TARS-2~\citep{uitars2}: 47.5\%), closing most of the gap to the 72.4\% human baseline.
-These agents can operate real desktops: filling forms, navigating websites, editing documents, and using professional software.
+On OSWorld~\citep{osworld}, screenshot-based agents have moved from sub-10\% at introduction to over 50\% in 2025 (Surfer~2~\citep{surfer2}: 50.7\%; UI-TARS-2~\citep{uitars2}: 47.5\%), closing most of the gap to the 72.4\% human baseline.
+These agents can fill forms, navigate websites, edit documents, and use professional software.
 
 \textbf{The blind spot.}
-All these agents share a fundamental architectural limitation: they observe the world through \emph{discrete static screenshots} taken every 3--5 seconds, and they are entirely deaf.
-Between screenshots, the agent is completely blind.
-This makes current CU agents incapable of understanding video content playing on screen, catching transient UI events that appear and auto-dismiss between observations, hearing meeting speech or notification sounds, or perceiving animations that convey information.
-A recent comprehensive survey of CU agents~\citep{cusurvey} catalogs many open challenges but does not identify the observation modality as a gap.
-Quantitative evidence of this limitation is mounting: GUI-World~\citep{guiworld} shows video LLMs fail on all temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; and CUA-Suite~\citep{cuasuite} demonstrates the richness of temporal dynamics that screenshot-based agents entirely miss across 55 hours of desktop recordings.
+All these agents observe through \emph{discrete static screenshots} every 3--5 seconds, and are entirely deaf.  Between screenshots, they are blind.
+They cannot understand on-screen video, catch transient UI events that auto-dismiss between observations, hear meeting speech or notification sounds, or perceive animations.
+A comprehensive survey~\citep{cusurvey} catalogs many open challenges but does not identify the observation modality as a gap.
+Quantitative evidence is mounting: GUI-World~\citep{guiworld} shows video LLMs fail on all temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; CUA-Suite~\citep{cuasuite} catalogs 55 hours of temporal dynamics that screenshot-based agents miss entirely.
 
 \textbf{Why existing approaches fall short.}
 Retraining CU models on video data is expensive, model-specific, and undemonstrated at scale.
-Using video-native models (Gemini) amounts to brute-force frame sampling that wastes tokens on redundant static frames.
+Video-native models (Gemini) amount to brute-force frame sampling that wastes tokens on redundant static frames.
 Native real-time multimodal models (Gemini Live~\citep{geminilive}, OpenAI Realtime~\citep{openairealtime}) work but lock users into a single provider, offer no selective perception, and require API migration; we evaluate them in Section~\ref{sec:streaming}.
-General control frameworks like Cradle~\citep{cradle} include pixel-level frame differencing but lack audio perception, visual narration, and the structured observation record.
+Cradle~\citep{cradle}'s pixel-level frame differencing is the closest predecessor but lacks audio perception, visual narration, and a structured observation record.
 
 \textbf{Our approach.}
-The bridge is the \textbf{Agent Observation Interface (AOI)}, a lightweight perception layer that converts continuous screen and audio streams into the sparse images and text that existing CU models already accept.
-The AOI sits between the environment and any image-based CU model; on static, silent content its gates produce nothing and behaviour reverts to the standard loop; on dynamic content it produces extra keyframes, audio transcripts, and CU-model-generated narration that persists as text after the source images are pruned.
+The \textbf{Agent Observation Interface (AOI)} is a lightweight perception layer that converts continuous screen and audio streams into the sparse images and text that existing CU models already accept.
+It sits between the environment and any image-based CU model; on static, silent content its gates produce nothing and behaviour reverts to the standard loop; on dynamic content it produces extra keyframes, audio transcripts, and CU-model-generated narration that persists as text after the source images are pruned.
 
 \textbf{Contributions.}
 \begin{enumerate}
-  \item We identify the \textbf{observation interface} as a critical but overlooked design axis in CU agents, complementary to the action interface studied by SWE-agent, and articulate \emph{decoupling observation from action} as the operative design principle.
-  \item We introduce the \textbf{AOI}, a model-agnostic perception layer with three gated components (inter-step keyframe capture, volume-gated audio scene understanding, and CU-model-generated visual narration that persists as text).
-  \item We introduce \textbf{DynaCU-Bench} (100 dynamic tasks) and a \textbf{Static-50} no-degradation baseline.  (A cross-engine ASR check using \texttt{espeak} and real asciinema cast files is reported in Appendix~\ref{app:realcontent} as a no-degradation pilot, not a perception comparison.)
-  \item We demonstrate that six CU models equipped with the AOI and \textbf{zero retraining} achieve absolute gains of +17 to +48 percentage points on dynamic tasks (paired McNemar $p<10^{-3}$ for every model).
-  \item We show via a controlled \emph{narration-discarded} ablation that the visual-narration component's $+18$\,pp gain decomposes into a significant $+8$\,pp from \emph{persistent text memory} of past visual observations ($p=0.039$) plus a directional, underpowered $+10$\,pp from inference-time chain-of-thought during narration generation ($p=0.12$ at $N{=}100$).
-  \item We rule out two important confounds: a direct \texttt{standard\_structured} run on DynaCU-Bench separates the AOI's structured-prompt effect from its perception effect (Section~\ref{sec:static}), and an open-source replication on Qwen3-VL-32B confirms the selection-method convergence is mechanism-driven, not Claude-specific (Section~\ref{sec:ablation}).
-  \item We benchmark against monolithic streaming baselines (Gemini Live~\citep{geminilive}, OpenAI Realtime~\citep{openairealtime}) with a separate adapter sanity check (Section~\ref{sec:streaming}, Appendix~\ref{app:streaming_sanity}).
+  \item We identify the \textbf{observation interface} as a critical but overlooked CU design axis, complementary to SWE-agent's action interface, and articulate \emph{decoupling observation from action} as the operative design principle.
+  \item We introduce the \textbf{AOI}, a model-agnostic perception layer with three gated components (inter-step keyframe capture, volume-gated audio scene understanding, CU-model-generated visual narration).
+  \item We release \textbf{DynaCU-Bench} (100 dynamic tasks) and a \textbf{Static-50} no-degradation baseline.  (A cross-engine ASR check with \texttt{espeak} and real asciinema casts appears in Appendix~\ref{app:realcontent} as a no-degradation pilot, not a perception comparison.)
+  \item Six CU models equipped with the AOI and \textbf{zero retraining} gain +17 to +48\,pp on dynamic tasks (paired McNemar $p<10^{-3}$ for every model).
+  \item A controlled \emph{narration-discarded} ablation decomposes the visual-narration component's $+18$\,pp gain into a significant $+8$\,pp from \emph{persistent text memory} ($p=0.039$) plus a directional $+10$\,pp from inference-time chain-of-thought during narration generation ($p=0.12$ at $N{=}100$).
+  \item Two confounds are ruled out: a \texttt{standard\_structured} run on DynaCU-Bench separates prompt-format from perception (Section~\ref{sec:static}), and an open-source Qwen3-VL-32B replication confirms the selection-method convergence is mechanism-driven, not Claude-specific (Section~\ref{sec:ablation}).
+  \item We benchmark against monolithic streaming baselines (Gemini Live, OpenAI Realtime) with an adapter sanity check (Section~\ref{sec:streaming}, Appendix~\ref{app:streaming_sanity}).
 \end{enumerate}
 
 % ════════════════════════════════════════════════════════════
@@ -148,10 +145,8 @@ Four categories of content are systematically missed:
 \label{sec:design}
 % ════════════════════════════════════════════════════════════
 
-The AOI sits between the environment and any existing CU model.
-It observes the entire interval between agent steps and provides the CU model with additional keyframes, audio descriptions, and accumulated text context---all in the standard image + text format that every CU model already accepts.
-For static, silent tasks, the AOI produces nothing and behavior is identical to the standard loop.
-For dynamic tasks, the CU model receives strictly more information.
+The AOI sits between the environment and any existing CU model, observing the entire interval between agent steps and providing the model with additional keyframes, audio descriptions, and accumulated text context---all in the standard image + text format that every CU model already accepts.
+For static, silent tasks, the AOI produces nothing and behavior is identical to the standard loop; for dynamic tasks, the model receives strictly more information.
 No retraining is needed.
 
 \subsection{Architecture Overview}
@@ -466,7 +461,7 @@ Three evaluation modes are used:
 \emph{DOM-based} (93 tasks): a deterministic JavaScript function \texttt{getTaskResult()} returns the expected value;
 \emph{LLM-judged} (1 task): a judge model scores the agent's response against a rubric;
 \emph{Hybrid} (6 tasks): DOM gate (did the agent act?) combined with LLM quality assessment.
-All tasks allow a maximum of 15 agent steps.
+Tasks have a maximum of 15 agent steps and a per-task wall-clock budget of \texttt{duration\_s + 10\,s + AOI overhead}, where \texttt{duration\_s} is the task's stimulus duration (typically 15--90\,s, scaling with difficulty); whichever limit is reached first ends the run.  These wall-clock budgets matter only for the slowest models (e.g.\ Grok-4 at $\sim$80--180\,s/call; Section~\ref{sec:grok}).
 
 % ════════════════════════════════════════════════════════════
 \section{Evaluation}
@@ -717,15 +712,8 @@ The standard agent needs 6 steps with lucky timing; the AOI agent's narration ca
 \subsection{Variance: 3-Seed Replication of the Headline}
 \label{sec:variance}
 
-The numbers in Table~\ref{tab:main} are each one trial of 100 binary-outcome
-tasks at the model's default sampling temperature.
-Because CU model outputs are stochastic, the single-run point estimate
-folds decoding variance into ``task hardness'' with no separation between
-the two.
-To quantify this, we re-run the Claude Sonnet~4.6 AOI~full configuration
-for two additional seeds (different decoding temperatures and
-random-keyframe RNG state where applicable), using the same eval harness
-and scoring; results are in Table~\ref{tab:variance}.
+Each Table~\ref{tab:main} cell is one trial of 100 binary tasks at the model's default sampling temperature, folding decoding variance into ``task hardness'' without separating the two.
+To quantify the decoding component, we re-run Claude Sonnet~4.6 + AOI~full for two additional seeds using the same harness; results are in Table~\ref{tab:variance}.
 
 \begin{table}[t]
 \centering
@@ -754,22 +742,12 @@ Claude Sonnet 4.6 + AOI full & 82 & 78 & 76
 \end{tabular}
 \end{table}
 
-This replication addresses a fairness concern that a strict reviewer
-would raise about any LLM-agent paper reporting single-run numbers.
-The decoding-variance question is independent of the statistical-power
-question already addressed by the McNemar tests: McNemar quantifies whether
-two configurations differ \emph{given a fixed run}; the seed sweep
-quantifies how much a single run's score itself moves under fresh
-decoding noise.
+The decoding-variance question is independent of the McNemar statistical-power question: McNemar quantifies whether two configurations differ \emph{given a fixed run}; the seed sweep quantifies how much a single run's score moves under fresh decoding noise.
 
 \subsection{Grok-4: A Late-Arriving Vision-Capable Model}
 \label{sec:grok}
 
-The xAI Grok-4 series~\citep{xai2026grok4} was released after the
-initial evaluation runs that produced Table~\ref{tab:main}.
-We wire it up through xAI's OpenAI-compatible vision endpoint
-(\texttt{api.x.ai/v1}) and run a full standard + AOI~full eval on the
-100 dynamic tasks; results are reported in Table~\ref{tab:grok}.
+The xAI Grok-4 series~\citep{xai2026grok4} was released after the initial Table~\ref{tab:main} runs.  We wire it through xAI's OpenAI-compatible vision endpoint (\texttt{api.x.ai/v1}) and run a full standard + AOI~full eval on the 100 dynamic tasks (Table~\ref{tab:grok}).
 
 \begin{table}[t]
 \centering
@@ -794,37 +772,17 @@ AOI full & 25  & --- & +21
 \end{tabular}
 \end{table}
 
-Grok-4's standard score (4/100) is the lowest of any model we
-evaluated; manual inspection shows it is not an action-grammar problem
-(the agent emits valid \texttt{wait}/\texttt{click}/\texttt{fill}
-actions) but a latency one: a single Grok-4 inference call routinely
-takes 80--180\,s, so on the 90\,s Easy and 150\,s Medium time budgets
-the agent completes only one or two steps before the task times out.
-The +21\,pp AOI gain therefore lower-bounds the true effect on Grok-4:
-the AOI lets the agent succeed on tasks where a few well-placed
-observations suffice (e.g. one inference call that captures the spoken
-answer from the audio transcript), but it cannot unblock the
-latency-dominated tasks that require many sequential actions within
-the time budget.
-This is consistent with the central claim that the observation
-interface, not the model, is the bottleneck \emph{whenever
-perception is the binding constraint}; Grok-4 is a case where
-inference latency, not perception, becomes the binding constraint
-once perception is unblocked.
+Grok-4's standard score (4/100) is the lowest of any model evaluated.  Manual inspection shows it is not an action-grammar problem (the agent emits valid \texttt{wait}/\texttt{click}/\texttt{fill} actions) but a latency one: a single Grok-4 call routinely takes 80--180\,s, so within the per-task wall-clock budget (\S\ref{sec:benchmark}) the agent completes only one or two steps.
+The +21\,pp AOI gain therefore lower-bounds the true effect: the AOI succeeds on tasks where a few well-placed observations suffice (e.g.\ one call that captures the spoken answer), but cannot unblock latency-dominated tasks that require many sequential actions.
+Grok-4 is a case where inference latency, not perception, becomes the binding constraint once perception is unblocked.
 
 \subsection{Newer Models: Gemini~3~Flash and Grok-4.3 / Grok-4-fast-reasoning}
 \label{sec:newer}
 
-To address the natural question of whether the AOI's gains hold up under
-the most recent model releases, we ran three additional 100-task evaluations
-with the same harness:
-(i)~\textbf{Gemini~3~Flash}~\citep{gemini3flash} as a sidebar to the
-Gemini~2.5~Flash result in Table~\ref{tab:main};
-(ii)~\textbf{Grok-4.3}, the latest \texttt{grok-4} series model on xAI's
-API; and
-(iii)~\textbf{Grok-4-fast-reasoning}, the lower-latency variant, included
-specifically to isolate Grok-4's perception bottleneck from its
-inference-latency floor (see Section~\ref{sec:grok}).
+Do the AOI's gains hold up on the most recent model releases?  We ran three additional 100-task evaluations with the same harness:
+(i)~\textbf{Gemini~3~Flash}~\citep{gemini3flash}, a sidebar to the Gemini~2.5~Flash result;
+(ii)~\textbf{Grok-4.3}, the latest \texttt{grok-4} series model on xAI's API;
+(iii)~\textbf{Grok-4-fast-reasoning}, a lower-latency variant included to isolate Grok-4's perception bottleneck from its inference-latency floor (Section~\ref{sec:grok}).
 Table~\ref{tab:newer} summarises the results.
 
 \begin{table}[t]
@@ -851,56 +809,16 @@ Grok-4-fast-reasoning        & 19  & 47  & $+$28  & 4.9e-06 \\
 \end{table}
 
 \textbf{Gemini 3 Flash: the gap shrinks, and not how we first read it.}
-Gemini~3~Flash improves the standard-mode score from 21 (Gemini~2.5)
-to 36 ($+15$\,pp) and reduces the AOI~$\Delta$ from $+48$ to $+9$\,pp
-($p=0.18$, not significant at $N{=}100$).  A first read invites the
-interpretation that Gemini~3 has \emph{internalised} between-step
-perception---which would be the prediction the
-interface-as-design-axis story most naturally makes for a model
-generation closing the visible gap.  A four-way decomposition in
-Section~\ref{sec:why_g3} rules that reading out.  The headline $+9$
-is a three-component sum: audio $+12$, structured scaffold $+9$,
-keyframes $-12$.  Audio gain on Gemini~3 is structurally comparable
-to what every other model gets ($+16$\,pp on A/B/G/H matches
-Gemini~2.5's $+24$; Claude $+27$, GPT-5.4 $+8$).  The novel finding
-is that the keyframe-image stream---uniformly positive on every prior
-model generation---flips to net \emph{negative} on Gemini~3.  Dropping
-keyframes (mode \texttt{aoi\_audio}) reaches $57/100$, $+12$\,pp above
-\texttt{aoi\_full}.  The implication is structural: an observation
-interface is not a fixed bundle; at least one of its components
-(keyframe presentation) has now crossed from net-positive to
-net-negative across model generations.
+Gemini~3~Flash raises the standard score from 21 (Gemini~2.5) to 36 ($+15$\,pp) and reduces the AOI~$\Delta$ from $+48$ to $+9$\,pp ($p=0.18$).  The natural first read---that Gemini~3 has \emph{internalised} between-step perception---is ruled out by a four-way decomposition in Section~\ref{sec:why_g3}: the $+9$ residual is the sum of audio $+12$, scaffold $+9$, and keyframes $-12$.  Audio gain is structurally comparable to every other model's ($+16$\,pp on A/B/G/H matches Gemini~2.5's $+24$; Claude $+27$; GPT-5.4 $+8$).  The novel finding is that the keyframe-image stream---uniformly positive on every prior model generation---flips to net \emph{negative} on Gemini~3.  Dropping keyframes (mode \texttt{aoi\_audio}) reaches $57/100$, $+12$\,pp above \texttt{aoi\_full}: a component has crossed from net-positive to net-negative across model generations, and the observation interface is no longer a fixed bundle.
 
-\textbf{Grok-4.3 vs.\ Grok-4-fast-reasoning: latency is real but not
-the whole story.}
-The original Grok-4 (Section~\ref{sec:grok}) sat at standard~4,
-AOI~full~25; Section~\ref{sec:grok} attributes the low AOI~full ceiling to
-inference latency rather than perception, on the basis that Grok-4's
-${\sim}80$--180\,s/call rate makes step-bounded benchmarks especially
-penalising.
-The two follow-on runs let us decompose that claim.
-Grok-4-fast-reasoning, with the same base model but a substantially
-lower per-call latency, reaches AOI~full~47 ($+22$\,pp over the
-original Grok-4 AOI~full ceiling).  Grok-4.3 reaches AOI~full~65, a
-further $+18$\,pp above the fast variant.
-So the original Grok-4 gap to a ``saturated'' Grok ceiling decomposes as
-roughly $+22$\,pp from removing the latency floor and $+18$\,pp from
-base-model improvement.  Latency was a real bottleneck but not the
-only one; the latency-bound framing in Section~\ref{sec:grok} was
-directionally right and is now quantitatively pinned.
+\textbf{Grok-4.3 vs.\ Grok-4-fast-reasoning: latency is real but not the whole story.}
+The original Grok-4 sat at standard~4, AOI~full~25 (Section~\ref{sec:grok} attributed the low ceiling to its ${\sim}80$--180\,s/call inference latency).  The two follow-on runs decompose that claim.  Grok-4-fast-reasoning (same base model, lower latency) reaches AOI~full~47, $+22$\,pp over the original; Grok-4.3 reaches AOI~full~65, a further $+18$\,pp.  So the gap to a ``saturated'' Grok ceiling decomposes into $+22$\,pp from removing latency and $+18$\,pp from base-model improvement: the latency-bound framing in Section~\ref{sec:grok} was directionally right and is now quantitatively pinned.
 
 \subsection{Why Did the Gemini~3 Gap Shrink? (Scaffold-Policy
 Mismatch, not Internalised Perception)}
 \label{sec:why_g3}
 
-We initially read the small Gemini~3 residual as evidence that the
-model had \emph{internalised} the AOI's structured-record
-presentation.  Three orthogonal measurements rule that interpretation
-out and replace it with a sharper one: Gemini~3's net residual is the
-sum of (i) a perception gain on the same content every other model
-benefits from, and (ii) a Gemini-3-unique action-policy regression
-triggered by the AOI's \texttt{[PAGE ELEMENTS]} scaffold on
-transient-UI categories.
+We initially read the small Gemini~3 residual as the model having \emph{internalised} the AOI's structured-record presentation.  Three orthogonal measurements rule that out and replace it with a sharper reading: Gemini~3's net residual is the sum of (i) a perception gain on the same content every other model benefits from, and (ii) a Gemini-3-unique action-policy regression triggered by the \texttt{[PAGE ELEMENTS]} scaffold on transient-UI categories.
 
 \begin{table}[t]
 \centering
@@ -959,22 +877,11 @@ Gemini~3 ($8{\to}12$).  Inspection of the failing
 via the listed selector, then emits \texttt{done} without explicitly
 clicking the submit button or pressing Enter.
 
-\textbf{Measurement 3: a four-way decomposition isolates each AOI
-component's per-model contribution.}
-To distinguish "audio is the only content Gemini~3 lacks" from
-"Gemini~3 is internally saturated", and to separate the
-\texttt{[PAGE ELEMENTS]} scaffold effect from the keyframe-image
-effect, we run two additional controls on the full 100-task suite:
-(a)~\texttt{standard\_audio}, audio transcripts injected but the
-\texttt{[PAGE ELEMENTS]} block suppressed (so the action grammar and
-termination policy stay in the bare-\texttt{standard} regime), and
-(b)~\texttt{aoi\_audio}, audio plus the full structured scaffold but
-\emph{no} keyframe images.  Together with \texttt{standard} (36),
-\texttt{standard\_structured} (29), and \texttt{aoi\_full} (45) these
-form a four-way decomposition (Table~\ref{tab:gemini3_audio_only}).
-
-The result inverts our prior reading and yields three sign-separated
-component effects on Gemini~3:
+\textbf{Measurement 3: a four-way decomposition isolates each AOI component's per-model contribution.}
+To distinguish ``audio is the only missing content'' from ``Gemini~3 is internally saturated,'' and to separate the \texttt{[PAGE ELEMENTS]} scaffold effect from the keyframe-image effect, we run two additional controls on the full 100-task suite:
+(a)~\texttt{standard\_audio}: audio transcripts injected, but the \texttt{[PAGE ELEMENTS]} block suppressed (so action grammar and termination policy stay in the bare-\texttt{standard} regime);
+(b)~\texttt{aoi\_audio}: audio plus the full structured scaffold, but \emph{no} keyframe images.
+With \texttt{standard} (36), \texttt{standard\_structured} (29), and \texttt{aoi\_full} (45), these form a four-way decomposition (Table~\ref{tab:gemini3_audio_only}) that inverts our prior reading and yields three sign-separated component effects on Gemini~3:
 
 \begin{itemize}
 \item \emph{Audio: $+12$\,pp} (\texttt{standard} $36 \to$
@@ -1003,15 +910,7 @@ $-2$\,pp on D (the carousel category where keyframes do carry novel
 visual information).
 \end{itemize}
 
-The net of $(+12)+(+9)+(-12)=+9$\,pp matches the headline
-\texttt{aoi\_full} residual.  But the decomposition reframes what the
-small net means: Gemini~3 has substantial slack the AOI can recover
-($\sim$$+21$ pp with the right component mix, reaching $57/100$ from
-$36$), it is just that the default AOI bundle is mis-tuned for this
-model---one of its components (keyframes) crosses from net-positive
-on Gemini~2.5-era models to net-negative on Gemini~3, while another
-(the structured scaffold) flips from uniformly positive to
-task-dependent.
+The net $(+12)+(+9)+(-12)=+9$\,pp matches the \texttt{aoi\_full} residual, but reframes what the small net means: Gemini~3 has substantial slack the AOI can recover ($\sim$$+21$\,pp with the right component mix, reaching $57/100$ from $36$); the default bundle is just mis-tuned for this model.  One component (keyframes) crosses from net-positive on Gemini~2.5-era models to net-negative on Gemini~3, while another (structured scaffold) flips from uniformly positive to task-dependent.
 
 \begin{table}[t]
 \centering
@@ -1042,39 +941,17 @@ aoi\_full                 & 45          & 26 & 1  & yes & yes & yes \\
 \end{table}
 
 \textbf{Diagnostic map (revised).}
-The corrected reading is more useful for the design-axis story than
-the original "internalisation" reading: \textbf{the observation
-interface is not a monolith, and its components flip sign between
-model generations}.
+\textbf{The observation interface is not a monolith, and its components flip sign between model generations.}
 
 \begin{itemize}
-\item \emph{Gemini~3~Flash:} not perception-saturated and not
-audio-saturated.  Net $+9$ with \texttt{aoi\_full} is a three-way
-cancellation: $+12$ audio, $+9$ scaffold (with bi-directional
-per-category effects), $-12$ keyframes.  Replacing the default component
-bundle with audio$+$scaffold-only (\texttt{aoi\_audio}) reaches
-$57/100$ on Gemini~3---a $+21$\,pp recovery, $+12$ above
-\texttt{aoi\_full}.  Implication: AOI components must be tuned
-per-model rather than presented as a fixed bundle.
-\item \emph{Gemini~2.5~Flash:} $+25$, $+23$.  Both prompt-format and
-perception components useful; neither internalised.
-\item \emph{Claude Sonnet 4.6:} $+19$, $+25$.  Both useful;
-perception the larger lift.
-\item \emph{Fara-7B:} $+4$, $+13$.  Reasoning-capacity-bottlenecked
-rather than perception-bottlenecked; structured prompt helps little
-because the model cannot leverage the richer presentation.
-\item \emph{Grok-4 (original):} latency-bottlenecked, not
-perception-bottlenecked: even with the AOI the AOI~full ceiling sits
-at 25 (decomposed by Grok-4-fast vs.\ Grok-4.3 into ${\sim}{+}22$
-from removing latency and ${\sim}{+}18$ from base-model improvement).
+\item \emph{Gemini~3~Flash:} not perception- or audio-saturated.  Net $+9$ is a three-way cancellation ($+12$ audio, $+9$ scaffold with bi-directional per-category effects, $-12$ keyframes).  Audio$+$scaffold-only (\texttt{aoi\_audio}) reaches $57/100$---a $+21$\,pp recovery, $+12$ above \texttt{aoi\_full}.  Components must be tuned per-model rather than bundled.
+\item \emph{Gemini~2.5~Flash:} $+25$, $+23$.  Both prompt-format and perception useful; neither internalised.
+\item \emph{Claude Sonnet 4.6:} $+19$, $+25$.  Both useful; perception the larger lift.
+\item \emph{Fara-7B:} $+4$, $+13$.  Reasoning-capacity-bottlenecked; the model cannot leverage richer prompt presentation.
+\item \emph{Grok-4 (original):} latency-bottlenecked.  The AOI~full ceiling of 25 decomposes (via Grok-4-fast vs.\ Grok-4.3) into ${\sim}{+}22$ from removing latency and ${\sim}{+}18$ from base-model improvement.
 \end{itemize}
 
-The AOI's residual gain still functions as a diagnostic map of where
-a given model has slack, but the dimensions are richer than a
-``perception only'' framing allowed: perceptual, prompt-handling, latency,
-reasoning-capacity, \emph{and} action-policy compatibility with the
-scaffold.  Calibrating the scaffold to the target model's native
-action grammar is the natural next step suggested by this finding.
+The AOI's residual gain still functions as a diagnostic map of where a model has slack, but the dimensions are richer than ``perception only'': perceptual, prompt-handling, latency, reasoning-capacity, \emph{and} action-policy compatibility with the scaffold.  Calibrating the scaffold to the target model's native action grammar is the natural next step.
 
 \subsection{Per-Category Analysis}
 
@@ -1659,8 +1536,8 @@ The observation overhead (12--32\,s per task) is more than offset by saving 2--6
 \emph{Wall-clock latency, however, does not always fall.}
 For four of five models, total task time \emph{rises} with the AOI: Claude $40.6\,\text{s}\to46.2\,\text{s}$ ($+14\%$), GPT-5.4 $26.6\,\text{s}\to50.6\,\text{s}$ ($+90\%$), Gemini $55.3\,\text{s}\to61.9\,\text{s}$ ($+12\%$), and Fara-7B $35.1\,\text{s}\to90.7\,\text{s}$ ($+158\%$).
 Only EvoCUA-32B sees absolute time \emph{decrease} ($117.0\,\text{s}\to113.9\,\text{s}$, $-3\%$) because its very high per-step model latency (${\sim}10$\,s/step) means step reduction dominates the added observation overhead.
-The honest summary is therefore: the AOI is consistently cheaper in dollars, but for fast-inference models it is somewhat slower in wall-clock time because the per-step observation work exceeds the latency saved per skipped step.
-For deployment scenarios where dollar cost or step count matters more than latency---batch automation, cost-sensitive production---the AOI is unambiguously preferred; for latency-sensitive interactive use, the trade-off is per-model.
+Summary: the AOI is consistently cheaper in dollars, but for fast-inference models it is slower in wall-clock time because per-step observation work exceeds the latency saved per skipped step.
+For batch automation or cost-sensitive production the AOI is unambiguously preferred; for latency-sensitive interactive use, the trade-off is per-model.
 
 \subsection{Static-Task Verification (Static-50)}
 \label{sec:static}
@@ -1701,19 +1578,8 @@ ${\sim}80$ steps) is therefore consistent with the prompt-format
 explanation, not with a hidden perception gain.
 
 \textbf{Structured-prompt confound: a direct measurement on DynaCU-Bench.}
-Because the gates correctly suppress almost all extraction on Static-50
-(7 keyframes total across 50 tasks, 0 audio segments), the +7/50 ($+14$\,pp)
-advantage there is \emph{not a perception gain}: it is an effect of the
-AOI's structured observation-record prompt format itself (DOM element list,
-prior-step trajectory summary, explicit context/new sectioning) over a raw
-screenshot.
-Rather than rely on the Static-50 upper bound, we evaluate this directly on
-DynaCU-Bench by adding a \texttt{standard\_structured} mode
-(\texttt{experiments/browser\_eval.py}) that supplies the AOI's prompt
-scaffolding to the CU model while \emph{disabling all keyframe and audio
-extraction}.  Any gain it produces over Standard is the prompt-format
-effect; the residual AOI~full minus standard\_structured gap is the
-perception-only effect.
+Because the gates suppress almost all extraction on Static-50 (7 keyframes, 0 audio segments across 50 tasks), the $+14$\,pp advantage there is \emph{not a perception gain}: it is an effect of the AOI's structured observation-record prompt format itself (DOM element list, prior-step trajectory summary, explicit context/new sectioning) over a raw screenshot.
+We measure this directly on DynaCU-Bench via a \texttt{standard\_structured} mode that supplies the AOI's prompt scaffolding while \emph{disabling all keyframe and audio extraction}: its gain over Standard is the prompt-format effect, and AOI~full minus standard\_structured is the perception-only effect.
 
 \begin{table}[t]
 \centering
@@ -1724,8 +1590,7 @@ prompt format (DOM element list, prior-step text trajectory) but no
 keyframes and no audio.  \textbf{AOI~full} is the full perception layer.
 $\Delta_\text{prompt}$ isolates the prompt-format effect;
 $\Delta_\text{percept}$ isolates the keyframe + audio + narration
-contribution.  All numbers are paired McNemar mid-$p$ vs.\ Standard.
-All five models in this table are evaluated directly; the two open-source rows
+contribution.  The two open-source rows
 are included after patching the vLLM platform detection to bypass the
 broken NVML library (see Section~\ref{sec:limitations}).
 Gemini~3~Flash is reported separately in Table~\ref{tab:gemini3_decomp}.}
@@ -1748,37 +1613,10 @@ Fara-7B             & 17 & \textbf{21} & 34 & \textbf{$+$4} & \textbf{$+$13} \\
 \end{tabular}
 \end{table}
 
-The five models in Table~\ref{tab:structured} (three cloud + two open-source) \emph{directly}
-test the prompt-format effect on DynaCU-Bench; Gemini~3~Flash is reported separately in Table~\ref{tab:gemini3_decomp} (Section~\ref{sec:why_g3}).  The two open-source
-rows required patching vLLM's CUDA platform detection to bypass
-a broken NVML library (see Section~\ref{sec:limitations}) before
-both local models could be served in \texttt{standard\_structured} mode.  For Fara-7B the prompt-format
-component is small (\textbf{+4 pp}), and most of the gain comes from
-perception (\textbf{+13 pp}) --- a different split from the cloud
-models.  This is consistent with Fara being the smallest model: its
-binding constraint is reasoning capacity, so a richer prompt format
-helps less than additional perception channels do.
-Both $\Delta_\text{prompt}$ and $\Delta_\text{percept}$ are positive for
-every model, so the AOI's structured prompt format and its perception
-channel each contribute independently to the gain rather than one being
-a re-explanation of the other.  The relative split varies with
-model: for Claude Sonnet~4.6 the perception channel is the larger
-component ($+25$\,pp vs.\ $+19$\,pp prompt-format), for Gemini~2.5~Flash
-the two are roughly balanced ($+23$\,pp perception vs.\ $+25$\,pp
-prompt-format), and for GPT-5.4 the two are also balanced but at smaller
-absolute magnitudes ($+9$\,pp perception vs.\ $+11$\,pp prompt-format).
-Across the five models in Table~\ref{tab:structured} the worst-case framing that the entire AOI gain
-is a prompt-format artifact is decisively ruled out, while the most
-favourable framing (perception is the only mechanism) is also too strong.
-The honest reading is that the structured observation record and the
-keyframe + audio + narration channel are \emph{both} load-bearing,
-with the relative split shifting toward perception for the smallest
-model (Fara-7B: $+4$ vs.\ $+13$\,pp).
-Note in particular that for Gemini, which scored only 21/100 with raw
-screenshots, the prompt-format component recovers $+25$\,pp on its own
-without any extra perception---a direct demonstration that part of what
-the AOI buys for video-native models is not new visual information but a
-better way to present the existing visual + textual context to them.
+Table~\ref{tab:structured}'s five models (three cloud + two open-source) directly test the prompt-format effect on DynaCU-Bench; Gemini~3~Flash is reported separately in Table~\ref{tab:gemini3_decomp} (Section~\ref{sec:why_g3}).  The open-source rows required patching vLLM's CUDA platform detection to bypass a broken NVML library (Section~\ref{sec:limitations}).
+Both $\Delta_\text{prompt}$ and $\Delta_\text{percept}$ are positive for every model: the structured prompt format and the perception channel each contribute independently rather than one re-explaining the other.  The split varies with model---Claude Sonnet~4.6 is perception-leaning ($+25$ vs.\ $+19$\,pp), Gemini~2.5~Flash and GPT-5.4 are roughly balanced ($+23$ vs.\ $+25$ and $+9$ vs.\ $+11$\,pp), Fara-7B is sharply perception-leaning ($+13$ vs.\ $+4$\,pp), consistent with the smallest model being reasoning-capacity-bottlenecked and unable to leverage a richer prompt format.
+Across all five models the worst-case framing that the entire AOI gain is a prompt-format artifact is decisively ruled out; the most favourable (perception is the only mechanism) is also too strong.
+For Gemini~2.5---which scored only 21/100 with raw screenshots---the prompt-format component alone recovers $+25$\,pp: for video-native models, part of what the AOI buys is not new visual information but a better way to present the existing visual + textual context.
 
 \subsection{Comparison with Streaming Multimodal Baselines}
 \label{sec:streaming}
@@ -1809,32 +1647,14 @@ The Gemini baseline uses Gemini~2.5 Flash native-audio, the highest
 function-calling-capable Live tier available.
 
 \textbf{Adapter sanity check.}
-A natural concern with the audio-subset numbers below is whether a 0/12 or
-3/12 score reflects model limitations or simply a broken adapter.
-To rule out the adapter explanation, we evaluate both baselines on a
-five-task purely-visual sanity set spanning four categories (C, E, F, I),
-with two tasks from F to cover both transient-banner subtypes
-(specifically: C-E1, E-E1, F-E1, F-E2, I-E1)
-where no audio comprehension is required.
-On every task, each adapter emits valid tool calls of every supported type
-(\texttt{click}, \texttt{fill}, \texttt{type\_text}, \texttt{scroll}), the
-browser environment executes those actions, and the resulting DOM state
-is recorded against the same success criterion used in the main benchmark
+To rule out broken-adapter as an explanation for the audio-subset numbers, we evaluate both baselines on a five-task purely-visual sanity set across four categories (C-E1, E-E1, F-E1, F-E2, I-E1; two F tasks cover both transient-banner subtypes).
+Each adapter emits valid tool calls of every supported type
+(\texttt{click}, \texttt{fill}, \texttt{type\_text}, \texttt{scroll}); the browser executes them; the resulting DOM is scored by the main benchmark's success criterion
 (Table~\ref{tab:streaming_sanity}; per-task detail in Appendix~\ref{app:streaming_sanity}).
-Both baselines achieve action-grammar success on 5/5 tasks (every
-attempted action lands on the page), but task-correct success on 0/5: the
-clicks land on the wrong UI elements, the typed text is hallucinated, and
-the model commits before reading the page.
-For example, on the cookie-banner task (F-E2), OpenAI Realtime clicks the
-``dismiss'' button instead of ``accept''---the click reached the DOM
-(\texttt{cookies\_dismissed} is recorded), the model just chose the wrong
-target.
-The same AOI-equipped Claude Sonnet~4.6 reference passes 4/5 on the same
-sanity set, confirming the tasks are solvable through a vision-grounded
-CU loop.
-The audio-subset failures below therefore reflect intrinsic limitations of
-the streaming-voice-with-tool-calls paradigm on grounded computer-use
-tasks, not an artifact of our scaffolding.
+Both baselines hit action-grammar success on 5/5 tasks but task-correct success on 0/5: clicks land on the wrong UI elements, typed text is hallucinated, and the model commits before reading the page.
+On the cookie-banner task (F-E2), OpenAI Realtime clicks ``dismiss'' instead of ``accept''---the click reached the DOM (\texttt{cookies\_dismissed} is recorded), but the model chose the wrong target.
+AOI-equipped Claude Sonnet~4.6 passes 4/5 on the same sanity set, confirming the tasks are solvable through a vision-grounded CU loop.
+The audio-subset failures below therefore reflect intrinsic limitations of streaming-voice-with-tool-calls on grounded computer-use, not adapter scaffolding.
 
 \begin{table}[t]
 \centering
@@ -1843,25 +1663,9 @@ balanced cross-category subset (3 tasks each from podcast~A, meeting~B,
 phone~G, interview~H).
 We adapt each streaming API to DynaCU-Bench by opening one session per
 task, streaming page audio + screenshots in, and translating returned tool
-calls into browser actions.
-Each baseline is evaluated against the same 12 tasks the AOI is scored on
-(scored by extracting the matching task IDs from the main results in
-Table~\ref{tab:main}).
-\emph{Backbone choice and access note:} OpenAI's Realtime API exposes
-two production models at evaluation time (May 2026): \texttt{gpt-realtime}
-(beta) and \texttt{gpt-realtime-2.0} (GA).  We probed both: the websocket
-\texttt{realtime.sessions} endpoint accepts \texttt{gpt-realtime} for our
-project tier and rejects \texttt{gpt-realtime-2.0} with
-\emph{``only available on the GA API''}; neither model accepts vision
-tokens \emph{inside} the Realtime session, so a true Realtime + vision
-flow requires a secondary non-realtime call for screenshots.  We
-therefore use the chat-completions vision path with
-\texttt{gpt-4o-realtime-preview} as the OpenAI backbone---this is the
-exact integration path the OpenAI Realtime cookbook recommends for
-``give a voice assistant eyes,'' and is what any practitioner deploying
-the OpenAI streaming-voice stack on a browser-control task would actually
-use today.  Gemini~Live uses the highest-tier function-calling-capable
-native-audio variant exposed by the public Live~API.}
+calls into browser actions.  Each baseline is scored on the same 12 task
+IDs the AOI is scored on in Table~\ref{tab:main}.  OpenAI backbone and
+Gemini Live tier choices are detailed in the body below.}
 \label{tab:streaming}
 \small
 \setlength{\tabcolsep}{4.5pt}
@@ -2070,18 +1874,21 @@ future work.
 \label{sec:conclusion}
 % ════════════════════════════════════════════════════════════
 
-Computer-use agents cannot perceive dynamic content because their observation is tied to action: one screenshot per action step.
-We argue this conflation is a design choice, not a necessity, and that the agent-computer \emph{observation} interface is a separable, underexplored design axis---the natural counterpart to the action interface that SWE-agent~\citep{sweagent} surfaced.
-We introduce the Agent Observation Interface (AOI), a perception layer that is transparent for static tasks, adaptive for dynamic content, and compatible with any existing CU model without retraining.
-On DynaCU-Bench, six diverse CU agents (Claude Sonnet~4.6, GPT-5.4, Gemini~2.5~Flash, Grok-4, EvoCUA-32B, Fara-7B) equipped with the AOI achieve absolute gains of +17 to +48 percentage points (paired McNemar $p<10^{-3}$ for every model), with the strongest configuration reaching 82\,\% task success on Claude Sonnet~4.6 (seed~1; 3-seed mean 78.7\,\%, std~3.1\,pp; Section~\ref{sec:variance}).
+Computer-use agents cannot perceive dynamic content because observation is tied to action: one screenshot per step.
+We argue the agent-computer \emph{observation} interface is a separable, underexplored design axis---the natural counterpart to the action interface SWE-agent~\citep{sweagent} surfaced---and introduce the AOI, a perception layer transparent for static tasks, adaptive for dynamic content, and compatible with any existing CU model without retraining.
+Six CU agents equipped with the AOI gain +17 to +48\,pp on DynaCU-Bench (paired McNemar $p<10^{-3}$ for every model); the strongest reaches 82\% on Claude Sonnet~4.6 (3-seed mean 78.7\%, std 3.1\,pp).
+
 Two findings reframe how we think about CU perception.
-First, keyframe \emph{selection} does not significantly affect accuracy: on Claude Sonnet~4.6, uniform, random, pixel-difference and CLIP-based methods all converge to ${\sim}58$\,\%, and we replicate the same convergence pattern on the open-source Qwen3-VL-32B vision model.  The critical factor is capturing \emph{any} inter-step frames, not \emph{how} they are selected.
-Second, the largest single contributor is visual narration ($+18$\,pp), and a controlled discarded-narration ablation finds a significant $+8$\,pp contribution from \emph{persistent text memory of past visual observations} ($p=0.039$) plus a directional, underpowered $+10$\,pp from inference-time chain-of-thought during narration generation ($p=0.12$ at $N{=}100$).
-The bottleneck in computer-use agents has been treated as reasoning and action; we show that \emph{observation memory} is equally critical and introduce a practical, training-free solution.
-Token-cost analysis shows the AOI is consistently \emph{cheaper} in dollars than the screenshot-only baseline because better perception yields fewer steps per task; wall-clock time, however, is somewhat slower for fast-inference models (per-step observation work exceeds latency saved per skipped step) and faster for slow-inference local models.
-On a separate 50-task static-only baseline (Static-50), the AOI's gates correctly suppressed extraction and the AOI did not degrade performance; the +14\,pp residual sets a conservative upper bound on a structured-prompt confound, which we then directly measured for five models on DynaCU-Bench (\texttt{standard\_structured}, Section~\ref{sec:static}; Gemini~3~Flash in Section~\ref{sec:why_g3}).
-On a balanced 12-task audio-focused subset, both production streaming baselines---OpenAI Realtime (3/12) and Gemini Live (0/12)---underperform the AOI (12/12) by a wide margin, confirming that streaming voice models with function-calling are not a substitute for a perception layer that persists what was heard.
-We make the entire stack---perception layer, 100-task DynaCU-Bench, 50-task Static-50, 12-task DynaCU-Real-Local cross-engine ASR harness, and adapter implementations of Gemini Live and the OpenAI Realtime API---publicly available so future CU research can cleanly decouple observation gains from model-side gains.
+First, keyframe \emph{selection} does not significantly affect accuracy---uniform, random, pixel-difference, and CLIP-based methods all converge to ${\sim}58$\% on Claude and on the open-source Qwen3-VL-32B---so the critical factor is capturing \emph{any} inter-step frames, not how they are selected.
+Second, the largest single contributor is visual narration ($+18$\,pp), of which a significant $+8$\,pp comes from \emph{persistent text memory of past visual observations} ($p=0.039$) and a directional $+10$\,pp from inference-time CoT during narration ($p=0.12$).
+Observation memory, not just reasoning and action, is a load-bearing bottleneck---and one that admits a practical, training-free solution.
+
+Three further results sharpen the picture.
+Token cost falls with the AOI on every cloud model (15--50\%) because better perception yields fewer steps per task; wall-clock time rises for fast-inference models and falls for slow ones.
+A direct \texttt{standard\_structured} control on DynaCU-Bench separates the AOI's prompt-format component from its perception component for five models (Section~\ref{sec:static}; Gemini~3~Flash in Section~\ref{sec:why_g3}), ruling out the worst-case confound that the gain is entirely a prompt-format artifact.
+On a 12-task audio-focused subset, production streaming baselines---OpenAI Realtime (3/12) and Gemini Live (0/12)---underperform AOI (12/12) by a wide margin: streaming voice models with function-calling are not a substitute for a perception layer that persists what was heard.
+
+We release the entire stack---perception layer, DynaCU-Bench, Static-50, DynaCU-Real-Local, and streaming-baseline adapters---so future CU research can cleanly decouple observation gains from model-side gains.
 
 % ════════════════════════════════════════════════════════════
 \bibliographystyle{plainnat}
