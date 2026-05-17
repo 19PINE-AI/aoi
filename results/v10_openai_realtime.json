@@ -1,0 +1,882 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": true,
+    "result_val": "guest_name_correct",
+    "steps_taken": 4,
+    "total_time_s": 47.17334985733032,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.573680400848389
+      },
+      {
+        "step": 2,
+        "action": "fill(#guestName, \"Dr. Sarah Chen\")",
+        "tool_call": "fill({\"id\": \"guestName\", \"text\": \"Dr. Sarah Chen\"})",
+        "result_val": "guest_name_correct",
+        "elapsed_s": 9.288395166397095
+      },
+      {
+        "step": 3,
+        "action": "fill(#guest-name-input, \"Dr. Sarah Chen\")",
+        "tool_call": "fill({\"id\": \"guest-name-input\", \"text\": \"Dr. Sarah Chen\"})",
+        "result_val": "guest_name_correct",
+        "elapsed_s": 43.578413248062134
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "guest_name_correct",
+        "elapsed_s": 47.14256548881531
+      }
+    ],
+    "error": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": true,
+    "result_val": "price_correct",
+    "steps_taken": 9,
+    "total_time_s": 98.04683017730713,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.579589605331421
+      },
+      {
+        "step": 2,
+        "action": "type(\"$49.99\")",
+        "tool_call": "type_text({\"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 8.389575958251953
+      },
+      {
+        "step": 3,
+        "action": "type(\"$49.99\")",
+        "tool_call": "type_text({\"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 12.781023502349854
+      },
+      {
+        "step": 4,
+        "action": "type(\"$49.99\")",
+        "tool_call": "type_text({\"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 17.13682532310486
+      },
+      {
+        "step": 5,
+        "action": "type(\"$49.99\")",
+        "tool_call": "type_text({\"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 21.32638907432556
+      },
+      {
+        "step": 6,
+        "action": "fill(#price-input, \"$49.99\")",
+        "tool_call": "fill({\"id\": \"price-input\", \"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 56.0069522857666
+      },
+      {
+        "step": 7,
+        "action": "type(\"$49.99\")",
+        "tool_call": "type_text({\"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 60.067781925201416
+      },
+      {
+        "step": 8,
+        "action": "type(\"$49.99\")",
+        "tool_call": "type_text({\"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 63.98471164703369
+      },
+      {
+        "step": 9,
+        "action": "fill(#price-input, \"$49.99\")",
+        "tool_call": "fill({\"id\": \"price-input\", \"text\": \"$49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 98.02459526062012
+      }
+    ],
+    "error": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "A-E3",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 105.1729941368103,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.1574413776397705
+      },
+      {
+        "step": 2,
+        "action": "fill(#city-name-input, \"Stockholm\")",
+        "tool_call": "fill({\"id\": \"city-name-input\", \"text\": \"Stockholm\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.08906030654907
+      },
+      {
+        "step": 3,
+        "action": "fill(#city-input, \"Stockholm\")",
+        "tool_call": "fill({\"id\": \"city-input\", \"text\": \"Stockholm\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 71.49415588378906
+      },
+      {
+        "step": 4,
+        "action": "fill(#city-input, \"Stockholm\")",
+        "tool_call": "fill({\"id\": \"city-input\", \"text\": \"Stockholm\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 105.14995694160461
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-M1",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 7,
+    "total_time_s": 176.08103728294373,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.4406139850616455
+      },
+      {
+        "step": 2,
+        "action": "fill(#bookTitle, \"The Alignment Problem\")",
+        "tool_call": "fill({\"id\": \"bookTitle\", \"text\": \"The Alignment Problem\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.35464072227478
+      },
+      {
+        "step": 3,
+        "action": "fill(#author, \"Brian Christian\")",
+        "tool_call": "fill({\"id\": \"author\", \"text\": \"Brian Christian\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.09151840209961
+      },
+      {
+        "step": 4,
+        "action": "fill(#author, \"Brian Christian\")",
+        "tool_call": "fill({\"id\": \"author\", \"text\": \"Brian Christian\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 75.72008800506592
+      },
+      {
+        "step": 5,
+        "action": "fill(#author, \"Brian Christian\")",
+        "tool_call": "fill({\"id\": \"author\", \"text\": \"Brian Christian\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 109.02632260322571
+      },
+      {
+        "step": 6,
+        "action": "fill(#book-title, \"The Alignment Problem\")",
+        "tool_call": "fill({\"id\": \"book-title\", \"text\": \"The Alignment Problem\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 142.70719408988953
+      },
+      {
+        "step": 7,
+        "action": "fill(#author, \"Brian Christian\")",
+        "tool_call": "fill({\"id\": \"author\", \"text\": \"Brian Christian\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 176.0555477142334
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-M2",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 6,
+    "total_time_s": 173.89417052268982,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.386768102645874
+      },
+      {
+        "step": 2,
+        "action": "fill(#drug_name_input, \"Ravantix\")",
+        "tool_call": "fill({\"id\": \"drug_name_input\", \"text\": \"Ravantix\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.9880576133728
+      },
+      {
+        "step": 3,
+        "action": "fill(#drug-name, \"Ravantix\")",
+        "tool_call": "fill({\"id\": \"drug-name\", \"text\": \"Ravantix\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 71.8119375705719
+      },
+      {
+        "step": 4,
+        "action": "fill(#drug-name, \"Ravantix\")",
+        "tool_call": "fill({\"id\": \"drug-name\", \"text\": \"Ravantix\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 105.48945927619934
+      },
+      {
+        "step": 5,
+        "action": "fill(#drug-name, \"Ravantix\")",
+        "tool_call": "fill({\"id\": \"drug-name\", \"text\": \"Ravantix\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 139.77755331993103
+      },
+      {
+        "step": 6,
+        "action": "fill(#drug-name, \"Ravantix\")",
+        "tool_call": "fill({\"id\": \"drug-name\", \"text\": \"Ravantix\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 173.8656883239746
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-M3",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 6,
+    "total_time_s": 173.63539600372314,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.576429128646851
+      },
+      {
+        "step": 2,
+        "action": "fill(#headline1, \"Senate passes landmark climate change\")",
+        "tool_call": "fill({\"id\": \"headline1\", \"text\": \"Senate passes landmark climate change\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.94738745689392
+      },
+      {
+        "step": 3,
+        "action": "fill(#headline1, \"Senate passes landmark climate change\")",
+        "tool_call": "fill({\"id\": \"headline1\", \"text\": \"Senate passes landmark climate change\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 72.56218600273132
+      },
+      {
+        "step": 4,
+        "action": "fill(#headline1, \"Senate passes landmark climate change\")",
+        "tool_call": "fill({\"id\": \"headline1\", \"text\": \"Senate passes landmark climate change\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 106.27360558509827
+      },
+      {
+        "step": 5,
+        "action": "fill(#headline-1, \"Senate passes landmark climate change\")",
+        "tool_call": "fill({\"id\": \"headline-1\", \"text\": \"Senate passes landmark climate change\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 140.07120656967163
+      },
+      {
+        "step": 6,
+        "action": "fill(#headline1, \"Senate passes landmark climate change\")",
+        "tool_call": "fill({\"id\": \"headline1\", \"text\": \"Senate passes landmark climate change\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 173.6097800731659
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-M4",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 6,
+    "total_time_s": 173.53752088546753,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.079124689102173
+      },
+      {
+        "step": 2,
+        "action": "fill(#year-founded, \"2018\")",
+        "tool_call": "fill({\"id\": \"year-founded\", \"text\": \"2018\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.81113576889038
+      },
+      {
+        "step": 3,
+        "action": "fill(#year-founded, \"2018\")",
+        "tool_call": "fill({\"id\": \"year-founded\", \"text\": \"2018\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 72.18002772331238
+      },
+      {
+        "step": 4,
+        "action": "fill(#year-founded, \"2018\")",
+        "tool_call": "fill({\"id\": \"year-founded\", \"text\": \"2018\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 105.93563485145569
+      },
+      {
+        "step": 5,
+        "action": "fill(#year-founded, \"2018\")",
+        "tool_call": "fill({\"id\": \"year-founded\", \"text\": \"2018\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 139.60823440551758
+      },
+      {
+        "step": 6,
+        "action": "fill(#year-founded, \"2018\")",
+        "tool_call": "fill({\"id\": \"year-founded\", \"text\": \"2018\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 173.51221776008606
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-H1",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incomplete",
+    "steps_taken": 15,
+    "total_time_s": 61.55877709388733,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 4.269516229629517
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 9.052312850952148
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 13.116083860397339
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 17.161287307739258
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 21.165307760238647
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 24.806518077850342
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 29.128698110580444
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 33.1826229095459
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 37.05568766593933
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 41.04297924041748
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 44.94528603553772
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 48.7052161693573
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 52.57433772087097
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 56.85406446456909
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incomplete",
+        "elapsed_s": 60.64307880401611
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-H2",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 61.5792601108551,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.649187088012695
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.786810159683228
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.8090341091156
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.59724259376526
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.669721126556396
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.474557876586914
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.33335852622986
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.17773509025574
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.40766906738281
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.16702699661255
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.78274202346802
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.72456407546997
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.825597524642944
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.70515727996826
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 61.55254149436951
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-H3",
+    "category": "A_podcast",
+    "difficulty": "hard",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 56.87461066246033,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(630, 320)",
+        "tool_call": "click({\"x\": 630, \"y\": 320})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.686591386795044
+      },
+      {
+        "step": 2,
+        "action": "click(636, 251)",
+        "tool_call": "click({\"x\": 636, \"y\": 251})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.3283350467681885
+      },
+      {
+        "step": 3,
+        "action": "click(630, 280)",
+        "tool_call": "click({\"x\": 630, \"y\": 280})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.169726848602295
+      },
+      {
+        "step": 4,
+        "action": "click(574, 233)",
+        "tool_call": "click({\"x\": 574, \"y\": 233})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.532641172409058
+      },
+      {
+        "step": 5,
+        "action": "click(640, 330)",
+        "tool_call": "click({\"x\": 640, \"y\": 330})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.326584815979004
+      },
+      {
+        "step": 6,
+        "action": "click(633, 243)",
+        "tool_call": "click({\"x\": 633, \"y\": 243})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.935414791107178
+      },
+      {
+        "step": 7,
+        "action": "click(632, 420)",
+        "tool_call": "click({\"x\": 632, \"y\": 420})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.50408411026001
+      },
+      {
+        "step": 8,
+        "action": "click(640, 360)",
+        "tool_call": "click({\"x\": 640, \"y\": 360})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.148631811141968
+      },
+      {
+        "step": 9,
+        "action": "click(627, 345)",
+        "tool_call": "click({\"x\": 627, \"y\": 345})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.51133441925049
+      },
+      {
+        "step": 10,
+        "action": "click(675, 300)",
+        "tool_call": "click({\"x\": 675, \"y\": 300})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.802159547805786
+      },
+      {
+        "step": 11,
+        "action": "click(650, 275)",
+        "tool_call": "click({\"x\": 650, \"y\": 275})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.69122529029846
+      },
+      {
+        "step": 12,
+        "action": "click(670, 280)",
+        "tool_call": "click({\"x\": 670, \"y\": 280})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.162673234939575
+      },
+      {
+        "step": 13,
+        "action": "click(620, 370)",
+        "tool_call": "click({\"x\": 620, \"y\": 370})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.74690556526184
+      },
+      {
+        "step": 14,
+        "action": "click(628, 382)",
+        "tool_call": "click({\"x\": 628, \"y\": 382})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.271252155303955
+      },
+      {
+        "step": 15,
+        "action": "click(450, 150)",
+        "tool_call": "click({\"x\": 450, \"y\": 150})",
+        "result_val": "incorrect",
+        "elapsed_s": 56.85017466545105
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 7,
+    "total_time_s": 117.76913952827454,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.2004170417785645
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.150404691696167
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.460992336273193
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.41318368911743
+      },
+      {
+        "step": 5,
+        "action": "fill(#launch_date, \"April 28\")",
+        "tool_call": "fill({\"id\": \"launch_date\", \"text\": \"April 28\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.62506318092346
+      },
+      {
+        "step": 6,
+        "action": "fill(#launch-date-input, \"April 28th\")",
+        "tool_call": "fill({\"id\": \"launch-date-input\", \"text\": \"April 28th\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 84.29710149765015
+      },
+      {
+        "step": 7,
+        "action": "fill(#launch-date, \"April 28th\")",
+        "tool_call": "fill({\"id\": \"launch-date\", \"text\": \"April 28th\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 117.750727891922
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 6,
+    "total_time_s": 112.78414416313171,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.215072870254517
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.028589487075806
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.089855432510376
+      },
+      {
+        "step": 4,
+        "action": "fill(#room-number, \"4\")",
+        "tool_call": "fill({\"id\": \"room-number\", \"text\": \"4\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.902464151382446
+      },
+      {
+        "step": 5,
+        "action": "fill(#room-number, \"4\")",
+        "tool_call": "fill({\"id\": \"room-number\", \"text\": \"4\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 79.2505829334259
+      },
+      {
+        "step": 6,
+        "action": "fill(#room-number, \"4\")",
+        "tool_call": "fill({\"id\": \"room-number\", \"text\": \"4\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 112.76366519927979
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  }
+]

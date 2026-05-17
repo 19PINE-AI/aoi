@@ -1,0 +1,357 @@
+[
+  {
+    "task_id": "C-E1",
+    "category": "C_video",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 8,
+    "total_time_s": 24.15760850906372,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.086632013320923
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.013335943222046
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.187154293060303
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.108178853988647
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.08411192893982
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.000343799591064
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.97647261619568
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.129369497299194
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_dashboard",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "no_alert",
+    "steps_taken": 8,
+    "total_time_s": 25.077175855636597,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 2.9207215309143066
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 5.828242540359497
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 8.974417686462402
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 12.482366561889648
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 16.235161066055298
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 19.14980912208557
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 22.149903297424316
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 25.05605983734131
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "form_not_accepted",
+    "steps_taken": 8,
+    "total_time_s": 23.403290033340454,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 2.921180486679077
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 5.821832895278931
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 8.726213216781616
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 11.63581371307373
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 14.546854734420776
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 17.47014570236206
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 20.40432047843933
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 23.345532178878784
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "cookies_dismissed",
+    "steps_taken": 8,
+    "total_time_s": 23.394315481185913,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 2.9306833744049072
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 5.864331245422363
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 8.807777643203735
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 11.74059534072876
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 14.643014192581177
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 17.550343990325928
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 20.45916175842285
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 23.370115756988525
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "text_incorrect",
+    "steps_taken": 8,
+    "total_time_s": 25.10168218612671,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 3.5695273876190186
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 6.7023797035217285
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 10.070566177368164
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 12.99760913848877
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 16.324193954467773
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 19.245009183883667
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 22.166170358657837
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 25.078428506851196
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  }
+]

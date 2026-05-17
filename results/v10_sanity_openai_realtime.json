@@ -1,0 +1,322 @@
+[
+  {
+    "task_id": "C-E1",
+    "category": "C_video",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 3,
+    "total_time_s": 100.57462906837463,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#first-command, \"git clone https://github.com/example/repo.git\")",
+        "tool_call": "fill({\"id\": \"first-command\", \"text\": \"git clone https://github.com/example/repo.git\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.57648587226868
+      },
+      {
+        "step": 2,
+        "action": "fill(#first-command, \"git clone https://github.com/example/repo.git\")",
+        "tool_call": "fill({\"id\": \"first-command\", \"text\": \"git clone https://github.com/example/repo.git\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 67.0900228023529
+      },
+      {
+        "step": 3,
+        "action": "fill(#first-command, \"git clone https://github.com/example/repo.git\")",
+        "tool_call": "fill({\"id\": \"first-command\", \"text\": \"git clone https://github.com/example/repo.git\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 100.5518057346344
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_dashboard",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "no_alert",
+    "steps_taken": 8,
+    "total_time_s": 28.497530698776245,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 3.720120668411255
+      },
+      {
+        "step": 2,
+        "action": "click(658, 482)",
+        "tool_call": "click({\"x\": 658, \"y\": 482})",
+        "result_val": "no_alert",
+        "elapsed_s": 7.000798940658569
+      },
+      {
+        "step": 3,
+        "action": "click(640, 540)",
+        "tool_call": "click({\"x\": 640, \"y\": 540})",
+        "result_val": "no_alert",
+        "elapsed_s": 10.50335431098938
+      },
+      {
+        "step": 4,
+        "action": "click(640, 520)",
+        "tool_call": "click({\"x\": 640, \"y\": 520})",
+        "result_val": "no_alert",
+        "elapsed_s": 13.692907571792603
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 17.35108757019043
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 21.140865802764893
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 24.802736043930054
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 28.475430488586426
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "form_not_accepted",
+    "steps_taken": 8,
+    "total_time_s": 25.536383390426636,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 510)",
+        "tool_call": "click({\"x\": 640, \"y\": 510})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 3.257220983505249
+      },
+      {
+        "step": 2,
+        "action": "click(648, 523)",
+        "tool_call": "click({\"x\": 648, \"y\": 523})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 6.464501619338989
+      },
+      {
+        "step": 3,
+        "action": "click(638, 486)",
+        "tool_call": "click({\"x\": 638, \"y\": 486})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 9.716772317886353
+      },
+      {
+        "step": 4,
+        "action": "click(612, 502)",
+        "tool_call": "click({\"x\": 612, \"y\": 502})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 12.876150846481323
+      },
+      {
+        "step": 5,
+        "action": "click(560, 410)",
+        "tool_call": "click({\"x\": 560, \"y\": 410})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 16.08788514137268
+      },
+      {
+        "step": 6,
+        "action": "click(380, 480)",
+        "tool_call": "click({\"x\": 380, \"y\": 480})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 19.2507905960083
+      },
+      {
+        "step": 7,
+        "action": "click(487, 594)",
+        "tool_call": "click({\"x\": 487, \"y\": 594})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 22.33603048324585
+      },
+      {
+        "step": 8,
+        "action": "click(635, 534)",
+        "tool_call": "click({\"x\": 635, \"y\": 534})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 25.515095710754395
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "cookies_dismissed",
+    "steps_taken": 8,
+    "total_time_s": 26.428358554840088,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(1170, 820)",
+        "tool_call": "click({\"x\": 1170, \"y\": 820})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 3.298600196838379
+      },
+      {
+        "step": 2,
+        "action": "click(337, 779)",
+        "tool_call": "click({\"x\": 337, \"y\": 779})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 6.461672067642212
+      },
+      {
+        "step": 3,
+        "action": "click(600, 680)",
+        "tool_call": "click({\"x\": 600, \"y\": 680})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 9.761454105377197
+      },
+      {
+        "step": 4,
+        "action": "click(640, 705)",
+        "tool_call": "click({\"x\": 640, \"y\": 705})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 13.145857810974121
+      },
+      {
+        "step": 5,
+        "action": "click(642, 1050)",
+        "tool_call": "click({\"x\": 642, \"y\": 1050})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 16.390963554382324
+      },
+      {
+        "step": 6,
+        "action": "scroll(down, 200)",
+        "tool_call": "scroll({\"direction\": \"down\", \"pixels\": 200})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 19.75638198852539
+      },
+      {
+        "step": 7,
+        "action": "click(63, 598)",
+        "tool_call": "click({\"x\": 63, \"y\": 598})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 23.138087511062622
+      },
+      {
+        "step": 8,
+        "action": "click(620, 1150)",
+        "tool_call": "click({\"x\": 620, \"y\": 1150})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 26.40802240371704
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "text_incorrect",
+    "steps_taken": 8,
+    "total_time_s": 27.283080339431763,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 3.9671268463134766
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 7.515127420425415
+      },
+      {
+        "step": 3,
+        "action": "type(\"The new product launch is scheduled for next Tuesday.\")",
+        "tool_call": "type_text({\"text\": \"The new product launch is scheduled for next Tuesday.\"})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 10.76135802268982
+      },
+      {
+        "step": 4,
+        "action": "type(\"Lunch is scheduled for next Tuesday.\")",
+        "tool_call": "type_text({\"text\": \"Lunch is scheduled for next Tuesday.\"})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 13.940808773040771
+      },
+      {
+        "step": 5,
+        "action": "type(\"Lunch is scheduled for next Tuesday.\")",
+        "tool_call": "type_text({\"text\": \"Lunch is scheduled for next Tuesday.\"})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 17.13121795654297
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 20.866147756576538
+      },
+      {
+        "step": 7,
+        "action": "type(\"Lunch is scheduled for next Tuesday.\")",
+        "tool_call": "type_text({\"text\": \"Lunch is scheduled for next Tuesday.\"})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 24.03999662399292
+      },
+      {
+        "step": 8,
+        "action": "type(\"Lunch is scheduled for next Tuesday.\")",
+        "tool_call": "type_text({\"text\": \"Lunch is scheduled for next Tuesday.\"})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 27.26122212409973
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  }
+]

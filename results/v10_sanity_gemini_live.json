@@ -1,0 +1,315 @@
+[
+  {
+    "task_id": "C-E1",
+    "category": "C_video",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 8,
+    "total_time_s": 36.25996971130371,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(500, 780)",
+        "tool_call": "click({\"x\": 500, \"y\": 780})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.429239988327026
+      },
+      {
+        "step": 2,
+        "action": "click(495, 780)",
+        "tool_call": "click({\"x\": 495, \"y\": 780})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.104629039764404
+      },
+      {
+        "step": 3,
+        "action": "click(499, 780)",
+        "tool_call": "click({\"x\": 499, \"y\": 780})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.61878252029419
+      },
+      {
+        "step": 4,
+        "action": "click(500, 791)",
+        "tool_call": "click({\"x\": 500, \"y\": 791})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.212464332580566
+      },
+      {
+        "step": 5,
+        "action": "click(499, 785)",
+        "tool_call": "click({\"x\": 499, \"y\": 785})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.74231266975403
+      },
+      {
+        "step": 6,
+        "action": "click(500, 785)",
+        "tool_call": "click({\"x\": 500, \"y\": 785})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.184306859970093
+      },
+      {
+        "step": 7,
+        "action": "click(500, 780)",
+        "tool_call": "click({\"x\": 500, \"y\": 780})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.229822874069214
+      },
+      {
+        "step": 8,
+        "action": "click(500, 780)",
+        "tool_call": "click({\"x\": 500, \"y\": 780})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.23782539367676
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_dashboard",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "no_alert",
+    "steps_taken": 8,
+    "total_time_s": 24.004949808120728,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 3.009272813796997
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 5.574068546295166
+      },
+      {
+        "step": 3,
+        "action": "click(493, 818)",
+        "tool_call": "click({\"x\": 493, \"y\": 818})",
+        "result_val": "no_alert",
+        "elapsed_s": 8.670199394226074
+      },
+      {
+        "step": 4,
+        "action": "click(500, 818)",
+        "tool_call": "click({\"x\": 500, \"y\": 818})",
+        "result_val": "no_alert",
+        "elapsed_s": 11.425767660140991
+      },
+      {
+        "step": 5,
+        "action": "click(499, 818)",
+        "tool_call": "click({\"x\": 499, \"y\": 818})",
+        "result_val": "no_alert",
+        "elapsed_s": 14.205296277999878
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 17.30093502998352
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 20.64759135246277
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 23.97680640220642
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "form_not_accepted",
+    "steps_taken": 8,
+    "total_time_s": 19.07427477836609,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(500, 602)",
+        "tool_call": "click({\"y\": 602, \"x\": 500})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 3.1458656787872314
+      },
+      {
+        "step": 2,
+        "action": "click(500, 601)",
+        "tool_call": "click({\"x\": 500, \"y\": 601})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 5.388475656509399
+      },
+      {
+        "step": 3,
+        "action": "click(500, 602)",
+        "tool_call": "click({\"y\": 602, \"x\": 500})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 7.680217027664185
+      },
+      {
+        "step": 4,
+        "action": "click(500, 602)",
+        "tool_call": "click({\"x\": 500, \"y\": 602})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 9.525136709213257
+      },
+      {
+        "step": 5,
+        "action": "click(500, 600)",
+        "tool_call": "click({\"x\": 500, \"y\": 600})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 12.264920234680176
+      },
+      {
+        "step": 6,
+        "action": "click(500, 602)",
+        "tool_call": "click({\"x\": 500, \"y\": 602})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 14.956568241119385
+      },
+      {
+        "step": 7,
+        "action": "click(499, 601)",
+        "tool_call": "click({\"x\": 499, \"y\": 601})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 17.05916738510132
+      },
+      {
+        "step": 8,
+        "action": "click(500, 602)",
+        "tool_call": "click({\"y\": 602, \"x\": 500})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 19.052198886871338
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "cookies_dismissed",
+    "steps_taken": 2,
+    "total_time_s": 4.820131540298462,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(939, 948)",
+        "tool_call": "click({\"x\": 939, \"y\": 948})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 2.52541446685791
+      },
+      {
+        "step": 2,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 4.7957563400268555
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "text_incorrect",
+    "steps_taken": 8,
+    "total_time_s": 23.416923761367798,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 3.01605486869812
+      },
+      {
+        "step": 2,
+        "action": "click(491, 489)",
+        "tool_call": "click({\"x\": 491, \"y\": 489})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 5.025019884109497
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 8.532219171524048
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 11.386382818222046
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 13.727927923202515
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 17.94929003715515
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 21.145477294921875
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 23.39423894882202
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  }
+]

@@ -1,0 +1,1141 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 57.8703396320343,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.821479320526123
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.310015201568604
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.351872444152832
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.071969270706177
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.02077603340149
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.726505041122437
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.71274495124817
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.35526442527771
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.3132050037384
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.064218282699585
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.8491997718811
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.568023681640625
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.247607707977295
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 54.18808913230896
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.84394693374634
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 104.6707489490509,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.064974546432495
+      },
+      {
+        "step": 2,
+        "action": "fill(#price-input, \"$49.99\")",
+        "tool_call": "fill({\"id\": \"price-input\", \"text\": \"$49.99\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.61000990867615
+      },
+      {
+        "step": 3,
+        "action": "fill(#price-input, \"$49.99\")",
+        "tool_call": "fill({\"id\": \"price-input\", \"text\": \"$49.99\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 71.0358657836914
+      },
+      {
+        "step": 4,
+        "action": "fill(#price-input, \"$49.99\")",
+        "tool_call": "fill({\"id\": \"price-input\", \"text\": \"$49.99\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 104.64737510681152
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-M1",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 61.52453684806824,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.275856018066406
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.34317922592163
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.561507940292358
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.578842878341675
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.6105854511261
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.986494302749634
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.664446592330933
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.40374684333801
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.610700368881226
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.412455797195435
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.408608198165894
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.20467448234558
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.971176862716675
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.75740838050842
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 61.50168824195862
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 7,
+    "total_time_s": 121.20371389389038,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.2190330028533936
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.738077163696289
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.097974300384521
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.07586359977722
+      },
+      {
+        "step": 5,
+        "action": "fill(#date-input, \"April 28th\")",
+        "tool_call": "fill({\"id\": \"date-input\", \"text\": \"April 28th\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 52.2304413318634
+      },
+      {
+        "step": 6,
+        "action": "fill(#launch-date-input, \"April 28th\")",
+        "tool_call": "fill({\"id\": \"launch-date-input\", \"text\": \"April 28th\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 86.01609468460083
+      },
+      {
+        "step": 7,
+        "action": "fill(#launch-date, \"April 28\")",
+        "tool_call": "fill({\"id\": \"launch-date\", \"text\": \"April 28\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 121.17683362960815
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 7,
+    "total_time_s": 119.6777572631836,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.398556709289551
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.830570220947266
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.660831451416016
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.61825680732727
+      },
+      {
+        "step": 5,
+        "action": "fill(#room-number-input, \"407\")",
+        "tool_call": "fill({\"id\": \"room-number-input\", \"text\": \"407\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 52.052086353302
+      },
+      {
+        "step": 6,
+        "action": "fill(#room-number-input, \"407\")",
+        "tool_call": "fill({\"id\": \"room-number-input\", \"text\": \"407\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 85.90362572669983
+      },
+      {
+        "step": 7,
+        "action": "fill(#room-number, \"407\")",
+        "tool_call": "fill({\"id\": \"room-number\", \"text\": \"407\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 119.65326070785522
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-M1",
+    "category": "B_meeting",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 10,
+    "total_time_s": 163.01467871665955,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(400, 300)",
+        "tool_call": "click({\"x\": 400, \"y\": 300})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.2194883823394775
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.388798475265503
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.700656652450562
+      },
+      {
+        "step": 4,
+        "action": "fill(#missing-value, \"13.7%\")",
+        "tool_call": "fill({\"id\": \"missing-value\", \"text\": \"13.7%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 48.925580739974976
+      },
+      {
+        "step": 5,
+        "action": "fill(#missing-value, \"18%\")",
+        "tool_call": "fill({\"id\": \"missing-value\", \"text\": \"18%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 82.24154043197632
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 87.13400411605835
+      },
+      {
+        "step": 7,
+        "action": "type(\"18%\")",
+        "tool_call": "type_text({\"text\": \"18%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 91.29192113876343
+      },
+      {
+        "step": 8,
+        "action": "fill(#missing-value, \"18%\")",
+        "tool_call": "fill({\"id\": \"missing-value\", \"text\": \"18%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 125.52733445167542
+      },
+      {
+        "step": 9,
+        "action": "type(\"18%\")",
+        "tool_call": "type_text({\"text\": \"18%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 129.25881004333496
+      },
+      {
+        "step": 10,
+        "action": "fill(#missing-value-input, \"18%\")",
+        "tool_call": "fill({\"id\": \"missing-value-input\", \"text\": \"18%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 162.9910991191864
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 120.64057230949402,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.9298324584960938
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.44740915298462
+      },
+      {
+        "step": 3,
+        "action": "click(372, 242)",
+        "tool_call": "click({\"x\": 372, \"y\": 242})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.033635139465332
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.338305950164795
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.24504804611206
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.42224884033203
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.60046410560608
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.765812158584595
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.87613320350647
+      },
+      {
+        "step": 10,
+        "action": "fill(#phone, \"555-\")",
+        "tool_call": "fill({\"id\": \"phone\", \"text\": \"555-\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 70.76195335388184
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 75.03404259681702
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 78.92873239517212
+      },
+      {
+        "step": 13,
+        "action": "click(299, 392)",
+        "tool_call": "click({\"x\": 299, \"y\": 392})",
+        "result_val": "incorrect",
+        "elapsed_s": 82.44027185440063
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 86.44923281669617
+      },
+      {
+        "step": 15,
+        "action": "fill(#callback-number, \"555-\")",
+        "tool_call": "fill({\"id\": \"callback-number\", \"text\": \"555-\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 120.61936950683594
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E2",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 106.45046806335449,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.7934772968292236
+      },
+      {
+        "step": 2,
+        "action": "fill(#caller-name, \"Jennifer Martinez\")",
+        "tool_call": "fill({\"id\": \"caller-name\", \"text\": \"Jennifer Martinez\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.67068552970886
+      },
+      {
+        "step": 3,
+        "action": "fill(#caller-name, \"Jennifer Martinez\")",
+        "tool_call": "fill({\"id\": \"caller-name\", \"text\": \"Jennifer Martinez\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 71.11232304573059
+      },
+      {
+        "step": 4,
+        "action": "fill(#caller-name-input, \"Jennifer Martinez\")",
+        "tool_call": "fill({\"id\": \"caller-name-input\", \"text\": \"Jennifer Martinez\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 106.42444062232971
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-M1",
+    "category": "G_phone",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 53.248517990112305,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(316, 264)",
+        "tool_call": "click({\"x\": 316, \"y\": 264})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.4983925819396973
+      },
+      {
+        "step": 2,
+        "action": "click(465, 415)",
+        "tool_call": "click({\"x\": 465, \"y\": 415})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.006807804107666
+      },
+      {
+        "step": 3,
+        "action": "click(650, 320)",
+        "tool_call": "click({\"x\": 650, \"y\": 320})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.653577327728271
+      },
+      {
+        "step": 4,
+        "action": "click(515, 380)",
+        "tool_call": "click({\"x\": 515, \"y\": 380})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.916274785995483
+      },
+      {
+        "step": 5,
+        "action": "click(572, 319)",
+        "tool_call": "click({\"x\": 572, \"y\": 319})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.968488693237305
+      },
+      {
+        "step": 6,
+        "action": "click(319, 262)",
+        "tool_call": "click({\"x\": 319, \"y\": 262})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.24034571647644
+      },
+      {
+        "step": 7,
+        "action": "click(444, 478)",
+        "tool_call": "click({\"x\": 444, \"y\": 478})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.014880418777466
+      },
+      {
+        "step": 8,
+        "action": "click(364, 518)",
+        "tool_call": "click({\"x\": 364, \"y\": 518})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.500767946243286
+      },
+      {
+        "step": 9,
+        "action": "click(320, 260)",
+        "tool_call": "click({\"x\": 320, \"y\": 260})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.000635385513306
+      },
+      {
+        "step": 10,
+        "action": "click(490, 410)",
+        "tool_call": "click({\"x\": 490, \"y\": 410})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.41068649291992
+      },
+      {
+        "step": 11,
+        "action": "click(440, 320)",
+        "tool_call": "click({\"x\": 440, \"y\": 320})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.643216371536255
+      },
+      {
+        "step": 12,
+        "action": "click(533, 334)",
+        "tool_call": "click({\"x\": 533, \"y\": 334})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.82804274559021
+      },
+      {
+        "step": 13,
+        "action": "click(464, 304)",
+        "tool_call": "click({\"x\": 464, \"y\": 304})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.24288272857666
+      },
+      {
+        "step": 14,
+        "action": "click(407, 214)",
+        "tool_call": "click({\"x\": 407, \"y\": 214})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.68383073806763
+      },
+      {
+        "step": 15,
+        "action": "click(365, 295)",
+        "tool_call": "click({\"x\": 365, \"y\": 295})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.2241952419281
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": true,
+    "result_val": "answer_heard_correct",
+    "steps_taken": 15,
+    "total_time_s": 54.352028608322144,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.6416430473327637
+      },
+      {
+        "step": 2,
+        "action": "type(\"Paris\")",
+        "tool_call": "type_text({\"text\": \"Paris\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 7.515388250350952
+      },
+      {
+        "step": 3,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 11.373712539672852
+      },
+      {
+        "step": 4,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 14.85694169998169
+      },
+      {
+        "step": 5,
+        "action": "speak(\"Paris\")",
+        "tool_call": "speak({\"text\": \"Paris\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 18.44761824607849
+      },
+      {
+        "step": 6,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 21.796630859375
+      },
+      {
+        "step": 7,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 25.340024948120117
+      },
+      {
+        "step": 8,
+        "action": "speak(\"Paris\")",
+        "tool_call": "speak({\"text\": \"Paris\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 28.554893493652344
+      },
+      {
+        "step": 9,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 33.29301047325134
+      },
+      {
+        "step": 10,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 36.71893000602722
+      },
+      {
+        "step": 11,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 40.00896668434143
+      },
+      {
+        "step": 12,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 43.55416297912598
+      },
+      {
+        "step": 13,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 47.14106869697571
+      },
+      {
+        "step": 14,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 50.86701226234436
+      },
+      {
+        "step": 15,
+        "action": "speak(\"Paris\")",
+        "tool_call": "speak({\"text\": \"Paris\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 54.328068017959595
+      }
+    ],
+    "error": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "H-E2",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": true,
+    "result_val": "name_spoken_correct",
+    "steps_taken": 15,
+    "total_time_s": 58.06610608100891,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.586043834686279
+      },
+      {
+        "step": 2,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.392748832702637
+      },
+      {
+        "step": 3,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.788339376449585
+      },
+      {
+        "step": 4,
+        "action": "type(\"Alexander Thompson\")",
+        "tool_call": "type_text({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 17.639297008514404
+      },
+      {
+        "step": 5,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 21.620782375335693
+      },
+      {
+        "step": 6,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 24.950522899627686
+      },
+      {
+        "step": 7,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 28.291510105133057
+      },
+      {
+        "step": 8,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 31.718012809753418
+      },
+      {
+        "step": 9,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 35.39011263847351
+      },
+      {
+        "step": 10,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 38.809326171875
+      },
+      {
+        "step": 11,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 42.4202880859375
+      },
+      {
+        "step": 12,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 45.84512996673584
+      },
+      {
+        "step": 13,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 50.15902042388916
+      },
+      {
+        "step": 14,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 54.14771819114685
+      },
+      {
+        "step": 15,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 58.03968405723572
+      }
+    ],
+    "error": null,
+    "final_score": 1.0
+  },
+  {
+    "task_id": "H-M1",
+    "category": "H_interview",
+    "difficulty": "medium",
+    "model_name": "gpt-4o",
+    "observation_mode": "openai_realtime",
+    "success": true,
+    "result_val": "revenue_spoken_correct",
+    "steps_taken": 15,
+    "total_time_s": 60.32484030723572,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The total revenue shown in the report is four point two million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is four point two million dollars.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.023855447769165
+      },
+      {
+        "step": 2,
+        "action": "speak(\"The total revenue shown in the report is four point two million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is four point two million dollars.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.748924493789673
+      },
+      {
+        "step": 3,
+        "action": "speak(\"The total revenue shown in the report is four point two million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is four point two million dollars.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.65001893043518
+      },
+      {
+        "step": 4,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.246196508407593
+      },
+      {
+        "step": 5,
+        "action": "speak(\"The total revenue shown in the report is four point two million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is four point two million dollars.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.928231716156006
+      },
+      {
+        "step": 6,
+        "action": "speak(\"The total revenue is 4.2 million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue is 4.2 million dollars.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.142595291137695
+      },
+      {
+        "step": 7,
+        "action": "speak(\"The total revenue is four point two million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue is four point two million dollars.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.680485486984253
+      },
+      {
+        "step": 8,
+        "action": "type(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "type_text({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 30.619362354278564
+      },
+      {
+        "step": 9,
+        "action": "speak(\"The total revenue shown in the report is four point two million dollars.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is four point two million dollars.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 35.611979246139526
+      },
+      {
+        "step": 10,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 39.42294383049011
+      },
+      {
+        "step": 11,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 42.877668380737305
+      },
+      {
+        "step": 12,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 46.24131894111633
+      },
+      {
+        "step": 13,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 52.3161187171936
+      },
+      {
+        "step": 14,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 55.70430779457092
+      },
+      {
+        "step": 15,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 60.304932832717896
+      }
+    ],
+    "error": null,
+    "final_score": 1.0
+  }
+]

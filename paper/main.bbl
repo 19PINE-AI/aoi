@@ -1,103 +1,119 @@
-\begin{thebibliography}{31}
+\begin{thebibliography}{39}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
   \providecommand{\doi}[1]{doi: #1}\else
   \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
 
-\bibitem[{Alibaba}(2025)]{guiowl}
-{Alibaba}.
-\newblock {GUI-Owl / Mobile-Agent-v3}: Fundamental agents for {GUI} automation.
-\newblock \emph{arXiv preprint arXiv:2508.15144}, 2025.
+\bibitem[Andreux et~al.(2025)]{surfer2}
+Mathieu Andreux et~al.
+\newblock Surfer~2: The next generation of cross-platform computer use agents.
+\newblock \emph{arXiv preprint arXiv:2510.19949}, 2025.
 
-\bibitem[{Anthropic}(2024)]{anthropic2024claude}
+\bibitem[{Anthropic}(2024{\natexlab{a}})]{anthropic2024claude}
 {Anthropic}.
 \newblock Claude computer use.
 \newblock
-  \url{https://docs.anthropic.com/en/docs/agents-and-tools/computer-use}, 2024.
+  \url{https://docs.anthropic.com/en/docs/agents-and-tools/computer-use},
+  2024{\natexlab{a}}.
 
-\bibitem[{Apollo Team}(2025)]{apollo}
-{Apollo Team}.
-\newblock Apollo: An exploration of video understanding in large multimodal
-  models.
-\newblock In \emph{CVPR}, 2025.
+\bibitem[{Anthropic}(2024{\natexlab{b}})]{mcp}
+{Anthropic}.
+\newblock Model context protocol.
+\newblock \url{https://modelcontextprotocol.io}, 2024{\natexlab{b}}.
 
-\bibitem[{BAAI}(2025)]{cradle}
-{BAAI}.
-\newblock Cradle: Empowering foundation agents towards general computer
-  control.
-\newblock In \emph{ICML}, 2025.
+\bibitem[Awadallah et~al.(2025)]{fara7b}
+Ahmed Awadallah et~al.
+\newblock {Fara-7B}: An efficient agentic model for computer use.
+\newblock \emph{arXiv preprint arXiv:2511.19663}, 2025.
 
-\bibitem[{ByteDance}(2025)]{uitars2}
-{ByteDance}.
-\newblock {UI-TARS-2}: Pioneering automated {GUI} interaction with native
-  agents, 2025.
-
-\bibitem[Chen et~al.(2025)]{guiworld}
+\bibitem[Chen et~al.(2024)]{guiworld}
 Dongping Chen et~al.
-\newblock {GUI-World}: A dataset for {GUI}-oriented multimodal {LLM}-based
-  agents.
-\newblock In \emph{ICLR}, 2025.
+\newblock {GUI-World}: A video benchmark and dataset for multimodal
+  {GUI}-oriented understanding.
+\newblock \emph{arXiv preprint arXiv:2406.10819}, 2024.
 
-\bibitem[{Dispider Team}(2025)]{dispider}
-{Dispider Team}.
-\newblock Dispider: Enabling video {LLM}s with active real-time interaction via
-  disentangled perception, decision, and reaction.
-\newblock In \emph{CVPR}, 2025.
+\bibitem[Chen et~al.(2025)]{cuasuite}
+Liang Chen et~al.
+\newblock {CUA-Suite}: 55 hours of real computer-use recordings for agent
+  benchmarking.
+\newblock \emph{arXiv preprint arXiv:2510.10142}, 2025.
 
-\bibitem[{Gaia Team}(2026)]{gaia2}
-{Gaia Team}.
-\newblock {Gaia2}: Dynamic, asynchronous environments for {LMM} evaluation.
-\newblock In \emph{ICLR}, 2026.
-
-\bibitem[{Google}(2025)]{gemini25cu}
+\bibitem[{Google}(2025)]{geminilive}
 {Google}.
-\newblock Gemini 2.5 computer use, 2025.
+\newblock Live {API} (gemini live).
+\newblock \url{https://ai.google.dev/gemini-api/docs/live}, 2025.
 
-\bibitem[{Google}(2026)]{geminilive}
-{Google}.
-\newblock Gemini 3.1 flash live.
-\newblock \url{https://ai.google.dev/gemini-api/docs/live}, 2026.
+\bibitem[{Google DeepMind}(2025)]{gemini25cu}
+{Google DeepMind}.
+\newblock {Gemini 2.5 Computer Use}.
+\newblock \url{https://deepmind.google/models/gemini/computer-use/}, 2025.
 
-\bibitem[{Google and Microsoft}(2026)]{webmcp}
-{Google and Microsoft}.
-\newblock {WebMCP}: Proposed {W3C} standard for structured {AI} agent
-  interactions with websites, 2026.
+\bibitem[{Google DeepMind}(2026)]{gemini3flash}
+{Google DeepMind}.
+\newblock {Gemini 3 Flash}.
+\newblock \url{https://deepmind.google/models/gemini/}, 2026.
+\newblock Accessed 2026-05-15; model id \texttt{gemini-3-flash-preview}.
 
-\bibitem[{H Company}(2025)]{surfer2}
-{H Company}.
-\newblock Surfer 2: The next generation of cross-platform computer use agents.
-\newblock \emph{arXiv preprint arXiv:2510.19949}, 2025.
+\bibitem[He et~al.(2024)]{webvoyager}
+Hongliang He et~al.
+\newblock {WebVoyager}: Building an end-to-end web agent with large multimodal
+  models.
+\newblock \emph{arXiv preprint arXiv:2401.13919}, 2024.
 
-\bibitem[Jang et~al.(2025)]{videowebarena}
+\bibitem[Jang et~al.(2024)]{videowebarena}
 Lawrence Jang et~al.
 \newblock {VideoWebArena}: Evaluating long context multimodal agents with video
-  tasks.
-\newblock In \emph{ICLR}, 2025.
+  understanding web tasks.
+\newblock \emph{arXiv preprint arXiv:2410.19100}, 2024.
 
-\bibitem[{MemGUI Team}(2026)]{memguibench}
-{MemGUI Team}.
-\newblock {MemGUI-Bench}: Memory-centric benchmark for mobile {GUI} agents.
-\newblock \emph{arXiv preprint arXiv:2602.06075}, 2026.
+\bibitem[Jin et~al.(2025)]{screenllm}
+Yiqiao Jin et~al.
+\newblock {ScreenLLM}: Stateful screen schema for efficient action
+  understanding and prediction.
+\newblock \emph{arXiv preprint arXiv:2503.20978}, 2025.
 
-\bibitem[{Microsoft}(2025)]{fara7b}
+\bibitem[{Meituan}(2026)]{evocua}
+{Meituan}.
+\newblock {EvoCUA}: Evolving computer use agent.
+\newblock \url{https://github.com/meituan/EvoCUA}, 2026.
+\newblock Accessed 2026-05-14.
+
+\bibitem[{Microsoft}(2025)]{nlweb}
 {Microsoft}.
-\newblock Fara-7b: An efficient agentic model for computer use.
-\newblock \emph{arXiv preprint arXiv:2511.19663}, 2025.
+\newblock {NLWeb}: A conversational interface for websites.
+\newblock \url{https://github.com/microsoft/NLWeb}, 2025.
+
+\bibitem[{OpenAI}(2024)]{openairealtime}
+{OpenAI}.
+\newblock Realtime {API}: Speech-to-speech models with tool use.
+\newblock \url{https://platform.openai.com/docs/guides/realtime}, 2024.
 
 \bibitem[{OpenAI}(2025)]{openai2025cua}
 {OpenAI}.
 \newblock Computer-using agent ({CUA}).
 \newblock \url{https://openai.com/index/computer-using-agent/}, 2025.
 
-\bibitem[Radford et~al.(2021)Radford, Kim, Hallacy, Ramesh, Goh, Agarwal,
-  Sastry, Askell, Mishkin, Clark, et~al.]{clip}
-Alec Radford, Jong~Wook Kim, Chris Hallacy, Aditya Ramesh, Gabriel Goh,
-  Sandhini Agarwal, Girish Sastry, Amanda Askell, Pamela Mishkin, Jack Clark,
-  et~al.
-\newblock Learning transferable visual models from natural language
-  supervision.
-\newblock In \emph{ICML}, 2021.
+\bibitem[{OpenAI}(2026)]{openai2026gpt54}
+{OpenAI}.
+\newblock Introducing {GPT}-5.4.
+\newblock \url{https://openai.com/index/introducing-gpt-5-4/}, 2026.
+
+\bibitem[Park et~al.(2025)]{memguibench}
+Joonsuk Park et~al.
+\newblock {MemGUI-Bench}: Benchmarking memory in {GUI} agents.
+\newblock \emph{arXiv preprint arXiv:2509.12233}, 2025.
+
+\bibitem[Qian et~al.(2025)]{dispider}
+Rui Qian et~al.
+\newblock Dispider: Enabling video {LLM}s with active real-time interaction via
+  disentangled perception, decision, and reaction.
+\newblock \emph{arXiv preprint arXiv:2501.03218}, 2025.
+
+\bibitem[{Qwen Team}(2025)]{qwen3vl}
+{Qwen Team}.
+\newblock {Qwen3-VL} technical report.
+\newblock \emph{arXiv preprint arXiv:2511.21631}, 2025.
 
 \bibitem[Radford et~al.(2023)Radford, Kim, Xu, Brockman, McLeavey, and
   Sutskever]{whisper}
@@ -105,77 +121,111 @@ Alec Radford, Jong~Wook Kim, Tao Xu, Greg Brockman, Christine McLeavey, and
   Ilya Sutskever.
 \newblock Robust speech recognition via large-scale weak supervision.
 \newblock In \emph{ICML}, 2023.
+\newblock arXiv:2212.04356.
 
-\bibitem[{Salesforce}(2025)]{coact}
-{Salesforce}.
-\newblock {CoAct-1}: Computer-using multi-agent system with coding actions.
-\newblock \emph{arXiv preprint arXiv:2508.03923}, 2025.
+\bibitem[Radford et~al.(2021)]{clip}
+Alec Radford et~al.
+\newblock Learning transferable visual models from natural language
+  supervision.
+\newblock In \emph{ICML}, 2021.
+\newblock arXiv:2103.00020.
 
-\bibitem[{ScreenLLM Team}(2025)]{screenllm}
-{ScreenLLM Team}.
-\newblock {ScreenLLM}: Stateful screen schema for efficient action
-  understanding and prediction.
-\newblock In \emph{WWW}, 2025.
-
-\bibitem[{ServiceNow}(2026)]{cuasuite}
-{ServiceNow}.
-\newblock {CUA-Suite / VideoCUA}.
-\newblock \emph{arXiv preprint arXiv:2603.24440}, 2026.
+\bibitem[Sager et~al.(2025)]{cusurvey}
+Pascal~J. Sager et~al.
+\newblock A comprehensive survey of agents for computer use: Foundations,
+  challenges, and future directions.
+\newblock \emph{arXiv preprint arXiv:2501.16150}, 2025.
 
 \bibitem[{Simular AI}(2025)]{agents3}
 {Simular AI}.
-\newblock Agent {S3}.
-\newblock \url{https://www.simular.ai/agent-s3}, 2025.
+\newblock {Agent S3}: An open-source computer-use agent.
+\newblock \url{https://github.com/simular-ai/Agent-S}, 2025.
 
-\bibitem[{StreamAgent Team}(2026)]{streamagent}
-{StreamAgent Team}.
-\newblock {StreamAgent}: Towards anticipatory agents for streaming video
-  understanding.
-\newblock In \emph{ICLR}, 2026.
+\bibitem[Song et~al.(2025)]{coact}
+Linxin Song et~al.
+\newblock {CoAct-1}: Computer-using agents with coding as actions.
+\newblock \emph{arXiv preprint arXiv:2508.03923}, 2025.
+
+\bibitem[Tan et~al.(2024)]{cradle}
+Weihao Tan et~al.
+\newblock Cradle: Empowering foundation agents towards general computer
+  control.
+\newblock \emph{arXiv preprint arXiv:2403.03186}, 2024.
 
 \bibitem[Tang et~al.(2025)]{aks}
-Jianxiong Tang et~al.
+Xi~Tang et~al.
 \newblock Adaptive keyframe sampling for long video understanding.
-\newblock In \emph{CVPR}, 2025.
+\newblock \emph{arXiv preprint arXiv:2502.21271}, 2025.
 
-\bibitem[Wang et~al.(2025{\natexlab{a}})]{opencua}
-Boyuan Wang et~al.
+\bibitem[Wang et~al.(2025{\natexlab{a}})]{uitars2}
+Haoming Wang et~al.
+\newblock {UI-TARS-2} technical report: Advancing {GUI} agent with multi-turn
+  reinforcement learning.
+\newblock \emph{arXiv preprint arXiv:2509.02544}, 2025{\natexlab{a}}.
+
+\bibitem[Wang et~al.(2025{\natexlab{b}})]{opencua}
+Xinyuan Wang et~al.
 \newblock {OpenCUA}: Open foundations for computer-use agents.
-\newblock \emph{arXiv preprint arXiv:2508.09123}, 2025{\natexlab{a}}.
-\newblock NeurIPS 2025 Spotlight.
+\newblock \emph{arXiv preprint arXiv:2508.09123}, 2025{\natexlab{b}}.
 
-\bibitem[Wang et~al.(2025{\natexlab{b}})]{cusurvey}
-Xinyi Wang et~al.
-\newblock A comprehensive survey of agents for computer use.
-\newblock \emph{arXiv preprint arXiv:2501.16150}, 2025{\natexlab{b}}.
-
-\bibitem[Wang et~al.(2025{\natexlab{c}})]{videotree}
+\bibitem[Wang et~al.(2024)]{videotree}
 Ziyang Wang et~al.
 \newblock {VideoTree}: Adaptive tree-based video representation for {LLM}
   reasoning on long videos.
-\newblock In \emph{CVPR}, 2025{\natexlab{c}}.
+\newblock \emph{arXiv preprint arXiv:2405.19209}, 2024.
+
+\bibitem[{xAI}(2026)]{xai2026grok4}
+{xAI}.
+\newblock {Grok 4}.
+\newblock \url{https://x.ai/news/grok-4}, 2026.
+\newblock Accessed 2026-05-14.
 
 \bibitem[Xie et~al.(2024)]{osworld}
 Tianbao Xie et~al.
 \newblock {OSWorld}: Benchmarking multimodal agents for open-ended tasks in
   real computer environments.
-\newblock In \emph{NeurIPS}, 2024.
+\newblock \emph{arXiv preprint arXiv:2404.07972}, 2024.
+\newblock NeurIPS 2024.
+
+\bibitem[Yang et~al.(2025)]{streamagent}
+Haolin Yang et~al.
+\newblock {StreamAgent}: Towards anticipatory agents for streaming video
+  understanding.
+\newblock \emph{arXiv preprint arXiv:2508.01875}, 2025.
 
 \bibitem[Yang et~al.(2024)]{sweagent}
 John Yang et~al.
 \newblock {SWE-agent}: Agent-computer interfaces enable automated software
   engineering.
-\newblock In \emph{NeurIPS}, 2024.
+\newblock \emph{arXiv preprint arXiv:2405.15793}, 2024.
 
-\bibitem[Zhang et~al.(2024)]{llovi}
-Ce~Zhang et~al.
-\newblock {LLoVi}: A simple {LLM} framework for long-range video
-  question-answering.
-\newblock In \emph{EMNLP}, 2024.
+\bibitem[Ye et~al.(2025)]{guiowl}
+Jiabo Ye et~al.
+\newblock {Mobile-Agent-v3}: Fundamental agents for {GUI} automation.
+\newblock \emph{arXiv preprint arXiv:2508.15144}, 2025.
 
 \bibitem[Zhang et~al.(2025)]{videogamebench}
-Luo Zhang et~al.
-\newblock {VideoGameBench}: Can {LMM}s play video games?
-\newblock \emph{arXiv preprint}, 2025.
+Alex~L. Zhang et~al.
+\newblock {VideoGameBench}: Can vision-language models complete popular video
+  games?
+\newblock \emph{arXiv preprint arXiv:2505.18134}, 2025.
+
+\bibitem[Zhang et~al.(2023)]{llovi}
+Ce~Zhang et~al.
+\newblock A simple {LLM} framework for long-range video question-answering.
+\newblock \emph{arXiv preprint arXiv:2312.17235}, 2023.
+
+\bibitem[Zhou et~al.(2023)]{webarena}
+Shuyan Zhou et~al.
+\newblock {WebArena}: A realistic web environment for building autonomous
+  agents.
+\newblock \emph{arXiv preprint arXiv:2307.13854}, 2023.
+\newblock ICLR 2024.
+
+\bibitem[Zohar et~al.(2024)]{apollo}
+Orr Zohar et~al.
+\newblock Apollo: An exploration of video understanding in large multimodal
+  models.
+\newblock \emph{arXiv preprint arXiv:2412.10360}, 2024.
 
 \end{thebibliography}

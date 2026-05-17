@@ -1,0 +1,1442 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 49.86917734146118,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.8218841552734375
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.926957130432129
+      },
+      {
+        "step": 3,
+        "action": "click(493, 969)",
+        "tool_call": "click({\"x\": 493, \"y\": 969})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.802974700927734
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.579075336456299
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.771369218826294
+      },
+      {
+        "step": 6,
+        "action": "click(500, 758)",
+        "tool_call": "click({\"x\": 500, \"y\": 758})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.32147741317749
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.38393998146057
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.09229874610901
+      },
+      {
+        "step": 9,
+        "action": "click(500, 758)",
+        "tool_call": "click({\"y\": 758, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.498790740966797
+      },
+      {
+        "step": 10,
+        "action": "click(500, 758)",
+        "tool_call": "click({\"x\": 500, \"y\": 758})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.26349425315857
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.068716287612915
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.355194091796875
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.960612297058105
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.999964237213135
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.84195613861084
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 49.10510802268982,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.5955429077148438
+      },
+      {
+        "step": 2,
+        "action": "click(500, 772)",
+        "tool_call": "click({\"y\": 772, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.069384574890137
+      },
+      {
+        "step": 3,
+        "action": "click(500, 960)",
+        "tool_call": "click({\"x\": 500, \"y\": 960})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.775222778320312
+      },
+      {
+        "step": 4,
+        "action": "click(500, 763)",
+        "tool_call": "click({\"x\": 500, \"y\": 763})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.02847409248352
+      },
+      {
+        "step": 5,
+        "action": "click(496, 775)",
+        "tool_call": "click({\"x\": 496, \"y\": 775})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.80075216293335
+      },
+      {
+        "step": 6,
+        "action": "click(500, 762)",
+        "tool_call": "click({\"x\": 500, \"y\": 762})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.632133722305298
+      },
+      {
+        "step": 7,
+        "action": "click(498, 772)",
+        "tool_call": "click({\"x\": 498, \"y\": 772})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.785938024520874
+      },
+      {
+        "step": 8,
+        "action": "click(500, 762)",
+        "tool_call": "click({\"x\": 500, \"y\": 762})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.272438287734985
+      },
+      {
+        "step": 9,
+        "action": "click(500, 764)",
+        "tool_call": "click({\"y\": 764, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.534857988357544
+      },
+      {
+        "step": 10,
+        "action": "click(500, 761)",
+        "tool_call": "click({\"x\": 500, \"y\": 761})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.04916977882385
+      },
+      {
+        "step": 11,
+        "action": "click(499, 772)",
+        "tool_call": "click({\"x\": 499, \"y\": 772})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.27557396888733
+      },
+      {
+        "step": 12,
+        "action": "click(498, 762)",
+        "tool_call": "click({\"x\": 498, \"y\": 762})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.47606372833252
+      },
+      {
+        "step": 13,
+        "action": "click(499, 762)",
+        "tool_call": "click({\"y\": 762, \"x\": 499})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.572839975357056
+      },
+      {
+        "step": 14,
+        "action": "click(498, 772)",
+        "tool_call": "click({\"y\": 772, \"x\": 498})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.43277645111084
+      },
+      {
+        "step": 15,
+        "action": "click(493, 766)",
+        "tool_call": "click({\"x\": 493, \"y\": 766})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.079028606414795
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-M1",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 53.46300649642944,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.822404384613037
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.148842096328735
+      },
+      {
+        "step": 3,
+        "action": "click(500, 786)",
+        "tool_call": "click({\"x\": 500, \"y\": 786})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.741683006286621
+      },
+      {
+        "step": 4,
+        "action": "click(499, 787)",
+        "tool_call": "click({\"x\": 499, \"y\": 787})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.177777528762817
+      },
+      {
+        "step": 5,
+        "action": "click(494, 787)",
+        "tool_call": "click({\"x\": 494, \"y\": 787})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.385644912719727
+      },
+      {
+        "step": 6,
+        "action": "click(494, 786)",
+        "tool_call": "click({\"x\": 494, \"y\": 786})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.629767417907715
+      },
+      {
+        "step": 7,
+        "action": "click(499, 786)",
+        "tool_call": "click({\"y\": 786, \"x\": 499})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.751341104507446
+      },
+      {
+        "step": 8,
+        "action": "click(494, 784)",
+        "tool_call": "click({\"x\": 494, \"y\": 784})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.905563831329346
+      },
+      {
+        "step": 9,
+        "action": "click(500, 786)",
+        "tool_call": "click({\"x\": 500, \"y\": 786})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.19645380973816
+      },
+      {
+        "step": 10,
+        "action": "click(500, 786)",
+        "tool_call": "click({\"x\": 500, \"y\": 786})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.61023950576782
+      },
+      {
+        "step": 11,
+        "action": "click(500, 798)",
+        "tool_call": "click({\"x\": 500, \"y\": 798})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.11378502845764
+      },
+      {
+        "step": 12,
+        "action": "click(500, 800)",
+        "tool_call": "click({\"x\": 500, \"y\": 800})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.95907163619995
+      },
+      {
+        "step": 13,
+        "action": "click(500, 786)",
+        "tool_call": "click({\"x\": 500, \"y\": 786})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.44321036338806
+      },
+      {
+        "step": 14,
+        "action": "click(500, 784)",
+        "tool_call": "click({\"x\": 500, \"y\": 784})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.65168118476868
+      },
+      {
+        "step": 15,
+        "action": "click(500, 787)",
+        "tool_call": "click({\"x\": 500, \"y\": 787})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.43565893173218
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 64.32929801940918,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.194864511489868
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.340879440307617
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.336524963378906
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.760987997055054
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.45530390739441
+      },
+      {
+        "step": 6,
+        "action": "click(469, 737)",
+        "tool_call": "click({\"x\": 469, \"y\": 737})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.62560272216797
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.255778074264526
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.658488273620605
+      },
+      {
+        "step": 9,
+        "action": "click(492, 735)",
+        "tool_call": "click({\"y\": 735, \"x\": 492})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.43961215019226
+      },
+      {
+        "step": 10,
+        "action": "click(500, 735)",
+        "tool_call": "click({\"x\": 500, \"y\": 735})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.770254611968994
+      },
+      {
+        "step": 11,
+        "action": "click(431, 735)",
+        "tool_call": "click({\"x\": 431, \"y\": 735})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.07444930076599
+      },
+      {
+        "step": 12,
+        "action": "click(500, 735)",
+        "tool_call": "click({\"y\": 735, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 52.90125060081482
+      },
+      {
+        "step": 13,
+        "action": "click(498, 735)",
+        "tool_call": "click({\"y\": 735, \"x\": 498})",
+        "result_val": "incorrect",
+        "elapsed_s": 56.66365456581116
+      },
+      {
+        "step": 14,
+        "action": "click(498, 730)",
+        "tool_call": "click({\"x\": 498, \"y\": 730})",
+        "result_val": "incorrect",
+        "elapsed_s": 60.316805362701416
+      },
+      {
+        "step": 15,
+        "action": "click(500, 735)",
+        "tool_call": "click({\"y\": 735, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 64.30522394180298
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 54.70155572891235,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.8879735469818115
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.011871337890625
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.276103258132935
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.208070039749146
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.421061277389526
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.56148934364319
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.58495569229126
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.56733250617981
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.03788185119629
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.08382558822632
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.18231391906738
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.06461691856384
+      },
+      {
+        "step": 13,
+        "action": "click(419, 735)",
+        "tool_call": "click({\"y\": 735, \"x\": 419})",
+        "result_val": "incorrect",
+        "elapsed_s": 48.46474504470825
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 51.510212659835815
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 54.67880177497864
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-M1",
+    "category": "B_meeting",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 69.14488625526428,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.310199737548828
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.937136888504028
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.590296745300293
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.825374603271484
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.0217444896698
+      },
+      {
+        "step": 6,
+        "action": "click(350, 760)",
+        "tool_call": "click({\"x\": 350, \"y\": 760})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.205005407333374
+      },
+      {
+        "step": 7,
+        "action": "click(498, 762)",
+        "tool_call": "click({\"x\": 498, \"y\": 762})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.20196771621704
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.18050146102905
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.829686403274536
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.73443651199341
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.34899640083313
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 54.09171652793884
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 59.12109851837158
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 64.02302050590515
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 69.12382507324219
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 40.28164029121399,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.8867058753967285
+      },
+      {
+        "step": 2,
+        "action": "click(500, 415)",
+        "tool_call": "click({\"x\": 500, \"y\": 415})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.626208066940308
+      },
+      {
+        "step": 3,
+        "action": "click(500, 688)",
+        "tool_call": "click({\"y\": 688, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.078820943832397
+      },
+      {
+        "step": 4,
+        "action": "click(494, 425)",
+        "tool_call": "click({\"x\": 494, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.728764772415161
+      },
+      {
+        "step": 5,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"x\": 500, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.100532054901123
+      },
+      {
+        "step": 6,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"x\": 500, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.365259885787964
+      },
+      {
+        "step": 7,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"y\": 425, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.501163244247437
+      },
+      {
+        "step": 8,
+        "action": "click(500, 420)",
+        "tool_call": "click({\"y\": 420, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.9610435962677
+      },
+      {
+        "step": 9,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"x\": 500, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.100310802459717
+      },
+      {
+        "step": 10,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"y\": 425, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.07747530937195
+      },
+      {
+        "step": 11,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"y\": 425, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.669889450073242
+      },
+      {
+        "step": 12,
+        "action": "click(494, 424)",
+        "tool_call": "click({\"x\": 494, \"y\": 424})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.119868993759155
+      },
+      {
+        "step": 13,
+        "action": "click(500, 420)",
+        "tool_call": "click({\"x\": 500, \"y\": 420})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.469029903411865
+      },
+      {
+        "step": 14,
+        "action": "click(494, 423)",
+        "tool_call": "click({\"x\": 494, \"y\": 423})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.994131565093994
+      },
+      {
+        "step": 15,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"x\": 500, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.2551543712616
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E2",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 49.02089214324951,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.61958384513855
+      },
+      {
+        "step": 2,
+        "action": "click(492, 679)",
+        "tool_call": "click({\"x\": 492, \"y\": 679})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.389411449432373
+      },
+      {
+        "step": 3,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"x\": 500, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.296972513198853
+      },
+      {
+        "step": 4,
+        "action": "click(500, 424)",
+        "tool_call": "click({\"x\": 500, \"y\": 424})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.016984939575195
+      },
+      {
+        "step": 5,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"x\": 500, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.693286418914795
+      },
+      {
+        "step": 6,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"y\": 425, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.305847883224487
+      },
+      {
+        "step": 7,
+        "action": "click(500, 421)",
+        "tool_call": "click({\"x\": 500, \"y\": 421})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.521270990371704
+      },
+      {
+        "step": 8,
+        "action": "click(494, 421)",
+        "tool_call": "click({\"x\": 494, \"y\": 421})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.079439640045166
+      },
+      {
+        "step": 9,
+        "action": "click(494, 425)",
+        "tool_call": "click({\"x\": 494, \"y\": 425})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.39518404006958
+      },
+      {
+        "step": 10,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"y\": 425, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.8998703956604
+      },
+      {
+        "step": 11,
+        "action": "click(500, 420)",
+        "tool_call": "click({\"x\": 500, \"y\": 420})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.89871263504028
+      },
+      {
+        "step": 12,
+        "action": "click(500, 424)",
+        "tool_call": "click({\"y\": 424, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.25648379325867
+      },
+      {
+        "step": 13,
+        "action": "click(500, 423)",
+        "tool_call": "click({\"x\": 500, \"y\": 423})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.469295263290405
+      },
+      {
+        "step": 14,
+        "action": "click(494, 420)",
+        "tool_call": "click({\"y\": 420, \"x\": 494})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.41673731803894
+      },
+      {
+        "step": 15,
+        "action": "click(500, 425)",
+        "tool_call": "click({\"y\": 425, \"x\": 500})",
+        "result_val": "incorrect",
+        "elapsed_s": 48.99324178695679
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-M1",
+    "category": "G_phone",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 65.95527601242065,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.900515556335449
+      },
+      {
+        "step": 2,
+        "action": "click(558, 584)",
+        "tool_call": "click({\"y\": 584, \"x\": 558})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.497557163238525
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.29389214515686
+      },
+      {
+        "step": 4,
+        "action": "click(580, 582)",
+        "tool_call": "click({\"y\": 582, \"x\": 580})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.587555170059204
+      },
+      {
+        "step": 5,
+        "action": "click(571, 578)",
+        "tool_call": "click({\"y\": 578, \"x\": 571})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.072098970413208
+      },
+      {
+        "step": 6,
+        "action": "click(567, 583)",
+        "tool_call": "click({\"x\": 567, \"y\": 583})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.819315910339355
+      },
+      {
+        "step": 7,
+        "action": "click(562, 565)",
+        "tool_call": "click({\"y\": 565, \"x\": 562})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.79922890663147
+      },
+      {
+        "step": 8,
+        "action": "click(575, 574)",
+        "tool_call": "click({\"x\": 575, \"y\": 574})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.36725378036499
+      },
+      {
+        "step": 9,
+        "action": "click(566, 584)",
+        "tool_call": "click({\"y\": 584, \"x\": 566})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.065879583358765
+      },
+      {
+        "step": 10,
+        "action": "click(563, 584)",
+        "tool_call": "click({\"x\": 563, \"y\": 584})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.57625889778137
+      },
+      {
+        "step": 11,
+        "action": "click(561, 582)",
+        "tool_call": "click({\"x\": 561, \"y\": 582})",
+        "result_val": "incorrect",
+        "elapsed_s": 52.96464419364929
+      },
+      {
+        "step": 12,
+        "action": "click(566, 574)",
+        "tool_call": "click({\"x\": 566, \"y\": 574})",
+        "result_val": "incorrect",
+        "elapsed_s": 56.255935192108154
+      },
+      {
+        "step": 13,
+        "action": "click(562, 574)",
+        "tool_call": "click({\"x\": 562, \"y\": 574})",
+        "result_val": "incorrect",
+        "elapsed_s": 59.67771553993225
+      },
+      {
+        "step": 14,
+        "action": "click(564, 574)",
+        "tool_call": "click({\"x\": 564, \"y\": 574})",
+        "result_val": "incorrect",
+        "elapsed_s": 62.80211591720581
+      },
+      {
+        "step": 15,
+        "action": "click(557, 581)",
+        "tool_call": "click({\"x\": 557, \"y\": 581})",
+        "result_val": "incorrect",
+        "elapsed_s": 65.92670774459839
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 49.879250049591064,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.317113399505615
+      },
+      {
+        "step": 2,
+        "action": "speak(\"There is no single capital of the world.\")",
+        "tool_call": "speak({\"text\": \"There is no single capital of the world.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.17345666885376
+      },
+      {
+        "step": 3,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.365314245223999
+      },
+      {
+        "step": 4,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.222700595855713
+      },
+      {
+        "step": 5,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.118698835372925
+      },
+      {
+        "step": 6,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.985738039016724
+      },
+      {
+        "step": 7,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.287480115890503
+      },
+      {
+        "step": 8,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.148354053497314
+      },
+      {
+        "step": 9,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.293944120407104
+      },
+      {
+        "step": 10,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.184685468673706
+      },
+      {
+        "step": 11,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.3312246799469
+      },
+      {
+        "step": 12,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.10383319854736
+      },
+      {
+        "step": 13,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.78098130226135
+      },
+      {
+        "step": 14,
+        "action": "speak(\"The capital of France is Paris.\")",
+        "tool_call": "speak({\"text\": \"The capital of France is Paris.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.486350536346436
+      },
+      {
+        "step": 15,
+        "action": "speak(\"Paris\")",
+        "tool_call": "speak({\"text\": \"Paris\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.85136651992798
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E2",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 39.871965646743774,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.5442628860473633
+      },
+      {
+        "step": 2,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.306460380554199
+      },
+      {
+        "step": 3,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.789223909378052
+      },
+      {
+        "step": 4,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.240083932876587
+      },
+      {
+        "step": 5,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.15082335472107
+      },
+      {
+        "step": 6,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.37283706665039
+      },
+      {
+        "step": 7,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.586642026901245
+      },
+      {
+        "step": 8,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.031583547592163
+      },
+      {
+        "step": 9,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.264277458190918
+      },
+      {
+        "step": 10,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.406636476516724
+      },
+      {
+        "step": 11,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.576637983322144
+      },
+      {
+        "step": 12,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.977702140808105
+      },
+      {
+        "step": 13,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.96599626541138
+      },
+      {
+        "step": 14,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.654775857925415
+      },
+      {
+        "step": 15,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.84619498252869
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-M1",
+    "category": "H_interview",
+    "difficulty": "medium",
+    "model_name": "gemini-2.5-flash-native-audio-latest",
+    "observation_mode": "gemini_live",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 47.249295711517334,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The total revenue is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 2.5206239223480225
+      },
+      {
+        "step": 2,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.453409910202026
+      },
+      {
+        "step": 3,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.811312675476074
+      },
+      {
+        "step": 4,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.800653219223022
+      },
+      {
+        "step": 5,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.435697555541992
+      },
+      {
+        "step": 6,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.266916036605835
+      },
+      {
+        "step": 7,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.311081171035767
+      },
+      {
+        "step": 8,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.124915838241577
+      },
+      {
+        "step": 9,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.28426456451416
+      },
+      {
+        "step": 10,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.56620955467224
+      },
+      {
+        "step": 11,
+        "action": "speak(\"$4.2M\")",
+        "tool_call": "speak({\"text\": \"$4.2M\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.47642946243286
+      },
+      {
+        "step": 12,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.68321657180786
+      },
+      {
+        "step": 13,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.16224908828735
+      },
+      {
+        "step": 14,
+        "action": "speak(\"The total revenue is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.88621187210083
+      },
+      {
+        "step": 15,
+        "action": "speak(\"The total revenue shown in the report is $4.2M.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2M.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 47.22438716888428
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  }
+]

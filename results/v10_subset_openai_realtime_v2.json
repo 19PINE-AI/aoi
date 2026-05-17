@@ -1,0 +1,1442 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 45.169857025146484,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.366546392440796
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.395622968673706
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.873340845108032
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.801890850067139
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.9450523853302
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.857937574386597
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.770768880844116
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.686323642730713
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.616526126861572
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.536242246627808
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.45765233039856
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.36484384536743
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.30950856208801
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.22619152069092
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.148603200912476
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 45.84628200531006,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.5045437812805176
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.594679594039917
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.889557361602783
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.003929138183594
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.201831579208374
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.122094869613647
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.455155611038208
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.37714910507202
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.302874088287354
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.227290630340576
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.149914503097534
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.06518626213074
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.97722053527832
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.90826630592346
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.824690103530884
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "A-E3",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 46.03636384010315,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.215364694595337
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.493869781494141
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.234663963317871
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.238251447677612
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.412720203399658
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.327888011932373
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.60863208770752
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.544187307357788
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.475812673568726
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.409848928451538
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.35014295578003
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.271273374557495
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.187352418899536
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.10067391395569
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.01708126068115
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 48.721062421798706,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.2945685386657715
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.523772716522217
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.170833349227905
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.424340009689331
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.758744955062866
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.838613748550415
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.816439151763916
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.712945699691772
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.083550691604614
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.987690448760986
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.901986837387085
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.975802183151245
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.893110275268555
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.80019783973694
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 48.69231390953064
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 48.60032057762146,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.339967727661133
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.379784107208252
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.22764801979065
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.596863746643066
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.771852493286133
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.821948528289795
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.668044805526733
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.580890893936157
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.082844495773315
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.98862910270691
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.90326929092407
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.815500020980835
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.72592067718506
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.660030364990234
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 48.577707052230835
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "B-E3",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 53.30725407600403,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.1052534580230713
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.782163143157959
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.489901065826416
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.181750059127808
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.101882696151733
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.024335622787476
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.933348178863525
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.86129546165466
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.76904296875
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.69168734550476
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.597198724746704
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.539095401763916
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 47.45589590072632
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.37506318092346
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.28319001197815
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 45.86249351501465,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.2833003997802734
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.500099182128906
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.267043590545654
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.264541864395142
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.38003396987915
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.282210111618042
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.507875442504883
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.414381742477417
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.317029237747192
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.269357681274414
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.19851040840149
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.099920988082886
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.00921988487244
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.917967557907104
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.838282108306885
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E2",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 45.6136577129364,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.1692440509796143
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.470184803009033
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.139819860458374
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.045823335647583
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.167688369750977
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.078948974609375
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.121029376983643
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.029093265533447
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.95310688018799
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.855626583099365
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.768073320388794
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.67069959640503
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.58049273490906
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.504313230514526
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 45.59114646911621
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "G-E3",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 44.68708252906799,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.1450607776641846
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.183778762817383
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.35231351852417
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.264123439788818
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.463539838790894
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.375277519226074
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.286956787109375
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.21435785293579
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.13437008857727
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.06987714767456
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.987489461898804
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.89179062843323
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.79744505882263
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.7324013710022
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.66017246246338
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 45.00987243652344,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.5008299350738525
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.572263717651367
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.761131048202515
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.678614616394043
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.768454790115356
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.68649911880493
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.60895824432373
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.539881467819214
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.4649178981781
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.392470836639404
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.306296825408936
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.224788427352905
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.142905712127686
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.065462827682495
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.985109090805054
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E2",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 44.367804765701294,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.1391217708587646
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.133402585983276
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.143376111984253
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.079527616500854
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.086723804473877
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.027379035949707
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.957300901412964
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 23.876174926757812
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.793330907821655
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 29.705450773239136
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 32.642088651657104
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.55819368362427
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.48240351676941
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.42392086982727
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.344725131988525
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  },
+  {
+    "task_id": "H-E3",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2.0",
+    "observation_mode": "openai_realtime",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 15,
+    "total_time_s": 44.92614960670471,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.142955780029297
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.226488351821899
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.363245725631714
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 12.315904140472412
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.38478422164917
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.32059335708618
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.26357412338257
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.217505931854248
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 27.167707204818726
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.10779333114624
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.092692375183105
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.00150179862976
+      },
+      {
+        "step": 13,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.96725249290466
+      },
+      {
+        "step": 14,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.93835163116455
+      },
+      {
+        "step": 15,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.875858783721924
+      }
+    ],
+    "error": null,
+    "final_score": 0.0
+  }
+]

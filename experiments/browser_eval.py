@@ -132,7 +132,19 @@ class BrowserEvaluator:
     Runs a single task against a CU model with a specified observation mode.
 
     Observation modes (v3):
-        standard          - Screenshot-only. No keyframes, no audio.
+        standard          - Screenshot-only. No keyframes, no audio, no DOM
+                            element list — the original CU agent baseline.
+        standard_structured - Screenshot-only AND no extra perception, but the
+                            AOI's structured prompt scaffolding (DOM element
+                            list, structured observation-record format) is
+                            applied.  Used to disentangle prompt-format gains
+                            from perception gains.
+        standard_audio     - Audio enabled (PulseAudio → Whisper), but the
+                            standard prompt (no [PAGE ELEMENTS] DOM list).
+                            Isolates audio's marginal benefit from the
+                            structured-prompt scaffold's effect — critical for
+                            models like Gemini 3 Flash where the scaffold and
+                            perception go in opposite directions.
         aoi_visual         - Keyframes only (3fps CLIP extraction), no audio.
         aoi_audio          - Audio only (PulseAudio → Whisper), no keyframes.
         aoi_full           - Keyframes + audio (full perception, no speak).
@@ -187,6 +199,7 @@ class BrowserEvaluator:
 
         use_keyframes = self.observation_mode in (
             "aoi_visual", "aoi_visual_only", "aoi_visual_asr", "aoi_full",
+            "aoi_full_no_narration_memory",
             "aoi_interactive", "pixel_diff", "uniform_1fps", "uniform_3fps",
             "random_keyframes",
         )
@@ -203,7 +216,10 @@ class BrowserEvaluator:
             self._keyframe_extractor = None
 
         # Audio pipeline: PulseAudio capture → Whisper service (HTTP)
-        use_audio = self.observation_mode in ("aoi_visual_asr", "aoi_full", "aoi_audio", "aoi_interactive")
+        use_audio = self.observation_mode in ("aoi_visual_asr", "aoi_full",
+                                              "aoi_full_no_narration_memory",
+                                              "aoi_audio", "aoi_interactive",
+                                              "standard_audio")
         if use_audio:
             if self._audio_processor is None:
                 self._audio_processor = AudioProcessor(
@@ -243,6 +259,58 @@ class BrowserEvaluator:
             ts = time.time()
             self._keyframe_extractor.on_sample(frame, ts)
 
+    def _inject_audio_file(self, env: BrowserEnvironment, src_url: str):
+        """Play a real recorded audio/video file (DynaCU-Real-Local) through
+        the PulseAudio virtual_speaker so the AOI capture pipeline sees it
+        exactly the way it would see a user listening to a real recording."""
+        from pathlib import Path
+        import subprocess as sp
+        # Resolve src relative to the HTML file's directory
+        html_path = Path("benchmark_env/html_tasks") / env.html_file
+        # Strip leading "../" segments
+        rel = src_url
+        base = html_path.parent
+        while rel.startswith("../"):
+            base = base.parent
+            rel = rel[3:]
+        asset_path = base / rel
+        if not asset_path.exists():
+            logger.warning("Audio file not found at %s (src=%s)", asset_path, src_url)
+            return
+        # Decode through ffmpeg → 16k mono → pacat → virtual_speaker
+        # Get duration first via ffprobe so we know how long to play
+        try:
+            duration_str = sp.check_output([
+                "ffprobe", "-v", "error", "-show_entries", "format=duration",
+                "-of", "default=noprint_wrappers=1:nokey=1", str(asset_path)
+            ], timeout=10).decode().strip()
+            self._audio_duration_s = float(duration_str)
+        except Exception:
+            self._audio_duration_s = 60.0  # fallback
+        logger.info("Injecting real audio file %s (%.1fs) via pacat",
+                    asset_path.name, self._audio_duration_s)
+        # Stream raw float32 16kHz mono PCM
+        def _play():
+            try:
+                proc = sp.Popen(
+                    ["ffmpeg", "-loglevel", "error", "-i", str(asset_path),
+                     "-f", "f32le", "-ac", "1", "-ar", "16000", "-"],
+                    stdout=sp.PIPE,
+                )
+                sp.run(
+                    ["pacat", "--format=float32le", "--rate=16000",
+                     "--channels=1", "--device=virtual_speaker", "--raw"],
+                    stdin=proc.stdout,
+                    timeout=self._audio_duration_s + 10,
+                )
+                logger.info("Real audio file injection complete (%.1fs)", self._audio_duration_s)
+            except Exception as e:
+                logger.warning("Audio file playback failed: %s", e)
+        import threading
+        thread = threading.Thread(target=_play, daemon=True)
+        thread.start()
+        self._audio_inject_thread = thread
+
     def _inject_page_audio(self, env: BrowserEnvironment):
         """
         Extract audio text from the HTML page and play it through PulseAudio
@@ -258,6 +326,19 @@ class BrowserEvaluator:
             return
 
         try:
+            # First check whether the page embeds a real audio FILE (DynaCU-Real-Local
+            # tasks do this).  If so, play that file directly through pacat — no TTS.
+            audio_file_url = env._page.evaluate('''() => {
+                const a = document.querySelector('audio[src], video[src]');
+                if (a) {
+                    return a.getAttribute('src');
+                }
+                return null;
+            }''')
+            if audio_file_url:
+                self._inject_audio_file(env, audio_file_url)
+                return
+
             # Extract audio content from page JavaScript
             audio_texts = env._page.evaluate('''() => {
                 // Try common variable names used in our task pages
@@ -414,8 +495,10 @@ class BrowserEvaluator:
 
             # Inject page audio through PulseAudio (since speechSynthesis
             # doesn't work in headless Chromium)
-            if self.observation_mode in ("aoi_audio", "aoi_full", "aoi_interactive",
-                                         "aoi_visual_asr"):
+            if self.observation_mode in ("aoi_audio", "aoi_full",
+                                         "aoi_full_no_narration_memory",
+                                         "aoi_interactive", "aoi_visual_asr",
+                                         "standard_audio"):
                 self._inject_page_audio(env)
                 # Wait for enough audio to buffer so the agent hears content
                 # on its first step. For short clips (< 15s), wait for the
@@ -483,17 +566,23 @@ class BrowserEvaluator:
                 # 6. CU model inference
                 context_text = obs.to_prompt_text()
 
-                # Add interactive page elements for AOI modes
-                # This gives the model DOM context about available inputs/buttons
-                if self.observation_mode != "standard":
+                # Add interactive page elements for AOI modes (and the
+                # `standard_structured` control, which gets the AOI's prompt
+                # scaffolding without any extra perception).
+                # `standard_audio` deliberately SKIPS [PAGE ELEMENTS] to isolate
+                # audio's marginal benefit from the scaffold effect.
+                if self.observation_mode not in ("standard", "standard_audio"):
                     page_elements = env.get_interactive_elements()
                     if page_elements:
                         context_text += f"\n\n{page_elements}"
 
                 # Add accumulated audio transcript for audio-enabled modes
                 # This ensures no spoken information is lost from earlier steps
-                if self.observation_mode in ("aoi_full", "aoi_audio",
-                                              "aoi_interactive", "aoi_visual_asr"):
+                if self.observation_mode in ("aoi_full",
+                                              "aoi_full_no_narration_memory",
+                                              "aoi_audio",
+                                              "aoi_interactive", "aoi_visual_asr",
+                                              "standard_audio"):
                     full_transcript = self._trajectory.get_full_transcript()
                     if full_transcript:
                         context_text += (
@@ -538,12 +627,22 @@ class BrowserEvaluator:
                                 task.task_id, step_num, action_result.error[:100])
 
                 # 8. Store in trajectory
+                # Narration-discarded ablation: model still generates a narration
+                # (so any chain-of-thought benefit from articulating the visual
+                # state still occurs at inference time), but the narration is
+                # dropped from the persistent trajectory rather than carried
+                # forward as long-term memory.  This isolates the "persistent
+                # text memory" effect from the "narrate-before-act CoT" effect.
+                if self.observation_mode == "aoi_full_no_narration_memory":
+                    stored_narration = ""
+                else:
+                    stored_narration = cu_output.narration
                 self._trajectory.append(
                     step_id=step_num,
                     step_start_time=t_obs_start,
                     step_end_time=time.time(),
                     audio_text=audio_text,
-                    visual_narration=cu_output.narration,
+                    visual_narration=stored_narration,
                     action=cu_output.action,
                     n_keyframes=len(keyframes),
                     audio_model_called=two_layer.has_audio,

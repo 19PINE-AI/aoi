@@ -128,42 +128,64 @@ class OpenAICUModel:
         self.model = model
         self.max_tokens = max_tokens
 
-    def __call__(
-        self,
-        context_text: str,
-        images: list[Image.Image],
-        task: str,
-    ) -> CUModelOutput:
-        content = []
+    def __call__(self, context_text, images, task):
+        return _openai_compat_call(
+            self.client, self.model, self.max_tokens, context_text, images, task,
+        )
 
-        if context_text.strip():
-            content.append({"type": "text", "text": context_text})
 
-        for img in images:
-            content.append({
-                "type": "image_url",
-                "image_url": {"url": f"data:image/png;base64,{pil_to_base64(img)}"},
-            })
-
+def _openai_compat_call(client, model, max_tokens, context_text, images, task):
+    """Shared chat-completions implementation for any OpenAI-compatible
+    vision endpoint (OpenAI, xAI Grok, OpenRouter, vLLM)."""
+    content = []
+    if context_text.strip():
+        content.append({"type": "text", "text": context_text})
+    for img in images:
         content.append({
-            "type": "text",
-            "text": f"Task: {task}{NARRATION_INSTRUCTION}",
+            "type": "image_url",
+            "image_url": {"url": f"data:image/png;base64,{pil_to_base64(img)}"},
         })
+    content.append({
+        "type": "text",
+        "text": f"Task: {task}{NARRATION_INSTRUCTION}",
+    })
+    token_param = (
+        {"max_completion_tokens": max_tokens}
+        if "gpt-5" in model or "o3" in model or "o4" in model
+        else {"max_tokens": max_tokens}
+    )
+    response = client.chat.completions.create(
+        model=model,
+        messages=[{"role": "user", "content": content}],
+        **token_param,
+    )
+    raw = response.choices[0].message.content
+    return _parse_output(raw)
 
-        # GPT-5+ uses max_completion_tokens; older models use max_tokens
-        token_param = (
-            {"max_completion_tokens": self.max_tokens}
-            if "gpt-5" in self.model or "o3" in self.model or "o4" in self.model
-            else {"max_tokens": self.max_tokens}
-        )
 
-        response = self.client.chat.completions.create(
-            model=self.model,
-            messages=[{"role": "user", "content": content}],
-            **token_param,
+class GrokCUModel:
+    """xAI Grok computer-use model via the OpenAI-compatible xAI endpoint.
+
+    Grok-4 supports vision and chat-completions function calling through
+    https://api.x.ai/v1.  Requires XAI_API_KEY in the environment.
+    """
+
+    def __init__(self, model: str = "grok-4", max_tokens: int = 1024,
+                 base_url: str = "https://api.x.ai/v1"):
+        import openai
+        api_key = os.environ.get("XAI_API_KEY") or os.environ.get("GROK_API_KEY")
+        if not api_key:
+            raise RuntimeError(
+                "GrokCUModel requires XAI_API_KEY (or GROK_API_KEY) to be set"
+            )
+        self.client = openai.OpenAI(api_key=api_key, base_url=base_url)
+        self.model = model
+        self.max_tokens = max_tokens
+
+    def __call__(self, context_text, images, task):
+        return _openai_compat_call(
+            self.client, self.model, self.max_tokens, context_text, images, task,
         )
-        raw = response.choices[0].message.content
-        return _parse_output(raw)
 
 
 class GeminiCUModel:
@@ -238,7 +260,10 @@ class LocalVLLMModel:
         model_family: str = "fara",  # "fara", "ui_tars", "generic"
     ):
         import openai
-        self.client = openai.OpenAI(base_url=base_url, api_key="local")
+        # VLLM_API_KEY allows routing through OpenAI-compatible providers
+        # (e.g. OpenRouter) when the local vLLM cannot start.
+        api_key = os.environ.get("VLLM_API_KEY", "local")
+        self.client = openai.OpenAI(base_url=base_url, api_key=api_key)
         self.model = model
         self.max_tokens = max_tokens
         self.model_family = model_family
@@ -277,10 +302,17 @@ class LocalVLLMModel:
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": content})
 
+        kwargs = {}
+        # OpenRouter provider routing (set via env when this account is
+        # gated to a single upstream).  Format: VLLM_OR_PROVIDER=alibaba.
+        provider = os.environ.get("VLLM_OR_PROVIDER")
+        if provider:
+            kwargs["extra_body"] = {"provider": {"only": [provider]}}
         response = self.client.chat.completions.create(
             model=self.model,
             max_tokens=self.max_tokens,
             messages=messages,
+            **kwargs,
         )
         raw = response.choices[0].message.content
         return self._parse_local_output(raw)
@@ -349,7 +381,7 @@ def _parse_output(raw: str) -> CUModelOutput:
 
 
 # ── Model registry ────────────────────────────────────────────────────────────
-# Current SOTA CU models available via API (April 2026)
+# Current SOTA CU models available via API (May 2026)
 SOTA_MODELS = {
     # Anthropic
     "claude-opus-4-6":    ("anthropic", "claude-opus-4-6"),
@@ -363,6 +395,13 @@ SOTA_MODELS = {
     "gemini-2.5-flash":   ("google",    "gemini-2.5-flash"),
     "gemini-cu":          ("google",    "gemini-2.5-computer-use-preview-10-2025"),
     "gemini-2.0-flash":   ("google",    "gemini-2.0-flash"),
+    # xAI
+    "grok-4":              ("xai", "grok-4"),
+    "grok-4-vision":       ("xai", "grok-4-vision"),
+    "grok-4.3":            ("xai", "grok-4.3"),
+    "grok-4-fast":         ("xai", "grok-4-fast-reasoning"),
+    "grok-4-fast-reasoning":     ("xai", "grok-4-fast-reasoning"),
+    "grok-4-fast-non-reasoning": ("xai", "grok-4-fast-non-reasoning"),
 }
 
 # Open-source models served locally via vLLM
@@ -372,6 +411,16 @@ LOCAL_MODELS = {
     "ui-tars-72b":   ("ByteDance-Seed/UI-TARS-72B-DPO",  "ui_tars", "http://localhost:5002/v1"),
     "opencua-7b":    ("xlangai/OpenCUA-7B",               "generic", "http://localhost:5003/v1"),
     "evocua-32b":    ("meituan/EvoCUA-32B-20260105",      "generic", "http://localhost:5004/v1"),
+    # Substitute open-source model when EvoCUA cannot start (e.g. NVML driver
+    # mismatch on the host).  Qwen3-8B is a smaller open-source model with
+    # tool-calling support; we use it as a stand-in for selection-method
+    # ablations (the convergence claim does not depend on absolute scores).
+    "qwen3-8b":      ("Qwen/Qwen3-8B",                    "generic", "http://localhost:8001/v1"),
+    # Open-source vision model accessed via OpenRouter (OpenAI-compatible).
+    # Substitute for EvoCUA-32B when the local vLLM cannot start (NVML mismatch).
+    # Set VLLM_API_KEY=$OPENROUTER_API_KEY when using this alias.
+    "qwen3-vl-32b":  ("qwen/qwen3-vl-32b-instruct",       "generic", "https://openrouter.ai/api/v1"),
+    "qwen3-vl-8b":   ("qwen/qwen3-vl-8b-instruct",        "generic", "https://openrouter.ai/api/v1"),
 }
 
 
@@ -395,6 +444,8 @@ def get_model(model_name: str) -> "ClaudeCUModel | OpenAICUModel | GeminiCUModel
             provider, full_id = "openai", model_name
         elif model_name.startswith("gemini"):
             provider, full_id = "google", model_name
+        elif model_name.startswith("grok"):
+            provider, full_id = "xai", model_name
         else:
             raise ValueError(
                 f"Unknown model: {model_name}. "
@@ -408,5 +459,7 @@ def get_model(model_name: str) -> "ClaudeCUModel | OpenAICUModel | GeminiCUModel
         return OpenAICUModel(model=full_id)
     elif provider == "google":
         return GeminiCUModel(model=full_id)
+    elif provider == "xai":
+        return GrokCUModel(model=full_id)
     else:
         raise ValueError(f"Unknown provider: {provider}")
