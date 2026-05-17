@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.4.16)  17 MAY 2026 01:38
+This is pdfTeX, Version 3.141592653-2.6-1.40.22 (TeX Live 2022/dev/Debian) (preloaded format=pdflatex 2026.4.16)  17 MAY 2026 09:35
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1082,41 +1082,48 @@ Overfull \hbox (5.92233pt too wide) in paragraph at lines 516--536
 Package pgfplots info on input line 565: Using 'lua backend=false' for axis: x 
 coord trafo unsupported.
 [8]
-Underfull \hbox (badness 10000) in paragraph at lines 686--687
+Underfull \hbox (badness 10000) in paragraph at lines 687--688
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 698--699
+Underfull \hbox (badness 10000) in paragraph at lines 699--700
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 700--702
+Underfull \hbox (badness 10000) in paragraph at lines 701--703
 []\T1/cmtt/m/n/10 fill(#answerInput, ``git clone ...'')
  []
 
-[9] [10] [11] [12]
-Overfull \hbox (3.9072pt too wide) in paragraph at lines 947--965
+[9] [10] [11]
+Overfull \hbox (13.06969pt too wide) in paragraph at lines 818--829
+\T1/cmr/m/n/10.95 leases, we ran three ad-di-tional 100-task eval-u-a-tions wit
+h the same har-ness: (i) \T1/cmr/bx/n/10.95 Gem-ini 3 Flash \T1/cmr/m/n/10.95 [
+[]Google
+ []
+
+[12]
+Overfull \hbox (3.9072pt too wide) in paragraph at lines 943--961
 []\T1/cmr/bx/n/10.95 Measurement 2: action-grammar shift is uni-ver-sal; pre-ma
 -ture ter-mi-na-tion is Gemini-
  []
 
 
-Overfull \hbox (19.91643pt too wide) in paragraph at lines 947--965
+Overfull \hbox (19.91643pt too wide) in paragraph at lines 943--961
 \T1/cmr/m/n/10.95 (auto-targets the fo-cused el-e-ment) and DOM-selector \T1/cm
 tt/m/n/10.95 fill(#id, "text") \T1/cmr/m/n/10.95 (used when \T1/cmtt/m/n/10.95 
 [PAGE ELEMENTS]
  []
 
 [13] [14]
-Package pgfplots info on input line 1139: Using 'lua backend=false' for axis: x
+Package pgfplots info on input line 1136: Using 'lua backend=false' for axis: x
  coord trafo unsupported.
  [15] [16]
-Package pgfplots info on input line 1269: Using 'lua backend=false' for axis: x
+Package pgfplots info on input line 1266: Using 'lua backend=false' for axis: x
  coord trafo unsupported.
  [17] [18]
-Package pgfplots info on input line 1457: fill between: activating layered grap
+Package pgfplots info on input line 1454: fill between: activating layered grap
 hics
 \pgf@layerbox@axis background=\box85
 \pgf@layerboxsaved@axis background=\box86
@@ -1134,13 +1141,13 @@ hics
 \pgf@layerboxsaved@axis descriptions=\box98
 \pgf@layerbox@axis foreground=\box99
 \pgf@layerboxsaved@axis foreground=\box100
-Package pgfplots info on input line 1457: Setting layers 'axis background,axis 
+Package pgfplots info on input line 1454: Setting layers 'axis background,axis 
 grid,axis ticks,axis lines,axis tick labels,pre main,main,axis descriptions,axi
 s foreground'...
  [19]
-Package pgfplots info on input line 1584: Using 'lua backend=false' for axis: s
+Package pgfplots info on input line 1582: Using 'lua backend=false' for axis: s
 tacked plots unsupported (yet).
-Package pgfplots info on input line 1584: Using 'lua backend=false' for axis: x
+Package pgfplots info on input line 1582: Using 'lua backend=false' for axis: x
  coord trafo unsupported.
  [20] [21] [22] [23] [24] [25] [26]
 Overfull \hbox (0.50453pt too wide) in paragraph at lines 2002--2006
@@ -1150,36 +1157,20 @@ Overfull \hbox (0.50453pt too wide) in paragraph at lines 2002--2006
 m/n/10.95 ms
  []
 
-
-Overfull \hbox (5.02484pt too wide) in paragraph at lines 2016--2040
-\T1/cmr/m/n/10.95 part of the gain on its own. We mea-sure this di-rectly on Dy
-naCU-Bench with a \T1/cmtt/m/n/10.95 standard_structured
- []
-
-
-Overfull \hbox (5.57372pt too wide) in paragraph at lines 2016--2040
-\T1/cmr/m/n/10.95 form plu-gin (\T1/cmtt/m/n/10.95 vllm/platforms/__init__.py:c
-uda_platform_plugin\T1/cmr/m/n/10.95 ) only calls \T1/cmtt/m/n/10.95 pynvml.nvm
-lInit()
- []
-
 [27] [28] (./main.bbl [29] [30]) [31] [32
 
 ] [33] [34] (./main.aux)
-
-LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
-
 Package rerunfilecheck Info: File `main.out' has not changed.
 (rerunfilecheck)             Checksum: 4B2E418199C54595B6CAD20216543049;7668.
  ) 
 Here is how much of TeX's memory you used:
  40038 strings out of 480171
  943440 string characters out of 5894489
- 1409548 words of memory out of 5000000
+ 1410541 words of memory out of 5000000
  57135 multiletter control sequences out of 15000+600000
  500761 words of font info for 101 fonts, out of 8000000 for 9000
  59 hyphenation exceptions out of 8191
- 84i,19n,80p,1760b,2794s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 84i,19n,80p,1799b,2794s stack positions out of 5000i,500n,10000p,200000b,80000s
  </home/ubuntu/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecit1095.60
 0pk> </home/ubuntu/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/tcrm1095.
 600pk> </home/ubuntu/.texlive2021/texmf-var/fonts/pk/ljfour/jknappen/ec/ecbx070
@@ -1217,10 +1208,10 @@ exlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></usr/share/texlive/
 texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texlive/texmf-d
 ist/fonts/type1/public/amsfonts/symbols/msam10.pfb></usr/share/texlive/texmf-di
 st/fonts/type1/urw/zapfding/uzdr.pfb>
-Output written on main.pdf (34 pages, 546205 bytes).
+Output written on main.pdf (34 pages, 543823 bytes).
 PDF statistics:
- 1837 PDF objects out of 2073 (max. 8388607)
- 797 compressed objects within 8 object streams
+ 1858 PDF objects out of 2073 (max. 8388607)
+ 821 compressed objects within 9 object streams
  190 named destinations out of 1000 (max. 500000)
  333 words of extra memory for PDF output out of 10000 (max. 10000000)
 
