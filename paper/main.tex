@@ -60,7 +60,7 @@
 \textbf{The interface, not the model.}
 SWE-agent~\citep{sweagent} showed that the agent-computer \emph{action} interface is an underexplored design axis for software-engineering agents.  We show the same for the \emph{observation} interface in computer-use (CU) agents: getting it right unlocks dynamic computer use from any existing CU model without retraining.
 Current CU agents---closed and open-source alike---observe the world through periodic screenshots every 3--5\,s and have no audio perception, leaving them blind to video playback, animations, transient UI events, meetings, notifications, and spoken instructions.
-We introduce the \textbf{Agent Observation Interface (AOI)}, a model-agnostic perception layer that decouples observation (continuous, adaptive) from action (discrete).
+We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples observation (continuous, adaptive) from action (discrete).
 Its three gated components---inter-step keyframe capture, volume-gated audio scene understanding, and CU-model-generated visual narration that persists as text---produce nothing on static, silent content, reducing the AOI to the standard loop.
 
 \textbf{Results.}
@@ -69,9 +69,12 @@ Six CU models---Claude Sonnet~4.6, GPT-5.4, Gemini~2.5~Flash, Grok-4, EvoCUA-32B
 On a 12-task audio-focused subset, AOI~full (12/12) beats two production streaming baselines---OpenAI Realtime~\citep{openairealtime} (3/12) and Gemini~Live~\citep{geminilive} (0/12)---both adapted to drive the same browser; an adapter sanity check rules out infrastructural failure.
 
 \textbf{Two surprises about the observation interface.}
-\emph{Selection doesn't matter, capture does}: four inter-step keyframe selection strategies (uniform, random, pixel-difference, CLIP) are statistically indistinguishable (pairwise McNemar $p>0.5$, ${\sim}58\%$ each), replicated on the open-source Qwen3-VL-32B vision model.
-ASR adds +6\,pp, and the largest single-component gain comes from \emph{persistent text memory}: a narration-discarded ablation isolates a significant $+8$\,pp contribution from retaining narration after keyframes are pruned ($p=0.039$ at $N{=}100$), plus a directional $+10$\,pp from inference-time chain-of-thought during narration ($p=0.12$; confirming at $p<0.05$ would require $N{\sim}300$).
-A \texttt{standard\_structured} control decomposes each cloud model's gain into prompt-format and perception components; for models predating Gemini~3 both contribute positively (Claude: $+25$\,pp perception vs.\ $+19$\,pp prompt; Gemini~2.5~Flash: $+23$ vs.\ $+25$).  On Gemini~3~Flash the headline residual collapses to $+9$\,pp ($p=0.18$).  A four-way decomposition (\texttt{standard}/\texttt{standard\_audio}/\texttt{aoi\_audio}/\texttt{aoi\_full}) shows this is not internalised perception but sign-separated component effects: audio $+12$\,pp, structured scaffold $+9$\,pp (bi-directional per category), keyframes $\mathbf{-12}$\,pp.  Replacing the default bundle with \texttt{aoi\_audio} (no keyframes) reaches $57/100$, a $+21$\,pp recovery and $+12$\,pp above \texttt{aoi\_full}.
+\emph{Selection doesn't matter, capture does}: four inter-step keyframe selection strategies (uniform, random, pixel-difference, CLIP) are statistically indistinguishable (pairwise McNemar $p>0.5$, 56--58\% each), replicated on the open-source Qwen3-VL-32B vision model.
+ASR adds +6\,pp; the largest single-component gain is visual narration (+18\,pp), which a narration-discarded ablation decomposes into a significant $+8$\,pp from \emph{persistent text memory of past visual observations} ($p=0.039$ at $N{=}100$) plus a directional $+10$\,pp from inference-time chain-of-thought during narration generation ($p=0.12$; confirming at $p<0.05$ would require $N{\sim}300$).
+A \texttt{standard\_structured} control decomposes each cloud model's gain into prompt-format and perception components; for models predating Gemini~3 both contribute positively (Claude: $+25$\,pp perception vs.\ $+19$\,pp prompt; Gemini~2.5~Flash: $+23$ vs.\ $+25$).  On Gemini~3~Flash the headline residual collapses to $+9$\,pp ($p=0.18$).
+A four-way decomposition (\texttt{standard}/\texttt{standard\_audio}/\texttt{aoi\_audio}/\texttt{aoi\_full}) shows this is not internalised perception but three sign-separated component effects: audio adds $+12$\,pp and the structured scaffold adds $+9$\,pp (bi-directional per category).
+\emph{The keyframe-image stream---uniformly positive on every prior model generation---flips to $\mathbf{-12}$\,pp on Gemini~3.}
+Replacing the default bundle with \texttt{aoi\_audio} (no keyframes) recovers $+21$\,pp over standard ($57/100$, $+12$\,pp above \texttt{aoi\_full}).
 Implication: the observation interface is a separable design axis along which models converge unevenly \emph{and unevenly per component}.  Keyframe imagery is the first AOI element we observe crossing from net-positive to net-negative across model generations, so component selection must become per-model rather than a fixed bundle.
 \end{abstract}
 
@@ -93,8 +96,8 @@ These agents can fill forms, navigate websites, edit documents, and use professi
 \textbf{The blind spot.}
 All these agents observe through \emph{discrete static screenshots} every 3--5 seconds, and are entirely deaf.  Between screenshots, they are blind.
 They cannot understand on-screen video, catch transient UI events that auto-dismiss between observations, hear meeting speech or notification sounds, or perceive animations.
-A comprehensive survey~\citep{cusurvey} catalogs many open challenges but does not identify the observation modality as a gap.
-Quantitative evidence is mounting: GUI-World~\citep{guiworld} shows video LLMs fail on all temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; CUA-Suite~\citep{cuasuite} catalogs 55 hours of temporal dynamics that screenshot-based agents miss entirely.
+A comprehensive survey~\citep{cusurvey} catalogues many open challenges but does not identify the observation modality as a gap.
+Quantitative evidence is mounting: GUI-World~\citep{guiworld} shows video LLMs fail on all temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; CUA-Suite~\citep{cuasuite} catalogues 55 hours of temporal dynamics that screenshot-based agents miss entirely.
 
 \textbf{Why existing approaches fall short.}
 Retraining CU models on video data is expensive, model-specific, and undemonstrated at scale.
@@ -103,15 +106,15 @@ Native real-time multimodal models (Gemini Live~\citep{geminilive}, OpenAI Realt
 Cradle~\citep{cradle}'s pixel-level frame differencing is the closest predecessor but lacks audio perception, visual narration, and a structured observation record.
 
 \textbf{Our approach.}
-The \textbf{Agent Observation Interface (AOI)} is a lightweight perception layer that converts continuous screen and audio streams into the sparse images and text that existing CU models already accept.
+The \textbf{Agent-Computer Observation Interface (AOI)} is a lightweight perception layer that converts continuous screen and audio streams into the sparse images and text that existing CU models already accept.
 It sits between the environment and any image-based CU model; on static, silent content its gates produce nothing and behaviour reverts to the standard loop; on dynamic content it produces extra keyframes, audio transcripts, and CU-model-generated narration that persists as text after the source images are pruned.
 
 \textbf{Contributions.}
 \begin{enumerate}
   \item We identify the \textbf{observation interface} as a critical but overlooked CU design axis, complementary to SWE-agent's action interface, and articulate \emph{decoupling observation from action} as the operative design principle.
-  \item We introduce the \textbf{AOI}, a model-agnostic perception layer with three gated components (inter-step keyframe capture, volume-gated audio scene understanding, CU-model-generated visual narration).
+  \item We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer with three gated components (inter-step keyframe capture, volume-gated audio scene understanding, CU-model-generated visual narration).
   \item We release \textbf{DynaCU-Bench} (100 dynamic tasks) and a \textbf{Static-50} no-degradation baseline.  (A cross-engine ASR check with \texttt{espeak} and real asciinema casts appears in Appendix~\ref{app:realcontent} as a no-degradation pilot, not a perception comparison.)
-  \item Six CU models equipped with the AOI and \textbf{zero retraining} gain +17 to +48\,pp on dynamic tasks (paired McNemar $p<10^{-3}$ for every model).
+  \item Six CU models equipped with the AOI and \textbf{zero retraining} gain +17 to +48\,pp on dynamic tasks (paired McNemar $p<10^{-3}$ for every model); three additional later-released models (Gemini~3~Flash, Grok-4.3, Grok-4-fast-reasoning) are reported as sidebars in Section~\ref{sec:newer}.
   \item A controlled \emph{narration-discarded} ablation decomposes the visual-narration component's $+18$\,pp gain into a significant $+8$\,pp from \emph{persistent text memory} ($p=0.039$) plus a directional $+10$\,pp from inference-time chain-of-thought during narration generation ($p=0.12$ at $N{=}100$).
   \item Two confounds are ruled out: a \texttt{standard\_structured} run on DynaCU-Bench separates prompt-format from perception (Section~\ref{sec:static}), and an open-source Qwen3-VL-32B replication confirms the selection-method convergence is mechanism-driven, not Claude-specific (Section~\ref{sec:ablation}).
   \item We benchmark against monolithic streaming baselines (Gemini Live, OpenAI Realtime) with an adapter sanity check (Section~\ref{sec:streaming}, Appendix~\ref{app:streaming_sanity}).
@@ -146,7 +149,7 @@ Four categories of content are systematically missed:
 % ════════════════════════════════════════════════════════════
 
 The AOI sits between the environment and any existing CU model, observing the entire interval between agent steps and providing the model with additional keyframes, audio descriptions, and accumulated text context---all in the standard image + text format that every CU model already accepts.
-For static, silent tasks, the AOI produces nothing and behavior is identical to the standard loop; for dynamic tasks, the model receives strictly more information.
+For static, silent tasks, the AOI produces nothing and behaviour is identical to the standard loop; for dynamic tasks, the model receives strictly more information.
 No retraining is needed.
 
 \subsection{Architecture Overview}
@@ -266,7 +269,7 @@ For a frame that passes the gates, the additional cost is dominated by CLIP-ViT-
     \node[draw=cAOI!40, line width=1.2pt, dashed, rounded corners=6pt, fill=cAOI!2,
           inner xsep=10pt, inner ysep=14pt,
           fit=(scr)(aud)(pg)(rg)(clip)(wh)(orec)(cm),
-          label={[font=\footnotesize\bfseries, text=cAOI!70!black, anchor=south, yshift=4pt]above:Agent Observation Interface (AOI)}] {};
+          label={[font=\footnotesize\bfseries, text=cAOI!70!black, anchor=south, yshift=4pt]above:Agent-Computer Observation Interface (AOI)}] {};
   \end{scope}
 
 \end{tikzpicture}
@@ -394,7 +397,7 @@ The task instruction is appended at the end.}
 \label{sec:implementation}
 % ════════════════════════════════════════════════════════════
 
-The AOI is implemented in Python (${\sim}2{,}600$ lines) as a modular layer that wraps any CU model.
+The AOI is implemented in Python (${\sim}2{,}600$ lines) as a modular layer that wraps any CU model (full software/hardware/hyperparameter details in Appendix~\ref{app:implementation}).
 Screen capture uses a headless browser (Playwright) at ${\sim}3$\,Hz.
 Audio capture and injection use PulseAudio virtual devices (virtual speaker and monitor source) at 16\,kHz mono.
 CLIP-ViT-B/16 runs on GPU (${\sim}150$\,MB VRAM).
@@ -424,7 +427,7 @@ Design principles:
 
 \subsection{Task Categories}
 
-DynaCU-Bench spans 10 categories across three capability axes: audio perception~(A), visual-temporal perception~(V), and real-time interaction~(I). Each category has 10 tasks.
+DynaCU-Bench spans 10 categories across three capability axes: audio perception~(A), visual-temporal perception~(V), and real-time interaction~(I). Each category has 10 tasks; representative examples per category appear in Appendix~\ref{app:tasklist}.
 
 \begin{table}[t]
 \centering
@@ -1093,7 +1096,8 @@ Fara-7B's small gain on medium/hard (5$\to$11, 3$\to$4) compared to its large ga
 \begin{table}[t]
 \centering
 \caption{Ablation study on Claude Sonnet~4.6: contribution of each AOI component.
-All configurations include per-category breakdown for categories most affected.}
+All configurations include per-category breakdown for categories most affected.
+Small per-category drops between adjacent tiers (e.g.\ B: 5$\to$4 from visual-only to visual$+$ASR; C: 10$\to$9 from visual$+$ASR to AOI~full) are within sampling noise (no McNemar significance); per-tier transitions on the 100-task total are tested in Table~\ref{tab:ablation_stats}.}
 \label{tab:ablation}
 \small
 \begin{tabular}{@{}l c ccccc@{}}
@@ -1759,7 +1763,7 @@ Appendix~\ref{app:realcontent}.
 \textbf{Computer-use agents.}
 The CU agent landscape spans closed-source systems~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source models~\citep{uitars2,opencua,fara7b,guiowl,coact}.
 Agent~S3~\citep{agents3} demonstrates competitive open-source performance on OSWorld.
-A recent CU agent survey~\citep{cusurvey} catalogs many agents and datasets and identifies several open gaps, but does not identify the observation modality as one.
+A recent CU agent survey~\citep{cusurvey} catalogues many agents and datasets and identifies several open gaps, but does not identify the observation modality as one.
 All of these agents operate through the screenshot--reason--act loop;
 none addresses dynamic visual content or audio perception.
 
