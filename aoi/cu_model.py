@@ -421,6 +421,15 @@ LOCAL_MODELS = {
     # Set VLLM_API_KEY=$OPENROUTER_API_KEY when using this alias.
     "qwen3-vl-32b":  ("qwen/qwen3-vl-32b-instruct",       "generic", "https://openrouter.ai/api/v1"),
     "qwen3-vl-8b":   ("qwen/qwen3-vl-8b-instruct",        "generic", "https://openrouter.ai/api/v1"),
+    # B1 additional open-source CU models via OpenRouter (B1 extension).
+    # OpenRouter account has restricted provider allowlist
+    # (deepinfra, nebius, ...); UI-TARS / GLM-4.5V are blocked by it.
+    # The accessible open-source vision-language models below span
+    # 30B-A3B MoE and 235B-A22B MoE, complementing the Qwen3-VL-32B
+    # already on file.
+    "qwen3-vl-30b-or":  ("qwen/qwen3-vl-30b-a3b-instruct",  "generic", "https://openrouter.ai/api/v1"),
+    "qwen3-vl-235b-or": ("qwen/qwen3-vl-235b-a22b-instruct","generic", "https://openrouter.ai/api/v1"),
+    "qwen25-vl-72b-or": ("qwen/qwen2.5-vl-72b-instruct",    "generic", "https://openrouter.ai/api/v1"),
 }
 
 

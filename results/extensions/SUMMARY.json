@@ -1,0 +1,236 @@
+{
+  "a1": {
+    "rows": {
+      "aoi_full_max1kf": {
+        "pass": 20,
+        "total": 50,
+        "rate": 40.0,
+        "ci_low": 27.608189786245752,
+        "ci_high": 53.81881089724063
+      },
+      "aoi_full_max2kf": {
+        "pass": 18,
+        "total": 50,
+        "rate": 36.0,
+        "ci_low": 24.138562967182875,
+        "ci_high": 49.859237989698045
+      },
+      "aoi_full_max3kf": {
+        "pass": 20,
+        "total": 50,
+        "rate": 40.0,
+        "ci_low": 27.608189786245752,
+        "ci_high": 53.81881089724063
+      },
+      "aoi_full_noise_kf": {
+        "pass": 17,
+        "total": 50,
+        "rate": 34.0,
+        "ci_low": 22.43676963506106,
+        "ci_high": 47.846431458517145
+      },
+      "aoi_full_dup_kf": {
+        "pass": 20,
+        "total": 50,
+        "rate": 40.0,
+        "ci_low": 27.608189786245752,
+        "ci_high": 53.81881089724063
+      },
+      "aoi_full_reorder_kf": {
+        "pass": 22,
+        "total": 50,
+        "rate": 44.0,
+        "ci_low": 31.161987210235342,
+        "ci_high": 57.69421319985648
+      },
+      "aoi_full_max5kf_ref": {
+        "pass": 18,
+        "total": 50,
+        "rate": 36.0,
+        "ci_low": 24.138562967182875,
+        "ci_high": 49.859237989698045,
+        "note": "Reference from v10c_gemini3flash_aoi_full.json (same subset)"
+      },
+      "aoi_audio_ref": {
+        "pass": 24,
+        "total": 50,
+        "rate": 48.0,
+        "ci_low": 34.79691239550571,
+        "ci_high": 61.48848774119157,
+        "note": "Reference: aoi_audio (no keyframes)"
+      }
+    },
+    "mcnemar": {
+      "aoi_full_max1kf vs aoi_full_max3kf": {
+        "b_only_a": 3,
+        "c_only_b": 3,
+        "p": 1.0,
+        "n_common": 50
+      },
+      "aoi_full_max1kf vs aoi_full_noise_kf": {
+        "b_only_a": 6,
+        "c_only_b": 3,
+        "p": 0.5078125,
+        "n_common": 50
+      },
+      "aoi_full_max3kf vs aoi_full_noise_kf": {
+        "b_only_a": 5,
+        "c_only_b": 2,
+        "p": 0.453125,
+        "n_common": 50
+      },
+      "aoi_full_max3kf vs aoi_full_dup_kf": {
+        "b_only_a": 3,
+        "c_only_b": 3,
+        "p": 1.0,
+        "n_common": 50
+      },
+      "aoi_full_noise_kf vs aoi_full_dup_kf": {
+        "b_only_a": 1,
+        "c_only_b": 4,
+        "p": 0.375,
+        "n_common": 50
+      },
+      "aoi_full_max3kf vs aoi_full_reorder_kf": {
+        "b_only_a": 1,
+        "c_only_b": 3,
+        "p": 0.625,
+        "n_common": 50
+      }
+    },
+    "by_category": {
+      "aoi_full_max1kf": {
+        "B_meeting": "6/10",
+        "C_video": "8/10",
+        "D_carousel": "4/10",
+        "E_dashboard": "1/10",
+        "F_transient": "1/10"
+      },
+      "aoi_full_max2kf": {
+        "B_meeting": "5/10",
+        "C_video": "6/10",
+        "D_carousel": "6/10",
+        "E_dashboard": "1/10",
+        "F_transient": "0/10"
+      },
+      "aoi_full_max3kf": {
+        "B_meeting": "6/10",
+        "C_video": "9/10",
+        "D_carousel": "4/10",
+        "E_dashboard": "1/10",
+        "F_transient": "0/10"
+      },
+      "aoi_full_noise_kf": {
+        "B_meeting": "6/10",
+        "C_video": "6/10",
+        "D_carousel": "5/10",
+        "E_dashboard": "0/10",
+        "F_transient": "0/10"
+      },
+      "aoi_full_dup_kf": {
+        "B_meeting": "7/10",
+        "C_video": "7/10",
+        "D_carousel": "5/10",
+        "E_dashboard": "1/10",
+        "F_transient": "0/10"
+      },
+      "aoi_full_reorder_kf": {
+        "B_meeting": "7/10",
+        "C_video": "9/10",
+        "D_carousel": "5/10",
+        "E_dashboard": "1/10",
+        "F_transient": "0/10"
+      }
+    }
+  },
+  "a2": {
+    "rows": {
+      "standard_minimal": {
+        "pass": 16,
+        "total": 100,
+        "rate": 16.0,
+        "ci_low": 10.095202349473716,
+        "ci_high": 24.420444558894413
+      },
+      "standard_pageel_only": {
+        "pass": 46,
+        "total": 100,
+        "rate": 46.0,
+        "ci_low": 36.56064385333187,
+        "ci_high": 55.73531460647615
+      },
+      "standard_ref": {
+        "pass": 38,
+        "total": 100,
+        "rate": 38.0,
+        "ci_low": 29.097449200134378,
+        "ci_high": 47.79042617928966
+      },
+      "standard_structured_ref": {
+        "pass": 57,
+        "total": 100,
+        "rate": 57.0,
+        "ci_low": 47.21521169586435,
+        "ci_high": 66.26686099947162
+      },
+      "aoi_full_ref": {
+        "pass": 82,
+        "total": 100,
+        "rate": 82.0,
+        "ci_low": 73.33246397578691,
+        "ci_high": 88.29986834574896
+      }
+    },
+    "mcnemar": {
+      "standard_minimal vs standard": {
+        "b_only_a": 0,
+        "c_only_b": 22,
+        "p": 4.76837158203125e-07,
+        "n_common": 100
+      },
+      "standard_minimal vs standard_pageel_only": {
+        "b_only_a": 1,
+        "c_only_b": 31,
+        "p": 1.5366822481155396e-08,
+        "n_common": 100
+      },
+      "standard_pageel_only vs standard_structured": {
+        "b_only_a": 3,
+        "c_only_b": 14,
+        "p": 0.012725830078125,
+        "n_common": 100
+      },
+      "standard vs standard_structured": {
+        "b_only_a": 3,
+        "c_only_b": 22,
+        "p": 0.00015652179718017578,
+        "n_common": 100
+      }
+    }
+  },
+  "a3": {
+    "n_audited": 10,
+    "label_counts": {
+      "memory_hit": 2,
+      "cot_only": 8
+    },
+    "by_category": {
+      "C_video": {
+        "memory_hit": 2
+      },
+      "D_carousel": {
+        "cot_only": 1
+      },
+      "E_dashboard": {
+        "cot_only": 1
+      },
+      "F_transient": {
+        "cot_only": 5
+      },
+      "I_collab": {
+        "cot_only": 1
+      }
+    }
+  },
+  "b1": {}
+}

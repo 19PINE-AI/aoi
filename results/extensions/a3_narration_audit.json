@@ -1,0 +1,251 @@
+{
+  "summary": {
+    "n_audited": 10,
+    "label_counts": {
+      "memory_hit": 2,
+      "cot_only": 8
+    },
+    "by_category": {
+      "C_video": {
+        "memory_hit": 2
+      },
+      "D_carousel": {
+        "cot_only": 1
+      },
+      "E_dashboard": {
+        "cot_only": 1
+      },
+      "F_transient": {
+        "cot_only": 5
+      },
+      "I_collab": {
+        "cot_only": 1
+      }
+    }
+  },
+  "audit_results": [
+    {
+      "task_id": "C-H3",
+      "category": "C_video",
+      "difficulty": "hard",
+      "n_prior_narrations": 7,
+      "winning_step_idx": 7,
+      "winning_action": "fill(#line4, \"31\")",
+      "narrations_before_action": [
+        "Step 1: The screen shows a code editor with two visible panes: app.py with a breakpoint at line 42, and utils.py with a breakpoint at line 17, with two more files (config.py and main.py) in the tabs.",
+        "Step 2: The screen now shows config.py (File 3 of 4) with a red breakpoint dot at line 8, and the status bar confirms \"Breakpoint set at line 8.\"",
+        "Step 3: The screen now shows main.py (File 4 of 4) with a red breakpoint dot at line 31, and the status bar confirms \"Breakpoint set at line 31.\"",
+        "Step 4: The screen shows main.py (File 4 of 4) with a red breakpoint dot at line 31, confirming \"Breakpoint set at line 31,\" and the form below shows app.py/42 and utils.py filled in so far.",
+        "Step 5: The screen shows main.py (File 4/4) with a breakpoint at line 31, and the form now has app.py/42 and utils.py/17 filled in, with file3 and file4 fields still empty.",
+        "Step 6: The screen shows config.py has been filled in as file3, but the line number for config.py (line3) still needs to be filled with 8, as observed in Step 2.",
+        "Step 7: The form now shows three breakpoints filled in (app.py/42, utils.py/17, config.py/8), and the fourth entry (main.py/31) still needs to be filled based on the visible breakpoint in the code editor."
+      ],
+      "winning_step_narration": "The form shows main.py filled in for file4 but the line4 field still shows the placeholder \"#\" and needs to be filled with 31.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "memory_hit",
+        "reason": "Prior narrations in steps 3, 4, 5, and 7 explicitly recorded main.py's breakpoint at line 31, which is the value used in the winning fill action."
+      }
+    },
+    {
+      "task_id": "C-M2",
+      "category": "C_video",
+      "difficulty": "medium",
+      "n_prior_narrations": 3,
+      "winning_step_idx": 3,
+      "winning_action": "fill(#page3Input, \"Notifications\")",
+      "narrations_before_action": [
+        "Step 1: The screenshot shows two settings pages visible - \"General\" (page 1) and \"Security\" (page 2), with pagination dots indicating 3 pages total, but I need to scroll down to see the third page title.",
+        "Step 2: After scrolling, I can now see the third settings page titled \"Notifications\" below the \"Security\" page, confirming all three page titles: General, Security, and Notifications.",
+        "Step 3: The screen shows the Notifications page (page 3) with Push Notifications, Email Alerts, Sound, and Do Not Disturb settings, and Page 1 input already filled with \"General\"."
+      ],
+      "winning_step_narration": "Page 2 input now shows \"Security\" filled in, and the third page showing \"Notifications\" is visible in the video demo.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "memory_hit",
+        "reason": "Step 2 narration explicitly lists 'Notifications' as the third page title, which is the value used in the winning fill action."
+      }
+    },
+    {
+      "task_id": "D-H1",
+      "category": "D_carousel",
+      "difficulty": "hard",
+      "n_prior_narrations": 9,
+      "winning_step_idx": 9,
+      "winning_action": "fill(#answerInput, \"847.92\")",
+      "narrations_before_action": [
+        "Step 1: The carousel is on slide 4/8 showing a 4K Monitor priced at $199.95.",
+        "Step 2: Slide 7 shows a Mech Keyboard priced at $155.00, and I can see the carousel is cycling through products.",
+        "Step 3: Step 3 shows slides 2 (Studio Headphones $124.50) and 3 (Cable Bundle $45.99), adding to the previously seen slide 4 (4K Monitor $199.95) and slide 7 (Mech Keyboard $155.00). I need to see slides 1, 5",
+        "Step 4: Step 4 reveals slide 6 showing Webcam HD at $34.99, giving me 6 of 8 products so far (slides 2,3,4,6,7 seen; still need slides 1,5,8).",
+        "Step 5: Step 5 confirms slides 2 (Studio Headphones $124.50) and 3 (Cable Bundle $45.99) again; I still need slides 1, 5, and 8 to complete the catalog.",
+        "Step 6: Slide 5 shows Wireless Mouse at $67.50, and slide 6 confirms Webcam HD at $34.99 - now I have 7 of 8 products (slides 2,3,4,5,6,7 seen; still need slide 1 and 8).",
+        "Step 7: Slide 1 shows USB-C Dock at $89.99, completing all 8 products: USB-C Dock $89.99, Studio Headphones $124.50, Cable Bundle $45.99, 4K Monitor $199.95, Wireless Mouse $67.50, Webcam HD $34.99, Mech Keyb",
+        "Step 8: The carousel shows slide 6 (Webcam HD $34.99) transitioning, with slide 5 (Wireless Mouse $67.50) visible on the left during the transition animation.",
+        "Step 9: The carousel is showing slide 3 (Cable Bundle $45.99), and I now have all 8 products identified - I need to calculate the total and submit it.\n\nI have all 8 products:\n1. USB-C Dock: $89.99\n2. Studio H"
+      ],
+      "winning_step_narration": "Slide 8 is now visible showing \"Desktop Speaker Set\" at $130.00 (SKU: SPK-008), completing all 8 products.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "Prior narrations covered 7 of 8 products; the 8th product (Desktop Speaker Set $130.00) needed to compute the $847.92 total was only revealed in the narration generated at the winning step, not in persistent prior memory."
+      }
+    },
+    {
+      "task_id": "E-M2",
+      "category": "E_dashboard",
+      "difficulty": "medium",
+      "n_prior_narrations": 8,
+      "winning_step_idx": 8,
+      "winning_action": "fill(#errorInput, \"7\")",
+      "narrations_before_action": [
+        "Step 1: The log viewer shows 4 total lines with ERROR count at 1, and I need to monitor for 30 seconds to count all ERROR entries.",
+        "Step 2: The log viewer now shows 6 total lines with ERROR count still at 1, and the logs span from 8:13:43 PM to 8:13:56 PM with one ERROR entry visible.",
+        "Step 3: The log viewer now shows 9 total lines with ERROR count at 2, showing two ERROR entries: one at 8:13:51 PM (redis-cache connection refused) and one at 8:13:58 PM (NullPointerException in PaymentServic",
+        "Step 4: The ERROR count now shows 3, with a third ERROR entry visible at 8:14:06 PM (Timeout reading from storage-node-05: 30s exceeded), and the log appears to have stopped updating with 11 total lines.",
+        "Step 5: The ERROR count now shows 4, with a fourth ERROR entry at 8:14:11 PM (Authentication failed: invalid token for user jdoe42), bringing the total to 4 ERROR entries visible.",
+        "Step 6: A fifth ERROR entry appeared at 8:14:19 PM (OutOfMemoryError: Java heap space in worker-thread-7), and the ERROR counter now shows 5.",
+        "Step 7: The ERROR counter now shows 6, with a sixth ERROR entry at 8:14:27 PM (Failed to write audit log: Permission denied /var/log/audit), and the log appears to have 18 total lines.",
+        "Step 8: The log viewer shows 20 total lines with ERROR count at 6, and the log appears to have stopped updating with the last entry at 8:14:32 PM."
+      ],
+      "winning_step_narration": "The ERROR counter now shows 7, with a new ERROR entry at 8:14:34 PM (DNS resolution failed for api.partner-service.io), and the log has 24 total lines.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "Prior narrations only reached an ERROR count of 6; the winning value of 7 came from the narration/observation generated at the winning step itself, not persistent memory."
+      }
+    },
+    {
+      "task_id": "F-E2",
+      "category": "F_transient",
+      "difficulty": "easy",
+      "n_prior_narrations": 0,
+      "winning_step_idx": 0,
+      "winning_action": "click(1188, 672)",
+      "narrations_before_action": [],
+      "winning_step_narration": "A cookie consent banner is visible at the bottom of the screen with \"Customize\" and \"Accept All\" buttons.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "There are no prior narrations; the winning click relied on the current screenshot and same-step narration, not persistent memory."
+      }
+    },
+    {
+      "task_id": "F-E3",
+      "category": "F_transient",
+      "difficulty": "easy",
+      "n_prior_narrations": 6,
+      "winning_step_idx": 6,
+      "winning_action": "click(933, 476)",
+      "narrations_before_action": [
+        "Step 1: The screen shows a CloudDrive file manager with a \"What file was downloaded?\" prompt, but I need to wait to see the completion toast showing the downloaded filename.",
+        "Step 2: The screen shows the CloudDrive file manager with files listed but no toast notification visible yet - I need to wait for the download completion toast to appear.",
+        "Step 3: The screen shows the CloudDrive file manager with files listed in Documents/Reports folder, but no toast notification has appeared yet showing the downloaded filename.",
+        "Step 4: The toast notification has not appeared in the screenshot, but the files visible in the Documents/Reports folder are: annual_budget_2025.xlsx, quarterly_report_Q3.pdf, team_roster.docx, presentation_f",
+        "Step 5: The toast notification never appeared in my view, but I can see the files listed in the Documents/Reports folder - I need to check if the page source or any hidden elements contain the downloaded file",
+        "Step 6: The toast notification never appeared in the screenshots, but I can see the files listed in the Documents/Reports folder - I need to check the page source to find the downloaded filename."
+      ],
+      "winning_step_narration": "The input field now contains \"quarterly_report_Q3.pdf\" and the Submit button is ready to be clicked.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "Prior narrations explicitly state the toast never appeared and only list multiple files without identifying which was downloaded; the specific filename 'quarterly_report_Q3.pdf' was not in persistent memory."
+      }
+    },
+    {
+      "task_id": "F-H1",
+      "category": "F_transient",
+      "difficulty": "hard",
+      "n_prior_narrations": 11,
+      "winning_step_idx": 11,
+      "winning_action": "fill(#confirmInput, \"CNF-78234\")",
+      "narrations_before_action": [
+        "Step 1: The phone number field shows \"555-CALL-ME\" with a red border indicating an invalid format, and the hint shows it should be \"+1 (XXX) XXX-XXXX or XXX-XXX-XXXX\".",
+        "Step 2: The phone field is selected with \"555-CALL-ME\" highlighted, ready to be replaced with a valid phone number.",
+        "Step 3: The phone field still shows \"555-CALL-ME\" with a red border, and the name field incorrectly shows \"555-867-5309\" instead of a name - the typing went to the wrong field.",
+        "Step 4: The phone field is selected with \"555-CALL-ME\" highlighted, and the name field incorrectly contains \"555-867-5309\".",
+        "Step 5: The name field incorrectly contains \"555-867-5309\" and the phone field still shows \"555-CALL-ME\" with a red border - I need to fix the name field first, then fix the phone field.",
+        "Step 6: The name field is selected and highlighted with \"555-867-5309\" ready to be replaced.",
+        "Step 7: The name field now correctly shows \"Maria Torres\" but the phone field still has \"555-CALL-ME\" with a red border indicating an invalid format.",
+        "Step 8: The phone field is selected and highlighted with \"555-CALL-ME\" ready to be replaced.",
+        "Step 9: The name field still shows \"555-867-5309\" and the phone field still shows \"555-CALL-ME\" - my typing attempts aren't working as expected, so I need to fix both fields using fill commands.",
+        "Step 10: The name field now correctly shows \"Maria Torres\" but the phone field still contains \"555-CALL-ME\" with a red border indicating invalid format.",
+        "Step 11: The form now shows all fields correctly filled - \"Maria Torres\" in name, \"m.torres@example.com\" in email, and \"555-867-5309\" in phone with a blue border indicating valid format."
+      ],
+      "winning_step_narration": "The success toast shows \"Confirmed! Number: CNF-78234\" in the top right corner.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "The confirmation number CNF-78234 appears only in the narration generated at the winning step, not in any prior persistent memory."
+      }
+    },
+    {
+      "task_id": "F-M1",
+      "category": "F_transient",
+      "difficulty": "medium",
+      "n_prior_narrations": 0,
+      "winning_step_idx": 0,
+      "winning_action": "click(640, 486)",
+      "narrations_before_action": [],
+      "winning_step_narration": "A session expiration warning modal is displayed with a countdown timer showing 9 seconds remaining and an \"Extend Session\" button.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "There are no prior narrations; the agent acted based on the current screenshot/narration at the winning step, not persistent memory."
+      }
+    },
+    {
+      "task_id": "F-M4",
+      "category": "F_transient",
+      "difficulty": "medium",
+      "n_prior_narrations": 0,
+      "winning_step_idx": 0,
+      "winning_action": "fill(#promoInput, \"FLASH40\")",
+      "narrations_before_action": [],
+      "winning_step_narration": "A flash sale pop-up is displayed showing the discount code \"FLASH40\" with a countdown closing in 1 second.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "There are no prior narrations; the code 'FLASH40' was obtained from the narration generated at the same step, not from persistent memory."
+      }
+    },
+    {
+      "task_id": "I-H3",
+      "category": "I_collab",
+      "difficulty": "hard",
+      "n_prior_narrations": 2,
+      "winning_step_idx": 2,
+      "winning_action": "type(\"In conclusion, Q1 2026 demonstrates strong and broad-based growth across key engagement metrics. The 23% increase in daily active users, combined with improved retention rates reaching 42% at 30",
+      "narrations_before_action": [
+        "Step 1: The document shows a Research Summary with a visible summary paragraph in a blockquote about Q1 2026 user engagement data.",
+        "Step 2: The research summary document is visible with the summary paragraph in a blockquote, and I need to read it then add a conclusion paragraph to the conclusion-area div."
+      ],
+      "winning_step_narration": "The conclusion-area div has been clicked and is now focused, ready for text input.",
+      "winning_step_audio": "",
+      "judgement": {
+        "label": "cot_only",
+        "reason": "Prior narrations only mention that a summary paragraph about Q1 2026 engagement exists, not the specific figures (23% DAU increase, 42% retention) used in the winning conclusion text."
+      }
+    }
+  ],
+  "coverage": {
+    "full_only_pass": [
+      "C-H3",
+      "I-H3",
+      "D-H1",
+      "F-E2",
+      "F-E3",
+      "F-M1",
+      "E-M2",
+      "C-M2",
+      "F-H1",
+      "F-M4"
+    ],
+    "nd_only_pass": [
+      "J-E1",
+      "C-H1"
+    ],
+    "both_pass_count": 72,
+    "both_fail_count": 16
+  }
+}

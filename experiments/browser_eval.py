@@ -160,6 +160,7 @@ class BrowserEvaluator:
         clip_theta: float = 0.04,
         pixel_threshold: float = 0.01,
         silence_threshold: float = 0.01,
+        max_keyframes_override: Optional[int] = None,
     ):
         self.model_name = model_name
         self.observation_mode = observation_mode
@@ -168,6 +169,8 @@ class BrowserEvaluator:
         self.clip_theta = clip_theta
         self.pixel_threshold = pixel_threshold
         self.silence_threshold = silence_threshold
+        # A1 keyframe causal probe: override keyframe budget per task
+        self.max_keyframes_override = max_keyframes_override
 
         self.cu_model = get_model(model_name)
 
@@ -188,29 +191,57 @@ class BrowserEvaluator:
         import subprocess
 
         # Kill any lingering audio injection from prior task
-        if hasattr(self, '_audio_inject_thread') and self._audio_inject_thread is not None:
-            self._audio_inject_thread.join(timeout=2)
-            self._audio_inject_thread = None
-        # Kill any lingering pacat processes from prior audio injection
-        subprocess.run(["pkill", "-f", "pacat.*virtual_speaker"],
-                       capture_output=True, timeout=2)
-        # Brief pause to let PulseAudio drain residual audio
-        time.sleep(0.5)
+        # NOTE: only kill the pacat process group when THIS evaluator owns audio.
+        # When an audio-free mode (e.g. standard_minimal, standard_pageel_only)
+        # runs in parallel with an audio-using mode, blindly pkill-ing pacat
+        # would yank the other process's audio injection.  Audio-free modes
+        # have nothing to clean up anyway.
+        _audio_owning_modes = {
+            "aoi_visual_asr", "aoi_full", "aoi_full_no_narration_memory",
+            "aoi_audio", "aoi_interactive", "standard_audio",
+            "aoi_full_max1kf", "aoi_full_max2kf", "aoi_full_max3kf",
+            "aoi_full_max5kf", "aoi_full_noise_kf", "aoi_full_dup_kf",
+            "aoi_full_reorder_kf",
+        }
+        if self.observation_mode in _audio_owning_modes:
+            if hasattr(self, '_audio_inject_thread') and self._audio_inject_thread is not None:
+                self._audio_inject_thread.join(timeout=2)
+                self._audio_inject_thread = None
+            subprocess.run(["pkill", "-f", "pacat.*virtual_speaker"],
+                           capture_output=True, timeout=2)
+            time.sleep(0.5)
 
         use_keyframes = self.observation_mode in (
             "aoi_visual", "aoi_visual_only", "aoi_visual_asr", "aoi_full",
             "aoi_full_no_narration_memory",
             "aoi_interactive", "pixel_diff", "uniform_1fps", "uniform_3fps",
             "random_keyframes",
+            # A1 keyframe-causal-probe modes:
+            "aoi_full_max1kf", "aoi_full_max2kf", "aoi_full_max3kf",
+            "aoi_full_max5kf",
+            "aoi_full_noise_kf", "aoi_full_dup_kf",
+            "aoi_full_reorder_kf",
         )
         if use_keyframes:
             no_clip = self.observation_mode.startswith("uniform") or self.observation_mode == "random_keyframes"
             theta = 0.0 if no_clip else self.clip_theta
             px_thresh = 0.0 if self.observation_mode in ("uniform_1fps", "random_keyframes") else self.pixel_threshold
+            # Resolve effective keyframe cap.  Mode-suffix overrides take precedence,
+            # then constructor override, then default 5.
+            mode_cap = {
+                "aoi_full_max1kf": 1, "aoi_full_max2kf": 2,
+                "aoi_full_max3kf": 3, "aoi_full_max5kf": 5,
+            }.get(self.observation_mode)
+            if mode_cap is not None:
+                effective_max = mode_cap
+            elif self.max_keyframes_override is not None:
+                effective_max = self.max_keyframes_override
+            else:
+                effective_max = 5
             self._keyframe_extractor = KeyframeExtractor(
                 theta=theta,
                 pixel_threshold=px_thresh,
-                max_keyframes=5,
+                max_keyframes=effective_max,
             )
         else:
             self._keyframe_extractor = None
@@ -219,7 +250,13 @@ class BrowserEvaluator:
         use_audio = self.observation_mode in ("aoi_visual_asr", "aoi_full",
                                               "aoi_full_no_narration_memory",
                                               "aoi_audio", "aoi_interactive",
-                                              "standard_audio")
+                                              "standard_audio",
+                                              # A1 keyframe-causal-probe modes
+                                              # all include audio
+                                              "aoi_full_max1kf", "aoi_full_max2kf",
+                                              "aoi_full_max3kf", "aoi_full_max5kf",
+                                              "aoi_full_noise_kf", "aoi_full_dup_kf",
+                                              "aoi_full_reorder_kf")
         if use_audio:
             if self._audio_processor is None:
                 self._audio_processor = AudioProcessor(
@@ -498,7 +535,12 @@ class BrowserEvaluator:
             if self.observation_mode in ("aoi_audio", "aoi_full",
                                          "aoi_full_no_narration_memory",
                                          "aoi_interactive", "aoi_visual_asr",
-                                         "standard_audio"):
+                                         "standard_audio",
+                                         # A1 keyframe-causal-probe modes
+                                         "aoi_full_max1kf", "aoi_full_max2kf",
+                                         "aoi_full_max3kf", "aoi_full_max5kf",
+                                         "aoi_full_noise_kf", "aoi_full_dup_kf",
+                                         "aoi_full_reorder_kf"):
                 self._inject_page_audio(env)
                 # Wait for enough audio to buffer so the agent hears content
                 # on its first step. For short clips (< 15s), wait for the
@@ -564,14 +606,37 @@ class BrowserEvaluator:
                 )
 
                 # 6. CU model inference
-                context_text = obs.to_prompt_text()
+                # A2 modes for sub-component decomposition of the standard_structured
+                # prompt-format effect:
+                #   standard_minimal: completely raw prompt, no structure markers,
+                #     no trajectory, no PAGE ELEMENTS — closest to "send the
+                #     screenshot and the task and nothing else."
+                #   standard_pageel_only: like standard_minimal but with [PAGE ELEMENTS]
+                #     appended (isolates DOM-list effect from structure effect)
+                #   standard_traj_only: structured trajectory wrapping (= current
+                #     standard behaviour) but NO PAGE ELEMENTS (this is what the
+                #     paper currently calls "standard"; included as a labeled
+                #     control)
+                if self.observation_mode in ("standard_minimal", "standard_pageel_only"):
+                    context_text = f"[TASK] {task.instruction}"
+                else:
+                    context_text = obs.to_prompt_text()
 
                 # Add interactive page elements for AOI modes (and the
                 # `standard_structured` control, which gets the AOI's prompt
                 # scaffolding without any extra perception).
                 # `standard_audio` deliberately SKIPS [PAGE ELEMENTS] to isolate
                 # audio's marginal benefit from the scaffold effect.
-                if self.observation_mode not in ("standard", "standard_audio"):
+                # A2 sub-component modes selectively include/exclude pieces.
+                # standard_minimal:  NO page elements
+                # standard_pageel_only:  page elements ONLY (no trajectory structure)
+                # standard_traj_only:  trajectory structure only (no page elements)
+                a2_no_page = self.observation_mode in (
+                    "standard_minimal", "standard_traj_only",
+                )
+                a2_force_page = self.observation_mode == "standard_pageel_only"
+                if (self.observation_mode not in ("standard", "standard_audio")
+                        and not a2_no_page) or a2_force_page:
                     page_elements = env.get_interactive_elements()
                     if page_elements:
                         context_text += f"\n\n{page_elements}"
@@ -582,7 +647,12 @@ class BrowserEvaluator:
                                               "aoi_full_no_narration_memory",
                                               "aoi_audio",
                                               "aoi_interactive", "aoi_visual_asr",
-                                              "standard_audio"):
+                                              "standard_audio",
+                                              # A1 modes
+                                              "aoi_full_max1kf", "aoi_full_max2kf",
+                                              "aoi_full_max3kf", "aoi_full_max5kf",
+                                              "aoi_full_noise_kf", "aoi_full_dup_kf",
+                                              "aoi_full_reorder_kf"):
                     full_transcript = self._trajectory.get_full_transcript()
                     if full_transcript:
                         context_text += (
@@ -603,6 +673,30 @@ class BrowserEvaluator:
                     last_action_error = None
 
                 images = obs.get_images()
+
+                # A1 image-substitution modes: replace the keyframe images
+                # while keeping the same image *count* so token cost is constant.
+                if self.observation_mode in ("aoi_full_noise_kf", "aoi_full_dup_kf",
+                                              "aoi_full_reorder_kf"):
+                    n_kf = len(keyframes)
+                    if n_kf > 0 and screenshot is not None:
+                        if self.observation_mode == "aoi_full_noise_kf":
+                            # Replace each keyframe with a random noise image of the
+                            # same size as the screenshot.
+                            w, h = screenshot.size
+                            sub = []
+                            for _ in range(n_kf):
+                                arr = (np.random.rand(h, w, 3) * 255).astype(np.uint8)
+                                sub.append(Image.fromarray(arr))
+                            images = sub + [screenshot]
+                        elif self.observation_mode == "aoi_full_dup_kf":
+                            # Replace each keyframe with a copy of the post-action
+                            # screenshot.  Same token cost as N+1 screenshots.
+                            images = [screenshot.copy() for _ in range(n_kf)] + [screenshot]
+                        elif self.observation_mode == "aoi_full_reorder_kf":
+                            # Put keyframes AFTER the post-action screenshot rather
+                            # than before, to probe whether image position matters.
+                            images = [screenshot] + [kf.image for kf in keyframes]
 
                 t_model_start = time.time()
                 try:
