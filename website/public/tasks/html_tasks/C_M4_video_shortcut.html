@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IDE Tutorial Video</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff4444; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 720px; }
+  .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .video-screen { width: 100%; aspect-ratio: 16/9; background: #1e1e1e; position: relative; overflow: hidden; }
+  .ide-frame { position: absolute; inset: 0; display: flex; flex-direction: column; opacity: 0; transition: opacity 0.5s ease; }
+  .ide-frame.active { opacity: 1; }
+  .ide-menubar { background: #333; padding: 4px 12px; display: flex; gap: 16px; font-size: 13px; color: #ccc; }
+  .ide-menubar span { padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+  .ide-menubar span.highlight { background: #007acc; color: #fff; }
+  .ide-content { flex: 1; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .ide-action { text-align: center; }
+  .ide-action .icon { font-size: 48px; margin-bottom: 16px; }
+  .ide-action .desc { font-size: 18px; color: #ccc; margin-bottom: 8px; }
+  .ide-action .detail { font-size: 14px; color: #888; }
+  .click-indicator { display: inline-block; width: 24px; height: 24px; border-radius: 50%; border: 3px solid #ff4444; animation: pulse 1s ease infinite; margin-left: 8px; vertical-align: middle; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } }
+  .submenu { background: #252526; border: 1px solid #444; border-radius: 6px; padding: 8px 0; width: 200px; margin: 0 auto; }
+  .submenu-item { padding: 6px 16px; font-size: 13px; color: #ccc; display: flex; justify-content: space-between; }
+  .submenu-item.hl { background: #094771; color: #fff; }
+  .submenu-item .shortcut { color: #888; font-size: 12px; }
+  .audio-indicator { position: absolute; bottom: 12px; right: 12px; display: flex; align-items: center; gap: 6px; background: rgba(0,0,0,0.7); padding: 6px 12px; border-radius: 20px; font-size: 12px; color: #aaa; }
+  .audio-bar { display: flex; gap: 2px; align-items: flex-end; height: 16px; }
+  .audio-bar span { width: 3px; background: #00ff41; border-radius: 1px; animation: audioBounce 0.8s ease infinite; }
+  .audio-bar span:nth-child(1) { height: 6px; animation-delay: 0s; }
+  .audio-bar span:nth-child(2) { height: 12px; animation-delay: 0.15s; }
+  .audio-bar span:nth-child(3) { height: 8px; animation-delay: 0.3s; }
+  .audio-bar span:nth-child(4) { height: 14px; animation-delay: 0.1s; }
+  @keyframes audioBounce { 0%,100% { transform: scaleY(1); } 50% { transform: scaleY(0.4); } }
+  .video-controls { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; }
+  .play-icon { color: #fff; font-size: 18px; }
+  .vol-icon { color: #fff; font-size: 16px; cursor: pointer; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #ff4444; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .video-title-bar { padding: 14px 16px; font-size: 15px; font-weight: 600; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 6px; color: #ccc; }
+  .form-section .hint { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #007acc; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #007acc; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #0098ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="video-wrapper">
+    <div class="video-screen" id="videoScreen">
+      <!-- Frame 1: Show IDE with menu bar -->
+      <div class="ide-frame" id="frame1">
+        <div class="ide-menubar">
+          <span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Run</span><span>Help</span>
+        </div>
+        <div class="ide-content">
+          <div class="ide-action">
+            <div class="icon">&#128187;</div>
+            <div class="desc">Opening the IDE...</div>
+            <div class="detail">Let's explore the command palette feature</div>
+          </div>
+        </div>
+        <div class="audio-indicator">
+          <div class="audio-bar"><span></span><span></span><span></span><span></span></div>
+          Narration
+        </div>
+      </div>
+      <!-- Frame 2: Click on View menu -->
+      <div class="ide-frame" id="frame2">
+        <div class="ide-menubar">
+          <span>File</span><span>Edit</span><span class="highlight">View<span class="click-indicator"></span></span><span>Go</span><span>Run</span><span>Help</span>
+        </div>
+        <div class="ide-content">
+          <div class="ide-action">
+            <div class="submenu">
+              <div class="submenu-item">Explorer</div>
+              <div class="submenu-item">Search</div>
+              <div class="submenu-item">Source Control</div>
+              <div class="submenu-item hl">Command Palette...</div>
+              <div class="submenu-item">Terminal</div>
+            </div>
+            <div class="detail" style="margin-top:16px">Navigating through the View menu...</div>
+          </div>
+        </div>
+        <div class="audio-indicator">
+          <div class="audio-bar"><span></span><span></span><span></span><span></span></div>
+          Narration
+        </div>
+      </div>
+      <!-- Frame 3: Shows command palette open -->
+      <div class="ide-frame" id="frame3">
+        <div class="ide-menubar">
+          <span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Run</span><span>Help</span>
+        </div>
+        <div class="ide-content">
+          <div class="ide-action">
+            <div style="background:#252526; border:1px solid #007acc; border-radius:8px; padding:12px; width:360px; margin:0 auto;">
+              <div style="background:#1e1e1e; padding:8px 12px; border-radius:4px; color:#ccc; font-size:14px;">
+                &gt; Type a command...
+              </div>
+              <div style="padding:8px 12px; font-size:13px; color:#888; margin-top:8px;">Recently used commands</div>
+            </div>
+            <div class="detail" style="margin-top:16px">The Command Palette is now open</div>
+          </div>
+        </div>
+        <div class="audio-indicator">
+          <div class="audio-bar"><span></span><span></span><span></span><span></span></div>
+          Narration
+        </div>
+      </div>
+    </div>
+    <div class="video-controls">
+      <span class="play-icon">&#9654;</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:15</span>
+      <span class="vol-icon" id="volIcon">&#128266;</span>
+    </div>
+    <div class="video-title-bar">VS Code Tips: Command Palette — Dev Productivity</div>
+  </div>
+  <div class="form-section">
+    <h3>What keyboard shortcut was mentioned for the command palette?</h3>
+    <div class="hint">Hint: The shortcut was mentioned in the audio narration only, not shown on screen.</div>
+    <div class="input-group">
+      <label for="answerInput">Keyboard Shortcut</label>
+      <input type="text" id="answerInput" placeholder="e.g. Ctrl+Shift+P" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const frameIds = ['frame1', 'frame2', 'frame3'];
+  const frameDuration = 5000;
+  const totalDuration = frameIds.length * frameDuration;
+  let startTime;
+  let audioPlayed = false;
+
+  function showFrame(index) {
+    frameIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index < frameIds.length) {
+      document.getElementById(frameIds[index]).classList.add('active');
+    }
+  }
+
+  function playNarration() {
+    if (audioPlayed) return;
+    audioPlayed = true;
+    const text = "Let me show you how to open the command palette. You can navigate through the View menu and click Command Palette. But instead of navigating menus, you can use the keyboard shortcut Control Shift P to open the command palette instantly. This is much faster for everyday use.";
+    const u = new SpeechSynthesisUtterance(text);
+    u.rate = 0.9;
+    u.lang = 'en-US';
+    speechSynthesis.speak(u);
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    showFrame(0);
+    playNarration();
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    setTimeout(() => showFrame(1), frameDuration);
+    setTimeout(() => showFrame(2), frameDuration * 2);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'shortcut_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('answerInput').value.toLowerCase().trim().replace(/\s+/g, '');
+    if (val.includes('ctrl+shift+p') || val.includes('control+shift+p') ||
+        val.includes('ctrl shift p'.replace(/\s/g,'')) ||
+        val.includes('controlshiftp')) return 'shortcut_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>All-Hands Meeting</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #202124; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  #loading { position: fixed; inset: 0; background: #202124; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #8ab4f8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .meet-header { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3c4043; }
+  .meet-logo { font-size: 18px; font-weight: 500; color: #8ab4f8; }
+  .meet-title { font-size: 14px; color: #bdc1c6; }
+  .meet-time { font-size: 13px; color: #9aa0a6; }
+  .meet-body { flex: 1; display: flex; padding: 16px; gap: 16px; overflow: auto; }
+  .slide-area { flex: 1; background: #1a1a2e; border-radius: 12px; overflow: hidden; position: relative; min-height: 380px; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px; opacity: 0; transition: opacity 0.8s ease; }
+  .slide.active { opacity: 1; }
+  .slide h2 { font-size: 24px; font-weight: 600; margin-bottom: 16px; color: #fff; }
+  .slide p { font-size: 14px; color: #9aa0a6; text-align: center; max-width: 450px; margin-bottom: 12px; line-height: 1.6; }
+  .bullet-list { text-align: left; max-width: 450px; }
+  .bullet-list li { padding: 5px 0; font-size: 14px; color: #bdc1c6; list-style: disc inside; }
+  .data-table { border-collapse: collapse; width: 90%; max-width: 460px; }
+  .data-table th { background: #16162b; padding: 8px 12px; text-align: left; font-size: 12px; color: #8ab4f8; border-bottom: 1px solid #2a2a3e; }
+  .data-table td { padding: 8px 12px; font-size: 13px; color: #bdc1c6; border-bottom: 1px solid #1e1e36; }
+  .participants { width: 180px; display: flex; flex-direction: column; gap: 6px; }
+  .participant { background: #292a2d; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; }
+  .participant .avatar-lg { width: 36px; height: 36px; border-radius: 50%; }
+  .participant .p-name { position: absolute; bottom: 4px; left: 6px; font-size: 10px; color: #bdc1c6; }
+
+  /* Minutes form */
+  .minutes-panel { background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 0 16px 16px; display: none; }
+  .minutes-panel.visible { display: block; }
+  .minutes-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .field-group { margin-bottom: 14px; }
+  .field-group label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
+  .field-group textarea { width: 100%; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 13px; outline: none; resize: vertical; min-height: 70px; font-family: inherit; }
+  .field-group textarea:focus { border-color: #8ab4f8; }
+  .submit-btn { padding: 10px 24px; background: #8ab4f8; border: none; border-radius: 8px; color: #202124; font-size: 14px; font-weight: 600; cursor: pointer; float: right; }
+  .status { font-size: 13px; color: #666; margin-top: 12px; clear: both; text-align: right; min-height: 20px; }
+  .waiting-msg { background: #1a1a2e; border-radius: 12px; padding: 16px 20px; margin: 0 16px 16px; text-align: center; font-size: 14px; color: #888; }
+  .meet-controls { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid #3c4043; }
+  .ctrl-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #3c4043; color: #e0e0e0; }
+  .ctrl-end { background: #ea4335; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; width: auto; }
+  .slide-indicator { position: absolute; bottom: 10px; right: 14px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="meet-header">
+  <div class="meet-logo">Google Meet</div>
+  <div class="meet-title">Q2 All-Hands</div>
+  <div class="meet-time" id="meetTime">--:--</div>
+</div>
+<div class="meet-body">
+  <div class="slide-area">
+    <div class="slide active" id="slide0">
+      <h2>Q2 All-Hands Agenda</h2>
+      <ul class="bullet-list">
+        <li>Company performance update</li>
+        <li>Product roadmap</li>
+        <li>Hiring plan</li>
+        <li>Customer success stories</li>
+        <li>Q&A</li>
+      </ul>
+    </div>
+    <div class="slide" id="slide1">
+      <h2>Company Performance</h2>
+      <table class="data-table">
+        <thead><tr><th>Metric</th><th>Q1</th><th>Q2</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td>$12.4M</td><td>$15.1M</td></tr>
+          <tr><td>Customers</td><td>1,240</td><td>1,580</td></tr>
+          <tr><td>NPS</td><td>72</td><td>78</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide" id="slide2">
+      <h2>Product Roadmap</h2>
+      <ul class="bullet-list">
+        <li>Mobile app v2 launch in June</li>
+        <li>Enterprise SSO by end of Q3</li>
+        <li>API v3 with webhooks in July</li>
+        <li>New analytics dashboard in August</li>
+      </ul>
+    </div>
+    <div class="slide" id="slide3">
+      <h2>Hiring Plan</h2>
+      <p>We plan to add 45 new team members across engineering, product, and customer success. Priority on backend engineering and ML roles.</p>
+    </div>
+    <div class="slide" id="slide4">
+      <h2>Customer Success</h2>
+      <p>Acme Corp expanded their contract by 3x. FinServ Inc achieved 99.9% uptime using our platform. Three new Fortune 500 logos this quarter.</p>
+    </div>
+    <div class="slide" id="slide5">
+      <h2>Thank You!</h2>
+      <p>Please fill out the meeting minutes form below.</p>
+    </div>
+    <div class="slide-indicator" id="slideIndicator">Slide 1 / 6</div>
+  </div>
+  <div class="participants">
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #ea4335, #fbbc05);"></div><div class="p-name">CEO</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #4285f4, #8ab4f8);"></div><div class="p-name">CTO</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #34a853, #5bb974);"></div><div class="p-name">VP Sales</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);"></div><div class="p-name">You</div></div>
+  </div>
+</div>
+<div class="waiting-msg" id="waitingMsg">Meeting in progress... Minutes form will appear after the presentation.</div>
+<div class="minutes-panel" id="minutesPanel">
+  <h3>Meeting Minutes</h3>
+  <div class="field-group">
+    <label for="decisions">Key Decisions</label>
+    <textarea id="decisions" placeholder="Summarize decisions made during the meeting..."></textarea>
+  </div>
+  <div class="field-group">
+    <label for="nextSteps">Next Steps</label>
+    <textarea id="nextSteps" placeholder="List the next steps discussed..."></textarea>
+  </div>
+  <div class="field-group">
+    <label for="owners">Owners / Responsible Parties</label>
+    <textarea id="owners" placeholder="Who is responsible for what..."></textarea>
+  </div>
+  <button class="submit-btn" id="submitBtn">Submit Minutes</button>
+  <div class="status" id="status"></div>
+</div>
+<div class="meet-controls">
+  <button class="ctrl-btn">&#127908;</button>
+  <button class="ctrl-btn">&#127909;</button>
+  <button class="ctrl-btn ctrl-end">Leave</button>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const slideAudio = [
+    "Welcome to the Q2 all-hands. Here's our agenda for today.",
+    "Let's start with performance. Revenue grew from twelve point four to fifteen point one million. Customer count is up to fifteen eighty. NPS improved to seventy-eight.",
+    "On the product side, we're launching mobile app v2 in June, enterprise SSO by end of Q3, API v3 with webhooks in July, and a new analytics dashboard in August.",
+    "For hiring, we plan to add forty-five new team members. Priority is on backend engineering and machine learning roles.",
+    "Customer success has been fantastic. Acme Corp expanded three X, FinServ achieved four nines uptime, and we added three Fortune five hundred logos.",
+    "That's a wrap. Please fill out the meeting minutes form at the bottom. Capture the key decisions, next steps, and who's responsible."
+  ];
+
+  function showSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('slideIndicator').textContent = `Slide ${idx + 1} / ${slides.length}`;
+  }
+
+  function advanceSlides() {
+    showSlide(0);
+    let idx = 0;
+    function speakForSlide(i) {
+      if (i >= slideAudio.length) return;
+      const u = new SpeechSynthesisUtterance(slideAudio[i]);
+      u.rate = 0.9;
+      u.lang = 'en-US';
+      u.onend = () => {
+        setTimeout(() => {
+          idx++;
+          if (idx < slides.length) {
+            showSlide(idx);
+            speakForSlide(idx);
+          }
+          if (idx >= slides.length) {
+            // Show minutes form
+            document.getElementById('waitingMsg').style.display = 'none';
+            document.getElementById('minutesPanel').classList.add('visible');
+          }
+        }, 2000);
+      };
+      speechSynthesis.speak(u);
+    }
+    speakForSlide(0);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('meetTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'minutes_submitted' ? 'Minutes submitted for review.' : 'Please fill in all fields.';
+  });
+
+  window.getTaskResult = function() {
+    const d = document.getElementById('decisions').value.trim();
+    const n = document.getElementById('nextSteps').value.trim();
+    const o = document.getElementById('owners').value.trim();
+    if (d.length > 10 && n.length > 10 && o.length > 10) return 'minutes_submitted';
+    return 'incomplete';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(advanceSlides, 500);
+  }, 2000);
+</script>
+</body>
+</html>

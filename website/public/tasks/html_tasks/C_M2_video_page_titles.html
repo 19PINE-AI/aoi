@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings App Tutorial</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff4444; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 700px; }
+  .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .video-screen { width: 100%; min-height: 200px; background: #111; position: relative; overflow-y: auto; }
+  .settings-frame { display: none; flex-direction: column; border-bottom: 1px solid #222; }
+  .settings-frame.active { display: flex; }
+  .app-bar { background: #2d2d44; padding: 12px 20px; display: flex; align-items: center; gap: 12px; }
+  .back-arrow { color: #888; font-size: 18px; }
+  .app-title { font-size: 14px; color: #aaa; }
+  .settings-header { padding: 24px 32px 16px; font-size: 28px; font-weight: 700; color: #fff; border-bottom: 2px solid #333; margin: 0 20px; }
+  .settings-body { padding: 20px 32px; flex: 1; }
+  .setting-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 1px solid #222; }
+  .setting-label { font-size: 15px; color: #ccc; }
+  .setting-value { font-size: 14px; color: #888; }
+  .toggle { width: 44px; height: 24px; border-radius: 12px; background: #555; position: relative; }
+  .toggle.on { background: #007acc; }
+  .toggle::after { content: ''; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left 0.2s; }
+  .toggle.on::after { left: 22px; }
+  .nav-indicator { display: flex; justify-content: center; gap: 8px; padding: 12px; }
+  .nav-dot { width: 8px; height: 8px; border-radius: 50%; background: #444; }
+  .nav-dot.active { background: #007acc; }
+  .video-controls { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; }
+  .play-icon { color: #fff; font-size: 18px; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #ff4444; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .video-title-bar { padding: 14px 16px; font-size: 15px; font-weight: 600; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .input-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .input-row label { font-size: 13px; color: #888; width: 60px; flex-shrink: 0; }
+  .input-row input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; flex: 1; }
+  .input-row input:focus { border-color: #007acc; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #007acc; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #0098ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="video-wrapper">
+    <div class="video-screen" id="videoScreen">
+      <div class="settings-frame" id="page1">
+        <div class="app-bar"><span class="back-arrow">&#8592;</span><span class="app-title">Settings</span></div>
+        <div class="settings-header">General</div>
+        <div class="settings-body">
+          <div class="setting-row"><span class="setting-label">Language</span><span class="setting-value">English</span></div>
+          <div class="setting-row"><span class="setting-label">Region</span><span class="setting-value">United States</span></div>
+          <div class="setting-row"><span class="setting-label">Theme</span><span class="setting-value">Dark</span></div>
+          <div class="setting-row"><span class="setting-label">Auto-update</span><div class="toggle on"></div></div>
+        </div>
+        <div class="nav-indicator"><div class="nav-dot active"></div><div class="nav-dot"></div><div class="nav-dot"></div></div>
+      </div>
+      <div class="settings-frame" id="page2">
+        <div class="app-bar"><span class="back-arrow">&#8592;</span><span class="app-title">Settings</span></div>
+        <div class="settings-header">Security</div>
+        <div class="settings-body">
+          <div class="setting-row"><span class="setting-label">Two-Factor Auth</span><div class="toggle on"></div></div>
+          <div class="setting-row"><span class="setting-label">Biometric Login</span><div class="toggle"></div></div>
+          <div class="setting-row"><span class="setting-label">Session Timeout</span><span class="setting-value">30 minutes</span></div>
+          <div class="setting-row"><span class="setting-label">Password Strength</span><span class="setting-value">Strong</span></div>
+        </div>
+        <div class="nav-indicator"><div class="nav-dot"></div><div class="nav-dot active"></div><div class="nav-dot"></div></div>
+      </div>
+      <div class="settings-frame" id="page3">
+        <div class="app-bar"><span class="back-arrow">&#8592;</span><span class="app-title">Settings</span></div>
+        <div class="settings-header">Notifications</div>
+        <div class="settings-body">
+          <div class="setting-row"><span class="setting-label">Push Notifications</span><div class="toggle on"></div></div>
+          <div class="setting-row"><span class="setting-label">Email Alerts</span><div class="toggle on"></div></div>
+          <div class="setting-row"><span class="setting-label">Sound</span><span class="setting-value">Default</span></div>
+          <div class="setting-row"><span class="setting-label">Do Not Disturb</span><div class="toggle"></div></div>
+        </div>
+        <div class="nav-indicator"><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot active"></div></div>
+      </div>
+    </div>
+    <div class="video-controls">
+      <span class="play-icon">&#9654;</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:15</span>
+    </div>
+    <div class="video-title-bar">Settings App Walkthrough — Mobile Dev Guide</div>
+  </div>
+  <div class="form-section">
+    <h3>What were the titles of the 3 settings pages shown?</h3>
+    <div class="input-row">
+      <label for="page1Input">Page 1:</label>
+      <input type="text" id="page1Input" placeholder="First page title" autocomplete="off">
+    </div>
+    <div class="input-row">
+      <label for="page2Input">Page 2:</label>
+      <input type="text" id="page2Input" placeholder="Second page title" autocomplete="off">
+    </div>
+    <div class="input-row">
+      <label for="page3Input">Page 3:</label>
+      <input type="text" id="page3Input" placeholder="Third page title" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const pageIds = ['page1', 'page2', 'page3'];
+  const pageDuration = 5000;
+  const totalDuration = pageIds.length * pageDuration;
+  let startTime;
+  let progressInterval;
+
+  function showPage(index) {
+    if (index === 0) {
+      pageIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    }
+    if (index < pageIds.length) {
+      document.getElementById(pageIds[index]).classList.add('active');
+    }
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    showPage(0);
+    progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    setTimeout(() => showPage(1), pageDuration);
+    setTimeout(() => showPage(2), pageDuration * 2);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'all_titles_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const p1 = document.getElementById('page1Input').value.toLowerCase().trim();
+    const p2 = document.getElementById('page2Input').value.toLowerCase().trim();
+    const p3 = document.getElementById('page3Input').value.toLowerCase().trim();
+    if (p1.includes('general') && p2.includes('security') && p3.includes('notification')) return 'all_titles_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

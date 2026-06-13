@@ -7,3 +7,5 @@ build/
 .env
 .venv/
 venv/
+node_modules/
+logs/

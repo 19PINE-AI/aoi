@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CI/CD Pipeline - Deployment #1847</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .info { font-size: 13px; color: #8892b0; }
+  .deploy-info { background: #16213e; border-radius: 10px; padding: 15px 20px; border: 1px solid #2a3a5e; margin-bottom: 20px; display: flex; gap: 30px; font-size: 13px; }
+  .deploy-info .di-item .di-label { color: #8892b0; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .deploy-info .di-item .di-value { font-weight: 600; margin-top: 2px; }
+
+  /* Pipeline visualization */
+  .pipeline { display: flex; align-items: center; justify-content: center; gap: 0; margin-bottom: 25px; padding: 30px 20px; }
+  .stage { background: #16213e; border-radius: 10px; padding: 20px 25px; border: 2px solid #2a3a5e; min-width: 180px; text-align: center; transition: all 0.5s; position: relative; }
+  .stage.running { border-color: #00d4ff; box-shadow: 0 0 15px rgba(0,212,255,0.2); }
+  .stage.success { border-color: #00ff88; }
+  .stage.failed { border-color: #e74c3c; }
+  .stage.skipped { border-color: #555; opacity: 0.6; }
+  .stage.pending { opacity: 0.5; }
+  .stage-name { font-size: 14px; font-weight: 600; margin-bottom: 8px; }
+  .stage-icon { font-size: 24px; margin-bottom: 8px; }
+  .stage-status { font-size: 12px; padding: 3px 10px; border-radius: 10px; display: inline-block; }
+  .st-pending { background: rgba(136,146,176,0.15); color: #8892b0; }
+  .st-running { background: rgba(0,212,255,0.15); color: #00d4ff; }
+  .st-success { background: rgba(0,255,136,0.15); color: #00ff88; }
+  .st-failed { background: rgba(231,76,60,0.15); color: #e74c3c; }
+  .st-skipped { background: rgba(136,146,176,0.15); color: #8892b0; }
+  .progress-bar { width: 100%; height: 6px; background: #0a0f1e; border-radius: 3px; margin-top: 10px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s; }
+  .arrow { font-size: 24px; color: #2a3a5e; margin: 0 10px; }
+
+  /* Toast */
+  .toast-area { position: fixed; top: 20px; right: 20px; z-index: 1000; display: flex; flex-direction: column; gap: 8px; }
+  .toast { padding: 14px 20px; border-radius: 8px; font-size: 14px; font-weight: 600; box-shadow: 0 4px 20px rgba(0,0,0,0.4); transform: translateX(120%); transition: transform 0.4s ease; display: flex; align-items: center; gap: 10px; }
+  .toast.show { transform: translateX(0); }
+  .toast.t-success { background: #16213e; border-left: 4px solid #00ff88; color: #00ff88; }
+  .toast.t-failed { background: #16213e; border-left: 4px solid #e74c3c; color: #e74c3c; }
+  .toast.t-skipped { background: #16213e; border-left: 4px solid #8892b0; color: #8892b0; }
+
+  /* Log area */
+  .log-area { background: #0a0f1e; border-radius: 10px; padding: 15px; border: 1px solid #2a3a5e; margin-bottom: 20px; font-family: monospace; font-size: 13px; max-height: 150px; overflow-y: auto; }
+  .log-area div { padding: 2px 0; color: #8892b0; }
+  .log-area .log-success { color: #00ff88; }
+  .log-area .log-error { color: #e74c3c; }
+  .log-area .log-info { color: #00d4ff; }
+
+  /* Answer section */
+  .answer-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; display: none; }
+  .answer-card h3 { color: #00d4ff; margin-bottom: 15px; text-align: center; }
+  .answer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; }
+  .answer-item { text-align: center; }
+  .answer-item label { display: block; font-size: 13px; color: #8892b0; margin-bottom: 6px; font-weight: 600; }
+  .answer-item select { width: 100%; padding: 10px; font-size: 14px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; }
+  .answer-item select:focus { outline: none; border-color: #00d4ff; }
+  .submit-row { text-align: center; margin-top: 15px; }
+  .submit-row button { padding: 10px 30px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>CI/CD Pipeline</h1>
+  <div class="info">Deployment #1847</div>
+</div>
+<div class="deploy-info">
+  <div class="di-item"><div class="di-label">Branch</div><div class="di-value">main</div></div>
+  <div class="di-item"><div class="di-label">Commit</div><div class="di-value">a7f3c2d</div></div>
+  <div class="di-item"><div class="di-label">Author</div><div class="di-value">dev-team</div></div>
+  <div class="di-item"><div class="di-label">Started</div><div class="di-value" id="startTime"></div></div>
+</div>
+<div class="pipeline">
+  <div class="stage pending" id="stage-build">
+    <div class="stage-icon">&#128230;</div>
+    <div class="stage-name">Build</div>
+    <div class="stage-status st-pending" id="status-build">Pending</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-build" style="width:0%;background:#00d4ff;"></div></div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="stage pending" id="stage-test">
+    <div class="stage-icon">&#128269;</div>
+    <div class="stage-name">Test</div>
+    <div class="stage-status st-pending" id="status-test">Pending</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-test" style="width:0%;background:#00d4ff;"></div></div>
+  </div>
+  <div class="arrow">&rarr;</div>
+  <div class="stage pending" id="stage-deploy">
+    <div class="stage-icon">&#128640;</div>
+    <div class="stage-name">Deploy</div>
+    <div class="stage-status st-pending" id="status-deploy">Pending</div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-deploy" style="width:0%;background:#00d4ff;"></div></div>
+  </div>
+</div>
+<div class="log-area" id="logArea"></div>
+<div class="answer-card" id="answerCard">
+  <h3>What was the final status of each stage?</h3>
+  <div class="answer-grid">
+    <div class="answer-item">
+      <label>Build</label>
+      <select id="sel-build">
+        <option value="">Select...</option>
+        <option value="success">Success</option>
+        <option value="failed">Failed</option>
+        <option value="skipped">Skipped</option>
+      </select>
+    </div>
+    <div class="answer-item">
+      <label>Test</label>
+      <select id="sel-test">
+        <option value="">Select...</option>
+        <option value="success">Success</option>
+        <option value="failed">Failed</option>
+        <option value="skipped">Skipped</option>
+      </select>
+    </div>
+    <div class="answer-item">
+      <label>Deploy</label>
+      <select id="sel-deploy">
+        <option value="">Select...</option>
+        <option value="success">Success</option>
+        <option value="failed">Failed</option>
+        <option value="skipped">Skipped</option>
+      </select>
+    </div>
+  </div>
+  <div class="submit-row"><button id="submitBtn">Submit</button></div>
+</div>
+<div class="toast-area" id="toastArea"></div>
+<script>
+(function() {
+  document.getElementById('startTime').textContent = new Date().toLocaleTimeString();
+  const logArea = document.getElementById('logArea');
+  let submitted = false;
+
+  function addLog(msg, cls) {
+    const d = document.createElement('div');
+    d.className = cls || '';
+    d.textContent = '> ' + msg;
+    logArea.appendChild(d);
+    logArea.scrollTop = logArea.scrollHeight;
+  }
+
+  function showToast(msg, type) {
+    const area = document.getElementById('toastArea');
+    const toast = document.createElement('div');
+    toast.className = 'toast t-' + type;
+    toast.textContent = msg;
+    area.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 50);
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() { if (area.contains(toast)) area.removeChild(toast); }, 400);
+    }, 3000);
+  }
+
+  function setStageState(name, state, progress) {
+    const stage = document.getElementById('stage-' + name);
+    const status = document.getElementById('status-' + name);
+    const prog = document.getElementById('prog-' + name);
+
+    stage.className = 'stage ' + state;
+    prog.style.width = progress + '%';
+
+    if (state === 'running') {
+      status.textContent = 'Running...';
+      status.className = 'stage-status st-running';
+      prog.style.background = '#00d4ff';
+    } else if (state === 'success') {
+      status.textContent = 'Success';
+      status.className = 'stage-status st-success';
+      prog.style.background = '#00ff88';
+    } else if (state === 'failed') {
+      status.textContent = 'Failed';
+      status.className = 'stage-status st-failed';
+      prog.style.background = '#e74c3c';
+    } else if (state === 'skipped') {
+      status.textContent = 'Skipped';
+      status.className = 'stage-status st-skipped';
+      prog.style.background = '#555';
+    }
+  }
+
+  // Timeline (compressed for agent latency):
+  // t=2s: Build starts
+  // t=2-5s: Build runs (progress)
+  // t=5s: Build SUCCESS toast
+  // t=5.5s: Test starts
+  // t=5.5-8.5s: Test runs
+  // t=8.5s: Test FAILED toast
+  // t=10.5s: Deploy SKIPPED toast
+  // t=12.5s: Answer card appears
+
+  setTimeout(function() {
+    // Build starts
+    setStageState('build', 'running', 0);
+    addLog('Build stage started...', 'log-info');
+    addLog('Compiling source files...', '');
+
+    let buildProg = 0;
+    const buildInterval = setInterval(function() {
+      buildProg += 34;
+      if (buildProg > 100) buildProg = 100;
+      setStageState('build', 'running', buildProg);
+    }, 1000);
+
+    // Build completes at t=5s
+    setTimeout(function() {
+      clearInterval(buildInterval);
+      setStageState('build', 'success', 100);
+      addLog('Build completed successfully', 'log-success');
+      addLog('Artifacts: app-1.2.3.tar.gz (24 MB)', '');
+      showToast('Build: SUCCESS \u2713', 'success');
+
+      // Test starts at t=5.5s
+      setTimeout(function() {
+        setStageState('test', 'running', 0);
+        addLog('Test stage started...', 'log-info');
+        addLog('Running unit tests (247 tests)...', '');
+
+        let testProg = 0;
+        const testInterval = setInterval(function() {
+          testProg += 34;
+          if (testProg > 100) testProg = 100;
+          setStageState('test', 'running', testProg);
+          if (testProg >= 34 && testProg < 68) addLog('Unit tests: 180/247 passed', '');
+          if (testProg >= 68 && testProg < 100) addLog('Integration tests running...', '');
+        }, 1000);
+
+        // Test fails at t=8.5s
+        setTimeout(function() {
+          clearInterval(testInterval);
+          setStageState('test', 'failed', 85);
+          addLog('Test FAILED: 3 integration tests failed', 'log-error');
+          addLog('  - test_api_auth: AssertionError', 'log-error');
+          addLog('  - test_db_migration: TimeoutError', 'log-error');
+          addLog('  - test_cache_invalidation: KeyError', 'log-error');
+          showToast('Test: FAILED \u2717', 'failed');
+
+          // Deploy skipped at t=10.5s
+          setTimeout(function() {
+            setStageState('deploy', 'skipped', 0);
+            addLog('Deploy stage SKIPPED: Test stage failed', '');
+            showToast('Deploy: SKIPPED \u2298', 'skipped');
+
+            // Show answer card
+            setTimeout(function() {
+              document.getElementById('answerCard').style.display = 'block';
+            }, 2000);
+          }, 2000);
+        }, 3000);
+      }, 500);
+    }, 3000);
+  }, 2000);
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const build = document.getElementById('sel-build').value;
+    const test = document.getElementById('sel-test').value;
+    const deploy = document.getElementById('sel-deploy').value;
+    if (build === 'success' && test === 'failed' && deploy === 'skipped') {
+      return 'all_statuses_correct';
+    }
+    return 'statuses_incorrect';
+  };
+})();
+</script>
+</body>
+</html>

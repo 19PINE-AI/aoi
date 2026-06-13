@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Infrastructure Dashboard - Status Report</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .info { font-size: 13px; color: #8892b0; }
+  .panels { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 20px; }
+  .panel { background: #16213e; border-radius: 10px; padding: 18px; border: 1px solid #2a3a5e; }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .panel-title { font-size: 14px; font-weight: 600; color: #00d4ff; }
+  .panel-value { font-size: 28px; font-weight: bold; }
+  .panel-sub { font-size: 12px; color: #8892b0; margin-bottom: 8px; }
+  .indicator { padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+  .ind-normal { background: rgba(0,255,136,0.15); color: #00ff88; }
+  .ind-warning { background: rgba(243,156,18,0.15); color: #f39c12; }
+  .ind-critical { background: rgba(231,76,60,0.15); color: #e74c3c; }
+  .chart-container { width: 100%; height: 100px; background: #0a0f1e; border-radius: 6px; overflow: hidden; position: relative; }
+  .chart-canvas { width: 100%; height: 100%; }
+  .report-section { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; display: block; text-align: center; }
+  .report-section h3 { color: #00d4ff; margin-bottom: 5px; }
+  .report-section p { color: #8892b0; font-size: 13px; margin-bottom: 15px; }
+  .report-section textarea { width: 100%; height: 120px; padding: 12px; font-size: 14px; font-family: inherit; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; resize: vertical; }
+  .report-section textarea:focus { outline: none; border-color: #00d4ff; }
+  .report-section button { padding: 10px 30px; margin-top: 12px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; }
+  .report-section button:hover { background: #00b8d9; }
+  .char-count { font-size: 12px; color: #8892b0; margin-top: 5px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Infrastructure Dashboard</h1>
+  <div class="info" id="clock"></div>
+</div>
+<div class="panels">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">CPU Usage</div>
+      <div class="indicator ind-normal" id="cpuInd">Normal</div>
+    </div>
+    <div class="panel-value" id="cpuVal">45%</div>
+    <div class="panel-sub">8-core Intel Xeon</div>
+    <div class="chart-container"><canvas class="chart-canvas" id="cpuChart"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Memory</div>
+      <div class="indicator ind-normal" id="memInd">Normal</div>
+    </div>
+    <div class="panel-value" id="memVal">60%</div>
+    <div class="panel-sub">32 GB DDR4</div>
+    <div class="chart-container"><canvas class="chart-canvas" id="memChart"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Disk I/O</div>
+      <div class="indicator ind-normal" id="diskInd">Normal</div>
+    </div>
+    <div class="panel-value" id="diskVal">120 MB/s</div>
+    <div class="panel-sub">NVMe SSD 1TB</div>
+    <div class="chart-container"><canvas class="chart-canvas" id="diskChart"></canvas></div>
+  </div>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-title">Network</div>
+      <div class="indicator ind-normal" id="netInd">Normal</div>
+    </div>
+    <div class="panel-value" id="netVal">245 Mbps</div>
+    <div class="panel-sub">10 GbE Interface</div>
+    <div class="chart-container"><canvas class="chart-canvas" id="netChart"></canvas></div>
+  </div>
+</div>
+<div class="report-section" id="reportSection">
+  <h3>Status Report Required</h3>
+  <p>Based on the dashboard observations, write a brief status report describing the current state of the infrastructure.</p>
+  <textarea id="reportText" placeholder="Describe the current status of CPU, Memory, Disk I/O, and Network..."></textarea>
+  <div class="char-count" id="charCount">0 / 50 characters minimum</div>
+  <button id="submitReport">Submit Report</button>
+</div>
+<script>
+(function() {
+  const chartData = {
+    cpu: [], mem: [], disk: [], net: []
+  };
+  let tick = 0;
+  let submitted = false;
+
+  // CPU spikes above 80% at t=10s (tick 5), memory stable ~60%, disk I/O trending up, network normal
+  function getCPU(t) {
+    if (t >= 5 && t <= 9) return 80 + Math.floor(Math.random() * 15);
+    if (t >= 4 && t < 5) return 65 + Math.floor(Math.random() * 10);
+    return 40 + Math.floor(Math.random() * 15);
+  }
+  function getMem(t) { return 58 + Math.floor(Math.random() * 6); }
+  function getDisk(t) { return 100 + t * 12 + Math.floor(Math.random() * 20); }
+  function getNet(t) { return 220 + Math.floor(Math.random() * 60); }
+
+  function drawChart(canvasId, data, color, maxV) {
+    const canvas = document.getElementById(canvasId);
+    const ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    const w = canvas.width, h = canvas.height;
+    ctx.clearRect(0, 0, w, h);
+    if (data.length < 2) return;
+
+    const mn = 0, mx = maxV;
+    const range = mx - mn;
+
+    // Grid lines
+    ctx.strokeStyle = 'rgba(42,58,94,0.5)';
+    ctx.lineWidth = 0.5;
+    for (let i = 1; i <= 3; i++) {
+      const y = h - (i / 4) * h;
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(w, y);
+      ctx.stroke();
+    }
+
+    // Data line
+    ctx.beginPath();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 2;
+    for (let i = 0; i < data.length; i++) {
+      const x = (i / (data.length - 1)) * w;
+      const y = h - ((data[i] - mn) / range) * (h - 10) - 5;
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+
+    // Fill
+    const lastX = ((data.length - 1) / (data.length - 1)) * w;
+    ctx.lineTo(lastX, h);
+    ctx.lineTo(0, h);
+    ctx.closePath();
+    ctx.fillStyle = color.replace(')', ', 0.1)').replace('rgb', 'rgba');
+    ctx.fill();
+  }
+
+  function updateDashboard() {
+    tick++;
+    const cpu = getCPU(tick);
+    const mem = getMem(tick);
+    const disk = getDisk(tick);
+    const net = getNet(tick);
+
+    chartData.cpu.push(cpu);
+    chartData.mem.push(mem);
+    chartData.disk.push(disk);
+    chartData.net.push(net);
+    if (chartData.cpu.length > 25) {
+      chartData.cpu.shift(); chartData.mem.shift();
+      chartData.disk.shift(); chartData.net.shift();
+    }
+
+    document.getElementById('cpuVal').textContent = cpu + '%';
+    document.getElementById('memVal').textContent = mem + '%';
+    document.getElementById('diskVal').textContent = disk + ' MB/s';
+    document.getElementById('netVal').textContent = net + ' Mbps';
+
+    // Indicators
+    if (cpu > 80) {
+      document.getElementById('cpuInd').textContent = 'Critical';
+      document.getElementById('cpuInd').className = 'indicator ind-critical';
+    } else if (cpu > 65) {
+      document.getElementById('cpuInd').textContent = 'Warning';
+      document.getElementById('cpuInd').className = 'indicator ind-warning';
+    } else {
+      document.getElementById('cpuInd').textContent = 'Normal';
+      document.getElementById('cpuInd').className = 'indicator ind-normal';
+    }
+
+    if (disk > 250) {
+      document.getElementById('diskInd').textContent = 'Warning';
+      document.getElementById('diskInd').className = 'indicator ind-warning';
+    } else {
+      document.getElementById('diskInd').textContent = 'Normal';
+      document.getElementById('diskInd').className = 'indicator ind-normal';
+    }
+
+    document.getElementById('memInd').textContent = 'Normal';
+    document.getElementById('netInd').textContent = 'Normal';
+
+    drawChart('cpuChart', chartData.cpu, 'rgb(0, 212, 255)', 100);
+    drawChart('memChart', chartData.mem, 'rgb(0, 255, 136)', 100);
+    drawChart('diskChart', chartData.disk, 'rgb(243, 156, 18)', 500);
+    drawChart('netChart', chartData.net, 'rgb(155, 89, 182)', 500);
+
+    // Show report after 35s (tick 17-18)
+    if (tick >= 18) {
+      document.getElementById('reportSection').style.display = 'block';
+    }
+  }
+
+  document.getElementById('reportText').addEventListener('input', function() {
+    const len = this.value.length;
+    document.getElementById('charCount').textContent = len + ' / 50 characters minimum';
+    document.getElementById('charCount').style.color = len >= 50 ? '#00ff88' : '#8892b0';
+  });
+
+  document.getElementById('submitReport').addEventListener('click', function() {
+    submitted = true;
+    this.textContent = 'Submitted';
+    this.style.background = '#00ff88';
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const text = document.getElementById('reportText').value.trim();
+    if (text.length > 50) return 'report_submitted';
+    return 'report_too_short';
+  };
+
+  function updateClock() {
+    document.getElementById('clock').textContent = new Date().toLocaleTimeString() + ' UTC';
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  setTimeout(function() {
+    setInterval(updateDashboard, 2000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

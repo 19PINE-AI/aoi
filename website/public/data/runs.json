@@ -1,0 +1,58 @@
+[
+ {
+  "id": "claude_aoi",
+  "label": "Claude Sonnet 4.6 \u2014 AOI full",
+  "pass": 82,
+  "total": 100,
+  "rate": 82.0
+ },
+ {
+  "id": "claude_standard",
+  "label": "Claude Sonnet 4.6 \u2014 Standard",
+  "pass": 38,
+  "total": 100,
+  "rate": 38.0
+ },
+ {
+  "id": "gpt54_aoi",
+  "label": "GPT-5.4 \u2014 AOI full",
+  "pass": 57,
+  "total": 100,
+  "rate": 57.0
+ },
+ {
+  "id": "gpt54_standard",
+  "label": "GPT-5.4 \u2014 Standard",
+  "pass": 37,
+  "total": 100,
+  "rate": 37.0
+ },
+ {
+  "id": "gemini3_aoi_audio",
+  "label": "Gemini 3 Flash \u2014 AOI audio",
+  "pass": 57,
+  "total": 100,
+  "rate": 57.0
+ },
+ {
+  "id": "gemini3_aoi_full",
+  "label": "Gemini 3 Flash \u2014 AOI full",
+  "pass": 45,
+  "total": 100,
+  "rate": 45.0
+ },
+ {
+  "id": "fara7b_aoi",
+  "label": "Fara-7B \u2014 AOI full",
+  "pass": 34,
+  "total": 100,
+  "rate": 34.0
+ },
+ {
+  "id": "evocua_aoi",
+  "label": "EvoCUA-32B \u2014 AOI full",
+  "pass": 55,
+  "total": 100,
+  "rate": 55.0
+ }
+]

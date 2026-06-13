@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meet Our Team</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #6c63ff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 560px; }
+  .page-header { text-align: center; margin-bottom: 24px; }
+  .page-header h1 { font-size: 28px; font-weight: 700; }
+  .page-header p { color: #888; font-size: 15px; margin-top: 6px; }
+  .team-carousel { background: #1a1a2e; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .team-viewport { overflow: hidden; }
+  .team-track { display: flex; transition: transform 0.6s ease; }
+  .member-slide { min-width: 100%; padding: 40px 32px; text-align: center; }
+  .member-photo { width: 120px; height: 120px; border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 700; color: #fff; border: 4px solid rgba(255,255,255,0.1); }
+  .member-name { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+  .member-role { font-size: 16px; color: #6c63ff; font-weight: 600; margin-bottom: 16px; }
+  .member-bio { font-size: 14px; color: #999; line-height: 1.6; max-width: 380px; margin: 0 auto; }
+  .member-socials { display: flex; justify-content: center; gap: 12px; margin-top: 16px; }
+  .social-link { width: 36px; height: 36px; border-radius: 50%; background: #16213e; display: flex; align-items: center; justify-content: center; color: #888; font-size: 14px; cursor: pointer; transition: background 0.2s; }
+  .social-link:hover { background: #1f2b45; color: #fff; }
+  .team-nav { display: flex; justify-content: center; align-items: center; gap: 10px; padding: 16px; background: #16213e; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: #444; cursor: pointer; transition: background 0.3s; }
+  .dot.active { background: #6c63ff; }
+  .nav-counter { font-size: 13px; color: #888; margin-left: 12px; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #6c63ff; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #6c63ff; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #7b73ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="page-header">
+    <h1>Meet Our Team</h1>
+    <p>The people behind the product</p>
+  </div>
+  <div class="team-carousel">
+    <div class="team-viewport">
+      <div class="team-track" id="teamTrack">
+        <div class="member-slide">
+          <div class="member-photo" style="background:linear-gradient(135deg,#f093fb,#f5576c)">EW</div>
+          <div class="member-name">Emma Wilson</div>
+          <div class="member-role">Chief Executive Officer</div>
+          <div class="member-bio">With 15 years of industry experience, Emma leads the company's vision and strategic direction, driving innovation across all departments.</div>
+          <div class="member-socials"><span class="social-link">in</span><span class="social-link">tw</span></div>
+        </div>
+        <div class="member-slide">
+          <div class="member-photo" style="background:linear-gradient(135deg,#667eea,#764ba2)">DP</div>
+          <div class="member-name">David Park</div>
+          <div class="member-role">Chief Technology Officer</div>
+          <div class="member-bio">David oversees all technical operations, from architecture decisions to engineering team growth. Former lead engineer at a top tech company.</div>
+          <div class="member-socials"><span class="social-link">in</span><span class="social-link">gh</span></div>
+        </div>
+        <div class="member-slide">
+          <div class="member-photo" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">LN</div>
+          <div class="member-name">Lisa Nguyen</div>
+          <div class="member-role">Chief Financial Officer</div>
+          <div class="member-bio">Lisa manages financial strategy, fundraising, and investor relations. She has successfully led three companies through IPO processes.</div>
+          <div class="member-socials"><span class="social-link">in</span><span class="social-link">tw</span></div>
+        </div>
+        <div class="member-slide">
+          <div class="member-photo" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">MB</div>
+          <div class="member-name">Marcus Brown</div>
+          <div class="member-role">Chief Operating Officer</div>
+          <div class="member-bio">Marcus ensures smooth day-to-day operations, scaling processes and building the organizational culture that drives our success.</div>
+          <div class="member-socials"><span class="social-link">in</span><span class="social-link">tw</span></div>
+        </div>
+        <div class="member-slide">
+          <div class="member-photo" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">RK</div>
+          <div class="member-name">Rachel Kim</div>
+          <div class="member-role">VP of Product</div>
+          <div class="member-bio">Rachel leads product strategy and design, ensuring every feature we ship delivers exceptional value to our users.</div>
+          <div class="member-socials"><span class="social-link">in</span><span class="social-link">tw</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="team-nav" id="teamNav">
+      <span class="nav-counter" id="counter">1 / 5</span>
+    </div>
+  </div>
+  <div class="form-section">
+    <h3>Who is the CTO?</h3>
+    <div class="input-group">
+      <label for="answerInput">CTO's Name</label>
+      <input type="text" id="answerInput" placeholder="Enter the CTO's full name..." autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const total = 5;
+  let cur = 0;
+
+  const nav = document.getElementById('teamNav');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.onclick = () => go(i);
+    nav.insertBefore(d, nav.firstChild);
+  }
+
+  function up() {
+    document.getElementById('teamTrack').style.transform = `translateX(-${cur * 100}%)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+  }
+
+  function go(i) { cur = ((i % total) + total) % total; up(); }
+
+  function startAuto() { setInterval(() => { cur = (cur + 1) % total; up(); }, 4000); }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'name_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const v = document.getElementById('answerInput').value.toLowerCase().trim();
+    if (v.includes('david') && v.includes('park')) return 'name_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    up();
+    setTimeout(startAuto, 500);
+  }, 2000);
+</script>
+</body>
+</html>

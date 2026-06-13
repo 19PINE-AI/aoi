@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Contact Form - Validation</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; display: flex; justify-content: center; align-items: flex-start; padding-top: 60px; }
+  .toast-container { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+  .toast { background: #e74c3c; color: white; padding: 14px 24px; border-radius: 8px; font-size: 14px; font-weight: 500; box-shadow: 0 4px 20px rgba(0,0,0,0.4); transform: translateX(120%); transition: transform 0.4s ease; display: flex; align-items: center; gap: 10px; max-width: 400px; }
+  .toast.show { transform: translateX(0); }
+  .toast.success { background: #00cc66; }
+  .toast-icon { font-size: 18px; }
+  .form-card { background: #16213e; border-radius: 12px; padding: 30px; border: 1px solid #2a3a5e; width: 450px; }
+  .form-card h2 { font-size: 22px; color: #00d4ff; margin-bottom: 5px; }
+  .form-card p { font-size: 13px; color: #8892b0; margin-bottom: 25px; }
+  .field { margin-bottom: 18px; }
+  .field label { display: block; font-size: 13px; color: #8892b0; margin-bottom: 6px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field input { width: 100%; padding: 10px 14px; font-size: 15px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; transition: border-color 0.3s; }
+  .field input:focus { outline: none; border-color: #00d4ff; }
+  .field input.error { border-color: #e74c3c; }
+  .field .hint { font-size: 11px; color: #e74c3c; margin-top: 4px; display: none; }
+  .submit-btn { width: 100%; padding: 12px; font-size: 15px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0a0f1e; transition: all 0.3s; margin-top: 10px; }
+  .submit-btn:hover { background: #00b8d9; }
+  .submit-btn:disabled { background: #555; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="toast-container" id="toastContainer"></div>
+<div class="form-card">
+  <h2>Contact Information</h2>
+  <p>Please review and submit your contact details</p>
+  <div class="field">
+    <label>Full Name</label>
+    <input type="text" id="nameInput" value="John Doe">
+  </div>
+  <div class="field">
+    <label>Email Address</label>
+    <input type="email" id="emailInput" value="user@" class="error">
+    <div class="hint" id="emailHint">Please enter a valid email address</div>
+  </div>
+  <div class="field">
+    <label>Phone Number</label>
+    <input type="tel" id="phoneInput" value="+1 (555) 234-5678">
+  </div>
+  <button class="submit-btn" id="submitBtn">Submit</button>
+</div>
+<script>
+(function() {
+  let formAccepted = false;
+  let submitCount = 0;
+
+  function showToast(message, type) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast' + (type === 'success' ? ' success' : '');
+    toast.innerHTML = '<span class="toast-icon">' + (type === 'success' ? '&#10003;' : '&#9888;') + '</span> ' + message;
+    container.appendChild(toast);
+    // Trigger animation
+    setTimeout(function() { toast.classList.add('show'); }, 50);
+    // Auto-dismiss after 3s
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() { container.removeChild(toast); }, 400);
+    }, 3000);
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitCount++;
+    const email = document.getElementById('emailInput').value.trim();
+    const emailInput = document.getElementById('emailInput');
+    const emailHint = document.getElementById('emailHint');
+
+    if (!isValidEmail(email)) {
+      showToast('Invalid email format', 'error');
+      emailInput.classList.add('error');
+      emailHint.style.display = 'block';
+      return;
+    }
+
+    // Valid email
+    emailInput.classList.remove('error');
+    emailHint.style.display = 'none';
+    formAccepted = true;
+    showToast('Form submitted successfully!', 'success');
+    document.getElementById('submitBtn').disabled = true;
+    document.getElementById('submitBtn').textContent = 'Submitted';
+  });
+
+  // Remove error styling on input
+  document.getElementById('emailInput').addEventListener('input', function() {
+    this.classList.remove('error');
+    document.getElementById('emailHint').style.display = 'none';
+  });
+
+  window.getTaskResult = function() {
+    if (formAccepted) return 'form_accepted';
+    return 'form_not_accepted';
+  };
+})();
+</script>
+</body>
+</html>

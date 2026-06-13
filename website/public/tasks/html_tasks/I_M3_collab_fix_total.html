@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Document - Expense Report</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Arial', sans-serif; background: #f0f0f0; height: 100vh; display: flex; flex-direction: column; }
+.toolbar {
+  background: #f9fbfd; border-bottom: 1px solid #dadce0; padding: 4px 8px;
+  display: flex; align-items: center;
+}
+.toolbar-title { padding: 4px 8px; font-size: 18px; font-weight: 400; color: #202124; border: none; outline: none; background: transparent; width: 300px; }
+.menu-bar { display: flex; gap: 2px; padding: 2px 8px; background: #f9fbfd; border-bottom: 1px solid #dadce0; }
+.menu-item { padding: 4px 8px; font-size: 13px; color: #444; cursor: pointer; border-radius: 4px; }
+.menu-item:hover { background: #e8eaed; }
+.format-bar {
+  display: flex; align-items: center; gap: 2px; padding: 4px 8px;
+  background: #edf2fa; border-bottom: 1px solid #dadce0;
+}
+.fmt-btn { padding: 4px 8px; border: none; background: transparent; cursor: pointer; border-radius: 4px; font-size: 13px; color: #444; }
+.collab-bar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 4px 12px; background: #f9fbfd; flex: 1;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: #fbbc04;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: bold; font-size: 14px; position: relative;
+}
+.avatar .online-dot {
+  width: 10px; height: 10px; background: #0f9d58; border: 2px solid white;
+  border-radius: 50%; position: absolute; bottom: -2px; right: -2px;
+}
+.collab-status { font-size: 12px; color: #5f6368; }
+.doc-container { flex: 1; display: flex; justify-content: center; padding: 20px; background: #f0f0f0; overflow-y: auto; }
+.doc-page {
+  width: 816px; min-height: 1056px; background: white; padding: 96px 72px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #202124;
+}
+.doc-page h1 { font-size: 20pt; margin-bottom: 16px; }
+.doc-page p { margin-bottom: 12px; }
+table {
+  width: 100%; border-collapse: collapse; margin: 16px 0;
+  font-size: 11pt;
+}
+th { background: #f1f3f4; text-align: left; padding: 10px 12px; border: 1px solid #dadce0; font-weight: 600; }
+td { padding: 10px 12px; border: 1px solid #dadce0; }
+tr:hover { background: #f8f9fa; }
+.total-row { background: #e8f0fe; font-weight: bold; }
+.editable-cell {
+  cursor: text; min-width: 60px; display: inline-block;
+  padding: 2px 4px; border-radius: 2px;
+}
+.editable-cell:hover { background: #fff8e1; }
+.editable-cell:focus { outline: 2px solid #1a73e8; background: #e3f2fd; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <input class="toolbar-title" value="Expense Report" readonly />
+  <div class="collab-bar">
+    <span class="collab-status">Alex is editing...</span>
+    <div class="avatar">A<span class="online-dot"></span></div>
+  </div>
+</div>
+<div class="menu-bar">
+  <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span>
+  <span class="menu-item">Insert</span><span class="menu-item">Format</span><span class="menu-item">Tools</span>
+</div>
+<div class="format-bar">
+  <select class="fmt-btn" style="width:120px"><option>Normal text</option></select>
+  <select class="fmt-btn" style="width:100px"><option>Arial</option></select>
+  <button class="fmt-btn"><b>B</b></button>
+  <button class="fmt-btn"><i>I</i></button>
+  <button class="fmt-btn"><u>U</u></button>
+</div>
+<div class="doc-container">
+  <div class="doc-page">
+    <h1>Q1 Expense Report</h1>
+    <p>Below is the summary of expenses for the first quarter. Please review the totals and ensure accuracy before submitting to finance.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Category</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Item A</td>
+          <td>Software Licenses</td>
+          <td>$120</td>
+        </tr>
+        <tr>
+          <td>Item B</td>
+          <td>Cloud Infrastructure</td>
+          <td>$85</td>
+        </tr>
+        <tr>
+          <td>Item C</td>
+          <td>Consulting Services</td>
+          <td>$200</td>
+        </tr>
+        <tr class="total-row">
+          <td colspan="2"><strong>Total</strong></td>
+          <td><span id="total-cell" class="editable-cell" contenteditable="true">$380</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p style="color: #5f6368; font-size: 10pt;">Note: All amounts are in USD. Please verify the total before final submission.</p>
+  </div>
+</div>
+
+<script>
+// Audio instruction at t=3s
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Hey, I just noticed the total in the table is wrong. Can you fix it?");
+  msg.rate = 0.95;
+  speechSynthesis.speak(msg);
+}, 3000);
+
+window.getTaskResult = function() {
+  const totalText = document.getElementById('total-cell').innerText.replace(/[^0-9]/g, '');
+  if (totalText === '405') {
+    return 'total_correct';
+  }
+  return 'total_incorrect_' + totalText;
+};
+</script>
+</body>
+</html>

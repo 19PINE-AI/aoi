@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Typing Rain</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+.header {
+  padding: 12px 24px; display: flex; justify-content: space-between; align-items: center;
+  background: rgba(15,15,35,0.9); z-index: 10; position: relative;
+}
+.title { font-size: 24px; font-weight: 700; color: #00ff88; }
+.stats { display: flex; gap: 20px; }
+.stat-item { text-align: center; }
+.stat-label { font-size: 10px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { font-size: 24px; font-weight: 700; }
+.game-area {
+  flex: 1; position: relative; overflow: hidden;
+}
+.falling-word {
+  position: absolute; font-size: 22px; font-weight: 600; color: #33aaff;
+  text-shadow: 0 0 8px rgba(51,170,255,0.3); white-space: nowrap;
+  transition: color 0.2s;
+}
+.falling-word.active { color: #ffcc00; text-shadow: 0 0 12px rgba(255,204,0,0.4); }
+.falling-word.caught {
+  color: #00ff88; animation: wordCaught 0.4s ease-out forwards;
+}
+@keyframes wordCaught {
+  0% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(1.3); opacity: 0; }
+}
+.falling-word.missed {
+  color: #ff3366; animation: wordMissed 0.3s ease-out forwards;
+}
+@keyframes wordMissed {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.input-area {
+  padding: 16px 24px; background: #1a1a3e; border-top: 2px solid #2a2a5e;
+  display: flex; align-items: center; gap: 12px; z-index: 10; position: relative;
+}
+.input-area input {
+  flex: 1; padding: 12px 16px; background: #0f0f23; border: 2px solid #2a2a5e;
+  border-radius: 8px; color: #e0e0e0; font-size: 18px; font-family: 'Segoe UI', sans-serif;
+  outline: none;
+}
+.input-area input:focus { border-color: #33aaff; }
+.input-area .hint { font-size: 12px; color: #5f6368; }
+.danger-zone {
+  position: absolute; bottom: 0; left: 0; right: 0; height: 3px;
+  background: linear-gradient(90deg, transparent, #ff3366, transparent);
+  opacity: 0.5;
+}
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #00ff88; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #ff3366; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Typing Rain</h1>
+  <p>Words fall from the sky! Type them before they hit the bottom.</p>
+  <p>Type 5 words correctly to win!</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Typing Rain</div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-label">Caught</div>
+      <div class="stat-value" id="caught" style="color:#00ff88">0</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Missed</div>
+      <div class="stat-value" id="missed" style="color:#ff3366">0</div>
+    </div>
+  </div>
+</div>
+
+<div class="game-area" id="game-area">
+  <div class="danger-zone"></div>
+</div>
+
+<div class="input-area">
+  <input type="text" id="type-input" placeholder="Type the falling words here..." autocomplete="off" />
+  <span class="hint">Press Enter or Space to submit</span>
+</div>
+
+<script>
+const WORDS = ['hello', 'world', 'python', 'data', 'cloud', 'server', 'deploy', 'code', 'build', 'test',
+               'debug', 'merge', 'query', 'route', 'cache', 'stack', 'array', 'token', 'parse', 'fetch'];
+
+let activeWords = [];
+let caughtCount = 0;
+let missedCount = 0;
+let wordId = 0;
+let gameActive = false;
+let animFrame = null;
+
+const gameArea = document.getElementById('game-area');
+const input = document.getElementById('type-input');
+
+function spawnWord() {
+  if (!gameActive) return;
+
+  const word = WORDS[Math.floor(Math.random() * WORDS.length)];
+  const el = document.createElement('div');
+  el.className = 'falling-word';
+  el.textContent = word;
+
+  const areaWidth = gameArea.offsetWidth;
+  const x = 40 + Math.random() * (areaWidth - 160);
+  el.style.left = x + 'px';
+  el.style.top = '-30px';
+
+  const id = wordId++;
+  const speed = 0.5 + Math.random() * 0.5; // pixels per frame (slower)
+
+  activeWords.push({ id, word, el, y: -30, speed, caught: false });
+  gameArea.appendChild(el);
+}
+
+function gameLoop() {
+  if (!gameActive) return;
+
+  const areaHeight = gameArea.offsetHeight;
+
+  activeWords.forEach(w => {
+    if (w.caught) return;
+    w.y += w.speed;
+    w.el.style.top = w.y + 'px';
+
+    if (w.y > areaHeight) {
+      // Missed
+      w.el.classList.add('missed');
+      w.caught = true;
+      missedCount++;
+      document.getElementById('missed').textContent = missedCount;
+      setTimeout(() => w.el.remove(), 300);
+    }
+  });
+
+  // Clean up
+  activeWords = activeWords.filter(w => !w.caught || w.el.parentNode);
+
+  animFrame = requestAnimationFrame(gameLoop);
+}
+
+function checkWord(typed) {
+  const lower = typed.toLowerCase().trim();
+  if (!lower) return;
+
+  // Find the lowest (closest to bottom) matching word
+  let bestMatch = null;
+  let bestY = -1;
+  activeWords.forEach(w => {
+    if (!w.caught && w.word === lower && w.y > bestY) {
+      bestMatch = w;
+      bestY = w.y;
+    }
+  });
+
+  if (bestMatch) {
+    bestMatch.caught = true;
+    bestMatch.el.classList.add('caught');
+    caughtCount++;
+    document.getElementById('caught').textContent = caughtCount;
+    setTimeout(() => bestMatch.el.remove(), 400);
+  }
+}
+
+input.addEventListener('keydown', (e) => {
+  if (e.key === 'Enter' || e.key === ' ') {
+    e.preventDefault();
+    checkWord(input.value);
+    input.value = '';
+  }
+});
+
+// Also highlight matching words as user types
+input.addEventListener('input', () => {
+  const val = input.value.toLowerCase().trim();
+  activeWords.forEach(w => {
+    if (!w.caught && w.word.startsWith(val) && val.length > 0) {
+      w.el.classList.add('active');
+    } else {
+      w.el.classList.remove('active');
+    }
+  });
+});
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startGame();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startGame() {
+  gameActive = true;
+  input.focus();
+  spawnWord();
+  // Spawn new words periodically
+  setInterval(() => {
+    if (gameActive) spawnWord();
+  }, 2500);
+  gameLoop();
+}
+
+window.getTaskResult = function() {
+  if (caughtCount >= 5) {
+    return '5_words_correct';
+  }
+  return 'words_correct_' + caughtCount;
+};
+</script>
+</body>
+</html>

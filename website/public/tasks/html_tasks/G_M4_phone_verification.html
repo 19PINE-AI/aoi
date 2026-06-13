@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Security Verification</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ffa726; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .phone-card { background: #16213e; border-radius: 16px; padding: 32px; width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; }
+  .call-status { font-size: 13px; color: #ffa726; margin-bottom: 8px; letter-spacing: 1px; text-transform: uppercase; }
+  .shield { width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #ffa726, #e65100); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; font-size: 36px; color: #fff; }
+  .caller-name { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+  .caller-sub { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .call-timer { font-size: 24px; font-weight: 300; margin-bottom: 16px; font-variant-numeric: tabular-nums; }
+  .call-actions { display: flex; justify-content: center; gap: 16px; margin-bottom: 24px; }
+  .action-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; color: #fff; }
+  .btn-mute { background: #333; }
+  .btn-speaker { background: #333; }
+  .btn-end { background: #e53935; }
+  .divider { border: none; border-top: 1px solid #2a2a4e; margin: 20px 0; }
+  .form-section h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; text-align: left; }
+  .input-group { display: flex; flex-direction: column; gap: 6px; text-align: left; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 8px; padding: 12px 16px; color: #e0e0e0; font-size: 22px; outline: none; transition: border-color 0.2s; letter-spacing: 8px; text-align: center; font-weight: 600; }
+  .input-group input:focus { border-color: #ffa726; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #ffa726; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #ffb74d; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="phone-card">
+  <div class="call-status" id="callStatus">Verification Call</div>
+  <div class="shield">&#128274;</div>
+  <div class="caller-name">Security Verification</div>
+  <div class="caller-sub">Automated system</div>
+  <div class="call-timer" id="timer">00:00</div>
+  <div class="call-actions">
+    <button class="action-btn btn-mute">&#128263;</button>
+    <button class="action-btn btn-speaker">&#128264;</button>
+    <button class="action-btn btn-end">&#128381;</button>
+  </div>
+  <hr class="divider">
+  <div class="form-section">
+    <h3>Enter the verification code you heard</h3>
+    <div class="input-group">
+      <label for="code">Verification Code</label>
+      <input type="text" id="code" maxlength="6" placeholder="------" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Verify</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const audioText = "Your verification code is: eight... four... seven... two... nine... three.";
+  let audioPlayed = false;
+  let timerSec = 0;
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function startAudio() {
+    if (audioPlayed) return;
+    audioPlayed = true;
+    document.getElementById('callStatus').textContent = 'Connected';
+    const u = new SpeechSynthesisUtterance(audioText);
+    u.rate = 0.7; u.lang = 'en-US';
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'code_correct' ? 'Verified!' : 'Incorrect code.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('code').value.replace(/\s/g, '');
+    if (val === '847293') return 'code_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startAudio, 500);
+  }, 2000);
+</script>
+</body>
+</html>

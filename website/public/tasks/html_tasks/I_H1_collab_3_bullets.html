@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Document - Action Items</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Arial', sans-serif; background: #f0f0f0; height: 100vh; display: flex; flex-direction: column; }
+.toolbar {
+  background: #f9fbfd; border-bottom: 1px solid #dadce0; padding: 4px 8px;
+  display: flex; align-items: center;
+}
+.toolbar-title { padding: 4px 8px; font-size: 18px; font-weight: 400; color: #202124; border: none; outline: none; background: transparent; width: 300px; }
+.menu-bar { display: flex; gap: 2px; padding: 2px 8px; background: #f9fbfd; border-bottom: 1px solid #dadce0; }
+.menu-item { padding: 4px 8px; font-size: 13px; color: #444; cursor: pointer; border-radius: 4px; }
+.menu-item:hover { background: #e8eaed; }
+.format-bar {
+  display: flex; align-items: center; gap: 2px; padding: 4px 8px;
+  background: #edf2fa; border-bottom: 1px solid #dadce0;
+}
+.fmt-btn { padding: 4px 8px; border: none; background: transparent; cursor: pointer; border-radius: 4px; font-size: 13px; color: #444; }
+.collab-bar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 4px 12px; background: #f9fbfd; flex: 1;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: #34a853;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: bold; font-size: 14px; position: relative;
+}
+.avatar .online-dot {
+  width: 10px; height: 10px; background: #0f9d58; border: 2px solid white;
+  border-radius: 50%; position: absolute; bottom: -2px; right: -2px;
+}
+.collab-status { font-size: 12px; color: #5f6368; }
+.doc-container { flex: 1; display: flex; justify-content: center; padding: 20px; background: #f0f0f0; overflow-y: auto; }
+.doc-page {
+  width: 816px; min-height: 1056px; background: white; padding: 96px 72px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #202124;
+}
+.doc-page h1 { font-size: 20pt; margin-bottom: 8px; }
+.doc-page h2 { font-size: 14pt; margin: 20px 0 8px; color: #202124; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+.doc-page p { margin-bottom: 10px; }
+.bold-highlight {
+  transition: all 0.3s;
+}
+.bold-highlight.changing {
+  background: #e8f0fe;
+}
+.heading-change {
+  transition: all 0.3s;
+}
+.heading-change.changing {
+  background: #e8f0fe;
+}
+.bullet-area {
+  min-height: 100px; padding: 8px; outline: none; margin-top: 12px;
+  border: 1px dashed #dadce0; border-radius: 4px;
+}
+.bullet-area:focus { border-color: #1a73e8; background: #fafbff; }
+.collab-cursor-line {
+  display: inline-block; width: 2px; height: 18px; background: #34a853;
+  vertical-align: text-bottom; animation: blink 1s step-end infinite;
+}
+@keyframes blink { 50% { opacity: 0; } }
+.collab-tag {
+  background: #34a853; color: white; font-size: 9px; padding: 1px 4px;
+  border-radius: 2px;
+}
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <input class="toolbar-title" value="Action Items" readonly />
+  <div class="collab-bar">
+    <span class="collab-status" id="collab-status">Alex is editing...</span>
+    <div class="avatar">A<span class="online-dot"></span></div>
+  </div>
+</div>
+<div class="menu-bar">
+  <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span>
+  <span class="menu-item">Insert</span><span class="menu-item">Format</span><span class="menu-item">Tools</span>
+</div>
+<div class="format-bar">
+  <select class="fmt-btn" style="width:120px"><option>Normal text</option></select>
+  <select class="fmt-btn" style="width:100px"><option>Arial</option></select>
+  <button class="fmt-btn"><b>B</b></button>
+  <button class="fmt-btn"><i>I</i></button>
+  <button class="fmt-btn"><u>U</u></button>
+</div>
+<div class="doc-container">
+  <div class="doc-page">
+    <h1>Weekly Action Items</h1>
+    <p style="color:#5f6368;">Meeting notes from April 10, 2026</p>
+
+    <h2>Discussion Summary</h2>
+    <p id="summary-text" class="bold-highlight">The team discussed the upcoming release schedule and agreed on <span id="bold-target">priorities for the next sprint</span>. Several blockers were identified that need immediate attention from the engineering leads.</p>
+
+    <h2 id="section-heading" class="heading-change">Tasks</h2>
+    <p>The following tasks were assigned during the meeting. Additional items may be added by team members.</p>
+
+    <h2>New Action Items</h2>
+    <p style="color:#5f6368; font-style:italic;">Type the dictated bullet points below:</p>
+    <div class="bullet-area" id="bullet-area" contenteditable="true"></div>
+  </div>
+</div>
+
+<script>
+// At t=2s: collaborator bolds some text
+setTimeout(() => {
+  const target = document.getElementById('bold-target');
+  const summaryText = document.getElementById('summary-text');
+  summaryText.classList.add('changing');
+  setTimeout(() => {
+    target.style.fontWeight = 'bold';
+    summaryText.classList.remove('changing');
+  }, 800);
+}, 2000);
+
+// At t=4s: collaborator changes heading
+setTimeout(() => {
+  const heading = document.getElementById('section-heading');
+  heading.classList.add('changing');
+  setTimeout(() => {
+    heading.textContent = 'Assigned Tasks';
+    heading.classList.remove('changing');
+  }, 800);
+}, 4000);
+
+// At t=6s: first bullet point audio
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("First bullet: Finalize the API documentation.");
+  msg.rate = 0.9;
+  speechSynthesis.speak(msg);
+}, 6000);
+
+// At t=12s: second bullet point
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Second: Set up staging environment by Thursday.");
+  msg.rate = 0.9;
+  speechSynthesis.speak(msg);
+}, 12000);
+
+// At t=18s: third bullet point
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Third: Schedule a demo with the client.");
+  msg.rate = 0.9;
+  speechSynthesis.speak(msg);
+}, 18000);
+
+window.getTaskResult = function() {
+  const text = document.getElementById('bullet-area').innerText.toLowerCase();
+  const hasAPI = text.includes('api documentation') || text.includes('api doc');
+  const hasStaging = text.includes('staging environment') || text.includes('staging');
+  const hasDemo = text.includes('demo') && text.includes('client');
+  if (hasAPI && hasStaging && hasDemo) {
+    return 'all_3_bullets_correct';
+  }
+  let count = (hasAPI ? 1 : 0) + (hasStaging ? 1 : 0) + (hasDemo ? 1 : 0);
+  return 'bullets_correct_' + count + '_of_3';
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sales Dashboard - Regional Revenue</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .period { font-size: 13px; color: #8892b0; }
+  .summary-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 20px; }
+  .summary-card { background: #16213e; border-radius: 10px; padding: 15px 20px; border: 1px solid #2a3a5e; }
+  .summary-label { font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; }
+  .summary-value { font-size: 24px; font-weight: bold; margin-top: 4px; }
+  .chart-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; margin-bottom: 20px; }
+  .chart-card h2 { font-size: 16px; color: #8892b0; margin-bottom: 20px; }
+  .bar-chart { display: flex; gap: 40px; justify-content: center; align-items: flex-end; height: 250px; padding: 0 40px; }
+  .bar-group { display: flex; flex-direction: column; align-items: center; flex: 1; max-width: 200px; }
+  .bar-wrapper { width: 100%; height: 220px; display: flex; align-items: flex-end; justify-content: center; }
+  .bar { width: 80px; border-radius: 6px 6px 0 0; transition: height 0.8s ease, background 0.5s; position: relative; }
+  .bar-value { position: absolute; top: -28px; width: 100%; text-align: center; font-size: 14px; font-weight: bold; }
+  .bar-label { margin-top: 10px; font-size: 14px; color: #8892b0; font-weight: 600; }
+  .east-bar { background: linear-gradient(to top, #00d4ff, #0088cc); }
+  .west-bar { background: linear-gradient(to top, #f39c12, #e67e22); }
+  .leader-badge { display: inline-block; padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; margin-top: 5px; }
+  .leader-badge.leading { background: rgba(0,255,136,0.15); color: #00ff88; }
+  .leader-badge.trailing { background: rgba(136,146,176,0.15); color: #8892b0; }
+  .flip-section { text-align: center; margin-bottom: 20px; }
+  #flipBtn { padding: 14px 40px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #e74c3c; color: white; text-transform: uppercase; letter-spacing: 2px; transition: all 0.3s; }
+  #flipBtn:hover { background: #c0392b; transform: scale(1.05); }
+  #flipBtn:disabled { background: #555; cursor: not-allowed; transform: none; }
+  .flip-status { margin-top: 10px; font-size: 14px; color: #8892b0; }
+  .comparison { font-size: 16px; text-align: center; margin-bottom: 15px; padding: 10px; background: #0a0f1e; border-radius: 8px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Regional Sales Dashboard</h1>
+  <div class="period">Q4 2025 &bull; Live Revenue Tracking</div>
+</div>
+<div class="summary-row">
+  <div class="summary-card">
+    <div class="summary-label">East Region</div>
+    <div class="summary-value" id="eastTotal" style="color:#00d4ff;">$380K</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-label">West Region</div>
+    <div class="summary-value" id="westTotal" style="color:#f39c12;">$450K</div>
+  </div>
+  <div class="summary-card">
+    <div class="summary-label">Combined</div>
+    <div class="summary-value" id="combinedTotal">$830K</div>
+  </div>
+</div>
+<div class="chart-card">
+  <h2>Regional Revenue Comparison</h2>
+  <div class="comparison" id="comparison">West leads by $70K</div>
+  <div class="bar-chart">
+    <div class="bar-group">
+      <div class="bar-wrapper">
+        <div class="bar east-bar" id="eastBar" style="height: 150px;">
+          <div class="bar-value" id="eastBarVal">$380K</div>
+        </div>
+      </div>
+      <div class="bar-label">East Region</div>
+      <div class="leader-badge trailing" id="eastBadge">Trailing</div>
+    </div>
+    <div class="bar-group">
+      <div class="bar-wrapper">
+        <div class="bar west-bar" id="westBar" style="height: 180px;">
+          <div class="bar-value" id="westBarVal">$450K</div>
+        </div>
+      </div>
+      <div class="bar-label">West Region</div>
+      <div class="leader-badge leading" id="westBadge">Leading</div>
+    </div>
+  </div>
+</div>
+<div class="flip-section">
+  <button id="flipBtn">Flip Alert</button>
+  <div class="flip-status" id="flipStatus">Click when East Region overtakes West Region</div>
+</div>
+<script>
+(function() {
+  // East starts at 380, West at 450. East grows faster and overtakes around t=20s (tick ~7)
+  const eastScript = [380, 395, 410, 425, 438, 448, 458, 468, 478, 488, 498, 508];
+  const westScript = [450, 455, 458, 460, 462, 464, 465, 466, 467, 468, 469, 470];
+
+  let tick = 0;
+  let east = 380, west = 450;
+  let flipClicked = false;
+  let eastWasAboveWest = false;
+
+  function updateRevenue() {
+    tick++;
+    const idx = Math.min(tick, eastScript.length - 1);
+    east = eastScript[idx] + Math.floor(Math.random() * 6 - 3);
+    west = westScript[idx] + Math.floor(Math.random() * 4 - 2);
+
+    document.getElementById('eastTotal').textContent = '$' + east + 'K';
+    document.getElementById('westTotal').textContent = '$' + west + 'K';
+    document.getElementById('combinedTotal').textContent = '$' + (east + west) + 'K';
+    document.getElementById('eastBarVal').textContent = '$' + east + 'K';
+    document.getElementById('westBarVal').textContent = '$' + west + 'K';
+
+    const maxVal = Math.max(east, west);
+    const eastH = Math.max(20, (east / maxVal) * 200);
+    const westH = Math.max(20, (west / maxVal) * 200);
+    document.getElementById('eastBar').style.height = eastH + 'px';
+    document.getElementById('westBar').style.height = westH + 'px';
+
+    const diff = Math.abs(east - west);
+    if (east > west) {
+      document.getElementById('comparison').textContent = 'East leads by $' + diff + 'K';
+      document.getElementById('comparison').style.color = '#00ff88';
+      document.getElementById('eastBadge').textContent = 'Leading';
+      document.getElementById('eastBadge').className = 'leader-badge leading';
+      document.getElementById('westBadge').textContent = 'Trailing';
+      document.getElementById('westBadge').className = 'leader-badge trailing';
+    } else {
+      document.getElementById('comparison').textContent = 'West leads by $' + diff + 'K';
+      document.getElementById('comparison').style.color = '#f39c12';
+      document.getElementById('eastBadge').textContent = 'Trailing';
+      document.getElementById('eastBadge').className = 'leader-badge trailing';
+      document.getElementById('westBadge').textContent = 'Leading';
+      document.getElementById('westBadge').className = 'leader-badge leading';
+    }
+  }
+
+  document.getElementById('flipBtn').addEventListener('click', function() {
+    if (flipClicked) return;
+    flipClicked = true;
+    eastWasAboveWest = east > west;
+    document.getElementById('flipBtn').disabled = true;
+    if (eastWasAboveWest) {
+      document.getElementById('flipBtn').style.background = '#00ff88';
+      document.getElementById('flipBtn').textContent = 'Flip Detected!';
+      document.getElementById('flipStatus').textContent = 'Correct! East ($' + east + 'K) overtook West ($' + west + 'K)';
+      document.getElementById('flipStatus').style.color = '#00ff88';
+    } else {
+      document.getElementById('flipBtn').style.background = '#f39c12';
+      document.getElementById('flipBtn').textContent = 'Too Early';
+      document.getElementById('flipStatus').textContent = 'East ($' + east + 'K) has not yet overtaken West ($' + west + 'K)';
+      document.getElementById('flipStatus').style.color = '#f39c12';
+    }
+  });
+
+  window.getTaskResult = function() {
+    if (flipClicked && eastWasAboveWest) return 'flip_detected';
+    if (flipClicked) return 'flip_wrong_time';
+    return 'no_flip';
+  };
+
+  setTimeout(function() {
+    setInterval(updateRevenue, 3000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

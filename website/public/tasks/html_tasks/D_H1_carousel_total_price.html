@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Catalog</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #27ca40; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 600px; }
+  .page-header { text-align: center; margin-bottom: 20px; }
+  .page-header h1 { font-size: 24px; font-weight: 700; }
+  .page-header p { color: #888; font-size: 14px; margin-top: 4px; }
+  .carousel-wrapper { background: #1a1a2e; border-radius: 16px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .carousel-viewport { overflow: hidden; }
+  .carousel-track { display: flex; transition: transform 0.4s ease; }
+  .item-slide { min-width: 100%; padding: 32px; display: flex; align-items: center; gap: 24px; }
+  .item-img { width: 160px; height: 160px; border-radius: 16px; display: flex; align-items: center; justify-content: center; font-size: 48px; flex-shrink: 0; }
+  .item-info { flex: 1; }
+  .item-name { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .item-desc { font-size: 14px; color: #999; margin-bottom: 12px; line-height: 1.4; }
+  .item-price { font-size: 32px; font-weight: 800; color: #27ca40; }
+  .item-sku { font-size: 12px; color: #666; margin-top: 4px; }
+  .carousel-nav { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 16px; background: #16213e; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #444; cursor: pointer; transition: background 0.3s; }
+  .dot.active { background: #27ca40; }
+  .nav-info { font-size: 13px; color: #888; margin-left: 12px; }
+  .speed-label { font-size: 12px; color: #ff8c00; text-align: center; padding: 6px; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 6px; color: #ccc; }
+  .form-section .hint { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #27ca40; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #27ca40; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #32d74b; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="page-header">
+    <h1>Complete Product Catalog</h1>
+    <p>Fast carousel — track all products and calculate the total</p>
+  </div>
+  <div class="carousel-wrapper">
+    <div class="carousel-viewport">
+      <div class="carousel-track" id="track">
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#667eea,#764ba2)">&#128187;</div>
+          <div class="item-info">
+            <div class="item-name">USB-C Dock</div>
+            <div class="item-desc">12-in-1 docking station with dual HDMI, Ethernet, and SD card reader.</div>
+            <div class="item-price">$89.99</div>
+            <div class="item-sku">SKU: DCK-001</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#f093fb,#f5576c)">&#127911;</div>
+          <div class="item-info">
+            <div class="item-name">Studio Headphones</div>
+            <div class="item-desc">Professional studio monitor headphones with flat frequency response.</div>
+            <div class="item-price">$124.50</div>
+            <div class="item-sku">SKU: HPH-002</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">&#128268;</div>
+          <div class="item-info">
+            <div class="item-name">Cable Bundle</div>
+            <div class="item-desc">Assorted USB-C, Lightning, and micro-USB cables in a travel pouch.</div>
+            <div class="item-price">$45.99</div>
+            <div class="item-sku">SKU: CBL-003</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#ffd700,#ff8c00)">&#128421;</div>
+          <div class="item-info">
+            <div class="item-name">4K Monitor</div>
+            <div class="item-desc">27-inch 4K UHD IPS display with USB-C power delivery.</div>
+            <div class="item-price">$199.95</div>
+            <div class="item-sku">SKU: MON-004</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#a18cd1,#fbc2eb)">&#128433;</div>
+          <div class="item-info">
+            <div class="item-name">Wireless Mouse</div>
+            <div class="item-desc">Ergonomic wireless mouse with 3 DPI settings and silent clicks.</div>
+            <div class="item-price">$67.50</div>
+            <div class="item-sku">SKU: MSE-005</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#ff9a9e,#fecfef)">&#128247;</div>
+          <div class="item-info">
+            <div class="item-name">Webcam HD</div>
+            <div class="item-desc">1080p webcam with auto-focus and built-in ring light.</div>
+            <div class="item-price">$34.99</div>
+            <div class="item-sku">SKU: WBC-006</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#d4fc79,#96e6a1)">&#9000;</div>
+          <div class="item-info">
+            <div class="item-name">Mech Keyboard</div>
+            <div class="item-desc">Compact 75% mechanical keyboard with hot-swappable switches.</div>
+            <div class="item-price">$155.00</div>
+            <div class="item-sku">SKU: KBD-007</div>
+          </div>
+        </div>
+        <div class="item-slide">
+          <div class="item-img" style="background:linear-gradient(135deg,#ffecd2,#fcb69f)">&#128266;</div>
+          <div class="item-info">
+            <div class="item-name">Desktop Speaker Set</div>
+            <div class="item-desc">2.1 channel desktop speakers with subwoofer and Bluetooth.</div>
+            <div class="item-price">$130.00</div>
+            <div class="item-sku">SKU: SPK-008</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="carousel-nav" id="navArea">
+      <span class="nav-info" id="counter">1 / 8</span>
+    </div>
+    <div class="speed-label">Auto-rotating every 2 seconds</div>
+  </div>
+  <div class="form-section">
+    <h3>What is the total cost of all products?</h3>
+    <div class="hint">Add up the prices of all 8 products in the carousel.</div>
+    <div class="input-group">
+      <label for="answerInput">Total cost</label>
+      <input type="text" id="answerInput" placeholder="e.g. $847.92" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const total = 8;
+  let cur = 0;
+
+  const nav = document.getElementById('navArea');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    d.onclick = () => go(i);
+    nav.insertBefore(d, nav.firstChild);
+  }
+
+  function up() {
+    document.getElementById('track').style.transform = `translateX(-${cur * 100}%)`;
+    document.querySelectorAll('.dot').forEach((d, i) => d.classList.toggle('active', i === cur));
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+  }
+
+  function go(i) { cur = ((i % total) + total) % total; up(); }
+
+  function startAuto() { setInterval(() => { cur = (cur + 1) % total; up(); }, 2000); }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'total_correct' ? 'Correct! The total is $847.92.' : 'Incorrect total. Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const v = document.getElementById('answerInput').value.replace(/[^0-9.]/g, '').trim();
+    if (v.includes('847.92') || v === '847' || v === '848') return 'total_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    up();
+    setTimeout(startAuto, 500);
+  }, 2000);
+</script>
+</body>
+</html>

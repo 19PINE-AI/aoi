@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live News Feed</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff4444; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 640px; }
+  .news-header { background: #1a1a2e; border-radius: 12px 12px 0 0; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center; }
+  .news-logo { font-size: 22px; font-weight: 800; color: #ff4444; }
+  .live-badge { display: flex; align-items: center; gap: 6px; background: #ff4444; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 700; }
+  .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #fff; animation: livePulse 1.5s ease infinite; }
+  @keyframes livePulse { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .feed-wrapper { background: #1a1a2e; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .feed-viewport { overflow: hidden; }
+  .feed-track { display: flex; transition: transform 0.5s ease; }
+  .story-card { min-width: 100%; padding: 28px 24px; position: relative; }
+  .story-category { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .story-headline { font-size: 22px; font-weight: 700; line-height: 1.3; margin-bottom: 12px; color: #fff; }
+  .story-summary { font-size: 14px; color: #999; line-height: 1.5; margin-bottom: 16px; }
+  .story-meta { font-size: 12px; color: #666; display: flex; gap: 16px; }
+  .breaking-banner { display: none; position: absolute; top: 0; left: 0; right: 0; background: linear-gradient(90deg, #ff0000, #cc0000); color: #fff; padding: 10px 20px; font-size: 16px; font-weight: 800; text-align: center; cursor: pointer; animation: breakFlash 0.5s ease infinite alternate; z-index: 5; }
+  .breaking-banner.show { display: block; }
+  @keyframes breakFlash { from { background: linear-gradient(90deg, #ff0000, #cc0000); } to { background: linear-gradient(90deg, #cc0000, #ff0000); } }
+  .feed-nav { display: flex; justify-content: center; align-items: center; gap: 6px; padding: 14px; background: #16213e; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: #444; transition: background 0.3s; }
+  .dot.active { background: #ff4444; }
+  .feed-counter { font-size: 13px; color: #888; margin-left: 12px; }
+  .rotation-info { font-size: 12px; color: #ff8c00; text-align: center; padding: 8px; }
+  .footer { background: #1a1a2e; border-radius: 0 0 12px 12px; padding: 12px 24px; }
+  .task-section { background: #1a1a2e; border-radius: 12px; padding: 24px; margin-top: 24px; }
+  .task-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 6px; color: #ccc; }
+  .task-section .hint { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .status { text-align: center; font-size: 14px; color: #666; min-height: 24px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="news-header">
+    <div class="news-logo">24/7 NEWS</div>
+    <div class="live-badge"><div class="live-dot"></div>LIVE FEED</div>
+  </div>
+  <div class="feed-wrapper">
+    <div class="feed-viewport">
+      <div class="feed-track" id="feedTrack">
+        <div class="story-card">
+          <div class="story-category" style="color:#4facfe">Politics</div>
+          <div class="story-headline">Senate Committee Advances Key Infrastructure Spending Bill</div>
+          <div class="story-summary">The bipartisan committee voted 18-4 to move the $200 billion infrastructure package to the full senate floor for debate next week.</div>
+          <div class="story-meta"><span>2 hours ago</span><span>Washington, D.C.</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#27ca40">Sports</div>
+          <div class="story-headline">World Cup Qualifier: National Team Clinches Spot With Last-Minute Goal</div>
+          <div class="story-summary">In a dramatic finish, the national team scored in the 94th minute to secure their place in next year's tournament.</div>
+          <div class="story-meta"><span>3 hours ago</span><span>Stadium Arena</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#ffd700">Business</div>
+          <div class="story-headline">Tech Giant Reports Record Quarterly Revenue of $94 Billion</div>
+          <div class="story-summary">Strong cloud computing and AI product demand drove the company to its best quarter ever, exceeding analyst expectations.</div>
+          <div class="story-meta"><span>4 hours ago</span><span>Silicon Valley</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#f093fb">Health</div>
+          <div class="story-headline">New Study Shows Promise for Universal Flu Vaccine Development</div>
+          <div class="story-summary">Researchers at Johns Hopkins have identified a protein structure that could lead to a single vaccine effective against all flu strains.</div>
+          <div class="story-meta"><span>5 hours ago</span><span>Baltimore, MD</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#ff8c00">Technology</div>
+          <div class="story-headline">Major Social Media Platform Announces End-to-End Encryption Rollout</div>
+          <div class="story-summary">The platform will begin encrypting all direct messages by default, a move praised by privacy advocates but criticized by law enforcement.</div>
+          <div class="story-meta"><span>6 hours ago</span><span>San Francisco</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#ff4444">Weather</div>
+          <div class="story-headline">Category 3 Hurricane Expected to Make Landfall by Weekend</div>
+          <div class="story-summary">Residents along the Gulf Coast are urged to evacuate as the storm intensifies with sustained winds of 120 mph.</div>
+          <div class="story-meta"><span>7 hours ago</span><span>Gulf Coast</span></div>
+        </div>
+        <div class="story-card" id="breakingStory">
+          <div class="breaking-banner" id="breakingBanner" onclick="clickBreaking()">&#9888; BREAKING NEWS &#9888; CLICK FOR DETAILS</div>
+          <div class="story-category" style="color:#ff0000">Breaking</div>
+          <div class="story-headline">Historic Peace Agreement Signed Between Long-Standing Rival Nations</div>
+          <div class="story-summary">After decades of conflict, the two nations have signed a comprehensive peace deal in a ceremony attended by world leaders.</div>
+          <div class="story-meta"><span>JUST NOW</span><span>Geneva, Switzerland</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#a18cd1">Science</div>
+          <div class="story-headline">NASA's Deep Space Telescope Captures New Images of Distant Galaxy Cluster</div>
+          <div class="story-summary">The images reveal previously unknown structures in the galaxy cluster, providing new insights into dark matter distribution.</div>
+          <div class="story-meta"><span>8 hours ago</span><span>NASA HQ</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#4facfe">Education</div>
+          <div class="story-headline">Universities Announce Free Online Degree Programs for Low-Income Students</div>
+          <div class="story-summary">A consortium of 20 major universities will offer fully accredited bachelor's degrees at no cost to qualifying students.</div>
+          <div class="story-meta"><span>9 hours ago</span><span>National</span></div>
+        </div>
+        <div class="story-card">
+          <div class="story-category" style="color:#27ca40">Environment</div>
+          <div class="story-headline">Coral Reef Recovery Program Shows Remarkable Results After Five Years</div>
+          <div class="story-summary">Marine biologists report a 40% increase in coral coverage at treated sites, offering hope for ocean ecosystem restoration.</div>
+          <div class="story-meta"><span>10 hours ago</span><span>Great Barrier Reef</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="feed-nav" id="feedNav">
+      <span class="feed-counter" id="counter">1 / 10</span>
+    </div>
+    <div class="rotation-info">Stories cycling every 2 seconds — watch for the BREAKING banner</div>
+  </div>
+  <div class="footer"></div>
+  <div class="task-section">
+    <h3>Click the BREAKING NEWS banner when it appears</h3>
+    <div class="hint">On the 7th story rotation, a red BREAKING banner will appear briefly. Click it fast!</div>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const total = 10;
+  let cur = 0;
+  let rotationCount = 0;
+  let breakingClicked = false;
+  let breakingShown = false;
+
+  const nav = document.getElementById('feedNav');
+  for (let i = 0; i < total; i++) {
+    const d = document.createElement('div');
+    d.className = 'dot';
+    nav.insertBefore(d, nav.firstChild);
+  }
+
+  function updateFeed() {
+    document.getElementById('feedTrack').style.transform = `translateX(-${cur * 100}%)`;
+    nav.querySelectorAll('.dot').forEach((d, i) => { d.classList.remove('active'); if (i === cur) d.classList.add('active'); });
+    document.getElementById('counter').textContent = `${cur + 1} / ${total}`;
+  }
+
+  function clickBreaking() {
+    breakingClicked = true;
+    document.getElementById('breakingBanner').style.background = '#27ca40';
+    document.getElementById('breakingBanner').textContent = 'BREAKING NEWS CLICKED!';
+    document.getElementById('status').textContent = 'You caught the breaking news!';
+  }
+
+  function startFeed() {
+    setInterval(() => {
+      cur = (cur + 1) % total;
+      rotationCount++;
+      updateFeed();
+
+      // Show breaking banner each time we land on story index 6
+      if (cur === 6 && !breakingClicked) {
+        breakingShown = true;
+        document.getElementById('breakingBanner').classList.add('show');
+        setTimeout(() => {
+          if (!breakingClicked) {
+            document.getElementById('breakingBanner').classList.remove('show');
+          }
+        }, 3000);
+      }
+    }, 2000);
+  }
+
+  window.getTaskResult = function() {
+    if (breakingClicked) return 'breaking_clicked';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    updateFeed();
+    setTimeout(startFeed, 500);
+  }, 2000);
+</script>
+</body>
+</html>

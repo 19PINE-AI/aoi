@@ -1,0 +1,12 @@
+{"version": 2, "width": 80, "height": 24, "timestamp": 1778250485, "env": {"SHELL": "/bin/bash", "TERM": "xterm-256color"}}
+[0.0, "o", "user@host:~$ "]
+[0.5, "o", "pip install requests\n"]
+[1.1, "o", "Collecting requests\n"]
+[1.5, "o", "  Downloading requests-2.32.3-py3-none-any.whl (64 kB)\n"]
+[2.0, "o", "Collecting urllib3<3,>=1.21.1 (from requests)\n"]
+[2.4, "o", "Collecting charset-normalizer<4,>=2 (from requests)\n"]
+[2.8, "o", "Collecting idna<4,>=2.5 (from requests)\n"]
+[3.1999999999999997, "o", "Collecting certifi>=2017.4.17 (from requests)\n"]
+[3.5999999999999996, "o", "Installing collected packages: urllib3, idna, charset-normalizer, certifi, requests\n"]
+[4.199999999999999, "o", "Successfully installed certifi-2025.4.26 charset-normalizer-3.4.0 idna-3.10 requests-2.32.3 urllib3-2.2.3\n"]
+[4.699999999999999, "o", "user@host:~$ "]

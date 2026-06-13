@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Review Video</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff6b6b; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 780px; }
+  .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .video-screen { width: 100%; min-height: 200px; background: #1e1e1e; position: relative; overflow-y: auto; }
+  .review-frame { display: none; flex-direction: column; border-bottom: 1px solid #333; }
+  .review-frame.active { display: flex; }
+  .review-header { background: #2d2d44; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .file-path { font-family: monospace; font-size: 13px; color: #ccc; }
+  .bug-badge { background: #ff4444; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .code-review-body { flex: 1; display: flex; }
+  .rev-line-nums { padding: 12px 0; width: 50px; text-align: right; padding-right: 10px; color: #858585; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; background: #1e1e1e; }
+  .rev-code { flex: 1; padding: 12px 16px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 1.7; overflow-x: auto; }
+  .rev-code .kw { color: #569cd6; }
+  .rev-code .fn { color: #dcdcaa; }
+  .rev-code .str { color: #ce9178; }
+  .rev-code .cmt { color: #6a9955; }
+  .rev-code .var { color: #9cdcfe; }
+  .bug-line { background: rgba(255,68,68,0.15); border-left: 3px solid #ff4444; padding-left: 8px; margin-left: -11px; }
+  .bug-annotation { background: #3d1a1a; border: 1px solid #ff4444; border-radius: 8px; padding: 10px 14px; margin: 8px 0 8px 40px; font-family: 'Segoe UI', sans-serif; font-size: 13px; }
+  .bug-annotation .bug-title { color: #ff6b6b; font-weight: 600; margin-bottom: 4px; }
+  .bug-annotation .bug-desc { color: #ccc; }
+  .reviewer-info { padding: 8px 16px; background: #16213e; display: flex; align-items: center; gap: 10px; }
+  .reviewer-avatar { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, #ff6b6b, #ee5a24); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+  .reviewer-name { font-size: 13px; color: #ccc; }
+  .video-controls { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; border-top: 1px solid #2a2a3e; }
+  .play-icon { color: #fff; font-size: 16px; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #ff4444; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .frame-label { font-size: 12px; color: #888; text-align: right; padding: 4px 16px; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .bug-field { margin-bottom: 16px; }
+  .bug-field label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
+  .bug-field textarea { width: 100%; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 14px; outline: none; resize: vertical; min-height: 60px; font-family: inherit; transition: border-color 0.2s; }
+  .bug-field textarea:focus { border-color: #ff6b6b; }
+  .submit-btn { width: 100%; margin-top: 4px; padding: 10px; background: #ff4444; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #ff5555; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="video-wrapper">
+    <div class="video-screen" id="videoScreen">
+      <!-- Bug 1: parser.py line 42 -->
+      <div class="review-frame" id="bug1">
+        <div class="review-header">
+          <span class="file-path">src/parser.py</span>
+          <span class="bug-badge">Bug 1 of 3</span>
+        </div>
+        <div class="code-review-body">
+          <div class="rev-line-nums">39<br>40<br>41<br>42<br>43<br>44<br>45<br>46<br>47</div>
+          <div class="rev-code">
+<span class="kw">def</span> <span class="fn">parse_tokens</span>(<span class="var">tokens</span>):
+    <span class="var">result</span> = []
+    <span class="cmt"># Process each token in the list</span>
+<div class="bug-line">    <span class="kw">for</span> <span class="var">i</span> <span class="kw">in</span> range(<span class="num">1</span>, len(<span class="var">tokens</span>) + <span class="num">1</span>):  <span class="cmt"># BUG HERE</span></div>
+        <span class="var">result</span>.append(<span class="var">tokens</span>[<span class="var">i</span>])
+    <span class="kw">return</span> <span class="var">result</span>
+
+<span class="kw">def</span> <span class="fn">validate</span>(<span class="var">data</span>):
+    <span class="kw">return</span> <span class="var">data</span> <span class="kw">is not</span> None
+          </div>
+        </div>
+        <div class="bug-annotation">
+          <div class="bug-title">Off-by-one error in the loop index</div>
+          <div class="bug-desc">Range starts at 1 and goes to len+1, causing IndexError on last iteration. Should be range(len(tokens)).</div>
+        </div>
+        <div class="reviewer-info">
+          <div class="reviewer-avatar">JK</div>
+          <span class="reviewer-name">Reviewed by: Jake Kim, Senior Engineer</span>
+        </div>
+      </div>
+      <!-- Bug 2: handler.py line 17 -->
+      <div class="review-frame" id="bug2">
+        <div class="review-header">
+          <span class="file-path">src/handler.py</span>
+          <span class="bug-badge">Bug 2 of 3</span>
+        </div>
+        <div class="code-review-body">
+          <div class="rev-line-nums">14<br>15<br>16<br>17<br>18<br>19<br>20<br>21<br>22</div>
+          <div class="rev-code">
+<span class="kw">class</span> <span class="fn">RequestHandler</span>:
+    <span class="kw">def</span> <span class="fn">process</span>(<span class="var">self</span>, <span class="var">request</span>):
+        <span class="var">user</span> = <span class="var">self</span>.get_user(<span class="var">request</span>.user_id)
+<div class="bug-line">        <span class="var">name</span> = <span class="var">user</span>.profile.display_name  <span class="cmt"># BUG HERE</span></div>
+        <span class="kw">return</span> <span class="fn">Response</span>(name=<span class="var">name</span>)
+
+    <span class="kw">def</span> <span class="fn">get_user</span>(<span class="var">self</span>, <span class="var">uid</span>):
+        <span class="kw">return</span> <span class="var">self</span>.db.find_one(uid)
+        <span class="cmt"># may return None if user not found</span>
+          </div>
+        </div>
+        <div class="bug-annotation">
+          <div class="bug-title">Null pointer dereference</div>
+          <div class="bug-desc">get_user() can return None when user_id is not found. Accessing .profile on None raises AttributeError.</div>
+        </div>
+        <div class="reviewer-info">
+          <div class="reviewer-avatar">JK</div>
+          <span class="reviewer-name">Reviewed by: Jake Kim, Senior Engineer</span>
+        </div>
+      </div>
+      <!-- Bug 3: db.py line 89 -->
+      <div class="review-frame" id="bug3">
+        <div class="review-header">
+          <span class="file-path">src/db.py</span>
+          <span class="bug-badge">Bug 3 of 3</span>
+        </div>
+        <div class="code-review-body">
+          <div class="rev-line-nums">86<br>87<br>88<br>89<br>90<br>91<br>92<br>93<br>94</div>
+          <div class="rev-code">
+<span class="kw">class</span> <span class="fn">QueryBuilder</span>:
+    <span class="kw">def</span> <span class="fn">find_by_name</span>(<span class="var">self</span>, <span class="var">name</span>):
+        <span class="cmt"># Build query for name lookup</span>
+<div class="bug-line">        <span class="var">query</span> = <span class="str">f"SELECT * FROM users WHERE name = '{</span><span class="var">name</span><span class="str">}'"</span>  <span class="cmt"># BUG</span></div>
+        <span class="kw">return</span> <span class="var">self</span>.execute(<span class="var">query</span>)
+
+    <span class="kw">def</span> <span class="fn">execute</span>(<span class="var">self</span>, <span class="var">sql</span>):
+        <span class="kw">return</span> <span class="var">self</span>.conn.cursor().execute(<span class="var">sql</span>)
+        <span class="cmt"># Returns raw cursor result</span>
+          </div>
+        </div>
+        <div class="bug-annotation">
+          <div class="bug-title">SQL injection vulnerability in query builder</div>
+          <div class="bug-desc">User input is directly interpolated into the SQL query using f-string. Must use parameterized queries instead.</div>
+        </div>
+        <div class="reviewer-info">
+          <div class="reviewer-avatar">JK</div>
+          <span class="reviewer-name">Reviewed by: Jake Kim, Senior Engineer</span>
+        </div>
+      </div>
+    </div>
+    <div class="video-controls">
+      <span class="play-icon">&#9654;</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:18</span>
+    </div>
+    <div class="frame-label" id="frameLabel">File 1 / 3</div>
+  </div>
+  <div class="form-section">
+    <h3>Describe each bug found in the code review</h3>
+    <div class="bug-field">
+      <label for="bug1Input">Bug 1 (file, line, description)</label>
+      <textarea id="bug1Input" placeholder="Describe the first bug..."></textarea>
+    </div>
+    <div class="bug-field">
+      <label for="bug2Input">Bug 2 (file, line, description)</label>
+      <textarea id="bug2Input" placeholder="Describe the second bug..."></textarea>
+    </div>
+    <div class="bug-field">
+      <label for="bug3Input">Bug 3 (file, line, description)</label>
+      <textarea id="bug3Input" placeholder="Describe the third bug..."></textarea>
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Report</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const bugIds = ['bug1', 'bug2', 'bug3'];
+  const bugDuration = 6000;
+  const totalDuration = bugIds.length * bugDuration;
+  let startTime;
+
+  function showBug(index) {
+    if (index === 0) bugIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index < bugIds.length) {
+      document.getElementById(bugIds[index]).classList.add('active');
+      document.getElementById('frameLabel').textContent = `File ${index + 1} / ${bugIds.length}`;
+    }
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    showBug(0);
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    setTimeout(() => showBug(1), bugDuration);
+    setTimeout(() => showBug(2), bugDuration * 2);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'report_submitted' ? 'Report submitted!' : 'Please fill in all bug descriptions.';
+  });
+
+  window.getTaskResult = function() {
+    const b1 = document.getElementById('bug1Input').value.trim();
+    const b2 = document.getElementById('bug2Input').value.trim();
+    const b3 = document.getElementById('bug3Input').value.trim();
+    if (b1.length > 5 && b2.length > 5 && b3.length > 5) return 'report_submitted';
+    return 'incomplete';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

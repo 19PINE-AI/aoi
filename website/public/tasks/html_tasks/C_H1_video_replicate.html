@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Settings Replication Task</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #6c63ff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 960px; display: flex; gap: 20px; }
+  .video-panel { flex: 1; }
+  .form-panel { width: 340px; flex-shrink: 0; }
+  .video-wrapper { background: #1a1a2e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .video-screen { width: 100%; min-height: 200px; background: #111; position: relative; overflow-y: auto; }
+  .config-frame { display: none; flex-direction: column; border-bottom: 1px solid #222; }
+  .config-frame.active { display: flex; }
+  .config-header { background: #2d2d44; padding: 10px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .config-header .title { font-size: 14px; color: #ccc; }
+  .step-badge { background: #6c63ff; color: #fff; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600; }
+  .config-body { flex: 1; padding: 24px; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+  .config-action { text-align: center; width: 100%; max-width: 320px; }
+  .config-action .label { font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 16px; }
+  .demo-toggle { width: 52px; height: 28px; border-radius: 14px; background: #555; position: relative; margin: 0 auto; cursor: default; }
+  .demo-toggle.on { background: #27ca40; }
+  .demo-toggle::after { content: ''; position: absolute; width: 24px; height: 24px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left 0.3s; }
+  .demo-toggle.on::after { left: 26px; }
+  .demo-dropdown { background: #16162b; border: 1px solid #444; border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 15px; width: 200px; margin: 0 auto; text-align: center; }
+  .demo-input { background: #16162b; border: 1px solid #444; border-radius: 8px; padding: 10px 16px; color: #fff; font-size: 15px; width: 200px; margin: 0 auto; text-align: center; }
+  .click-ring { display: inline-block; width: 20px; height: 20px; border: 3px solid #ff4444; border-radius: 50%; animation: pulse 1s ease infinite; vertical-align: middle; margin-left: 8px; }
+  @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.4; } }
+  .video-controls { display: flex; align-items: center; gap: 12px; padding: 8px 16px; background: #16213e; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #ff4444; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .play-icon { color: #fff; font-size: 16px; }
+  .form-wrapper { background: #1a1a2e; border-radius: 12px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.4); }
+  .form-wrapper h3 { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #ccc; }
+  .form-row { margin-bottom: 14px; }
+  .form-row label { display: block; font-size: 13px; color: #888; margin-bottom: 6px; }
+  .form-row input, .form-row select { width: 100%; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .form-row input:focus, .form-row select:focus { border-color: #6c63ff; }
+  .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+  .toggle-row .name { font-size: 14px; color: #ccc; }
+  .toggle-switch { width: 44px; height: 24px; border-radius: 12px; background: #555; position: relative; cursor: pointer; flex-shrink: 0; }
+  .toggle-switch.on { background: #27ca40; }
+  .toggle-switch::after { content: ''; position: absolute; width: 20px; height: 20px; border-radius: 50%; background: #fff; top: 2px; left: 2px; transition: left 0.2s; }
+  .toggle-switch.on::after { left: 22px; }
+  .submit-btn { width: 100%; margin-top: 8px; padding: 10px; background: #6c63ff; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #7b73ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="video-panel">
+    <div class="video-wrapper">
+      <div class="video-screen" id="videoScreen">
+        <div class="config-frame" id="step1">
+          <div class="config-header"><span class="title">Settings Configuration</span><span class="step-badge">Step 1 of 5</span></div>
+          <div class="config-body">
+            <div class="config-action">
+              <div class="label">Enable Dark Mode <span class="click-ring"></span></div>
+              <div class="demo-toggle on"></div>
+              <div style="color:#888;font-size:13px;margin-top:12px">Toggle is switched ON</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-frame" id="step2">
+          <div class="config-header"><span class="title">Settings Configuration</span><span class="step-badge">Step 2 of 5</span></div>
+          <div class="config-body">
+            <div class="config-action">
+              <div class="label">Set Language <span class="click-ring"></span></div>
+              <div class="demo-dropdown">French</div>
+              <div style="color:#888;font-size:13px;margin-top:12px">Selected: French</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-frame" id="step3">
+          <div class="config-header"><span class="title">Settings Configuration</span><span class="step-badge">Step 3 of 5</span></div>
+          <div class="config-body">
+            <div class="config-action">
+              <div class="label">Set Timezone <span class="click-ring"></span></div>
+              <div class="demo-dropdown">UTC+2</div>
+              <div style="color:#888;font-size:13px;margin-top:12px">Selected: UTC+2</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-frame" id="step4">
+          <div class="config-header"><span class="title">Settings Configuration</span><span class="step-badge">Step 4 of 5</span></div>
+          <div class="config-body">
+            <div class="config-action">
+              <div class="label">Enable Notifications <span class="click-ring"></span></div>
+              <div class="demo-toggle on"></div>
+              <div style="color:#888;font-size:13px;margin-top:12px">Toggle is switched ON</div>
+            </div>
+          </div>
+        </div>
+        <div class="config-frame" id="step5">
+          <div class="config-header"><span class="title">Settings Configuration</span><span class="step-badge">Step 5 of 5</span></div>
+          <div class="config-body">
+            <div class="config-action">
+              <div class="label">Set Username <span class="click-ring"></span></div>
+              <div class="demo-input">admin_user</div>
+              <div style="color:#888;font-size:13px;margin-top:12px">Typed: admin_user</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="video-controls">
+        <span class="play-icon">&#9654;</span>
+        <span class="time-label" id="elapsed">0:00</span>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+        <span class="time-label" id="duration">0:25</span>
+      </div>
+    </div>
+  </div>
+  <div class="form-panel">
+    <div class="form-wrapper">
+      <h3>Replicate the settings shown</h3>
+      <div class="form-row">
+        <div class="toggle-row">
+          <span class="name">Dark Mode</span>
+          <div class="toggle-switch" id="darkModeToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="langSelect">Language</label>
+        <select id="langSelect">
+          <option value="">-- Select --</option>
+          <option value="english">English</option>
+          <option value="french">French</option>
+          <option value="spanish">Spanish</option>
+          <option value="german">German</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label for="tzSelect">Timezone</label>
+        <select id="tzSelect">
+          <option value="">-- Select --</option>
+          <option value="utc+0">UTC+0</option>
+          <option value="utc+1">UTC+1</option>
+          <option value="utc+2">UTC+2</option>
+          <option value="utc+3">UTC+3</option>
+          <option value="utc-5">UTC-5</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <div class="toggle-row">
+          <span class="name">Notifications</span>
+          <div class="toggle-switch" id="notifToggle" onclick="this.classList.toggle('on')"></div>
+        </div>
+      </div>
+      <div class="form-row">
+        <label for="usernameInput">Username</label>
+        <input type="text" id="usernameInput" placeholder="Enter username" autocomplete="off">
+      </div>
+      <button class="submit-btn" id="submitBtn">Submit Settings</button>
+      <div class="status" id="status"></div>
+    </div>
+  </div>
+</div>
+<script>
+  const stepIds = ['step1','step2','step3','step4','step5'];
+  const stepDuration = 5000;
+  const totalDuration = stepIds.length * stepDuration;
+  let startTime;
+
+  function showStep(index) {
+    if (index === 0) stepIds.forEach(id => document.getElementById(id).classList.remove('active'));
+    if (index < stepIds.length) {
+      document.getElementById(stepIds[index]).classList.add('active');
+    }
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    showStep(0);
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    for (let i = 1; i < stepIds.length; i++) {
+      (function(idx) {
+        setTimeout(() => showStep(idx), stepDuration * idx);
+      })(i);
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'all_5_steps_correct' ? 'All settings correct!' : 'Some settings are incorrect. Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const darkMode = document.getElementById('darkModeToggle').classList.contains('on');
+    const lang = document.getElementById('langSelect').value;
+    const tz = document.getElementById('tzSelect').value;
+    const notif = document.getElementById('notifToggle').classList.contains('on');
+    const username = document.getElementById('usernameInput').value.trim();
+    if (darkMode && lang === 'french' && tz === 'utc+2' && notif && username === 'admin_user') {
+      return 'all_5_steps_correct';
+    }
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

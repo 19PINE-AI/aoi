@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Whack-a-Mole</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+.header {
+  width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-size: 28px; font-weight: 700; color: #00ff88; text-shadow: 0 0 10px rgba(0,255,136,0.3); }
+.score-display {
+  font-size: 36px; font-weight: 700; color: #33aaff;
+  text-shadow: 0 0 10px rgba(51,170,255,0.3);
+}
+.score-label { font-size: 12px; color: #5f6368; text-transform: uppercase; letter-spacing: 2px; }
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #00ff88; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #ff3366; margin-top: 20px; }
+.grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;
+  padding: 20px; max-width: 500px; width: 100%; margin-top: 20px;
+}
+.hole {
+  width: 140px; height: 140px; background: #1a1a3e; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; cursor: pointer; border: 3px solid #2a2a4e;
+  transition: border-color 0.2s; justify-self: center;
+}
+.hole:hover { border-color: #33aaff; }
+.mole {
+  width: 100px; height: 100px; border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #d4a574, #8b6914);
+  position: absolute; bottom: -100px; transition: bottom 0.3s ease-out;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+}
+.mole.up { bottom: 10px; }
+.mole .eyes {
+  display: flex; gap: 16px; margin-top: -10px;
+}
+.mole .eye {
+  width: 14px; height: 18px; background: white; border-radius: 50%;
+  position: relative;
+}
+.mole .eye::after {
+  content: ''; width: 8px; height: 8px; background: #222;
+  border-radius: 50%; position: absolute; top: 5px; left: 3px;
+}
+.mole .nose {
+  width: 16px; height: 12px; background: #ff6b6b; border-radius: 50%;
+  margin-top: 4px;
+}
+.mole.whacked {
+  animation: whack 0.3s ease-out;
+}
+@keyframes whack {
+  0% { transform: scale(1); }
+  50% { transform: scale(0.7) rotate(10deg); }
+  100% { transform: scale(0) rotate(20deg); bottom: -100px; }
+}
+.hit-effect {
+  position: absolute; font-size: 24px; color: #00ff88; font-weight: bold;
+  animation: floatUp 0.8s ease-out forwards; pointer-events: none;
+}
+@keyframes floatUp {
+  0% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-40px); }
+}
+.timer {
+  font-size: 14px; color: #5f6368; margin-top: 12px;
+}
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Whack-a-Mole</h1>
+  <p>Click the moles as they pop up!</p>
+  <p>Score at least 3 hits to win.</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Whack-a-Mole</div>
+  <div style="text-align:right;">
+    <div class="score-label">Score</div>
+    <div class="score-display" id="score">0</div>
+  </div>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="timer" id="timer"></div>
+
+<script>
+let score = 0;
+let gameActive = false;
+let currentMole = -1;
+let moleTimeout = null;
+let gameStartTime = 0;
+
+// Build grid
+const grid = document.getElementById('grid');
+for (let i = 0; i < 9; i++) {
+  const hole = document.createElement('div');
+  hole.className = 'hole';
+  hole.dataset.index = i;
+
+  const mole = document.createElement('div');
+  mole.className = 'mole';
+  mole.innerHTML = '<div><div class="eyes"><div class="eye"></div><div class="eye"></div></div><div class="nose"></div></div>';
+  mole.addEventListener('click', (e) => {
+    e.stopPropagation();
+    whackMole(i);
+  });
+
+  hole.appendChild(mole);
+  hole.addEventListener('click', () => whackMole(i));
+  grid.appendChild(hole);
+}
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startGame();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startGame() {
+  gameActive = true;
+  gameStartTime = Date.now();
+  showMole();
+}
+
+function showMole() {
+  if (!gameActive) return;
+
+  // Hide current mole
+  if (currentMole >= 0) {
+    const holes = document.querySelectorAll('.hole');
+    holes[currentMole].querySelector('.mole').classList.remove('up');
+  }
+
+  // Pick random hole
+  let next;
+  do { next = Math.floor(Math.random() * 9); } while (next === currentMole);
+  currentMole = next;
+
+  const mole = document.querySelectorAll('.hole')[currentMole].querySelector('.mole');
+  mole.classList.remove('whacked');
+  mole.classList.add('up');
+
+  // Mole stays up for 5 seconds
+  moleTimeout = setTimeout(() => {
+    mole.classList.remove('up');
+    // Next mole after 4-6 second gap
+    const delay = 4000 + Math.random() * 2000;
+    setTimeout(() => showMole(), 1000);
+  }, 5000);
+}
+
+function whackMole(index) {
+  if (!gameActive) return;
+  if (index !== currentMole) return;
+
+  const hole = document.querySelectorAll('.hole')[index];
+  const mole = hole.querySelector('.mole');
+
+  if (!mole.classList.contains('up')) return;
+
+  // Hit!
+  score++;
+  document.getElementById('score').textContent = score;
+
+  // Visual effects
+  mole.classList.add('whacked');
+  clearTimeout(moleTimeout);
+
+  const hitEl = document.createElement('div');
+  hitEl.className = 'hit-effect';
+  hitEl.textContent = '+1';
+  hole.appendChild(hitEl);
+  setTimeout(() => hitEl.remove(), 800);
+
+  setTimeout(() => {
+    mole.classList.remove('up');
+    mole.classList.remove('whacked');
+    currentMole = -1;
+    const delay = 1000 + Math.random() * 2000;
+    setTimeout(() => showMole(), delay);
+  }, 300);
+}
+
+window.getTaskResult = function() {
+  if (score >= 3) {
+    return 'score_3_or_more';
+  }
+  return 'score_' + score;
+};
+</script>
+</body>
+</html>

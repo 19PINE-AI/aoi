@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Check and Submit</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-width: 600px; width: 100%; padding: 32px; }
+  .card h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 20px; }
+  .instructions { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 14px; color: #3730a3; line-height: 1.6; }
+  .terms-box { background: #fafafa; border: 1px solid #e5e5e5; border-radius: 8px; padding: 18px; margin-bottom: 20px; font-size: 13px; line-height: 1.7; color: #666; max-height: 120px; overflow-y: auto; }
+  .checkbox-row { display: flex; align-items: center; gap: 10px; margin-bottom: 20px; }
+  .checkbox-row input[type="checkbox"] { width: 20px; height: 20px; cursor: pointer; accent-color: #4f46e5; }
+  .checkbox-row label { font-size: 15px; color: #333; cursor: pointer; }
+  .submit-btn { padding: 12px 28px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .submit-btn:hover { background: #4338ca; }
+  .submit-btn:disabled { background: #bbb; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Task: Agree and Submit</h1>
+  <div class="instructions">
+    Read the terms below. Check the <strong>"I agree to the terms and conditions"</strong> checkbox, then click <strong>Submit</strong>.
+  </div>
+  <div class="terms-box">
+    By using this service, you agree to the following terms: Your data will be processed in accordance with our privacy policy. You may cancel your subscription at any time. Refunds are available within 30 days of purchase. All content is provided "as is" without warranty of any kind.
+  </div>
+  <div class="checkbox-row">
+    <input type="checkbox" id="agreeCheckbox">
+    <label for="agreeCheckbox">I agree to the terms and conditions</label>
+  </div>
+  <button class="submit-btn" id="submitBtn">Submit</button>
+</div>
+<script>
+(function() {
+  let submitted = false;
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+  window.getTaskResult = function() {
+    var checked = document.getElementById('agreeCheckbox').checked;
+    if (checked && submitted) return 'checkbox_submitted';
+    if (checked) return 'checked_not_submitted';
+    if (submitted) return 'submitted_not_checked';
+    return 'no_action';
+  };
+})();
+</script>
+</body>
+</html>

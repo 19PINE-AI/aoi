@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Click the Correct Button</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-width: 600px; width: 100%; padding: 32px; }
+  .card h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 20px; }
+  .instructions { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 14px; color: #3730a3; line-height: 1.6; }
+  .button-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 20px; }
+  .task-btn { padding: 16px 20px; font-size: 15px; font-weight: 600; border: 2px solid #ddd; border-radius: 10px; background: #fff; color: #333; cursor: pointer; transition: all 0.2s; }
+  .task-btn:hover { border-color: #4f46e5; background: #f8f7ff; }
+  .task-btn.clicked { border-color: #10b981; background: #ecfdf5; color: #065f46; }
+  .status { margin-top: 12px; font-size: 14px; color: #888; min-height: 20px; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Task: Click a Button</h1>
+  <div class="instructions">
+    Click the button labeled <strong>"Confirm Order"</strong>.
+  </div>
+  <div class="button-grid">
+    <button class="task-btn" data-label="cancel">Cancel Order</button>
+    <button class="task-btn" data-label="confirm">Confirm Order</button>
+    <button class="task-btn" data-label="save">Save Draft</button>
+    <button class="task-btn" data-label="delete">Delete Item</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+<script>
+(function() {
+  let clickedButton = null;
+  document.querySelectorAll('.task-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.task-btn').forEach(function(b) { b.classList.remove('clicked'); });
+      btn.classList.add('clicked');
+      clickedButton = btn.getAttribute('data-label');
+      document.getElementById('status').textContent = 'You clicked: ' + btn.textContent;
+    });
+  });
+  window.getTaskResult = function() {
+    if (clickedButton === 'confirm') return 'button_correct';
+    if (clickedButton) return 'wrong_button';
+    return 'no_click';
+  };
+})();
+</script>
+</body>
+</html>

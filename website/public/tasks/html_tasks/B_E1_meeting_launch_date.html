@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Product Launch Meeting</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #202124; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  #loading { position: fixed; inset: 0; background: #202124; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #8ab4f8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Meeting header */
+  .meet-header { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3c4043; }
+  .meet-logo { font-size: 18px; font-weight: 500; color: #8ab4f8; }
+  .meet-title { font-size: 14px; color: #bdc1c6; }
+  .meet-time { font-size: 13px; color: #9aa0a6; }
+
+  /* Main content area */
+  .meet-body { flex: 1; display: flex; padding: 16px; gap: 16px; }
+
+  /* Slide area */
+  .slide-area { flex: 1; background: #1a1a2e; border-radius: 12px; overflow: hidden; position: relative; display: flex; align-items: center; justify-content: center; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; opacity: 0; transition: opacity 0.8s ease; }
+  .slide.active { opacity: 1; }
+  .slide h2 { font-size: 28px; font-weight: 600; margin-bottom: 20px; color: #fff; }
+  .slide p { font-size: 16px; color: #bdc1c6; line-height: 1.7; text-align: center; }
+  .slide .agenda-list { text-align: left; list-style: none; }
+  .slide .agenda-list li { padding: 8px 0; font-size: 16px; color: #bdc1c6; border-bottom: 1px solid #2a2a3e; }
+  .slide .agenda-list li::before { content: '\25B6'; color: #8ab4f8; margin-right: 10px; font-size: 12px; }
+  .slide .team-chart { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .team-member { background: #16162b; border-radius: 10px; padding: 16px; text-align: center; }
+  .team-member .avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(135deg, #8ab4f8, #6c63ff); margin: 0 auto 8px; }
+  .team-member .name { font-size: 14px; font-weight: 500; color: #e0e0e0; }
+  .team-member .role { font-size: 12px; color: #888; }
+  .timeline { display: flex; align-items: center; gap: 0; margin-top: 20px; }
+  .timeline-item { text-align: center; flex: 1; }
+  .timeline-item .dot { width: 16px; height: 16px; border-radius: 50%; background: #8ab4f8; margin: 0 auto 8px; }
+  .timeline-item .tl-label { font-size: 13px; color: #bdc1c6; }
+  .timeline-line { width: 60px; height: 2px; background: #3c4043; margin-bottom: 16px; }
+
+  /* Participants sidebar */
+  .participants { width: 200px; display: flex; flex-direction: column; gap: 8px; }
+  .participant { background: #292a2d; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+  .participant .avatar-lg { width: 40px; height: 40px; border-radius: 50%; background: linear-gradient(135deg, #ea4335, #fbbc05); }
+  .participant .p-name { position: absolute; bottom: 6px; left: 8px; font-size: 11px; color: #bdc1c6; }
+
+  /* Bottom controls */
+  .meet-controls { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid #3c4043; }
+  .ctrl-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+  .ctrl-mic { background: #3c4043; color: #e0e0e0; }
+  .ctrl-cam { background: #3c4043; color: #e0e0e0; }
+  .ctrl-end { background: #ea4335; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; width: auto; }
+  .slide-indicator { position: absolute; bottom: 12px; right: 16px; font-size: 12px; color: #666; }
+
+  /* Answer form overlay */
+  .answer-panel { background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 0 16px 16px; }
+  .answer-panel h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .answer-row { display: flex; gap: 12px; align-items: center; }
+  .answer-row label { font-size: 13px; color: #888; white-space: nowrap; }
+  .answer-row input { flex: 1; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 14px; outline: none; }
+  .answer-row input:focus { border-color: #8ab4f8; }
+  .submit-btn { margin-top: 12px; padding: 10px 24px; background: #8ab4f8; border: none; border-radius: 8px; color: #202124; font-size: 14px; font-weight: 600; cursor: pointer; float: right; }
+  .status { font-size: 13px; color: #666; margin-top: 12px; clear: both; text-align: right; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+
+<div class="meet-header">
+  <div class="meet-logo">Google Meet</div>
+  <div class="meet-title">Product Launch Planning</div>
+  <div class="meet-time" id="meetTime">--:--</div>
+</div>
+
+<div class="meet-body">
+  <div class="slide-area">
+    <!-- Slide 1: Agenda -->
+    <div class="slide active" id="slide0">
+      <h2>Meeting Agenda</h2>
+      <ul class="agenda-list">
+        <li>Project status overview</li>
+        <li>Team assignments</li>
+        <li>Timeline review</li>
+        <li>Open discussion</li>
+      </ul>
+    </div>
+    <!-- Slide 2: Team -->
+    <div class="slide" id="slide1">
+      <h2>Project Team</h2>
+      <div class="team-chart">
+        <div class="team-member"><div class="avatar"></div><div class="name">Alex Rivera</div><div class="role">PM Lead</div></div>
+        <div class="team-member"><div class="avatar"></div><div class="name">Jamie Okafor</div><div class="role">Engineering</div></div>
+        <div class="team-member"><div class="avatar"></div><div class="name">Priya Sharma</div><div class="role">Design</div></div>
+        <div class="team-member"><div class="avatar"></div><div class="name">Leo Martinez</div><div class="role">QA Lead</div></div>
+        <div class="team-member"><div class="avatar"></div><div class="name">Mina Park</div><div class="role">Marketing</div></div>
+        <div class="team-member"><div class="avatar"></div><div class="name">Sam Nguyen</div><div class="role">DevOps</div></div>
+      </div>
+    </div>
+    <!-- Slide 3: Timeline (no date shown) -->
+    <div class="slide" id="slide2">
+      <h2>Project Timeline</h2>
+      <p style="margin-bottom:24px; color:#9aa0a6;">Key milestones for the product launch</p>
+      <div class="timeline">
+        <div class="timeline-item"><div class="dot"></div><div class="tl-label">Design<br>Complete</div></div>
+        <div class="timeline-line"></div>
+        <div class="timeline-item"><div class="dot"></div><div class="tl-label">Beta<br>Release</div></div>
+        <div class="timeline-line"></div>
+        <div class="timeline-item"><div class="dot"></div><div class="tl-label">Final<br>Testing</div></div>
+        <div class="timeline-line"></div>
+        <div class="timeline-item"><div class="dot" style="background:#34a853;"></div><div class="tl-label">Launch<br>Day</div></div>
+      </div>
+    </div>
+    <div class="slide-indicator" id="slideIndicator">Slide 1 / 3</div>
+  </div>
+
+  <div class="participants">
+    <div class="participant"><div class="avatar-lg"></div><div class="p-name">Alex R.</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #34a853, #0984e3);"></div><div class="p-name">Jamie O.</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #a29bfe, #6c5ce7);"></div><div class="p-name">You</div></div>
+  </div>
+</div>
+
+<div class="answer-panel">
+  <h3>What is the new launch date mentioned by the presenter?</h3>
+  <div class="answer-row">
+    <label for="launchDate">Launch Date:</label>
+    <input type="text" id="launchDate" placeholder="e.g. March 15" autocomplete="off">
+  </div>
+  <button class="submit-btn" id="submitBtn">Submit</button>
+  <div class="status" id="status"></div>
+</div>
+
+<div class="meet-controls">
+  <button class="ctrl-btn ctrl-mic" title="Microphone">&#127908;</button>
+  <button class="ctrl-btn ctrl-cam" title="Camera">&#127909;</button>
+  <button class="ctrl-btn ctrl-end">Leave</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let currentSlide = 0;
+  const slideAudio = [
+    "Welcome everyone. Let's go through the agenda for today's product launch planning meeting. We have four items to cover.",
+    "Here's the team. As you can see we have strong cross-functional coverage. And I want to mention, we've moved the launch date to April twenty-eighth. Please update your calendars.",
+    "Looking at the timeline, each milestone builds on the previous one. We need to hit each target to stay on track for launch day."
+  ];
+
+  function showSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('slideIndicator').textContent = `Slide ${idx + 1} / ${slides.length}`;
+  }
+
+  function advanceSlides() {
+    let slideIdx = 0;
+    showSlide(0);
+    speakForSlide(0);
+
+    function speakForSlide(idx) {
+      if (idx >= slideAudio.length) return;
+      const u = new SpeechSynthesisUtterance(slideAudio[idx]);
+      u.rate = 0.9;
+      u.lang = 'en-US';
+      u.onend = () => {
+        setTimeout(() => {
+          slideIdx++;
+          if (slideIdx < slides.length) {
+            showSlide(slideIdx);
+            speakForSlide(slideIdx);
+          }
+        }, 2000);
+      };
+      speechSynthesis.speak(u);
+    }
+  }
+
+  // Clock
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('meetTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'date_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('launchDate').value.toLowerCase().trim();
+    if ((val.includes('april') && val.includes('28')) || val.includes('april twenty-eighth') || val.includes('april twenty eighth') || val.includes('4/28') || val.includes('04/28')) return 'date_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(advanceSlides, 500);
+  }, 2000);
+</script>
+</body>
+</html>

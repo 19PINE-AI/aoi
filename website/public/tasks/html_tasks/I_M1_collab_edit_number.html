@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shared Document - Budget Overview</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Arial', sans-serif; background: #f0f0f0; height: 100vh; display: flex; flex-direction: column; }
+.toolbar {
+  background: #f9fbfd; border-bottom: 1px solid #dadce0; padding: 4px 8px;
+  display: flex; align-items: center;
+}
+.toolbar-title { padding: 4px 8px; font-size: 18px; font-weight: 400; color: #202124; border: none; outline: none; background: transparent; width: 300px; }
+.menu-bar { display: flex; gap: 2px; padding: 2px 8px; background: #f9fbfd; border-bottom: 1px solid #dadce0; }
+.menu-item { padding: 4px 8px; font-size: 13px; color: #444; cursor: pointer; border-radius: 4px; }
+.menu-item:hover { background: #e8eaed; }
+.format-bar {
+  display: flex; align-items: center; gap: 2px; padding: 4px 8px;
+  background: #edf2fa; border-bottom: 1px solid #dadce0;
+}
+.fmt-btn { padding: 4px 8px; border: none; background: transparent; cursor: pointer; border-radius: 4px; font-size: 13px; color: #444; }
+.collab-bar {
+  display: flex; align-items: center; justify-content: flex-end; gap: 8px;
+  padding: 4px 12px; background: #f9fbfd; flex: 1;
+}
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; background: #4285f4;
+  display: flex; align-items: center; justify-content: center;
+  color: white; font-weight: bold; font-size: 14px; position: relative;
+}
+.avatar .online-dot {
+  width: 10px; height: 10px; background: #0f9d58; border: 2px solid white;
+  border-radius: 50%; position: absolute; bottom: -2px; right: -2px;
+}
+.doc-container { flex: 1; display: flex; justify-content: center; padding: 20px; background: #f0f0f0; overflow-y: auto; }
+.doc-page {
+  width: 816px; min-height: 1056px; background: white; padding: 96px 72px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  font-family: 'Arial', sans-serif; font-size: 11pt; line-height: 1.5; color: #202124;
+}
+.doc-page h1 { font-size: 20pt; margin-bottom: 16px; }
+.doc-page h2 { font-size: 14pt; margin: 24px 0 8px; color: #202124; border-bottom: 1px solid #e0e0e0; padding-bottom: 4px; }
+.doc-page p { margin-bottom: 10px; }
+.editable-number {
+  background: #fff8e1; padding: 2px 6px; border-radius: 3px; cursor: text;
+  border: 1px solid transparent; font-weight: bold; display: inline;
+  min-width: 40px;
+}
+.editable-number:hover { border-color: #fdd835; }
+.editable-number:focus { border-color: #1a73e8; outline: none; background: #e3f2fd; }
+.collab-status { font-size: 12px; color: #5f6368; }
+</style>
+</head>
+<body>
+<div class="toolbar">
+  <input class="toolbar-title" value="Budget Overview" readonly />
+  <div class="collab-bar">
+    <span class="collab-status">Alex is editing...</span>
+    <div class="avatar">A<span class="online-dot"></span></div>
+  </div>
+</div>
+<div class="menu-bar">
+  <span class="menu-item">File</span><span class="menu-item">Edit</span><span class="menu-item">View</span>
+  <span class="menu-item">Insert</span><span class="menu-item">Format</span><span class="menu-item">Tools</span>
+</div>
+<div class="format-bar">
+  <select class="fmt-btn" style="width:120px"><option>Normal text</option></select>
+  <select class="fmt-btn" style="width:100px"><option>Arial</option></select>
+  <button class="fmt-btn"><b>B</b></button>
+  <button class="fmt-btn"><i>I</i></button>
+  <button class="fmt-btn"><u>U</u></button>
+</div>
+<div class="doc-container">
+  <div class="doc-page">
+    <h1>Budget Overview — FY2026</h1>
+
+    <h2>Section 1: Revenue Projections</h2>
+    <p>Based on current trends, we project total revenue of $2.4 million for FY2026. This represents a 15% increase over the previous fiscal year. The primary growth driver is the expansion into enterprise clients, which now account for 62% of recurring revenue.</p>
+
+    <h2>Section 2: Operating Expenses</h2>
+    <p>Total operating expenses for Q1 were $<span id="section2-number" class="editable-number" contenteditable="true">380</span> thousand. This includes personnel costs, infrastructure, marketing spend, and administrative overhead. We expect this figure to stabilize in subsequent quarters as hiring ramp-up completes.</p>
+
+    <h2>Section 3: Capital Allocation</h2>
+    <p>The board approved a capital expenditure budget of $150 thousand for new equipment and software licenses. An additional $75 thousand has been earmarked for the office renovation project scheduled to begin in July.</p>
+  </div>
+</div>
+
+<script>
+// Audio instruction at t=3s
+setTimeout(() => {
+  const msg = new SpeechSynthesisUtterance("Can you change the number in section 2 to four hundred and fifty?");
+  msg.rate = 0.95;
+  speechSynthesis.speak(msg);
+}, 3000);
+
+window.getTaskResult = function() {
+  const numEl = document.getElementById('section2-number');
+  const text = numEl.innerText.trim();
+  if (text === '450') {
+    return 'correct_value_in_section2';
+  }
+  return 'incorrect_value_' + text;
+};
+</script>
+</body>
+</html>

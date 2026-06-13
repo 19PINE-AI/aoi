@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Error Monitor - Sequential Alerts</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .info { font-size: 13px; color: #8892b0; display: flex; align-items: center; gap: 8px; }
+  .header .dot { width: 8px; height: 8px; border-radius: 50%; background: #e74c3c; animation: blink 1s infinite; }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+  .content-area { display: grid; grid-template-columns: 1fr 300px; gap: 20px; }
+  .log-panel { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .log-panel h3 { font-size: 14px; color: #8892b0; margin-bottom: 15px; text-transform: uppercase; letter-spacing: 1px; }
+  .log-view { background: #0a0f1e; border-radius: 8px; padding: 12px; height: 350px; overflow-y: auto; font-family: 'Courier New', monospace; font-size: 12px; }
+  .log-entry { padding: 4px 6px; border-radius: 3px; margin-bottom: 2px; }
+  .log-entry.err { color: #e74c3c; background: rgba(231,76,60,0.05); }
+  .log-entry.info { color: #8892b0; }
+  .log-entry.warn { color: #f39c12; }
+  .sidebar { display: flex; flex-direction: column; gap: 15px; }
+  .stat-card { background: #16213e; border-radius: 10px; padding: 15px; border: 1px solid #2a3a5e; }
+  .stat-card .stat-label { font-size: 11px; color: #8892b0; text-transform: uppercase; letter-spacing: 0.5px; }
+  .stat-card .stat-value { font-size: 28px; font-weight: bold; margin-top: 4px; }
+  .stat-card .stat-value.err-val { color: #e74c3c; }
+  .stat-card .stat-value.warn-val { color: #f39c12; }
+  .stat-card .stat-value.total-val { color: #00d4ff; }
+  .error-list { background: #16213e; border-radius: 10px; padding: 15px; border: 1px solid #2a3a5e; }
+  .error-list h3 { font-size: 14px; color: #8892b0; margin-bottom: 10px; }
+  .error-item { padding: 6px 8px; font-size: 12px; font-family: monospace; color: #e74c3c; background: rgba(231,76,60,0.05); border-radius: 4px; margin-bottom: 4px; display: flex; justify-content: space-between; }
+  .error-item .num { color: #8892b0; font-size: 11px; }
+
+  /* Toast */
+  .toast-area { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+  .toast { background: #16213e; border-left: 4px solid #e74c3c; padding: 16px 22px; border-radius: 8px; font-size: 14px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); transform: translateX(120%); transition: transform 0.4s ease; display: flex; align-items: center; gap: 12px; margin-bottom: 8px; min-width: 300px; }
+  .toast.show { transform: translateX(0); }
+  .toast .toast-icon { color: #e74c3c; font-size: 18px; }
+  .toast .toast-code { font-family: monospace; font-weight: bold; color: #e74c3c; font-size: 16px; }
+  .toast .toast-label { font-size: 12px; color: #8892b0; }
+
+  /* Answer section */
+  .answer-card { background: #16213e; border-radius: 10px; padding: 25px; border: 1px solid #2a3a5e; margin-top: 20px; text-align: center; }
+  .answer-card h3 { color: #00d4ff; margin-bottom: 15px; }
+  .answer-card input { padding: 10px 15px; font-size: 16px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 200px; text-align: center; font-family: monospace; }
+  .answer-card input:focus { outline: none; border-color: #00d4ff; }
+  .answer-card button { padding: 10px 20px; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-left: 10px; }
+  .answer-card .hint { font-size: 12px; color: #8892b0; margin-top: 8px; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Error Monitor</h1>
+  <div class="info"><div class="dot"></div> Capturing Errors &mdash; prod-cluster</div>
+</div>
+<div class="content-area">
+  <div class="log-panel">
+    <h3>System Log</h3>
+    <div class="log-view" id="logView"></div>
+  </div>
+  <div class="sidebar">
+    <div class="stat-card">
+      <div class="stat-label">Errors Captured</div>
+      <div class="stat-value err-val" id="errCount">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Warnings</div>
+      <div class="stat-value warn-val" id="warnCount">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Events</div>
+      <div class="stat-value total-val" id="totalCount">0</div>
+    </div>
+    <div class="error-list">
+      <h3>Error Codes</h3>
+      <div id="errorCodeList"></div>
+    </div>
+  </div>
+</div>
+<div class="answer-card" id="answerCard">
+  <h3>What was the THIRD error code?</h3>
+  <div>
+    <input type="text" id="codeInput" placeholder="e.g. ERR-XXXX">
+    <button id="submitBtn">Submit</button>
+  </div>
+  <div class="hint">Enter the error code that appeared third in the sequence</div>
+</div>
+<div class="toast-area" id="toastArea"></div>
+<script>
+(function() {
+  const errorCodes = ['ERR-3301', 'ERR-5589', 'ERR-7712', 'ERR-2048', 'ERR-9156'];
+  const errorMsgs = [
+    'Database connection pool exhausted',
+    'Authentication token expired unexpectedly',
+    'File system write permission denied on /data',
+    'Message queue consumer timeout exceeded',
+    'TLS handshake failed with upstream service'
+  ];
+
+  // Background log entries between errors
+  const bgLogs = [
+    { level: 'info', msg: 'Health check: all services responsive' },
+    { level: 'info', msg: 'Request processed: GET /api/status (200)' },
+    { level: 'warn', msg: 'Connection pool utilization at 75%' },
+    { level: 'info', msg: 'Cache hit ratio: 94.2%' },
+    { level: 'info', msg: 'Metrics flush: 832 data points written' },
+    { level: 'warn', msg: 'Slow query: 1.8s on orders table' },
+    { level: 'info', msg: 'Session cleanup: removed 12 stale entries' },
+    { level: 'info', msg: 'Load balancer: 4/4 backends healthy' },
+  ];
+
+  let errIdx = 0;
+  let errCount = 0, warnCount = 0, totalCount = 0;
+  let bgIdx = 0;
+  let submitted = false;
+
+  const logView = document.getElementById('logView');
+  const errorCodeList = document.getElementById('errorCodeList');
+
+  function addLogEntry(level, msg) {
+    totalCount++;
+    if (level === 'warn') warnCount++;
+    const entry = document.createElement('div');
+    entry.className = 'log-entry ' + level;
+    entry.textContent = '[' + new Date().toLocaleTimeString() + '] [' + level.toUpperCase() + '] ' + msg;
+    logView.appendChild(entry);
+    logView.scrollTop = logView.scrollHeight;
+    document.getElementById('totalCount').textContent = totalCount;
+    document.getElementById('warnCount').textContent = warnCount;
+  }
+
+  function showErrorToast(code, msg) {
+    errCount++;
+    document.getElementById('errCount').textContent = errCount;
+
+    // Add to error code list
+    const item = document.createElement('div');
+    item.className = 'error-item';
+    item.innerHTML = '<span>' + code + '</span><span class="num">#' + errCount + '</span>';
+    errorCodeList.appendChild(item);
+
+    // Add log entry
+    addLogEntry('err', code + ': ' + msg);
+
+    // Show toast
+    const area = document.getElementById('toastArea');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = '<div class="toast-icon">&#9888;</div><div><div class="toast-code">' + code + '</div><div class="toast-label">' + msg + '</div></div>';
+    area.appendChild(toast);
+    setTimeout(function() { toast.classList.add('show'); }, 50);
+
+    // Auto-dismiss after 3 seconds
+    setTimeout(function() {
+      toast.classList.remove('show');
+      setTimeout(function() {
+        if (area.contains(toast)) area.removeChild(toast);
+      }, 400);
+    }, 3000);
+  }
+
+  function addBackground() {
+    const bg = bgLogs[bgIdx % bgLogs.length];
+    bgIdx++;
+    addLogEntry(bg.level, bg.msg);
+  }
+
+  // Schedule: each error toast visible 3s, then 1s gap before next
+  // Total per error cycle: 3s
+  // Error 1: t=2s, Error 2: t=5s, Error 3: t=8s, Error 4: t=11s, Error 5: t=14s
+  // Answer card is always visible — agent can submit once it reads the sidebar
+
+  function scheduleErrors() {
+    if (errIdx >= errorCodes.length) {
+      return;
+    }
+    showErrorToast(errorCodes[errIdx], errorMsgs[errIdx]);
+    errIdx++;
+    // Schedule next error: 3s cycle
+    setTimeout(scheduleErrors, 3000);
+  }
+
+  // Add background logs periodically
+  function bgLogLoop() {
+    addBackground();
+    setTimeout(bgLogLoop, 3000 + Math.random() * 2000);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+
+  window.getTaskResult = function() {
+    if (!submitted) return 'not_submitted';
+    const val = document.getElementById('codeInput').value.trim().toUpperCase();
+    if (val.includes('ERR-7712') || val.includes('7712')) return 'third_code_correct';
+    return 'third_code_incorrect';
+  };
+
+  // Start after 2s delay
+  setTimeout(function() {
+    bgLogLoop();
+    scheduleErrors();
+  }, 2000);
+})();
+</script>
+</body>
+</html>

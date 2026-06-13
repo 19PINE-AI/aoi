@@ -1,0 +1,2073 @@
+[
+ {
+  "task_id": "A-E1",
+  "category": "A_podcast",
+  "difficulty": "easy",
+  "instruction": "A podcast episode is playing. Listen and type the guest's name into the text field.",
+  "ground_truth": "Dr. Sarah Chen",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "A_E1_podcast_guest_name.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-E2",
+  "category": "A_podcast",
+  "difficulty": "easy",
+  "instruction": "Listen to the product review podcast. What price did the reviewer mention? Type the price.",
+  "ground_truth": "$49.99",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "A_E2_podcast_price.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-E3",
+  "category": "A_podcast",
+  "difficulty": "easy",
+  "instruction": "A news briefing is playing. What city was mentioned as the location of the event? Type it.",
+  "ground_truth": "Stockholm",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "A_E3_podcast_city.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-M1",
+  "category": "A_podcast",
+  "difficulty": "medium",
+  "instruction": "Listen to the podcast segment. The host mentions a book title AND the author. Type both into the form fields.",
+  "ground_truth": "{'title': 'The Alignment Problem', 'author': 'Brian Christian'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "A_M1_podcast_book.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-M2",
+  "category": "A_podcast",
+  "difficulty": "medium",
+  "instruction": "A science podcast discusses a drug trial. Listen for the drug name AND the efficacy percentage. Enter both.",
+  "ground_truth": "{'drug': 'Revantix', 'efficacy': '73%'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "A_M2_podcast_drug_trial.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-M3",
+  "category": "A_podcast",
+  "difficulty": "medium",
+  "instruction": "The podcast host reads three headlines. Type all three into the corresponding fields in order.",
+  "ground_truth": "['Senate passes climate bill', 'Tech layoffs reach 50,000', 'Mars rover finds ice']",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "A_M3_podcast_headlines.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-M4",
+  "category": "A_podcast",
+  "difficulty": "medium",
+  "instruction": "An interview podcast is playing. Listen for the year the company was founded and the number of employees. Fill in both fields.",
+  "ground_truth": "{'year': '2018', 'employees': '340'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "A_M4_podcast_company_facts.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-H1",
+  "category": "A_podcast",
+  "difficulty": "hard",
+  "instruction": "Listen to the full debate segment. Summarize the three main arguments presented by the speaker in the text area.",
+  "ground_truth": "renewable energy cost reduction, grid reliability concerns, job transition programs",
+  "eval_type": "llm",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 240.0,
+  "html_file": "A_H1_podcast_debate_summary.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-H2",
+  "category": "A_podcast",
+  "difficulty": "hard",
+  "instruction": "A financial podcast discusses quarterly results for three companies. Fill in the revenue figure for each company in the table.",
+  "ground_truth": "{'Acme Corp': '$12.4M', 'Bolt Inc': '$8.7M', 'Cipher Ltd': '$21.1M'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 240.0,
+  "html_file": "A_H2_podcast_financials.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "A-H3",
+  "category": "A_podcast",
+  "difficulty": "hard",
+  "instruction": "A podcast presents a recipe with 5 ingredients and quantities. Pause the podcast and enter each ingredient with its quantity in the shopping list.",
+  "ground_truth": "['2 cups flour', '3 eggs', '200ml milk', '50g butter', '1 tsp vanilla']",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "A_H3_podcast_recipe.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-E1",
+  "category": "B_meeting",
+  "difficulty": "easy",
+  "instruction": "You joined a team meeting. The presenter verbally announces the new launch date, which is NOT shown on any slide. Type the date.",
+  "ground_truth": "April 28th",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "B_E1_meeting_launch_date.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-E2",
+  "category": "B_meeting",
+  "difficulty": "easy",
+  "instruction": "A meeting presentation is running. The speaker mentions a room number for the next meeting. Type it.",
+  "ground_truth": "407",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "B_E2_meeting_room.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-E3",
+  "category": "B_meeting",
+  "difficulty": "easy",
+  "instruction": "During the meeting, a slide shows a chart title but the Y-axis label is only mentioned verbally. Type the Y-axis label.",
+  "ground_truth": "Revenue in Millions USD",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "B_E3_meeting_axis_label.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-M1",
+  "category": "B_meeting",
+  "difficulty": "medium",
+  "instruction": "Watch the slide deck and listen to the presenter. Slide 3 shows a table with a blank cell \u2014 the presenter fills it in verbally. Type the value.",
+  "ground_truth": "14.6%",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "B_M1_meeting_blank_cell.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-M2",
+  "category": "B_meeting",
+  "difficulty": "medium",
+  "instruction": "The presenter shows 4 slides. After the presentation, enter how many slides contained a bar chart.",
+  "ground_truth": "2",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "B_M2_meeting_chart_count.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-M3",
+  "category": "B_meeting",
+  "difficulty": "medium",
+  "instruction": "During the meeting, the speaker assigns action items to team members. Fill in who is responsible for each action item listed on screen.",
+  "ground_truth": "{'design review': 'Alice', 'API migration': 'Bob', 'docs update': 'Carol'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "B_M3_meeting_action_items.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-M4",
+  "category": "B_meeting",
+  "difficulty": "medium",
+  "instruction": "A budget review meeting is running. The presenter shows department budgets on slides and verbally corrects one figure. Identify which department was corrected and enter the new amount.",
+  "ground_truth": "{'department': 'Marketing', 'amount': '$1.4M'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "B_M4_meeting_budget_correction.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-H1",
+  "category": "B_meeting",
+  "difficulty": "hard",
+  "instruction": "The presenter shows slides and asks you a question verbally: 'Based on slide 2, which region should we prioritize?' Look at slide 2's data and type your answer in the chat box before the timer runs out.",
+  "ground_truth": "APAC",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "B_H1_meeting_question.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-H2",
+  "category": "B_meeting",
+  "difficulty": "hard",
+  "instruction": "Watch all 6 meeting slides and listen to the commentary. After the presentation, fill in the meeting minutes form: decisions made, next steps, and owner for each.",
+  "ground_truth": "meeting_minutes",
+  "eval_type": "hybrid",
+  "axes": [
+   "audio",
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "B_H2_meeting_minutes.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "B-H3",
+  "category": "B_meeting",
+  "difficulty": "hard",
+  "instruction": "A live meeting simulation: the presenter asks two questions at different times during the slides. Answer each in the chat within 10 seconds of being asked.",
+  "ground_truth": "both_answered",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "B_H3_meeting_live_qa.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-E1",
+  "category": "C_video",
+  "difficulty": "easy",
+  "instruction": "A terminal recording plays showing someone running commands. What was the first command executed? Type it.",
+  "ground_truth": "git clone https://github.com/example/repo.git",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "C_E1_screencast_command.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-E2",
+  "category": "C_video",
+  "difficulty": "easy",
+  "instruction": "A product demo video auto-plays. What is the product name shown in the title screen? Type it.",
+  "ground_truth": "CloudSync Pro",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "C_E2_video_product_name.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-E3",
+  "category": "C_video",
+  "difficulty": "easy",
+  "instruction": "Watch the tutorial video. How many steps are shown in the setup process? Enter the number.",
+  "ground_truth": "4",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "C_E3_video_step_count.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-M1",
+  "category": "C_video",
+  "difficulty": "medium",
+  "instruction": "A coding tutorial plays. Watch the code being written and type the function name that was defined.",
+  "ground_truth": "process_data",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "C_M1_screencast_function.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-M2",
+  "category": "C_video",
+  "difficulty": "medium",
+  "instruction": "A video demo shows navigating through 3 settings pages. List the title of each page in order.",
+  "ground_truth": "['General', 'Security', 'Notifications']",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "C_M2_video_page_titles.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-M3",
+  "category": "C_video",
+  "difficulty": "medium",
+  "instruction": "Watch the screencast. The presenter opens a config file and changes a port number. Type both the old and new port numbers.",
+  "ground_truth": "{'old': '3000', 'new': '8080'}",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "C_M3_screencast_port_change.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-M4",
+  "category": "C_video",
+  "difficulty": "medium",
+  "instruction": "A narrated tutorial plays with audio explaining each visual step. The narrator mentions a shortcut key not shown on screen. Type the shortcut.",
+  "ground_truth": "Ctrl+Shift+P",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "C_M4_video_shortcut.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-H1",
+  "category": "C_video",
+  "difficulty": "hard",
+  "instruction": "A video tutorial demonstrates a 5-step configuration process. Replicate each step in the settings panel on the right side of the page.",
+  "ground_truth": "workflow_replicated",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "C_H1_video_replicate.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-H2",
+  "category": "C_video",
+  "difficulty": "hard",
+  "instruction": "Watch the recorded code review. The reviewer highlights 3 bugs across different files. Describe each bug in the report fields.",
+  "ground_truth": "three_bugs",
+  "eval_type": "hybrid",
+  "axes": [
+   "visual",
+   "audio"
+  ],
+  "duration_s": 240.0,
+  "html_file": "C_H2_video_code_review.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "C-H3",
+  "category": "C_video",
+  "difficulty": "hard",
+  "instruction": "A screencast shows a developer debugging. They open 4 files and place breakpoints. List each filename and line number where a breakpoint was set.",
+  "ground_truth": "{'app.py:42': True, 'utils.py:17': True, 'config.py:8': True, 'main.py:31': True}",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "C_H3_video_breakpoints.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-E1",
+  "category": "D_carousel",
+  "difficulty": "easy",
+  "instruction": "A product carousel rotates through 4 items. Find the item with the lowest price and click 'Buy' on it.",
+  "ground_truth": "Wireless Earbuds - $29.99",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "D_E1_carousel_cheapest.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-E2",
+  "category": "D_carousel",
+  "difficulty": "easy",
+  "instruction": "A testimonial carousel rotates. How many testimonials mention the word 'excellent'? Type the count.",
+  "ground_truth": "2",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "D_E2_carousel_testimonials.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-E3",
+  "category": "D_carousel",
+  "difficulty": "easy",
+  "instruction": "A news ticker scrolls headlines across the top of the page. Click the headline about technology.",
+  "ground_truth": "tech_headline_clicked",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "D_E3_ticker_headline.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-M1",
+  "category": "D_carousel",
+  "difficulty": "medium",
+  "instruction": "A hero banner rotates every 4 seconds showing promotional offers. Find and enter the promo code from the winter sale banner.",
+  "ground_truth": "WINTER25",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "D_M1_carousel_promo_code.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-M2",
+  "category": "D_carousel",
+  "difficulty": "medium",
+  "instruction": "An image gallery auto-rotates. Count the total number of unique images shown and enter the count.",
+  "ground_truth": "6",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "D_M2_carousel_image_count.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-M3",
+  "category": "D_carousel",
+  "difficulty": "medium",
+  "instruction": "A product carousel shows items with ratings. Which product has the highest star rating? Type its name.",
+  "ground_truth": "Premium Headphones",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "D_M3_carousel_highest_rated.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-M4",
+  "category": "D_carousel",
+  "difficulty": "medium",
+  "instruction": "A sliding banner shows 5 team members with their roles. Find the CTO and enter their name.",
+  "ground_truth": "David Park",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "D_M4_carousel_team_cto.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-H1",
+  "category": "D_carousel",
+  "difficulty": "hard",
+  "instruction": "A rapidly rotating carousel (2s per slide) shows 8 products with prices. Calculate the total cost of all products and enter it.",
+  "ground_truth": "$847.92",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "D_H1_carousel_total_price.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-H2",
+  "category": "D_carousel",
+  "difficulty": "hard",
+  "instruction": "Two carousels rotate independently \u2014 one shows features, the other shows pricing tiers. Match each feature to its pricing tier and fill in the table.",
+  "ground_truth": "features_matched",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "D_H2_carousel_dual_match.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "D-H3",
+  "category": "D_carousel",
+  "difficulty": "hard",
+  "instruction": "A news feed carousel shows 10 stories cycling rapidly. A breaking news alert appears on one specific slide for 3 seconds. Click the breaking news banner when it appears.",
+  "ground_truth": "breaking_clicked",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "D_H3_carousel_breaking_news.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-E1",
+  "category": "E_dashboard",
+  "difficulty": "easy",
+  "instruction": "A server dashboard shows CPU usage updating every 2 seconds. When CPU exceeds 90%, click the 'Alert' button. Wait and watch.",
+  "ground_truth": "alert_triggered",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "E_E1_dashboard_cpu_alert.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-E2",
+  "category": "E_dashboard",
+  "difficulty": "easy",
+  "instruction": "A stock ticker dashboard shows live prices. What is the highest price reached by ACME stock? Type it after observing for at least 20 seconds.",
+  "ground_truth": "142.50",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "E_E2_dashboard_stock_peak.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-E3",
+  "category": "E_dashboard",
+  "difficulty": "easy",
+  "instruction": "An IoT sensor dashboard updates temperature readings. When temperature drops below 32F, type 'FREEZE WARNING' in the alert field.",
+  "ground_truth": "FREEZE WARNING",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "E_E3_dashboard_temp_warning.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-M1",
+  "category": "E_dashboard",
+  "difficulty": "medium",
+  "instruction": "A network monitoring dashboard shows packet loss for 4 servers. Identify which server had the highest packet loss spike and enter its name.",
+  "ground_truth": "web-server-03",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "E_M1_dashboard_packet_loss.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-M2",
+  "category": "E_dashboard",
+  "difficulty": "medium",
+  "instruction": "A real-time log viewer scrolls application logs. Count the number of ERROR-level entries that appear in 30 seconds and enter the count.",
+  "ground_truth": "7",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "E_M2_dashboard_error_count.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-M3",
+  "category": "E_dashboard",
+  "difficulty": "medium",
+  "instruction": "A sales dashboard shows revenue by region updating live. When the East region overtakes West in total revenue, click the 'Flip Alert' button.",
+  "ground_truth": "flip_detected",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "E_M3_dashboard_revenue_flip.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-M4",
+  "category": "E_dashboard",
+  "difficulty": "medium",
+  "instruction": "An application performance dashboard shows 3 metrics: latency, throughput, and error rate. When ANY metric goes red (critical), click the corresponding 'Acknowledge' button.",
+  "ground_truth": "acknowledged",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "E_M4_dashboard_acknowledge.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-H1",
+  "category": "E_dashboard",
+  "difficulty": "hard",
+  "instruction": "A NOC dashboard shows 6 servers. Three will go critical at different times. Acknowledge each within 5 seconds of it going red. All 3 must be acknowledged.",
+  "ground_truth": "all_acknowledged",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "E_H1_dashboard_triage.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-H2",
+  "category": "E_dashboard",
+  "difficulty": "hard",
+  "instruction": "A multi-panel dashboard: network, CPU, memory, and disk all update live. Write a one-paragraph status report based on the observed data trends.",
+  "ground_truth": "status_report",
+  "eval_type": "hybrid",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "E_H2_dashboard_report.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "E-H3",
+  "category": "E_dashboard",
+  "difficulty": "hard",
+  "instruction": "A dashboard with audio alerts: a beep sounds when any metric crosses a threshold, and the specific metric is announced verbally. Acknowledge the correct metric each time. Handle 3 alerts.",
+  "ground_truth": "all_alerts_handled",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "audio",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "E_H3_dashboard_audio_alert.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-E1",
+  "category": "F_transient",
+  "difficulty": "easy",
+  "instruction": "Submit the form. An error toast will appear briefly at the top. Read the error message and fix the email field, then resubmit.",
+  "ground_truth": "form_accepted",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "F_E1_toast_error_fix.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-E2",
+  "category": "F_transient",
+  "difficulty": "easy",
+  "instruction": "A cookie consent banner appears at the bottom. It auto-dismisses in 5 seconds. Click 'Accept All' before it disappears.",
+  "ground_truth": "cookies_accepted",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "F_E2_cookie_consent.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-E3",
+  "category": "F_transient",
+  "difficulty": "easy",
+  "instruction": "A download starts automatically. A completion toast shows the filename briefly. Type the filename that was downloaded.",
+  "ground_truth": "quarterly_report_Q3.pdf",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "F_E3_download_toast.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-M1",
+  "category": "F_transient",
+  "difficulty": "medium",
+  "instruction": "A session expiration warning appears with a countdown timer. Click 'Extend Session' before the timer reaches zero.",
+  "ground_truth": "session_extended",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "F_M1_session_warning.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-M2",
+  "category": "F_transient",
+  "difficulty": "medium",
+  "instruction": "Fill out a multi-field form. After submission, a validation toast briefly shows which field has an error. Fix only that field and resubmit.",
+  "ground_truth": "form_valid",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "F_M2_validation_toast.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-M3",
+  "category": "F_transient",
+  "difficulty": "medium",
+  "instruction": "A web app shows notification badges that appear and fade. Count how many notifications appeared in total during the 30-second observation period.",
+  "ground_truth": "5",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "F_M3_notification_count.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-M4",
+  "category": "F_transient",
+  "difficulty": "medium",
+  "instruction": "A 'flash sale' pop-up appears for 4 seconds with a discount code. Enter the code in the checkout field before the sale ends.",
+  "ground_truth": "FLASH40",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "F_M4_flash_sale.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-H1",
+  "category": "F_transient",
+  "difficulty": "hard",
+  "instruction": "Submit a form. The first toast shows an error with a code (e.g., ERR-4021). Fix the issue, resubmit, and read the success toast's confirmation number. Enter the confirmation number.",
+  "ground_truth": "CNF-78234",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "F_H1_error_chain.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-H2",
+  "category": "F_transient",
+  "difficulty": "hard",
+  "instruction": "A deployment dashboard shows 3 deploy stages running. Toast notifications appear briefly when each stage succeeds or fails. Record the final status of each stage.",
+  "ground_truth": "{'build': 'success', 'test': 'failed', 'deploy': 'skipped'}",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "F_H2_deploy_stages.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "F-H3",
+  "category": "F_transient",
+  "difficulty": "hard",
+  "instruction": "Multiple error toasts will appear in sequence, each showing a different error code. The page asks for the THIRD error code. Enter it.",
+  "ground_truth": "ERR-7712",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 240.0,
+  "html_file": "F_H3_sequential_toasts.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-E1",
+  "category": "G_phone",
+  "difficulty": "easy",
+  "instruction": "You have a voicemail. Listen to it and type the callback number into the phone field.",
+  "ground_truth": "555-0147",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "G_E1_voicemail_number.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-E2",
+  "category": "G_phone",
+  "difficulty": "easy",
+  "instruction": "A recorded phone message plays. The caller leaves their name. Type the caller's name.",
+  "ground_truth": "Jennifer Martinez",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "G_E2_voicemail_name.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-E3",
+  "category": "G_phone",
+  "difficulty": "easy",
+  "instruction": "A phone system plays an automated message with business hours. Enter the closing time.",
+  "ground_truth": "6:30 PM",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "G_E3_phone_hours.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-M1",
+  "category": "G_phone",
+  "difficulty": "medium",
+  "instruction": "An IVR system plays: 'Press 1 for Sales, Press 2 for Support, Press 3 for Billing'. You need Support. Click the correct button.",
+  "ground_truth": "support",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "G_M1_ivr_menu.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-M2",
+  "category": "G_phone",
+  "difficulty": "medium",
+  "instruction": "A caller dictates an address over the phone. Type the full address into the form.",
+  "ground_truth": "742 Evergreen Terrace, Springfield, IL 62704",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "G_M2_phone_address.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-M3",
+  "category": "G_phone",
+  "difficulty": "medium",
+  "instruction": "A customer calls and describes a problem: their order number and the issue. Fill in both fields from what you hear.",
+  "ground_truth": "{'order': 'ORD-98234', 'issue': 'wrong item shipped'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "G_M3_phone_complaint.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-M4",
+  "category": "G_phone",
+  "difficulty": "medium",
+  "instruction": "An automated phone system reads a verification code digit by digit. Type the 6-digit code.",
+  "ground_truth": "847293",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 150.0,
+  "html_file": "G_M4_phone_verification.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-H1",
+  "category": "G_phone",
+  "difficulty": "hard",
+  "instruction": "A multi-turn phone call: the caller first asks for your account number (shown on screen), then asks for your zip code (also shown). Respond to each question by typing in the response field within 10 seconds.",
+  "ground_truth": "both_responded",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "G_H1_phone_multi_turn.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-H2",
+  "category": "G_phone",
+  "difficulty": "hard",
+  "instruction": "A conference call with 2 speakers. Each speaker gives a different data point. One is mentioned only by Speaker A, the other only by Speaker B. Enter both values attributed to the correct speaker.",
+  "ground_truth": "{'speaker_a': 'Q3 target: 15%', 'speaker_b': 'budget: $2.1M'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 240.0,
+  "html_file": "G_H2_phone_multi_speaker.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "G-H3",
+  "category": "G_phone",
+  "difficulty": "hard",
+  "instruction": "A caller reads a list of 5 items with prices. The phone UI shows a shopping cart. Add each item and price as the caller says them, keeping up in real time.",
+  "ground_truth": "all_5_items_added",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "G_H3_phone_shopping_list.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "H-E1",
+  "category": "H_interview",
+  "difficulty": "easy",
+  "instruction": "An interviewer asks: 'What is the capital of France?' Speak your answer using the speak action.",
+  "ground_truth": "Paris",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "H_E1_interview_capital.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-E2",
+  "category": "H_interview",
+  "difficulty": "easy",
+  "instruction": "The interviewer asks: 'Please state your name as shown on the screen.' Read the name displayed on the page and speak it.",
+  "ground_truth": "Alexander Thompson",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "H_E2_interview_name.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-E3",
+  "category": "H_interview",
+  "difficulty": "easy",
+  "instruction": "The system says: 'To verify your identity, please say the 4-digit PIN shown on screen.' Read the PIN aloud.",
+  "ground_truth": "7294",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "H_E3_interview_pin.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-M1",
+  "category": "H_interview",
+  "difficulty": "medium",
+  "instruction": "The interviewer asks: 'What is the total revenue shown in the report on screen?' Read the financial report and speak the total.",
+  "ground_truth": "$4.2 million",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "H_M1_interview_revenue.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-M2",
+  "category": "H_interview",
+  "difficulty": "medium",
+  "instruction": "A voice agent asks two questions sequentially. Answer each by speaking. Q1: 'What year is shown?' Q2: 'What color is the header?'",
+  "ground_truth": "{'year': '2026', 'color': 'blue'}",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "H_M2_interview_two_questions.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-M3",
+  "category": "H_interview",
+  "difficulty": "medium",
+  "instruction": "An automated phone system asks: 'Please say your order number.' The order number is displayed on the page. Speak it clearly.",
+  "ground_truth": "ORD-44821",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "H_M3_interview_order.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-M4",
+  "category": "H_interview",
+  "difficulty": "medium",
+  "instruction": "A language assessment asks you to repeat a sentence read aloud by the system. Listen, then speak the same sentence.",
+  "ground_truth": "The quick brown fox jumps over the lazy dog",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "H_M4_interview_repeat.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-H1",
+  "category": "H_interview",
+  "difficulty": "hard",
+  "instruction": "A job interview simulation. The interviewer asks: 'Describe the project shown on screen in your own words.' You must read the project details and speak a coherent 2-3 sentence description.",
+  "ground_truth": "project_description",
+  "eval_type": "hybrid",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "H_H1_interview_describe.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-H2",
+  "category": "H_interview",
+  "difficulty": "hard",
+  "instruction": "A verbal math test: the system speaks a math problem, and the answer is partially shown on screen. Combine both to compute and speak the result.",
+  "ground_truth": "156",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "H_H2_interview_math.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "H-H3",
+  "category": "H_interview",
+  "difficulty": "hard",
+  "instruction": "A multi-round interview: the system asks 3 questions about data shown on a dashboard that updates between questions. Answer each by speaking within 15 seconds.",
+  "ground_truth": "all_3_answered",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "H_H3_interview_dashboard.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "I-E1",
+  "category": "I_collab",
+  "difficulty": "easy",
+  "instruction": "A collaborator dictates a sentence over audio. Type what they say into the shared document.",
+  "ground_truth": "The deadline for the proposal is next Friday",
+  "eval_type": "dom",
+  "axes": [
+   "audio"
+  ],
+  "duration_s": 90.0,
+  "html_file": "I_E1_collab_dictation.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-E2",
+  "category": "I_collab",
+  "difficulty": "easy",
+  "instruction": "A collaborator is editing the document in real time. They add a new heading. Type the heading they added into the response field.",
+  "ground_truth": "Q4 Objectives",
+  "eval_type": "dom",
+  "axes": [
+   "visual"
+  ],
+  "duration_s": 90.0,
+  "html_file": "I_E2_collab_observe_heading.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-E3",
+  "category": "I_collab",
+  "difficulty": "easy",
+  "instruction": "A collaborator says 'delete the last paragraph' over audio. The document is visible. Remove the last paragraph.",
+  "ground_truth": "paragraph_deleted",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "I_E3_collab_delete.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-M1",
+  "category": "I_collab",
+  "difficulty": "medium",
+  "instruction": "A collaborator verbally says 'change the number in section 2 to 450'. Find section 2 in the document and update the number.",
+  "ground_truth": "number_updated",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "I_M1_collab_edit_number.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-M2",
+  "category": "I_collab",
+  "difficulty": "medium",
+  "instruction": "The collaborator edits section 1 visually (you see the cursor moving) while verbally telling you to edit section 3. Make the edit they describe in section 3, not section 1.",
+  "ground_truth": "correct_section_edited",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "I_M2_collab_parallel_edit.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-M3",
+  "category": "I_collab",
+  "difficulty": "medium",
+  "instruction": "A collaborator pastes a table into the doc (visible) and says 'the total in the last row is wrong \u2014 fix it.' Calculate the correct total and update the cell.",
+  "ground_truth": "total_fixed",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "I_M3_collab_fix_total.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-M4",
+  "category": "I_collab",
+  "difficulty": "medium",
+  "instruction": "While you observe real-time edits to a document, the collaborator verbally asks: 'What did I just change?' Type what was changed.",
+  "ground_truth": "edit_described",
+  "eval_type": "hybrid",
+  "axes": [
+   "audio",
+   "visual"
+  ],
+  "duration_s": 150.0,
+  "html_file": "I_M4_collab_describe_change.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-H1",
+  "category": "I_collab",
+  "difficulty": "hard",
+  "instruction": "Collaborative session: the partner dictates 3 bullet points via audio while simultaneously editing formatting on screen. Type all 3 bullet points in the document.",
+  "ground_truth": "3_bullets_entered",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "I_H1_collab_3_bullets.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-H2",
+  "category": "I_collab",
+  "difficulty": "hard",
+  "instruction": "A full collaborative editing session: partner makes 2 edits visually and gives 2 verbal instructions. Execute all 4 changes correctly.",
+  "ground_truth": "all_changes",
+  "eval_type": "dom",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "I_H2_collab_full_session.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "I-H3",
+  "category": "I_collab",
+  "difficulty": "hard",
+  "instruction": "Collaborator asks via audio: 'Read me the summary paragraph.' You must read the visible summary and speak it back. Then they say 'Now add a conclusion.' Add a conclusion paragraph.",
+  "ground_truth": "read_and_edit",
+  "eval_type": "hybrid",
+  "axes": [
+   "audio",
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "I_H3_collab_read_and_edit.html",
+  "requires_audio_out": true
+ },
+ {
+  "task_id": "J-E1",
+  "category": "J_game",
+  "difficulty": "easy",
+  "instruction": "A whack-a-mole game. Moles pop up one at a time and stay for 5 seconds. Click at least 3 moles to win.",
+  "ground_truth": "3_moles_hit",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "J_E1_game_whack_mole.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-E2",
+  "category": "J_game",
+  "difficulty": "easy",
+  "instruction": "A reaction time test. When the screen turns green, click as fast as you can. Complete 3 rounds.",
+  "ground_truth": "3_rounds_complete",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "J_E2_game_reaction.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-E3",
+  "category": "J_game",
+  "difficulty": "easy",
+  "instruction": "A color matching game. A target color is shown at the top. Click the matching color swatch when it appears among rotating options.",
+  "ground_truth": "color_matched",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 90.0,
+  "html_file": "J_E3_game_color_match.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-M1",
+  "category": "J_game",
+  "difficulty": "medium",
+  "instruction": "Simon Says: watch a sequence of 4 colored button flashes, then repeat the pattern by clicking the buttons in the same order.",
+  "ground_truth": "pattern_correct",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "J_M1_game_simon.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-M2",
+  "category": "J_game",
+  "difficulty": "medium",
+  "instruction": "A memory card game. Cards flip briefly then face down. Find and click 3 matching pairs.",
+  "ground_truth": "3_pairs_found",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "J_M2_game_memory.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-M3",
+  "category": "J_game",
+  "difficulty": "medium",
+  "instruction": "A number puzzle: numbers 1-9 appear in random positions and stay for 3 seconds, then hide. Click them in ascending order from memory.",
+  "ground_truth": "sequence_correct",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "J_M3_game_number_memory.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-M4",
+  "category": "J_game",
+  "difficulty": "medium",
+  "instruction": "A typing speed game. Words appear on screen and scroll down. Type each word before it reaches the bottom. Successfully type 5 words.",
+  "ground_truth": "5_words_typed",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 150.0,
+  "html_file": "J_M4_game_typing.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-H1",
+  "category": "J_game",
+  "difficulty": "hard",
+  "instruction": "A platformer mini-game: guide the character by clicking platforms as they appear. Survive for 30 seconds without falling.",
+  "ground_truth": "survived_30s",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "J_H1_game_platformer.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-H2",
+  "category": "J_game",
+  "difficulty": "hard",
+  "instruction": "An advanced Simon Says: watch a 6-step pattern with 6 different colors, then reproduce it. You have 2 attempts.",
+  "ground_truth": "pattern_6_correct",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "J_H2_game_simon_hard.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "J-H3",
+  "category": "J_game",
+  "difficulty": "hard",
+  "instruction": "A dual-task game: track a moving target with clicks while simultaneously typing numbers that flash on screen. Score 5 hits AND 3 correct numbers.",
+  "ground_truth": "dual_task_complete",
+  "eval_type": "dom",
+  "axes": [
+   "visual",
+   "interact"
+  ],
+  "duration_s": 240.0,
+  "html_file": "J_H3_game_dual_task.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E1",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the green heading on the page and type its exact text into the answer box. Click Submit.",
+  "ground_truth": "Quarterly Revenue Report",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E1_read_heading.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E2",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Click the button labeled 'Confirm Order'.",
+  "ground_truth": "Confirm Order",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E2_click_button.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E3",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "From the shipping method dropdown, select 'Express Shipping (2-3 days)' and click Submit.",
+  "ground_truth": "express",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E3_select_dropdown.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E4",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Fill in the contact form with Name: 'Jane Peterson' and Email: 'jane.peterson@example.com'. Click Submit.",
+  "ground_truth": "{'name': 'Jane Peterson', 'email': 'jane.peterson@example.com'}",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E4_contact_form.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E5",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Check the 'I agree to the terms and conditions' checkbox and click Submit.",
+  "ground_truth": "checkbox_submitted",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E5_checkbox_submit.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E6",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Look at the product table. Find the price of 'Wireless Mouse' and type it into the answer box. Click Submit.",
+  "ground_truth": "$34.50",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E6_read_table.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E7",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Click the link labeled 'Account Settings' from the navigation menu.",
+  "ground_truth": "Account Settings",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E7_click_link.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E8",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Count the number of items in the shopping list and type the count into the answer box. Click Submit.",
+  "ground_truth": "7",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E8_count_items.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E9",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the reference code in the Source field and type the exact same text into the Destination field. Click Submit.",
+  "ground_truth": "TXN-2024-08-ALPHA",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E9_copy_text.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E10",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the paragraph about the Greenfield Community Library. Answer the question: Who founded it? Type the answer and click Submit.",
+  "ground_truth": "Margaret Thornton",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E10_read_paragraph.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E11",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the customer contact card and type the phone number exactly as shown into the answer box. Click Submit.",
+  "ground_truth": "(415) 555-0182",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E11_read_phone.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E12",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Choose the most relevant category for this support ticket and click Submit.",
+  "ground_truth": "billing",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E12_radio_category.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E13",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the display settings table and type the refresh rate (number only) into the answer box. Click Submit.",
+  "ground_truth": "144",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E13_read_setting.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E14",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Sum the two prices in the order summary and type the total dollar amount into the answer box. Click Submit.",
+  "ground_truth": "49.75",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E14_sum_prices.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E15",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Select exactly the toppings: mushroom, olive, pepper. Click Place Order.",
+  "ground_truth": "mushroom_olive_pepper",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E15_multi_select.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E16",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Click the button labelled '5'.",
+  "ground_truth": "5",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E16_button_grid.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E17",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the user profile and type the email address into the answer box. Click Submit.",
+  "ground_truth": "ariel.nguyen@northpine.io",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E17_find_email.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E18",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Set the quantity to 4 and click Add to Cart.",
+  "ground_truth": "4",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E18_increment_qty.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E19",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the pricing table and type the name of the cheapest plan into the answer box. Click Submit.",
+  "ground_truth": "Lite",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E19_cheapest.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E20",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Find Brassroot Co. in the founding-year list and type its founding year into the answer box. Click Submit.",
+  "ground_truth": "2015",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E20_match_year.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E21",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Use the dropdown to select 'teal' and click Confirm.",
+  "ground_truth": "teal",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E21_select_color.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-E22",
+  "category": "S_static",
+  "difficulty": "easy",
+  "instruction": "Read the project notice and type the procurement deadline date (e.g. 'June 14') into the answer box. Click Submit.",
+  "ground_truth": "June 14",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 30.0,
+  "html_file": "S_E22_find_date.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M1",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Read the shipping rate table and type the rate (number only) for Standard shipping in zone B. Click Submit.",
+  "ground_truth": "11",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M1_conditional_fill.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M2",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Fill in the shipping address: 240 Maple Ave, Portland, OR 97205. Click Save Address.",
+  "ground_truth": "240 Maple Ave Portland OR 97205",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M2_address_form.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M3",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Calculate 7.5% sales tax on a $80.00 subtotal and enter the tax amount in dollars. Click Submit.",
+  "ground_truth": "6.00",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M3_calculate_tax.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M4",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Find the engineer with the longest tenure in the table and type their full name. Click Submit.",
+  "ground_truth": "Ana Roth",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M4_filter_employees.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M5",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Set a password that meets all stated requirements and click Set Password.",
+  "ground_truth": "valid_password",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M5_password.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M6",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Enable two-factor authentication via the Authenticator app option, then confirm.",
+  "ground_truth": "app",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M6_two_factor.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M7",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Compute the invoice subtotal as the sum of qty \u00d7 unit price across all rows. Type the dollar total. Click Submit.",
+  "ground_truth": "52.25",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M7_invoice_total.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M8",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Apply the requested setting changes (enable Two-Step Login and Marketing Emails; disable Activity Sharing) and click Save Settings.",
+  "ground_truth": "settings_correct",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M8_settings_toggle.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M9",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Schedule a meeting on 2026-06-15 at 14:30 with attendee mariah@firm.io. Click Schedule.",
+  "ground_truth": "scheduled",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M9_schedule_meeting.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M10",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Apply the refund policy to compute the restocking fee in cents on a $200.00 purchase at day 22. Type the answer and click Submit.",
+  "ground_truth": "5000",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M10_policy_reasoning.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M11",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Find the reference number in the email transcript and type it (uppercase) into the answer box. Click Submit.",
+  "ground_truth": "RX-7B4K-29CT",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M11_find_code.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M12",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Apply the loan eligibility rules to the given applicant and answer 'yes' or 'no'. Click Submit.",
+  "ground_truth": "no",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M12_eligibility.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M13",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Convert 7.5 kilometers to meters; type the integer answer. Click Submit.",
+  "ground_truth": "7500",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M13_unit_conversion.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M14",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Find the highest-scoring player on the leaderboard and type the username. Click Submit.",
+  "ground_truth": "player_yellow",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M14_leaderboard.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M15",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Check the box next to every stock with closing price greater than $100. Click Submit.",
+  "ground_truth": "above_threshold",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M15_above_threshold.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-M16",
+  "category": "S_static",
+  "difficulty": "medium",
+  "instruction": "Match the user query to the most relevant tag, then click Submit.",
+  "ground_truth": "api-credentials",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 60.0,
+  "html_file": "S_M16_choose_match.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H1",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Apply the discount, tax, and shipping fee in order to compute the final invoice amount; type the dollar total. Click Submit.",
+  "ground_truth": "469.92",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H1_invoice_workflow.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H2",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Choose the shortest legal route given today's day and the cargo type. Type the route name. Click Submit.",
+  "ground_truth": "R-Alpha",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H2_dispatch.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H3",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Decode the ROT-13 message and type the plaintext (uppercase). Click Submit.",
+  "ground_truth": "HELLO WORLD",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H3_decode_message.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H4",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Select a subset of items whose prices sum to exactly $50, then click Submit.",
+  "ground_truth": "budget_50",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H4_budget_select.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H5",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Compose a reply to the email: To = sender's address, Subject begins with 'Re:', body must mention INV-9821. Click Send Reply.",
+  "ground_truth": "reply_correct",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H5_compose_reply.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H6",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Identify the next number in the sequence and type it. Click Submit.",
+  "ground_truth": "42",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H6_sequence.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H7",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Apply the triage rules and type the ticket ID to address first. Click Submit.",
+  "ground_truth": "T-004",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H7_sort_priority.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H8",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Convert $250 USD to JPY using the chained rates and type the integer answer. Click Submit.",
+  "ground_truth": "32660",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H8_currency.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H9",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Identify the target field that maps from the source field 'dob' and type its name. Click Submit.",
+  "ground_truth": "birthdate",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H9_schema_map.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H10",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Compute the median of the given numbers and type the integer answer. Click Submit.",
+  "ground_truth": "9",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H10_median.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H11",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Find the shortest path from A to D in the directed graph and type the total distance. Click Submit.",
+  "ground_truth": "6",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H11_path.html",
+  "requires_audio_out": false
+ },
+ {
+  "task_id": "S-H12",
+  "category": "S_static",
+  "difficulty": "hard",
+  "instruction": "Read the audit log and type the number of distinct users that performed a delete action. Click Submit.",
+  "ground_truth": "2",
+  "eval_type": "dom",
+  "axes": [],
+  "duration_s": 120.0,
+  "html_file": "S_H12_audit.html",
+  "requires_audio_out": false
+ }
+]

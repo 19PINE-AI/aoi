@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ShopNow - Checkout</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .nav { background: #16213e; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; border-radius: 10px; margin-bottom: 20px; }
+  .nav .logo { font-size: 20px; font-weight: bold; color: #00d4ff; }
+  .nav .cart { font-size: 14px; color: #8892b0; display: flex; align-items: center; gap: 6px; }
+  .checkout-layout { display: grid; grid-template-columns: 1fr 350px; gap: 20px; max-width: 900px; margin: 0 auto; }
+  .order-summary { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .order-summary h2 { font-size: 18px; color: #00d4ff; margin-bottom: 15px; }
+  .item { display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(42,58,94,0.5); }
+  .item:last-child { border: none; }
+  .item-img { width: 60px; height: 60px; background: #0a0f1e; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+  .item-info { flex: 1; }
+  .item-name { font-size: 14px; font-weight: 600; }
+  .item-detail { font-size: 12px; color: #8892b0; margin-top: 3px; }
+  .item-price { font-size: 14px; font-weight: bold; }
+  .payment-section { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .payment-section h2 { font-size: 18px; color: #00d4ff; margin-bottom: 15px; }
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 12px; color: #8892b0; margin-bottom: 5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .field input { width: 100%; padding: 10px 12px; font-size: 14px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; }
+  .field input:focus { outline: none; border-color: #00d4ff; }
+  .promo-field { display: flex; gap: 8px; }
+  .promo-field input { flex: 1; }
+  .promo-field button { padding: 10px 16px; background: #2a3a5e; color: #8892b0; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; }
+  .promo-field button:hover { background: #3a4a6e; }
+  .totals { margin-top: 15px; padding-top: 12px; border-top: 1px solid #2a3a5e; }
+  .total-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
+  .total-row.final { font-size: 18px; font-weight: bold; margin-top: 8px; padding-top: 8px; border-top: 1px solid #2a3a5e; }
+  .total-row .discount { color: #00ff88; }
+  .place-order { width: 100%; padding: 14px; font-size: 16px; font-weight: bold; background: #00d4ff; color: #0a0f1e; border: none; border-radius: 8px; cursor: pointer; margin-top: 15px; }
+  .place-order:hover { background: #00b8d9; }
+  .promo-applied { font-size: 12px; color: #00ff88; margin-top: 5px; display: none; }
+
+  /* Flash sale popup */
+  .popup-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+  .popup-overlay.show { display: flex; }
+  .popup { background: linear-gradient(135deg, #16213e 0%, #1a1a4e 100%); border-radius: 12px; padding: 30px; border: 2px solid #f39c12; width: 400px; text-align: center; box-shadow: 0 10px 40px rgba(243,156,18,0.3); animation: popupScale 0.4s ease; }
+  @keyframes popupScale { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+  .popup .flash-icon { font-size: 48px; margin-bottom: 10px; animation: flashBlink 0.5s infinite; }
+  @keyframes flashBlink { 0%,100% { opacity: 1; } 50% { opacity: 0.5; } }
+  .popup h2 { font-size: 28px; color: #f39c12; margin-bottom: 8px; letter-spacing: 2px; }
+  .popup .code { font-size: 32px; font-weight: bold; color: #00ff88; background: #0a0f1e; padding: 8px 20px; border-radius: 8px; display: inline-block; margin: 12px 0; font-family: monospace; letter-spacing: 3px; }
+  .popup .desc { font-size: 16px; color: #c0c0c0; margin-bottom: 5px; }
+  .popup .timer { font-size: 13px; color: #8892b0; margin-top: 10px; }
+  .popup .close-x { position: absolute; top: 10px; right: 15px; font-size: 20px; color: #8892b0; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">ShopNow</div>
+  <div class="cart">&#128722; Cart (2 items)</div>
+</div>
+<div class="checkout-layout">
+  <div class="order-summary">
+    <h2>Order Summary</h2>
+    <div class="item">
+      <div class="item-img">&#127911;</div>
+      <div class="item-info">
+        <div class="item-name">Wireless Noise-Canceling Headphones</div>
+        <div class="item-detail">Color: Midnight Black | Qty: 1</div>
+      </div>
+      <div class="item-price">$249.99</div>
+    </div>
+    <div class="item">
+      <div class="item-img">&#9000;</div>
+      <div class="item-info">
+        <div class="item-name">Ergonomic Mechanical Keyboard</div>
+        <div class="item-detail">Switch: Cherry MX Brown | Qty: 1</div>
+      </div>
+      <div class="item-price">$159.99</div>
+    </div>
+  </div>
+  <div class="payment-section">
+    <h2>Payment</h2>
+    <div class="field">
+      <label>Card Number</label>
+      <input type="text" value="**** **** **** 4242" readonly>
+    </div>
+    <div class="field">
+      <label>Promo Code</label>
+      <div class="promo-field">
+        <input type="text" id="promoInput" placeholder="Enter code">
+        <button id="applyBtn">Apply</button>
+      </div>
+      <div class="promo-applied" id="promoApplied">Code applied successfully!</div>
+    </div>
+    <div class="totals">
+      <div class="total-row"><span>Subtotal</span><span>$409.98</span></div>
+      <div class="total-row"><span>Shipping</span><span>Free</span></div>
+      <div class="total-row" id="discountRow" style="display:none;"><span>Discount</span><span class="discount" id="discountAmt">-$0.00</span></div>
+      <div class="total-row final"><span>Total</span><span id="totalAmt">$409.98</span></div>
+    </div>
+    <button class="place-order">Place Order</button>
+  </div>
+</div>
+
+<div class="popup-overlay" id="flashPopup">
+  <div class="popup" style="position:relative;">
+    <div class="flash-icon">&#9889;</div>
+    <h2>FLASH SALE!</h2>
+    <div class="desc">Use code for 40% off your order</div>
+    <div class="code">FLASH40</div>
+    <div class="desc">Limited time offer!</div>
+    <div class="timer" id="popupTimer">Closing in 4s...</div>
+  </div>
+</div>
+
+<script>
+(function() {
+  let codeApplied = false;
+
+  // Show flash sale popup after 6 seconds
+  setTimeout(function() {
+    const popup = document.getElementById('flashPopup');
+    popup.classList.add('show');
+
+    let remaining = 4;
+    const timerEl = document.getElementById('popupTimer');
+    const countInterval = setInterval(function() {
+      remaining--;
+      timerEl.textContent = 'Closing in ' + remaining + 's...';
+      if (remaining <= 0) {
+        clearInterval(countInterval);
+        popup.classList.remove('show');
+      }
+    }, 1000);
+  }, 6000);
+
+  document.getElementById('applyBtn').addEventListener('click', function() {
+    const code = document.getElementById('promoInput').value.trim().toUpperCase();
+    if (code === 'FLASH40') {
+      codeApplied = true;
+      document.getElementById('promoApplied').style.display = 'block';
+      document.getElementById('discountRow').style.display = 'flex';
+      const discount = (409.98 * 0.4).toFixed(2);
+      document.getElementById('discountAmt').textContent = '-$' + discount;
+      document.getElementById('totalAmt').textContent = '$' + (409.98 - parseFloat(discount)).toFixed(2);
+      this.textContent = 'Applied';
+      this.style.background = '#00ff88';
+      this.style.color = '#0a0f1e';
+    }
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('promoInput').value.trim().toUpperCase();
+    if (val.includes('FLASH40')) return 'code_applied';
+    return 'code_not_applied';
+  };
+})();
+</script>
+</body>
+</html>

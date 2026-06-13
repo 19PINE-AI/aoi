@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Interview</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #7c4dff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .main-layout { display: flex; gap: 24px; align-items: flex-start; }
+  .left-col { width: 420px; display: flex; flex-direction: column; gap: 20px; }
+  .video-panel { background: #16213e; border-radius: 16px; padding: 16px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); text-align: center; }
+  .video-placeholder { width: 100%; aspect-ratio: 16/9; border-radius: 10px; background: linear-gradient(135deg, #311b92, #4527a0, #512da8); display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 10px; position: relative; }
+  .interviewer-avatar { width: 56px; height: 56px; border-radius: 50%; background: linear-gradient(135deg, #7c4dff, #4527a0); display: flex; align-items: center; justify-content: center; font-size: 24px; color: #fff; margin-bottom: 4px; }
+  .interviewer-name { font-size: 12px; color: rgba(255,255,255,0.8); }
+  .live-badge { position: absolute; top: 8px; left: 8px; background: #e53935; color: #fff; font-size: 10px; padding: 2px 6px; border-radius: 4px; font-weight: 600; }
+  .call-timer { font-size: 16px; font-weight: 300; font-variant-numeric: tabular-nums; }
+  .dashboard { background: #16213e; border-radius: 16px; padding: 20px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .dashboard h4 { font-size: 14px; color: #7c4dff; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px; }
+  .metrics { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+  .metric-card { background: #0f1a30; border: 1px solid #2a2a4e; border-radius: 10px; padding: 16px; text-align: center; transition: all 0.5s; }
+  .metric-card.updated { border-color: #7c4dff; background: #1a1a40; }
+  .metric-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+  .metric-value { font-size: 24px; font-weight: 700; color: #fff; transition: color 0.3s; }
+  .metric-card.updated .metric-value { color: #b388ff; }
+  .response-panel { background: #16213e; border-radius: 16px; padding: 24px; width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
+  .response-panel h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .question-block { margin-bottom: 14px; padding: 10px 12px; background: #0f1a30; border-radius: 8px; border-left: 3px solid #333; transition: border-color 0.3s; }
+  .question-block.active { border-color: #7c4dff; }
+  .question-block.done { border-color: #66bb6a; }
+  .q-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px; }
+  .mic-row { display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+  .mic-dot { width: 10px; height: 10px; border-radius: 50%; background: #333; flex-shrink: 0; }
+  .mic-dot.listening { background: #e53935; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(229,57,53,0.4); } 50% { box-shadow: 0 0 0 6px rgba(229,57,53,0); } }
+  .mic-dot.done { background: #66bb6a; }
+  .mic-status { font-size: 11px; color: #888; }
+  .transcript-line { font-size: 13px; color: #aaa; min-height: 18px; }
+  .fallback-input { width: 100%; background: #0a1224; border: 1px solid #2a2a4e; border-radius: 6px; padding: 7px 10px; color: #e0e0e0; font-size: 13px; outline: none; margin-top: 4px; }
+  .fallback-input:focus { border-color: #7c4dff; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #7c4dff; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; }
+  .submit-btn:hover { background: #9c7cff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="main-layout">
+  <div class="left-col">
+    <div class="video-panel">
+      <div class="video-placeholder">
+        <div class="live-badge">LIVE</div>
+        <div class="interviewer-avatar">&#128100;</div>
+        <div class="interviewer-name">Data Analyst</div>
+      </div>
+      <div class="call-timer" id="timer">00:00</div>
+    </div>
+    <div class="dashboard">
+      <h4>Live Dashboard</h4>
+      <div class="metrics">
+        <div class="metric-card" id="revenueCard">
+          <div class="metric-label">Revenue</div>
+          <div class="metric-value" id="revenueVal">$5.2M</div>
+        </div>
+        <div class="metric-card" id="usersCard">
+          <div class="metric-label">Users</div>
+          <div class="metric-value" id="usersVal">12,400</div>
+        </div>
+        <div class="metric-card" id="growthCard">
+          <div class="metric-label">Growth</div>
+          <div class="metric-value" id="growthVal">8.3%</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="response-panel">
+    <h3>Dashboard Q&A</h3>
+    <div class="question-block" id="qb1">
+      <div class="q-label">Question 1 — Revenue</div>
+      <div class="mic-row">
+        <div class="mic-dot" id="mic1"></div>
+        <div class="mic-status" id="micStatus1">Waiting...</div>
+      </div>
+      <div class="transcript-line" id="transcript1"></div>
+      <input type="text" class="fallback-input" id="fallback1" placeholder="Type or speak your answer" autocomplete="off">
+    </div>
+    <div class="question-block" id="qb2">
+      <div class="q-label">Question 2 — Users</div>
+      <div class="mic-row">
+        <div class="mic-dot" id="mic2"></div>
+        <div class="mic-status" id="micStatus2">Waiting...</div>
+      </div>
+      <div class="transcript-line" id="transcript2"></div>
+      <input type="text" class="fallback-input" id="fallback2" placeholder="Type or speak your answer" autocomplete="off">
+    </div>
+    <div class="question-block" id="qb3">
+      <div class="q-label">Question 3 — Growth</div>
+      <div class="mic-row">
+        <div class="mic-dot" id="mic3"></div>
+        <div class="mic-status" id="micStatus3">Waiting...</div>
+      </div>
+      <div class="transcript-line" id="transcript3"></div>
+      <input type="text" class="fallback-input" id="fallback3" placeholder="Type or speak your answer" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit All Answers</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  let timerSec = 0;
+  let responses = ['', '', ''];
+
+  setInterval(() => {
+    timerSec++;
+    const m = String(Math.floor(timerSec / 60)).padStart(2, '0');
+    const s = String(timerSec % 60).padStart(2, '0');
+    document.getElementById('timer').textContent = m + ':' + s;
+  }, 1000);
+
+  function listenFor(num) {
+    const micEl = document.getElementById('mic' + num);
+    const statusEl = document.getElementById('micStatus' + num);
+    const transcriptEl = document.getElementById('transcript' + num);
+    const qbEl = document.getElementById('qb' + num);
+    micEl.classList.add('listening');
+    statusEl.textContent = 'Listening...';
+    qbEl.classList.add('active');
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (SpeechRecognition) {
+      const recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.lang = 'en-US';
+      recognition.onresult = (event) => {
+        const text = event.results[0][0].transcript;
+        responses[num - 1] = text;
+        transcriptEl.textContent = text;
+        micEl.classList.remove('listening');
+        micEl.classList.add('done');
+        statusEl.textContent = 'Captured';
+        qbEl.classList.remove('active');
+        qbEl.classList.add('done');
+      };
+      recognition.onerror = () => {
+        statusEl.textContent = 'Use text input';
+        micEl.classList.remove('listening');
+      };
+      recognition.onend = () => {
+        if (!responses[num - 1]) {
+          micEl.classList.remove('listening');
+          statusEl.textContent = 'Use text input';
+        }
+      };
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(() => {
+        recognition.start();
+      }).catch(() => {
+        statusEl.textContent = 'Mic unavailable — type answer';
+        micEl.classList.remove('listening');
+      });
+    } else {
+      statusEl.textContent = 'Type your answer below';
+      micEl.classList.remove('listening');
+    }
+  }
+
+  function updateDashboard(revenue, users, growth) {
+    if (revenue) {
+      document.getElementById('revenueVal').textContent = revenue;
+      document.getElementById('revenueCard').classList.add('updated');
+      setTimeout(() => document.getElementById('revenueCard').classList.remove('updated'), 2000);
+    }
+    if (users) {
+      document.getElementById('usersVal').textContent = users;
+      document.getElementById('usersCard').classList.add('updated');
+      setTimeout(() => document.getElementById('usersCard').classList.remove('updated'), 2000);
+    }
+    if (growth) {
+      document.getElementById('growthVal').textContent = growth;
+      document.getElementById('growthCard').classList.add('updated');
+      setTimeout(() => document.getElementById('growthCard').classList.remove('updated'), 2000);
+    }
+  }
+
+  // Q1 at t=3s: "What is the current revenue?"
+  function askQ1() {
+    const u = new SpeechSynthesisUtterance("What is the current revenue?");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { listenFor(1); };
+    speechSynthesis.speak(u);
+  }
+
+  // Dashboard update at t=15s: Revenue $5.8M, Users 13,100
+  function dashUpdate1() {
+    updateDashboard('$5.8M', '13,100', null);
+  }
+
+  // Q2 at t=20s: "How many users are there now?"
+  function askQ2() {
+    const u = new SpeechSynthesisUtterance("How many users are there now?");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { listenFor(2); };
+    speechSynthesis.speak(u);
+  }
+
+  // Dashboard update at t=30s: Growth 11.2%
+  function dashUpdate2() {
+    updateDashboard(null, null, '11.2%');
+  }
+
+  // Q3 at t=35s: "What is the current growth rate?"
+  function askQ3() {
+    const u = new SpeechSynthesisUtterance("What is the current growth rate?");
+    u.rate = 0.9; u.lang = 'en-US';
+    u.onend = () => { listenFor(3); };
+    speechSynthesis.speak(u);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'all_3_correct' ? 'All correct!' : 'Check your answers.';
+  });
+
+  window.getTaskResult = function() {
+    const r1 = (responses[0] + ' ' + document.getElementById('fallback1').value).toLowerCase();
+    const r2 = (responses[1] + ' ' + document.getElementById('fallback2').value).toLowerCase().replace(/,/g, '');
+    const r3 = (responses[2] + ' ' + document.getElementById('fallback3').value).toLowerCase();
+
+    // Q1: revenue was $5.2M at time of asking
+    const q1ok = r1.includes('5.2') || r1.includes('five point two');
+    // Q2: users were 13,100 at time of asking
+    const q2ok = r2.includes('13100') || r2.includes('13,100') || r2.includes('thirteen thousand one hundred') || r2.includes('13 100');
+    // Q3: growth was 11.2% at time of asking
+    const q3ok = r3.includes('11.2') || r3.includes('eleven point two');
+
+    if (q1ok && q2ok && q3ok) return 'all_3_correct';
+    let partial = 0;
+    if (q1ok) partial++;
+    if (q2ok) partial++;
+    if (q3ok) partial++;
+    return 'partial_' + partial + '_of_3';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+
+    // Timeline
+    setTimeout(askQ1, 3000);     // Q1 at t=3s
+    setTimeout(dashUpdate1, 15000); // Update at t=15s
+    setTimeout(askQ2, 20000);    // Q2 at t=20s
+    setTimeout(dashUpdate2, 30000); // Update at t=30s
+    setTimeout(askQ3, 35000);    // Q3 at t=35s
+  }, 2000);
+</script>
+</body>
+</html>

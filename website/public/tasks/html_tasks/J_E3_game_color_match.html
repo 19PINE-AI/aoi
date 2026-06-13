@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Match</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+.header {
+  width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-size: 24px; font-weight: 700; color: #ff3366; }
+.status { font-size: 14px; color: #aaa; }
+.target-area {
+  margin-top: 30px; text-align: center;
+}
+.target-label { font-size: 18px; color: #aaa; margin-bottom: 12px; }
+.target-color {
+  width: 120px; height: 120px; border-radius: 12px; margin: 0 auto;
+  border: 3px solid rgba(255,255,255,0.2);
+  box-shadow: 0 0 20px rgba(0,0,0,0.3);
+}
+.target-name { font-size: 22px; font-weight: 700; margin-top: 12px; text-transform: uppercase; letter-spacing: 2px; }
+.swatches {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-top: 40px; padding: 0 40px; max-width: 500px;
+}
+.swatch {
+  width: 120px; height: 120px; border-radius: 12px; cursor: pointer;
+  border: 3px solid transparent; transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+  justify-self: center;
+}
+.swatch:hover { transform: scale(1.08); border-color: rgba(255,255,255,0.4); }
+.swatch.correct { border-color: #00ff88; box-shadow: 0 0 20px rgba(0,255,136,0.5); }
+.swatch.wrong { border-color: #ff3366; animation: shake 0.4s; }
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  75% { transform: translateX(8px); }
+}
+.feedback {
+  margin-top: 30px; font-size: 28px; font-weight: 700; min-height: 40px;
+}
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #ff3366; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #00ff88; margin-top: 20px; }
+.shuffle-notice {
+  font-size: 12px; color: #5f6368; margin-top: 16px; text-align: center;
+}
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Color Match</h1>
+  <p>Match the target color by clicking the correct swatch!</p>
+  <p>Swatches shuffle every 3 seconds.</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Color Match</div>
+  <div class="status" id="status">Find the matching color</div>
+</div>
+
+<div class="target-area">
+  <div class="target-label">Match this color:</div>
+  <div class="target-color" id="target-color"></div>
+  <div class="target-name" id="target-name"></div>
+</div>
+
+<div class="swatches" id="swatches"></div>
+<div class="shuffle-notice">Swatches shuffle every 3 seconds</div>
+<div class="feedback" id="feedback"></div>
+
+<script>
+const COLORS = [
+  { name: 'BLUE', hex: '#2196F3' },
+  { name: 'RED', hex: '#F44336' },
+  { name: 'GREEN', hex: '#4CAF50' },
+  { name: 'YELLOW', hex: '#FFEB3B' },
+  { name: 'PURPLE', hex: '#9C27B0' },
+  { name: 'ORANGE', hex: '#FF9800' },
+  { name: 'CYAN', hex: '#00BCD4' },
+  { name: 'PINK', hex: '#E91E63' },
+];
+
+let targetColor = null;
+let correctClicked = false;
+let shuffleInterval = null;
+
+// Pick target
+function pickTarget() {
+  targetColor = COLORS[Math.floor(Math.random() * COLORS.length)];
+  document.getElementById('target-color').style.background = targetColor.hex;
+  document.getElementById('target-name').textContent = targetColor.name;
+  document.getElementById('target-name').style.color = targetColor.hex;
+}
+
+// Shuffle swatches
+function shuffleSwatches() {
+  if (correctClicked) return;
+
+  const container = document.getElementById('swatches');
+  container.innerHTML = '';
+
+  // Pick 6 colors including the target
+  let selected = [targetColor];
+  let available = COLORS.filter(c => c.name !== targetColor.name);
+  // Shuffle available
+  for (let i = available.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [available[i], available[j]] = [available[j], available[i]];
+  }
+  selected = selected.concat(available.slice(0, 5));
+
+  // Shuffle selected
+  for (let i = selected.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [selected[i], selected[j]] = [selected[j], selected[i]];
+  }
+
+  selected.forEach(color => {
+    const swatch = document.createElement('div');
+    swatch.className = 'swatch';
+    swatch.style.background = color.hex;
+    swatch.dataset.name = color.name;
+    swatch.addEventListener('click', () => handleClick(swatch, color));
+    container.appendChild(swatch);
+  });
+}
+
+function handleClick(swatch, color) {
+  if (correctClicked) return;
+
+  if (color.name === targetColor.name) {
+    correctClicked = true;
+    swatch.classList.add('correct');
+    document.getElementById('feedback').textContent = 'Correct!';
+    document.getElementById('feedback').style.color = '#00ff88';
+    document.getElementById('status').textContent = 'Well done!';
+    clearInterval(shuffleInterval);
+  } else {
+    swatch.classList.add('wrong');
+    document.getElementById('feedback').textContent = 'Wrong! Try again.';
+    document.getElementById('feedback').style.color = '#ff3366';
+    setTimeout(() => {
+      swatch.classList.remove('wrong');
+      document.getElementById('feedback').textContent = '';
+    }, 1000);
+  }
+}
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        pickTarget();
+        shuffleSwatches();
+        shuffleInterval = setInterval(shuffleSwatches, 3000);
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+window.getTaskResult = function() {
+  if (correctClicked) {
+    return 'correct_color_clicked';
+  }
+  return 'no_correct_click';
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Config Editing Screencast</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #007acc; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 750px; }
+  .editor-wrapper { background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .editor-titlebar { background: #323233; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27ca40; }
+  .tab { margin-left: 16px; background: #1e1e1e; padding: 6px 14px; border-radius: 6px 6px 0 0; color: #ccc; font-size: 13px; }
+  .editor-body { display: flex; min-height: 280px; }
+  .line-nums { padding: 16px 0; width: 50px; text-align: right; padding-right: 12px; background: #1e1e1e; color: #858585; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.7; user-select: none; }
+  .code-pane { flex: 1; padding: 16px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.7; }
+  .code-pane .key { color: #9cdcfe; }
+  .code-pane .val { color: #ce9178; }
+  .code-pane .num { color: #b5cea8; }
+  .code-pane .cmt { color: #6a9955; }
+  .code-pane .highlight { background: rgba(255,255,0,0.15); display: inline; padding: 2px 4px; border-radius: 3px; }
+  .cursor-blink { display: inline-block; width: 2px; height: 17px; background: #fff; animation: blink 0.6s step-end infinite; vertical-align: text-bottom; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .status-bar { background: #007acc; padding: 4px 16px; font-size: 12px; display: flex; justify-content: space-between; color: #fff; }
+  .terminal-section { background: #0a0a16; padding: 12px 16px; font-family: 'Courier New', monospace; font-size: 13px; color: #00ff41; min-height: 40px; border-top: 1px solid #333; }
+  .player-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #007acc; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .frame-label { font-size: 12px; color: #888; text-align: right; padding: 4px 16px; }
+  .rec-badge { background: #ff4444; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .input-row { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+  .input-row label { font-size: 13px; color: #888; width: 80px; flex-shrink: 0; }
+  .input-row input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; width: 160px; }
+  .input-row input:focus { border-color: #007acc; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #007acc; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #0098ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="editor-wrapper">
+    <div class="editor-titlebar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+      <div class="tab">config.yaml</div>
+    </div>
+    <div class="editor-body">
+      <div class="line-nums" id="lineNums"></div>
+      <div class="code-pane" id="codePane"></div>
+    </div>
+    <div class="status-bar">
+      <span>YAML &bull; UTF-8</span>
+      <span id="cursorPos">Ln 1, Col 1</span>
+    </div>
+    <div class="terminal-section" id="terminalSection"></div>
+    <div class="player-bar">
+      <span class="rec-badge">REC</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:12</span>
+    </div>
+    <div class="frame-label" id="frameLabel">Frame 1 / 4</div>
+  </div>
+  <div class="form-section">
+    <h3>What port was changed from and to?</h3>
+    <div class="input-row">
+      <label for="oldPort">Old Port:</label>
+      <input type="text" id="oldPort" placeholder="Old port number" autocomplete="off">
+    </div>
+    <div class="input-row">
+      <label for="newPort">New Port:</label>
+      <input type="text" id="newPort" placeholder="New port number" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const yamlLines = [
+    '<span class="cmt"># Server Configuration</span>',
+    '<span class="key">server</span>:',
+    '  <span class="key">host</span>: <span class="val">0.0.0.0</span>',
+    '  <span class="key">port</span>: <span class="num">PORT_VALUE</span>',
+    '  <span class="key">workers</span>: <span class="num">4</span>',
+    '',
+    '<span class="cmt"># Database</span>',
+    '<span class="key">database</span>:',
+    '  <span class="key">host</span>: <span class="val">localhost</span>',
+    '  <span class="key">port</span>: <span class="num">5432</span>',
+    '  <span class="key">name</span>: <span class="val">myapp_db</span>',
+    '',
+    '<span class="cmt"># Logging</span>',
+    '<span class="key">logging</span>:',
+    '  <span class="key">level</span>: <span class="val">info</span>',
+    '  <span class="key">file</span>: <span class="val">./logs/app.log</span>'
+  ];
+
+  function renderCode(portValue, highlightPort) {
+    const lines = yamlLines.map(l => l.replace('PORT_VALUE', portValue));
+    if (highlightPort) {
+      lines[3] = '  <span class="key">port</span>: <span class="highlight"><span class="num">' + portValue + '</span></span>';
+    }
+    document.getElementById('codePane').innerHTML = lines.join('\n');
+    const nums = [];
+    for (let i = 1; i <= lines.length; i++) nums.push(i);
+    document.getElementById('lineNums').innerHTML = nums.join('\n');
+  }
+
+  const totalDuration = 12000;
+  let startTime;
+
+  function frame1() {
+    document.getElementById('frameLabel').textContent = 'Frame 1 / 4';
+    document.getElementById('terminalSection').innerHTML = '<span style="color:#888">$ vim config.yaml</span>';
+    renderCode('3000', false);
+    document.getElementById('cursorPos').textContent = 'Ln 1, Col 1';
+  }
+
+  function frame2() {
+    document.getElementById('frameLabel').textContent = 'Frame 2 / 4';
+    renderCode('3000', true);
+    document.getElementById('cursorPos').textContent = 'Ln 4, Col 9';
+  }
+
+  function frame3() {
+    document.getElementById('frameLabel').textContent = 'Frame 3 / 4';
+    renderCode('8080', false);
+    document.getElementById('cursorPos').textContent = 'Ln 4, Col 13';
+  }
+
+  function frame4() {
+    document.getElementById('frameLabel').textContent = 'Frame 4 / 4';
+    renderCode('8080', false);
+    document.getElementById('terminalSection').innerHTML = '<span style="color:#888">$ </span><span style="color:#00ff41">Config updated successfully. Restarting server on port 8080...</span>';
+    document.getElementById('cursorPos').textContent = 'Saved';
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    frame1();
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    setTimeout(frame2, 3000);
+    setTimeout(frame3, 6000);
+    setTimeout(frame4, 9000);
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'ports_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const oldVal = document.getElementById('oldPort').value.trim();
+    const newVal = document.getElementById('newPort').value.trim();
+    if (oldVal === '3000' && newVal === '8080') return 'ports_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

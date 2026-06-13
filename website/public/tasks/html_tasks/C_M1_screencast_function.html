@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Code Editor Screencast</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #007acc; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 780px; }
+  .editor-wrapper { background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .editor-titlebar { background: #323233; padding: 8px 16px; display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27ca40; }
+  .editor-tab { margin-left: 16px; background: #1e1e1e; padding: 6px 16px; border-radius: 6px 6px 0 0; color: #ccc; font-size: 13px; display: flex; align-items: center; gap: 6px; }
+  .editor-tab .file-icon { color: #519aba; font-size: 14px; }
+  .sidebar { display: flex; }
+  .sidebar-icons { width: 48px; background: #333; padding: 12px 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+  .sidebar-icons span { font-size: 20px; color: #888; cursor: pointer; }
+  .sidebar-icons span.active { color: #fff; }
+  .file-tree { width: 200px; background: #252526; padding: 12px 0; font-size: 13px; }
+  .file-tree-header { padding: 4px 12px; font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+  .file-item { padding: 4px 12px 4px 24px; color: #ccc; cursor: pointer; display: flex; align-items: center; gap: 6px; }
+  .file-item.active { background: #37373d; }
+  .file-item .fi { color: #519aba; font-size: 12px; }
+  .editor-main { flex: 1; display: flex; }
+  .line-numbers { padding: 16px 0; width: 50px; text-align: right; padding-right: 12px; background: #1e1e1e; color: #858585; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; user-select: none; }
+  .code-area { flex: 1; padding: 16px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6; min-height: 320px; overflow: hidden; white-space: pre; }
+  .code-area .kw { color: #569cd6; }
+  .code-area .fn { color: #dcdcaa; }
+  .code-area .str { color: #ce9178; }
+  .code-area .cmt { color: #6a9955; }
+  .code-area .param { color: #9cdcfe; }
+  .code-area .num { color: #b5cea8; }
+  .code-area .op { color: #d4d4d4; }
+  .cursor-line { display: inline; }
+  .type-cursor { display: inline-block; width: 2px; height: 17px; background: #fff; animation: blink 0.6s step-end infinite; vertical-align: text-bottom; }
+  @keyframes blink { 50% { opacity: 0; } }
+  .editor-content { display: flex; flex: 1; }
+  .editor-body { display: flex; width: 100%; }
+  .status-bar { background: #007acc; padding: 4px 16px; font-size: 12px; display: flex; justify-content: space-between; color: #fff; }
+  .player-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #007acc; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .rec-badge { background: #ff4444; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .divider { border: none; border-top: 1px solid #2a2a3e; margin: 20px 0; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .input-group { display: flex; flex-direction: column; gap: 8px; }
+  .input-group label { font-size: 13px; color: #888; }
+  .input-group input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 15px; outline: none; transition: border-color 0.2s; }
+  .input-group input:focus { border-color: #007acc; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #007acc; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #0098ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="editor-wrapper">
+    <div class="editor-titlebar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+      <div class="editor-tab"><span class="file-icon">&#128196;</span> utils.py</div>
+    </div>
+    <div class="editor-body">
+      <div class="sidebar-icons">
+        <span class="active">&#128196;</span>
+        <span>&#128269;</span>
+        <span>&#9881;</span>
+      </div>
+      <div class="file-tree">
+        <div class="file-tree-header">Explorer</div>
+        <div class="file-item"><span class="fi">&#128196;</span> main.py</div>
+        <div class="file-item active"><span class="fi">&#128196;</span> utils.py</div>
+        <div class="file-item"><span class="fi">&#128196;</span> config.py</div>
+        <div class="file-item"><span class="fi">&#128196;</span> tests.py</div>
+      </div>
+      <div class="editor-content">
+        <div class="line-numbers" id="lineNumbers"></div>
+        <div class="code-area" id="codeArea"></div>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span>Python &bull; UTF-8 &bull; LF</span>
+      <span>Ln 1, Col 1</span>
+    </div>
+    <div class="player-bar">
+      <span class="rec-badge">REC</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:18</span>
+    </div>
+  </div>
+  <div class="form-section">
+    <h3>What function name was defined in the screencast?</h3>
+    <div class="input-group">
+      <label for="answerInput">Function name</label>
+      <input type="text" id="answerInput" placeholder="Enter the function name..." autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Answer</button>
+    <div class="status" id="statusMsg"></div>
+  </div>
+</div>
+<script>
+  const existingCode = [
+    '<span class="cmt"># utils.py - Data processing utilities</span>',
+    '<span class="kw">import</span> json',
+    '<span class="kw">from</span> typing <span class="kw">import</span> List, Dict',
+    '',
+    '',
+    '<span class="kw">class</span> <span class="fn">DataHandler</span>:',
+    '    <span class="kw">def</span> <span class="fn">__init__</span>(<span class="param">self</span>):',
+    '        <span class="param">self</span>.cache = {}',
+    '',
+    ''
+  ];
+
+  const functionText = 'def process_data(input_list):';
+  const bodyLines = [
+    '    """Process and transform the input data list."""',
+    '    result = []',
+    '    for item in input_list:',
+    '        if isinstance(item, dict):',
+    '            result.append(item.get("value", 0))',
+    '    return sorted(result)'
+  ];
+
+  const afterCode = [
+    '',
+    '',
+    '<span class="kw">def</span> <span class="fn">load_config</span>(<span class="param">path</span>):',
+    '    <span class="kw">with</span> open(path) <span class="kw">as</span> f:',
+    '        <span class="kw">return</span> json.load(f)'
+  ];
+
+  let codeArea, lineNumbers;
+  let startTime;
+  const totalDuration = 18000;
+
+  function updateLineNumbers(count) {
+    lineNumbers.innerHTML = '';
+    for (let i = 1; i <= count; i++) {
+      lineNumbers.innerHTML += i + '\n';
+    }
+  }
+
+  function renderExistingCode() {
+    codeArea.innerHTML = existingCode.join('\n');
+    updateLineNumbers(existingCode.length);
+  }
+
+  function phase1_showFile() {
+    renderExistingCode();
+  }
+
+  function phase2_typeFunction() {
+    let html = existingCode.join('\n') + '\n';
+    const typeLine = document.createElement('span');
+    typeLine.className = 'cursor-line';
+    codeArea.innerHTML = html;
+    codeArea.appendChild(typeLine);
+    const cursor = document.createElement('span');
+    cursor.className = 'type-cursor';
+    cursor.innerHTML = '&nbsp;';
+
+    let charIdx = 0;
+    const coloredFn = '<span class="kw">def</span> <span class="fn">process_data</span>(<span class="param">input_list</span>):';
+
+    const interval = setInterval(() => {
+      if (charIdx < functionText.length) {
+        typeLine.textContent += functionText[charIdx];
+        charIdx++;
+        updateLineNumbers(existingCode.length + 1);
+      } else {
+        clearInterval(interval);
+        // Replace with colored version
+        const lines = existingCode.slice();
+        lines.push(coloredFn);
+        // Type body lines with a delay
+        let bodyIdx = 0;
+        const bodyInterval = setInterval(() => {
+          if (bodyIdx < bodyLines.length) {
+            lines.push(bodyLines[bodyIdx]);
+            bodyIdx++;
+            codeArea.innerHTML = lines.join('\n');
+            updateLineNumbers(lines.length);
+          } else {
+            clearInterval(bodyInterval);
+            // Phase 3: show more code after delay
+            setTimeout(phase3_showAfterCode, 2000);
+          }
+        }, 400);
+      }
+    }, 100);
+  }
+
+  function phase3_showAfterCode() {
+    const lines = existingCode.slice();
+    const coloredFn = '<span class="kw">def</span> <span class="fn">process_data</span>(<span class="param">input_list</span>):';
+    lines.push(coloredFn);
+    const coloredBody = [
+      '    <span class="str">"""Process and transform the input data list."""</span>',
+      '    result = []',
+      '    <span class="kw">for</span> item <span class="kw">in</span> input_list:',
+      '        <span class="kw">if</span> isinstance(item, dict):',
+      '            result.append(item.get(<span class="str">"value"</span>, <span class="num">0</span>))',
+      '    <span class="kw">return</span> sorted(result)'
+    ];
+    lines.push(...coloredBody);
+    lines.push(...afterCode);
+    codeArea.innerHTML = lines.join('\n');
+    updateLineNumbers(lines.length);
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+
+    phase1_showFile();
+    setTimeout(phase2_typeFunction, 3000);
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    codeArea = document.getElementById('codeArea');
+    lineNumbers = document.getElementById('lineNumbers');
+  });
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('statusMsg').textContent = result === 'function_correct' ? 'Correct!' : 'Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('answerInput').value.toLowerCase().trim();
+    if (val.includes('process_data')) return 'function_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

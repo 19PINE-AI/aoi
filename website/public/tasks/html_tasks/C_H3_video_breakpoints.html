@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Debugging Screencast</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #007acc; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .container { width: 780px; }
+  .editor-wrapper { background: #1e1e1e; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.5); margin-bottom: 24px; }
+  .editor-titlebar { background: #323233; padding: 8px 16px; display: flex; align-items: center; gap: 8px; }
+  .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .dot-red { background: #ff5f56; }
+  .dot-yellow { background: #ffbd2e; }
+  .dot-green { background: #27ca40; }
+  .tab-bar { display: flex; margin-left: 12px; gap: 2px; }
+  .tab { background: #2d2d2d; padding: 6px 14px; border-radius: 6px 6px 0 0; color: #888; font-size: 13px; }
+  .tab.active { background: #1e1e1e; color: #fff; }
+  .debug-frame { display: none; flex-direction: column; min-height: 340px; }
+  .debug-frame.active { display: flex; }
+  .debug-toolbar { background: #333; padding: 6px 12px; display: flex; align-items: center; gap: 8px; }
+  .debug-btn { background: #444; border: none; color: #ccc; padding: 4px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+  .debug-btn.run { background: #27ca40; color: #fff; }
+  .debug-status { font-size: 12px; color: #ff8c00; margin-left: auto; }
+  .code-view { display: flex; flex: 1; }
+  .gutter { width: 55px; padding: 12px 0; background: #1e1e1e; user-select: none; }
+  .gutter-line { height: 22px; display: flex; align-items: center; justify-content: flex-end; padding-right: 8px; font-family: 'Courier New', monospace; font-size: 13px; color: #858585; position: relative; }
+  .breakpoint { position: absolute; left: 6px; width: 12px; height: 12px; border-radius: 50%; background: #ff4444; }
+  .code-content { flex: 1; padding: 12px 16px; font-family: 'Courier New', monospace; font-size: 13px; line-height: 22px; }
+  .code-line { height: 22px; white-space: pre; }
+  .code-line.bp-line { background: rgba(255,68,68,0.1); }
+  .code-content .kw { color: #569cd6; }
+  .code-content .fn { color: #dcdcaa; }
+  .code-content .str { color: #ce9178; }
+  .code-content .cmt { color: #6a9955; }
+  .code-content .var { color: #9cdcfe; }
+  .code-content .num { color: #b5cea8; }
+  .status-bar { background: #ff8c00; padding: 4px 16px; font-size: 12px; color: #fff; display: flex; justify-content: space-between; }
+  .player-bar { display: flex; align-items: center; gap: 12px; padding: 10px 16px; background: #16213e; }
+  .rec-badge { background: #ff4444; color: #fff; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; }
+  .progress-track { flex: 1; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: #007acc; transition: width 0.3s linear; }
+  .time-label { font-size: 12px; color: #888; font-family: monospace; }
+  .frame-label { font-size: 12px; color: #888; text-align: right; padding: 4px 16px; }
+  .form-section { background: #1a1a2e; border-radius: 12px; padding: 24px; }
+  .form-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 16px; color: #ccc; }
+  .bp-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bp-row label { font-size: 13px; color: #888; width: 24px; }
+  .bp-row input { background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 8px 12px; color: #e0e0e0; font-size: 14px; outline: none; transition: border-color 0.2s; }
+  .bp-row input:focus { border-color: #007acc; }
+  .bp-row input.file-input { width: 160px; }
+  .bp-row input.line-input { width: 80px; }
+  .bp-row .at { color: #666; font-size: 13px; }
+  .submit-btn { width: 100%; margin-top: 12px; padding: 10px; background: #007acc; border: none; border-radius: 8px; color: #fff; font-size: 15px; font-weight: 500; cursor: pointer; transition: background 0.2s; }
+  .submit-btn:hover { background: #0098ff; }
+  .status { text-align: center; font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="container">
+  <div class="editor-wrapper">
+    <div class="editor-titlebar">
+      <div class="dot dot-red"></div>
+      <div class="dot dot-yellow"></div>
+      <div class="dot dot-green"></div>
+      <div class="tab-bar" id="tabBar"></div>
+    </div>
+    <div id="framesContainer"></div>
+    <div class="status-bar">
+      <span>Debugging</span>
+      <span id="fileInfo">app.py</span>
+    </div>
+    <div class="player-bar">
+      <span class="rec-badge">REC</span>
+      <span class="time-label" id="elapsed">0:00</span>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+      <span class="time-label" id="duration">0:20</span>
+    </div>
+    <div class="frame-label" id="frameLabel">File 1 / 4</div>
+  </div>
+  <div class="form-section">
+    <h3>List all breakpoints set during the session</h3>
+    <div class="bp-row">
+      <label>1.</label>
+      <input type="text" class="file-input" id="file1" placeholder="filename" autocomplete="off">
+      <span class="at">line</span>
+      <input type="text" class="line-input" id="line1" placeholder="#" autocomplete="off">
+    </div>
+    <div class="bp-row">
+      <label>2.</label>
+      <input type="text" class="file-input" id="file2" placeholder="filename" autocomplete="off">
+      <span class="at">line</span>
+      <input type="text" class="line-input" id="line2" placeholder="#" autocomplete="off">
+    </div>
+    <div class="bp-row">
+      <label>3.</label>
+      <input type="text" class="file-input" id="file3" placeholder="filename" autocomplete="off">
+      <span class="at">line</span>
+      <input type="text" class="line-input" id="line3" placeholder="#" autocomplete="off">
+    </div>
+    <div class="bp-row">
+      <label>4.</label>
+      <input type="text" class="file-input" id="file4" placeholder="filename" autocomplete="off">
+      <span class="at">line</span>
+      <input type="text" class="line-input" id="line4" placeholder="#" autocomplete="off">
+    </div>
+    <button class="submit-btn" id="submitBtn">Submit Breakpoints</button>
+    <div class="status" id="status"></div>
+  </div>
+</div>
+<script>
+  const files = [
+    {
+      name: 'app.py', bpLine: 42, startLine: 38,
+      lines: [
+        '<span class="kw">from</span> flask <span class="kw">import</span> Flask, request',
+        '<span class="kw">from</span> handlers <span class="kw">import</span> process_request',
+        '',
+        '<span class="var">app</span> = Flask(__name__)',
+        '<span class="cmt"># Main request handler</span>',
+        '<span class="kw">@</span><span class="fn">app.route</span>(<span class="str">\'/api/data\'</span>)',
+        '<span class="kw">def</span> <span class="fn">handle_data</span>():',
+        '    <span class="var">data</span> = request.get_json()',
+        '    <span class="var">result</span> = process_request(<span class="var">data</span>)',
+        '    <span class="kw">return</span> jsonify(<span class="var">result</span>)',
+        '',
+        '<span class="kw">if</span> __name__ == <span class="str">\'__main__\'</span>:'
+      ]
+    },
+    {
+      name: 'utils.py', bpLine: 17, startLine: 13,
+      lines: [
+        '<span class="kw">import</span> hashlib',
+        '<span class="kw">import</span> re',
+        '',
+        '<span class="kw">def</span> <span class="fn">validate_input</span>(<span class="var">data</span>):',
+        '    <span class="kw">if not</span> isinstance(<span class="var">data</span>, dict):',
+        '        <span class="kw">raise</span> ValueError(<span class="str">"Expected dict"</span>)',
+        '    <span class="var">cleaned</span> = sanitize(<span class="var">data</span>)',
+        '    <span class="kw">return</span> <span class="var">cleaned</span>',
+        '',
+        '<span class="kw">def</span> <span class="fn">sanitize</span>(<span class="var">data</span>):',
+        '    <span class="kw">for</span> <span class="var">key</span> <span class="kw">in</span> <span class="var">data</span>:',
+        '        <span class="var">data</span>[<span class="var">key</span>] = re.sub(<span class="str">r\'[<>]\'</span>, <span class="str">\'\'</span>, str(<span class="var">data</span>[<span class="var">key</span>]))'
+      ]
+    },
+    {
+      name: 'config.py', bpLine: 8, startLine: 4,
+      lines: [
+        '<span class="kw">import</span> os',
+        '<span class="kw">import</span> yaml',
+        '',
+        '<span class="kw">class</span> <span class="fn">Config</span>:',
+        '    <span class="var">DEBUG</span> = <span class="num">True</span>',
+        '    <span class="var">SECRET_KEY</span> = os.environ.get(<span class="str">\'SECRET_KEY\'</span>)',
+        '    <span class="var">DB_URI</span> = os.environ.get(<span class="str">\'DATABASE_URL\'</span>)',
+        '    <span class="var">CACHE_TTL</span> = <span class="num">300</span>',
+        '',
+        '<span class="kw">def</span> <span class="fn">load_config</span>(<span class="var">path</span>):',
+        '    <span class="kw">with</span> open(<span class="var">path</span>) <span class="kw">as</span> <span class="var">f</span>:',
+        '        <span class="kw">return</span> yaml.safe_load(<span class="var">f</span>)'
+      ]
+    },
+    {
+      name: 'main.py', bpLine: 31, startLine: 27,
+      lines: [
+        '<span class="kw">import</span> sys',
+        '<span class="kw">from</span> app <span class="kw">import</span> app',
+        '<span class="kw">from</span> config <span class="kw">import</span> load_config',
+        '',
+        '<span class="kw">def</span> <span class="fn">main</span>():',
+        '    <span class="var">cfg</span> = load_config(<span class="str">\'config.yaml\'</span>)',
+        '    app.config.update(<span class="var">cfg</span>)',
+        '    app.run(host=<span class="str">\'0.0.0.0\'</span>, port=<span class="num">5000</span>)',
+        '',
+        '<span class="kw">if</span> __name__ == <span class="str">\'__main__\'</span>:',
+        '    main()',
+        '<span class="cmt"># End of file</span>'
+      ]
+    }
+  ];
+
+  const container = document.getElementById('framesContainer');
+  const tabBar = document.getElementById('tabBar');
+
+  files.forEach((file, fi) => {
+    // Create tab
+    const tab = document.createElement('div');
+    tab.className = 'tab';
+    tab.textContent = file.name;
+    tab.dataset.index = fi;
+    tabBar.appendChild(tab);
+
+    // Create frame
+    const frame = document.createElement('div');
+    frame.className = 'debug-frame';
+    frame.id = 'frame' + fi;
+
+    const toolbar = document.createElement('div');
+    toolbar.className = 'debug-toolbar';
+    toolbar.innerHTML = '<button class="debug-btn run">&#9654; Continue</button><button class="debug-btn">&#10074;&#10074; Pause</button><button class="debug-btn">&#8631; Step Over</button><span class="debug-status">Breakpoint set at line ' + file.bpLine + '</span>';
+    frame.appendChild(toolbar);
+
+    const codeView = document.createElement('div');
+    codeView.className = 'code-view';
+
+    const gutter = document.createElement('div');
+    gutter.className = 'gutter';
+    const codeContent = document.createElement('div');
+    codeContent.className = 'code-content';
+
+    for (let i = 0; i < file.lines.length; i++) {
+      const lineNum = file.startLine + i;
+      const gl = document.createElement('div');
+      gl.className = 'gutter-line';
+      gl.textContent = lineNum;
+      if (lineNum === file.bpLine) {
+        const bp = document.createElement('div');
+        bp.className = 'breakpoint';
+        gl.appendChild(bp);
+      }
+      gutter.appendChild(gl);
+
+      const cl = document.createElement('div');
+      cl.className = 'code-line';
+      if (lineNum === file.bpLine) cl.classList.add('bp-line');
+      cl.innerHTML = file.lines[i];
+      codeContent.appendChild(cl);
+    }
+
+    codeView.appendChild(gutter);
+    codeView.appendChild(codeContent);
+    frame.appendChild(codeView);
+    container.appendChild(frame);
+  });
+
+  const frameDuration = 5000;
+  const totalDuration = files.length * frameDuration;
+  let startTime;
+
+  function showFile(index) {
+    if (index === 0) {
+      document.querySelectorAll('.debug-frame').forEach(f => f.classList.remove('active'));
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    }
+    if (index < files.length) {
+      document.getElementById('frame' + index).classList.add('active');
+      tabBar.children[index].classList.add('active');
+      document.getElementById('fileInfo').textContent = files[index].name;
+      document.getElementById('frameLabel').textContent = `File ${index + 1} / ${files.length}`;
+    }
+  }
+
+  function startPlayback() {
+    startTime = Date.now();
+    showFile(0);
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const pct = Math.min(100, (elapsed / totalDuration) * 100);
+      document.getElementById('progressFill').style.width = pct + '%';
+      const sec = Math.floor(elapsed / 1000);
+      document.getElementById('elapsed').textContent = '0:' + String(sec).padStart(2, '0');
+      if (pct >= 100) clearInterval(progressInterval);
+    }, 200);
+    for (let i = 1; i < files.length; i++) {
+      (function(idx) { setTimeout(() => showFile(idx), frameDuration * idx); })(i);
+    }
+  }
+
+  document.getElementById('submitBtn').addEventListener('click', () => {
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'all_breakpoints_correct' ? 'All breakpoints correct!' : 'Some entries are incorrect. Try again.';
+  });
+
+  window.getTaskResult = function() {
+    const expected = [
+      { file: 'app.py', line: '42' },
+      { file: 'utils.py', line: '17' },
+      { file: 'config.py', line: '8' },
+      { file: 'main.py', line: '31' }
+    ];
+    for (let i = 0; i < 4; i++) {
+      const f = document.getElementById('file' + (i+1)).value.toLowerCase().trim();
+      const l = document.getElementById('line' + (i+1)).value.trim();
+      if (!f.includes(expected[i].file) || l !== expected[i].line) return 'incorrect';
+    }
+    return 'all_breakpoints_correct';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(startPlayback, 500);
+  }, 2000);
+</script>
+</body>
+</html>

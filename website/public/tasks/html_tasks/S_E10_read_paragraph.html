@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Read and Answer</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #f5f5f5; color: #333; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 40px 20px; }
+  .card { background: #fff; border-radius: 12px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); max-width: 650px; width: 100%; padding: 32px; }
+  .card h1 { font-size: 28px; color: #1a1a2e; margin-bottom: 20px; }
+  .instructions { background: #eef2ff; border-left: 4px solid #4f46e5; padding: 14px 18px; border-radius: 0 8px 8px 0; margin-bottom: 24px; font-size: 14px; color: #3730a3; line-height: 1.6; }
+  .passage { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 10px; padding: 20px 24px; margin-bottom: 24px; font-size: 15px; line-height: 1.8; color: #475569; }
+  .question { font-size: 16px; font-weight: 600; color: #1e293b; margin-bottom: 12px; }
+  label { display: block; font-size: 14px; font-weight: 600; color: #555; margin-bottom: 6px; }
+  input[type="text"] { width: 100%; padding: 12px 16px; font-size: 16px; border: 2px solid #ddd; border-radius: 8px; outline: none; }
+  input:focus { border-color: #4f46e5; }
+  .submit-btn { margin-top: 16px; padding: 12px 28px; background: #4f46e5; color: #fff; border: none; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; }
+  .submit-btn:hover { background: #4338ca; }
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>Task: Read and Answer</h1>
+  <div class="instructions">
+    Read the paragraph below carefully, then answer the question.
+  </div>
+  <div class="passage">
+    The Greenfield Community Library was established in 1987 by Margaret Thornton, a retired school principal.
+    The library currently holds over 42,000 volumes and serves approximately 3,200 registered members.
+    It is open six days a week, closed on Sundays. The building was renovated in 2015 with a grant of
+    $250,000 from the Patterson Foundation.
+  </div>
+  <div class="question">Question: Who founded the Greenfield Community Library?</div>
+  <label for="answerBox">Your answer:</label>
+  <input type="text" id="answerBox" placeholder="Type your answer here..." autocomplete="off">
+  <button class="submit-btn" id="submitBtn">Submit</button>
+</div>
+<script>
+(function() {
+  let submitted = false;
+  document.getElementById('submitBtn').addEventListener('click', function() {
+    submitted = true;
+  });
+  window.getTaskResult = function() {
+    var val = document.getElementById('answerBox').value.trim().toLowerCase();
+    if (val.includes('margaret') && val.includes('thornton')) return 'answer_correct';
+    if (val.includes('margaret') || val.includes('thornton')) return 'partial';
+    if (val) return 'incorrect';
+    return 'empty';
+  };
+})();
+</script>
+</body>
+</html>

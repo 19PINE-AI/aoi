@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IoT Temperature Dashboard</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .live { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #8892b0; }
+  .header .live .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0.3; } }
+  .sensors { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+  .sensor-card { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; text-align: center; transition: border-color 0.5s; }
+  .sensor-card.freeze { border-color: #3498db; box-shadow: 0 0 20px rgba(52,152,219,0.3); }
+  .sensor-name { font-size: 13px; color: #8892b0; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px; }
+  .sensor-temp { font-size: 52px; font-weight: bold; margin-bottom: 8px; transition: color 0.5s; }
+  .sensor-status { font-size: 12px; padding: 4px 12px; border-radius: 12px; display: inline-block; }
+  .status-normal { background: rgba(0,255,136,0.15); color: #00ff88; }
+  .status-cold { background: rgba(52,152,219,0.15); color: #3498db; }
+  .status-freeze { background: rgba(231,76,60,0.15); color: #e74c3c; }
+  .thermometer { width: 20px; height: 120px; background: #0a0f1e; border-radius: 10px; margin: 10px auto; position: relative; overflow: hidden; }
+  .thermo-fill { position: absolute; bottom: 0; width: 100%; border-radius: 0 0 10px 10px; transition: height 1s, background 1s; }
+  .alert-card { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; text-align: center; }
+  .alert-card h3 { color: #00d4ff; margin-bottom: 15px; font-size: 16px; }
+  .alert-card input { padding: 12px 20px; font-size: 16px; border: 2px solid #2a3a5e; border-radius: 8px; background: #0a0f1e; color: #e0e0e0; width: 300px; text-align: center; }
+  .alert-card input:focus { outline: none; border-color: #00d4ff; }
+  .alert-hint { font-size: 12px; color: #8892b0; margin-top: 10px; }
+  .history { background: #16213e; border-radius: 10px; padding: 15px 20px; border: 1px solid #2a3a5e; margin-bottom: 20px; }
+  .history h3 { font-size: 14px; color: #8892b0; margin-bottom: 10px; }
+  .history-log { font-family: monospace; font-size: 12px; max-height: 100px; overflow-y: auto; color: #8892b0; }
+  .history-log div { padding: 2px 0; }
+  .history-log .warn { color: #f39c12; }
+  .history-log .crit { color: #e74c3c; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>IoT Temperature Monitoring</h1>
+  <div class="live"><div class="dot"></div> Sensors Active &bull; Update: 3s</div>
+</div>
+<div class="sensors">
+  <div class="sensor-card" id="sensor1Card">
+    <div class="sensor-name">Sensor 1 &mdash; Warehouse A</div>
+    <div class="sensor-temp" id="temp1">45&deg;F</div>
+    <div class="thermometer"><div class="thermo-fill" id="thermo1" style="height:60%;background:#00ff88;"></div></div>
+    <div class="sensor-status status-normal" id="status1">Normal</div>
+  </div>
+  <div class="sensor-card" id="sensor2Card">
+    <div class="sensor-name">Sensor 2 &mdash; Warehouse B</div>
+    <div class="sensor-temp" id="temp2">45&deg;F</div>
+    <div class="thermometer"><div class="thermo-fill" id="thermo2" style="height:60%;background:#00ff88;"></div></div>
+    <div class="sensor-status status-normal" id="status2">Normal</div>
+  </div>
+  <div class="sensor-card" id="sensor3Card">
+    <div class="sensor-name">Sensor 3 &mdash; Warehouse C</div>
+    <div class="sensor-temp" id="temp3">48&deg;F</div>
+    <div class="thermometer"><div class="thermo-fill" id="thermo3" style="height:65%;background:#00ff88;"></div></div>
+    <div class="sensor-status status-normal" id="status3">Normal</div>
+  </div>
+</div>
+<div class="history" id="historySection">
+  <h3>Event Log</h3>
+  <div class="history-log" id="historyLog"></div>
+</div>
+<div class="alert-card">
+  <h3>Temperature Alert Response</h3>
+  <input type="text" id="alertInput" placeholder="Type alert message here...">
+  <div class="alert-hint">Enter "FREEZE WARNING" if any sensor drops below 32&deg;F</div>
+</div>
+<script>
+(function() {
+  // Sensor 2 drops from 45 to below 32 around t=18s (tick 6 at 3s interval)
+  const sensor1Script = [45, 44, 46, 43, 45, 44, 43, 44, 45, 43, 44, 45];
+  const sensor2Script = [45, 43, 41, 38, 35, 33, 30, 28, 27, 29, 30, 31];
+  const sensor3Script = [48, 47, 49, 48, 46, 47, 48, 47, 46, 48, 47, 48];
+
+  let tick = 0;
+  const logEl = document.getElementById('historyLog');
+
+  function addLog(msg, cls) {
+    const d = document.createElement('div');
+    d.textContent = '[' + new Date().toLocaleTimeString() + '] ' + msg;
+    if (cls) d.className = cls;
+    logEl.appendChild(d);
+    logEl.scrollTop = logEl.scrollHeight;
+  }
+
+  function getTemp(script, t) {
+    const idx = Math.min(t, script.length - 1);
+    return script[idx] + Math.floor(Math.random() * 3 - 1);
+  }
+
+  function updateSensor(id, temp) {
+    const tempEl = document.getElementById('temp' + id);
+    const thermoEl = document.getElementById('thermo' + id);
+    const statusEl = document.getElementById('status' + id);
+    const cardEl = document.getElementById('sensor' + id + 'Card');
+
+    tempEl.textContent = temp + '\u00B0F';
+    const pct = Math.max(5, Math.min(95, ((temp + 10) / 70) * 100));
+    thermoEl.style.height = pct + '%';
+
+    if (temp < 32) {
+      tempEl.style.color = '#e74c3c';
+      thermoEl.style.background = '#e74c3c';
+      statusEl.textContent = 'FREEZE RISK';
+      statusEl.className = 'sensor-status status-freeze';
+      cardEl.classList.add('freeze');
+    } else if (temp < 38) {
+      tempEl.style.color = '#3498db';
+      thermoEl.style.background = '#3498db';
+      statusEl.textContent = 'Cold';
+      statusEl.className = 'sensor-status status-cold';
+      cardEl.classList.remove('freeze');
+    } else {
+      tempEl.style.color = '#00ff88';
+      thermoEl.style.background = '#00ff88';
+      statusEl.textContent = 'Normal';
+      statusEl.className = 'sensor-status status-normal';
+      cardEl.classList.remove('freeze');
+    }
+    return temp;
+  }
+
+  function updateAll() {
+    tick++;
+    const t1 = getTemp(sensor1Script, tick);
+    const t2 = getTemp(sensor2Script, tick);
+    const t3 = getTemp(sensor3Script, tick);
+
+    updateSensor(1, t1);
+    updateSensor(2, t2);
+    updateSensor(3, t3);
+
+    addLog('S1: ' + t1 + '\u00B0F | S2: ' + t2 + '\u00B0F | S3: ' + t3 + '\u00B0F');
+
+    if (t2 < 32) addLog('ALERT: Sensor 2 below freezing threshold!', 'crit');
+    else if (t2 < 38) addLog('WARNING: Sensor 2 temperature dropping', 'warn');
+  }
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('alertInput').value.trim();
+    if (val.toUpperCase().includes('FREEZE WARNING')) return 'warning_correct';
+    if (val.length > 0) return 'warning_incorrect';
+    return 'no_warning';
+  };
+
+  addLog('Temperature monitoring started');
+
+  setTimeout(function() {
+    setInterval(updateAll, 3000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

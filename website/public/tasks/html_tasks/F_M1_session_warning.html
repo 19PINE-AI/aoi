@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ProjectHub - Workspace</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; }
+  .nav { background: #16213e; padding: 12px 30px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #2a3a5e; }
+  .nav .logo { font-size: 18px; font-weight: bold; color: #00d4ff; }
+  .nav .user { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #8892b0; }
+  .nav .user .avatar { width: 32px; height: 32px; border-radius: 50%; background: #2a3a5e; display: flex; align-items: center; justify-content: center; font-size: 14px; }
+  .content { max-width: 900px; margin: 30px auto; padding: 0 20px; }
+  .content h1 { font-size: 24px; margin-bottom: 20px; }
+  .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-bottom: 30px; }
+  .card { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .card h3 { font-size: 14px; color: #00d4ff; margin-bottom: 8px; }
+  .card p { font-size: 13px; color: #8892b0; line-height: 1.5; }
+  .card .stat { font-size: 28px; font-weight: bold; margin-top: 8px; }
+  .activity { background: #16213e; border-radius: 10px; padding: 20px; border: 1px solid #2a3a5e; }
+  .activity h3 { font-size: 16px; margin-bottom: 15px; }
+  .activity-item { padding: 10px 0; border-bottom: 1px solid rgba(42,58,94,0.5); font-size: 14px; display: flex; gap: 12px; }
+  .activity-item:last-child { border: none; }
+  .activity-item .dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 6px; flex-shrink: 0; }
+  .activity-item .time { color: #8892b0; font-size: 12px; margin-top: 3px; }
+
+  /* Modal overlay */
+  .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; justify-content: center; align-items: center; }
+  .modal-overlay.show { display: flex; }
+  .modal { background: #16213e; border-radius: 12px; padding: 30px; border: 2px solid #f39c12; width: 420px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+  .modal .icon { font-size: 48px; margin-bottom: 15px; }
+  .modal h2 { font-size: 20px; color: #f39c12; margin-bottom: 10px; }
+  .modal p { font-size: 14px; color: #8892b0; margin-bottom: 20px; }
+  .modal .timer { font-size: 64px; font-weight: bold; color: #e74c3c; margin-bottom: 20px; font-variant-numeric: tabular-nums; }
+  .modal .timer.urgent { animation: timerPulse 0.5s infinite; }
+  @keyframes timerPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+  .modal .extend-btn { padding: 12px 30px; font-size: 16px; font-weight: bold; border: none; border-radius: 8px; cursor: pointer; background: #00d4ff; color: #0a0f1e; transition: all 0.3s; }
+  .modal .extend-btn:hover { background: #00b8d9; transform: scale(1.05); }
+
+  /* Expired state */
+  .expired-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(10,15,30,0.95); z-index: 2000; justify-content: center; align-items: center; flex-direction: column; }
+  .expired-overlay.show { display: flex; }
+  .expired-overlay .icon { font-size: 60px; margin-bottom: 20px; }
+  .expired-overlay h2 { font-size: 28px; color: #e74c3c; margin-bottom: 10px; }
+  .expired-overlay p { font-size: 16px; color: #8892b0; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <div class="logo">ProjectHub</div>
+  <div class="user">
+    <span>alex.johnson@company.com</span>
+    <div class="avatar">AJ</div>
+  </div>
+</div>
+<div class="content">
+  <h1>Dashboard</h1>
+  <div class="cards">
+    <div class="card">
+      <h3>Active Projects</h3>
+      <p>Currently in progress</p>
+      <div class="stat">12</div>
+    </div>
+    <div class="card">
+      <h3>Open Tasks</h3>
+      <p>Awaiting completion</p>
+      <div class="stat">47</div>
+    </div>
+    <div class="card">
+      <h3>Team Members</h3>
+      <p>Active contributors</p>
+      <div class="stat">8</div>
+    </div>
+  </div>
+  <div class="activity">
+    <h3>Recent Activity</h3>
+    <div class="activity-item">
+      <div class="dot" style="background:#00ff88;"></div>
+      <div>
+        <div>Sarah merged PR #142: "Fix pagination in user list"</div>
+        <div class="time">2 minutes ago</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="dot" style="background:#00d4ff;"></div>
+      <div>
+        <div>Mike created issue #89: "Add dark mode toggle"</div>
+        <div class="time">15 minutes ago</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="dot" style="background:#f39c12;"></div>
+      <div>
+        <div>Deploy pipeline completed for staging environment</div>
+        <div class="time">1 hour ago</div>
+      </div>
+    </div>
+    <div class="activity-item">
+      <div class="dot" style="background:#9b59b6;"></div>
+      <div>
+        <div>Lisa updated project roadmap for Q2 2025</div>
+        <div class="time">3 hours ago</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="sessionModal">
+  <div class="modal">
+    <div class="icon">&#9888;</div>
+    <h2>Session Expiring</h2>
+    <p>Your session will expire due to inactivity. Click below to continue working.</p>
+    <div class="timer" id="sessionTimer">10</div>
+    <button class="extend-btn" id="extendBtn">Extend Session</button>
+  </div>
+</div>
+
+<div class="expired-overlay" id="expiredOverlay">
+  <div class="icon">&#128274;</div>
+  <h2>Session Expired</h2>
+  <p>Your session has timed out. Please log in again to continue.</p>
+</div>
+
+<script>
+(function() {
+  let sessionExtended = false;
+  let sessionExpired = false;
+  let countdown = 10;
+  let countdownInterval = null;
+
+  // Show session warning after 8 seconds
+  setTimeout(function() {
+    document.getElementById('sessionModal').classList.add('show');
+    countdown = 10;
+    document.getElementById('sessionTimer').textContent = countdown;
+
+    countdownInterval = setInterval(function() {
+      countdown--;
+      const timerEl = document.getElementById('sessionTimer');
+      timerEl.textContent = countdown;
+      if (countdown <= 3) {
+        timerEl.classList.add('urgent');
+      }
+      if (countdown <= 0) {
+        clearInterval(countdownInterval);
+        // Session expired
+        sessionExpired = true;
+        document.getElementById('sessionModal').classList.remove('show');
+        document.getElementById('expiredOverlay').classList.add('show');
+      }
+    }, 1000);
+  }, 8000);
+
+  document.getElementById('extendBtn').addEventListener('click', function() {
+    if (sessionExpired) return;
+    sessionExtended = true;
+    clearInterval(countdownInterval);
+    document.getElementById('sessionModal').classList.remove('show');
+  });
+
+  window.getTaskResult = function() {
+    if (sessionExtended) return 'session_extended';
+    if (sessionExpired) return 'session_expired';
+    return 'pending';
+  };
+})();
+</script>
+</body>
+</html>

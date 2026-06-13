@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APM Dashboard - Service Health</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #1a1a2e; color: #e0e0e0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; min-height: 100vh; padding: 20px; }
+  .header { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; background: #16213e; border-radius: 10px; margin-bottom: 20px; }
+  .header h1 { font-size: 20px; color: #00d4ff; }
+  .header .live { font-size: 13px; color: #8892b0; display: flex; align-items: center; gap: 8px; }
+  .header .dot { width: 8px; height: 8px; border-radius: 50%; background: #00ff88; animation: blink 1.5s infinite; }
+  @keyframes blink { 0%,100% { opacity:1; } 50% { opacity:0.3; } }
+  .panels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 20px; }
+  .panel { background: #16213e; border-radius: 10px; padding: 20px; border: 2px solid #2a3a5e; transition: border-color 0.5s, box-shadow 0.5s; }
+  .panel.critical { border-color: #e74c3c; box-shadow: 0 0 20px rgba(231,76,60,0.3); }
+  .panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+  .panel-title { font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+  .indicator { width: 14px; height: 14px; border-radius: 50%; transition: background 0.5s; }
+  .indicator.green { background: #00ff88; }
+  .indicator.yellow { background: #f39c12; }
+  .indicator.red { background: #e74c3c; animation: pulseRed 0.8s infinite; }
+  @keyframes pulseRed { 0%,100% { box-shadow: 0 0 5px #e74c3c; } 50% { box-shadow: 0 0 20px #e74c3c; } }
+  .metric-main { font-size: 36px; font-weight: bold; margin-bottom: 5px; }
+  .metric-unit { font-size: 14px; color: #8892b0; margin-bottom: 15px; }
+  .metric-detail { display: flex; justify-content: space-between; font-size: 12px; padding: 5px 0; border-top: 1px solid rgba(42,58,94,0.5); }
+  .metric-detail .label { color: #8892b0; }
+  .ack-btn { width: 100%; padding: 10px; margin-top: 15px; font-size: 13px; font-weight: bold; border: none; border-radius: 6px; cursor: pointer; background: #2a3a5e; color: #8892b0; transition: all 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+  .ack-btn:hover { background: #3a4a6e; }
+  .ack-btn.active { background: #e74c3c; color: white; animation: pulseBtn 1s infinite; }
+  @keyframes pulseBtn { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+  .ack-btn.acknowledged { background: #00ff88; color: #0a0f1e; animation: none; }
+  .ack-btn:disabled { cursor: default; }
+  .status-bar { background: #16213e; border-radius: 10px; padding: 15px 20px; border: 1px solid #2a3a5e; text-align: center; }
+  .status-bar .status-text { font-size: 14px; }
+  .timeline { display: flex; gap: 3px; margin-top: 10px; justify-content: center; }
+  .timeline-dot { width: 8px; height: 8px; border-radius: 50%; background: #2a3a5e; }
+  .timeline-dot.past { background: #00ff88; }
+  .timeline-dot.current { background: #f39c12; }
+</style>
+</head>
+<body>
+<div class="header">
+  <h1>Application Performance Monitor</h1>
+  <div class="live"><div class="dot"></div> Real-time Metrics</div>
+</div>
+<div class="panels">
+  <div class="panel" id="panel-latency">
+    <div class="panel-header">
+      <div class="panel-title">Latency (p99)</div>
+      <div class="indicator green" id="ind-latency"></div>
+    </div>
+    <div class="metric-main" id="val-latency">124ms</div>
+    <div class="metric-unit">milliseconds</div>
+    <div class="metric-detail"><span class="label">Threshold</span><span>500ms</span></div>
+    <div class="metric-detail"><span class="label">Avg (1h)</span><span id="avg-latency">118ms</span></div>
+    <button class="ack-btn" id="ack-latency" disabled>Acknowledge</button>
+  </div>
+  <div class="panel" id="panel-throughput">
+    <div class="panel-header">
+      <div class="panel-title">Throughput</div>
+      <div class="indicator green" id="ind-throughput"></div>
+    </div>
+    <div class="metric-main" id="val-throughput">2,450</div>
+    <div class="metric-unit">requests/sec</div>
+    <div class="metric-detail"><span class="label">Threshold</span><span>&lt;500 rps</span></div>
+    <div class="metric-detail"><span class="label">Avg (1h)</span><span id="avg-throughput">2,380 rps</span></div>
+    <button class="ack-btn" id="ack-throughput" disabled>Acknowledge</button>
+  </div>
+  <div class="panel" id="panel-errorrate">
+    <div class="panel-header">
+      <div class="panel-title">Error Rate</div>
+      <div class="indicator green" id="ind-errorrate"></div>
+    </div>
+    <div class="metric-main" id="val-errorrate">0.3%</div>
+    <div class="metric-unit">of total requests</div>
+    <div class="metric-detail"><span class="label">Threshold</span><span>5%</span></div>
+    <div class="metric-detail"><span class="label">Avg (1h)</span><span id="avg-errorrate">0.2%</span></div>
+    <button class="ack-btn" id="ack-errorrate" disabled>Acknowledge</button>
+  </div>
+</div>
+<div class="status-bar">
+  <div class="status-text" id="statusText">All systems operational</div>
+</div>
+<script>
+(function() {
+  // Latency goes critical (red) at t=12s (tick 6)
+  const metrics = ['latency', 'throughput', 'errorrate'];
+  const criticalMetric = 'latency'; // which one goes red
+  const criticalTick = 6; // at tick 6 (12 seconds)
+
+  let tick = 0;
+  let acknowledged = {};
+  let criticalActive = false;
+  let criticalWasActiveWhenAcked = {};
+
+  function setIndicator(metric, color) {
+    const el = document.getElementById('ind-' + metric);
+    el.className = 'indicator ' + color;
+    const panel = document.getElementById('panel-' + metric);
+    const btn = document.getElementById('ack-' + metric);
+    if (color === 'red') {
+      panel.classList.add('critical');
+      btn.classList.add('active');
+      btn.disabled = false;
+      btn.textContent = 'Acknowledge';
+    } else {
+      panel.classList.remove('critical');
+      if (!acknowledged[metric]) {
+        btn.classList.remove('active');
+        btn.disabled = true;
+      }
+    }
+  }
+
+  function updateMetrics() {
+    tick++;
+
+    // Latency
+    let latency;
+    if (tick >= criticalTick && tick <= criticalTick + 6) {
+      latency = 800 + Math.floor(Math.random() * 400);
+      setIndicator('latency', 'red');
+      criticalActive = true;
+    } else if (tick >= criticalTick - 2 && tick < criticalTick) {
+      latency = 350 + Math.floor(Math.random() * 150);
+      setIndicator('latency', 'yellow');
+    } else {
+      latency = 100 + Math.floor(Math.random() * 80);
+      setIndicator('latency', 'green');
+      if (tick > criticalTick + 6) criticalActive = false;
+    }
+    document.getElementById('val-latency').textContent = latency + 'ms';
+
+    // Throughput - stays green/yellow
+    let throughput = 2200 + Math.floor(Math.random() * 600);
+    if (tick >= criticalTick && tick <= criticalTick + 4) {
+      throughput = 1800 + Math.floor(Math.random() * 300);
+      setIndicator('throughput', 'yellow');
+    } else {
+      setIndicator('throughput', 'green');
+    }
+    document.getElementById('val-throughput').textContent = throughput.toLocaleString();
+
+    // Error rate - stays mostly green
+    let errRate = (0.1 + Math.random() * 0.4).toFixed(1);
+    if (tick >= criticalTick && tick <= criticalTick + 3) {
+      errRate = (2.0 + Math.random() * 2).toFixed(1);
+      setIndicator('errorrate', 'yellow');
+    } else {
+      setIndicator('errorrate', 'green');
+    }
+    document.getElementById('val-errorrate').textContent = errRate + '%';
+
+    // Status bar
+    if (criticalActive) {
+      document.getElementById('statusText').textContent = 'CRITICAL: Latency exceeds threshold — Acknowledge required';
+      document.getElementById('statusText').style.color = '#e74c3c';
+    } else {
+      document.getElementById('statusText').textContent = 'All systems operational';
+      document.getElementById('statusText').style.color = '#00ff88';
+    }
+  }
+
+  metrics.forEach(function(m) {
+    document.getElementById('ack-' + m).addEventListener('click', function() {
+      if (acknowledged[m]) return;
+      acknowledged[m] = true;
+      criticalWasActiveWhenAcked[m] = (m === criticalMetric && criticalActive);
+      const btn = document.getElementById('ack-' + m);
+      btn.classList.remove('active');
+      btn.classList.add('acknowledged');
+      btn.textContent = 'Acknowledged';
+      btn.disabled = true;
+    });
+  });
+
+  window.getTaskResult = function() {
+    if (acknowledged[criticalMetric] && criticalWasActiveWhenAcked[criticalMetric]) {
+      // Check no wrong panel was clicked instead
+      return 'critical_acknowledged';
+    }
+    // Check if wrong panel was acknowledged
+    for (var m in acknowledged) {
+      if (m !== criticalMetric && acknowledged[m]) return 'wrong_panel_acknowledged';
+    }
+    return 'not_acknowledged';
+  };
+
+  setTimeout(function() {
+    setInterval(updateMetrics, 2000);
+  }, 2000);
+})();
+</script>
+</body>
+</html>

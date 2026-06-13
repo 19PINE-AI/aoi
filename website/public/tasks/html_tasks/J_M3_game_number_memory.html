@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Number Memory</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', sans-serif; height: 100vh; display: flex; flex-direction: column; align-items: center; overflow: hidden; }
+.header {
+  width: 100%; padding: 16px 24px; display: flex; justify-content: space-between; align-items: center;
+}
+.title { font-size: 28px; font-weight: 700; color: #33aaff; }
+.stats { display: flex; gap: 24px; }
+.stat-item { text-align: center; }
+.stat-label { font-size: 11px; color: #5f6368; text-transform: uppercase; letter-spacing: 1px; }
+.stat-value { font-size: 28px; font-weight: 700; }
+.game-container {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  flex: 1; padding: 20px;
+}
+.number-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px;
+}
+.cell {
+  width: 110px; height: 110px; border-radius: 12px; display: flex;
+  align-items: center; justify-content: center; font-size: 42px; font-weight: 700;
+  cursor: pointer; border: 3px solid #2a2a4e; background: #1a1a3e;
+  transition: all 0.2s; user-select: none;
+}
+.cell:hover { border-color: #33aaff; background: #1a1a4e; }
+.cell.showing { background: #1a2a4e; border-color: #33aaff; color: #33aaff; }
+.cell.hidden { color: transparent; }
+.cell.correct {
+  background: #1a3a2e; border-color: #00ff88; color: #00ff88;
+  box-shadow: 0 0 15px rgba(0,255,136,0.3);
+}
+.cell.wrong {
+  background: #3a1a1e; border-color: #ff3366; color: #ff3366;
+  animation: shake 0.4s;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+.message {
+  margin-top: 24px; font-size: 22px; font-weight: 600; min-height: 32px; color: #aaa;
+}
+.next-number {
+  margin-top: 12px; font-size: 16px; color: #5f6368;
+}
+.instruction {
+  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(15,15,35,0.95); display: flex; flex-direction: column;
+  align-items: center; justify-content: center; z-index: 100;
+  transition: opacity 0.5s;
+}
+.instruction h1 { font-size: 48px; color: #33aaff; margin-bottom: 16px; }
+.instruction p { font-size: 18px; color: #aaa; margin-bottom: 8px; }
+.instruction .countdown { font-size: 64px; color: #00ff88; margin-top: 20px; }
+</style>
+</head>
+<body>
+<div class="instruction" id="instruction">
+  <h1>Number Memory</h1>
+  <p>Numbers 1-9 appear in random positions for 4 seconds.</p>
+  <p>Then click cells in ascending order (1, 2, 3...)</p>
+  <p>Get the first 5 correct to win!</p>
+  <div class="countdown" id="countdown">2</div>
+</div>
+
+<div class="header">
+  <div class="title">Number Memory</div>
+  <div class="stats">
+    <div class="stat-item">
+      <div class="stat-label">Correct</div>
+      <div class="stat-value" id="correct-count" style="color:#00ff88">0</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Errors</div>
+      <div class="stat-value" id="error-count" style="color:#ff3366">0</div>
+    </div>
+  </div>
+</div>
+
+<div class="game-container">
+  <div class="number-grid" id="grid"></div>
+  <div class="message" id="message">Memorize the numbers!</div>
+  <div class="next-number" id="next-hint">Next: click 1</div>
+</div>
+
+<script>
+let numberPositions = []; // index 0-8 maps to number at that position
+let nextExpected = 1;
+let correctClicks = 0;
+let errorClicks = 0;
+let gameActive = false;
+let clickSequence = [];
+
+// Shuffle numbers 1-9 into positions
+function generateGrid() {
+  let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  for (let i = numbers.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [numbers[i], numbers[j]] = [numbers[j], numbers[i]];
+  }
+  numberPositions = numbers;
+}
+
+function renderGrid(showNumbers) {
+  const grid = document.getElementById('grid');
+  grid.innerHTML = '';
+  numberPositions.forEach((num, idx) => {
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (showNumbers ? ' showing' : ' hidden');
+    cell.textContent = num;
+    cell.dataset.number = num;
+    cell.dataset.index = idx;
+    cell.addEventListener('click', () => handleClick(cell, num));
+    grid.appendChild(cell);
+  });
+}
+
+function handleClick(cell, num) {
+  if (!gameActive) return;
+  if (cell.classList.contains('correct')) return;
+
+  clickSequence.push(num);
+
+  if (num === nextExpected) {
+    // Correct!
+    cell.classList.remove('hidden');
+    cell.classList.add('correct');
+    correctClicks++;
+    document.getElementById('correct-count').textContent = correctClicks;
+    nextExpected++;
+    document.getElementById('next-hint').textContent = nextExpected <= 9 ? 'Next: click ' + nextExpected : 'All done!';
+
+    if (correctClicks >= 5) {
+      document.getElementById('message').textContent = 'Great! First 5 correct!';
+      document.getElementById('message').style.color = '#00ff88';
+    }
+    if (correctClicks === 9) {
+      document.getElementById('message').textContent = 'Perfect! All 9 correct!';
+      gameActive = false;
+    }
+  } else {
+    // Wrong
+    cell.classList.remove('hidden');
+    cell.classList.add('wrong');
+    errorClicks++;
+    document.getElementById('error-count').textContent = errorClicks;
+    document.getElementById('message').textContent = 'Wrong! That was ' + num + ', expected ' + nextExpected;
+    document.getElementById('message').style.color = '#ff3366';
+
+    setTimeout(() => {
+      cell.classList.remove('wrong');
+      cell.classList.add('hidden');
+      document.getElementById('message').textContent = '';
+      document.getElementById('message').style.color = '#aaa';
+    }, 800);
+  }
+}
+
+// Countdown
+let countVal = 2;
+const countdownEl = document.getElementById('countdown');
+const countInterval = setInterval(() => {
+  countVal--;
+  if (countVal > 0) {
+    countdownEl.textContent = countVal;
+  } else {
+    countdownEl.textContent = 'GO!';
+    clearInterval(countInterval);
+    setTimeout(() => {
+      document.getElementById('instruction').style.opacity = '0';
+      setTimeout(() => {
+        document.getElementById('instruction').style.display = 'none';
+        startGame();
+      }, 500);
+    }, 500);
+  }
+}, 1000);
+
+function startGame() {
+  generateGrid();
+  renderGrid(true);
+  document.getElementById('message').textContent = 'Memorize the positions! (4 seconds)';
+  document.getElementById('next-hint').textContent = '';
+
+  setTimeout(() => {
+    renderGrid(false);
+    gameActive = true;
+    document.getElementById('message').textContent = 'Click cells in ascending order: 1, 2, 3...';
+    document.getElementById('next-hint').textContent = 'Next: click 1';
+  }, 4000);
+}
+
+window.getTaskResult = function() {
+  // Check if first 5 clicks were in correct ascending order
+  let firstFiveCorrect = true;
+  for (let i = 0; i < Math.min(5, clickSequence.length); i++) {
+    if (clickSequence[i] !== i + 1) {
+      firstFiveCorrect = false;
+      break;
+    }
+  }
+  if (firstFiveCorrect && clickSequence.length >= 5) {
+    return 'ascending_correct';
+  }
+  return 'correct_clicks_' + correctClicks;
+};
+</script>
+</body>
+</html>

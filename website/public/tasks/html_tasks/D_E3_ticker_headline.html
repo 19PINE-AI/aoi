@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global News Network</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #0f0f23; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; }
+  #loading { position: fixed; inset: 0; background: #0f0f23; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #ff4444; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .news-header { background: #1a1a2e; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #ff4444; }
+  .logo { font-size: 24px; font-weight: 800; color: #ff4444; }
+  .header-nav { display: flex; gap: 20px; font-size: 14px; color: #888; }
+  .ticker-bar { background: #16213e; overflow: hidden; position: relative; border-bottom: 1px solid #2a2a3e; }
+  .ticker-label { position: absolute; left: 0; top: 0; bottom: 0; background: #ff4444; color: #fff; font-weight: 700; font-size: 13px; padding: 10px 16px; z-index: 2; display: flex; align-items: center; }
+  .ticker-viewport { overflow: hidden; margin-left: 110px; height: 40px; }
+  .ticker-track { display: flex; transition: transform 0.5s ease; height: 100%; }
+  .ticker-item { min-width: 100%; display: flex; align-items: center; padding: 0 20px; font-size: 14px; cursor: pointer; white-space: nowrap; color: #ccc; transition: color 0.2s; }
+  .ticker-item:hover { color: #fff; }
+  .ticker-item .category { color: #ff4444; font-weight: 600; margin-right: 12px; font-size: 12px; text-transform: uppercase; }
+  .ticker-item.selected { color: #ffd700; }
+  .main-content { max-width: 700px; margin: 40px auto; padding: 0 20px; }
+  .main-content h2 { font-size: 20px; margin-bottom: 20px; color: #ccc; }
+  .news-grid { display: flex; flex-direction: column; gap: 16px; margin-bottom: 32px; }
+  .news-card { background: #1a1a2e; border-radius: 12px; padding: 20px; display: flex; gap: 16px; }
+  .news-thumb { width: 120px; height: 80px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; }
+  .news-body h3 { font-size: 15px; font-weight: 600; margin-bottom: 6px; color: #ddd; }
+  .news-body p { font-size: 13px; color: #888; line-height: 1.4; }
+  .news-body .meta { font-size: 12px; color: #666; margin-top: 6px; }
+  .task-section { background: #1a1a2e; border-radius: 12px; padding: 24px; max-width: 700px; margin: 0 auto 40px; }
+  .task-section h3 { font-size: 16px; font-weight: 500; margin-bottom: 6px; color: #ccc; }
+  .task-section .hint { font-size: 13px; color: #888; margin-bottom: 12px; }
+  .status { text-align: center; font-size: 14px; color: #666; min-height: 24px; margin-top: 10px; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="news-header">
+  <div class="logo">GNN</div>
+  <div class="header-nav"><span>Home</span><span>World</span><span>Tech</span><span>Sports</span><span>Business</span></div>
+</div>
+<div class="ticker-bar">
+  <div class="ticker-label">BREAKING</div>
+  <div class="ticker-viewport">
+    <div class="ticker-track" id="tickerTrack">
+      <div class="ticker-item" data-category="sports" onclick="selectHeadline(this, 'sports')">
+        <span class="category">Sports</span> National team secures dramatic last-minute victory in championship finals
+      </div>
+      <div class="ticker-item" data-category="politics" onclick="selectHeadline(this, 'politics')">
+        <span class="category">Politics</span> Senate passes bipartisan infrastructure bill after months of negotiations
+      </div>
+      <div class="ticker-item" data-category="tech" onclick="selectHeadline(this, 'tech')">
+        <span class="category">Tech</span> Major AI breakthrough announced at global tech summit
+      </div>
+      <div class="ticker-item" data-category="weather" onclick="selectHeadline(this, 'weather')">
+        <span class="category">Weather</span> Severe weather warnings issued for eastern seaboard this weekend
+      </div>
+      <div class="ticker-item" data-category="business" onclick="selectHeadline(this, 'business')">
+        <span class="category">Business</span> Markets reach all-time high as quarterly earnings exceed expectations
+      </div>
+    </div>
+  </div>
+</div>
+<div class="main-content">
+  <h2>Top Stories</h2>
+  <div class="news-grid">
+    <div class="news-card">
+      <div class="news-thumb" style="background:linear-gradient(135deg,#667eea,#764ba2)">&#127942;</div>
+      <div class="news-body">
+        <h3>Championship Season Heats Up</h3>
+        <p>As teams prepare for the final stretch, analysts weigh in on the top contenders and underdogs.</p>
+        <div class="meta">2 hours ago &bull; Sports</div>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-thumb" style="background:linear-gradient(135deg,#f093fb,#f5576c)">&#127758;</div>
+      <div class="news-body">
+        <h3>Global Leaders Meet for Climate Talks</h3>
+        <p>Delegates from 150 countries convene to discuss ambitious emission targets for the next decade.</p>
+        <div class="meta">4 hours ago &bull; World</div>
+      </div>
+    </div>
+    <div class="news-card">
+      <div class="news-thumb" style="background:linear-gradient(135deg,#4facfe,#00f2fe)">&#128202;</div>
+      <div class="news-body">
+        <h3>Startup Funding Reaches Record Levels</h3>
+        <p>Venture capital firms invested over $80B in Q3, with AI and clean energy leading the charge.</p>
+        <div class="meta">6 hours ago &bull; Business</div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="task-section">
+  <h3>Click the technology headline in the scrolling ticker above</h3>
+  <div class="hint">Watch the ticker bar and click on the tech-related headline when it appears.</div>
+  <div class="status" id="status"></div>
+</div>
+<script>
+  const totalItems = 5;
+  let currentItem = 0;
+  let selectedCategory = null;
+
+  function updateTicker() {
+    document.getElementById('tickerTrack').style.transform = `translateX(-${currentItem * 100}%)`;
+  }
+
+  function selectHeadline(el, category) {
+    selectedCategory = category;
+    document.querySelectorAll('.ticker-item').forEach(t => t.classList.remove('selected'));
+    el.classList.add('selected');
+    const result = window.getTaskResult();
+    document.getElementById('status').textContent = result === 'tech_headline_clicked' ? 'Correct! You found the tech headline.' : 'That\'s not the technology headline. Try again.';
+  }
+
+  function startTicker() {
+    setInterval(() => {
+      currentItem = (currentItem + 1) % totalItems;
+      updateTicker();
+    }, 3000);
+  }
+
+  window.getTaskResult = function() {
+    if (selectedCategory === 'tech') return 'tech_headline_clicked';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    updateTicker();
+    setTimeout(startTicker, 500);
+  }, 2000);
+</script>
+</body>
+</html>

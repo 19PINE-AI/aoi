@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Strategy Meeting — Regional Analysis</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: #202124; color: #e0e0e0; font-family: 'Segoe UI', system-ui, sans-serif; min-height: 100vh; display: flex; flex-direction: column; }
+  #loading { position: fixed; inset: 0; background: #202124; display: flex; justify-content: center; align-items: center; z-index: 999; transition: opacity 0.5s; }
+  #loading .spinner { width: 48px; height: 48px; border: 4px solid #333; border-top-color: #8ab4f8; border-radius: 50%; animation: spin 0.8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .meet-header { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #3c4043; }
+  .meet-logo { font-size: 18px; font-weight: 500; color: #8ab4f8; }
+  .meet-title { font-size: 14px; color: #bdc1c6; }
+  .meet-time { font-size: 13px; color: #9aa0a6; }
+  .meet-body { flex: 1; display: flex; padding: 16px; gap: 16px; }
+  .slide-area { flex: 1; background: #1a1a2e; border-radius: 12px; overflow: hidden; position: relative; min-height: 400px; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; opacity: 0; transition: opacity 0.8s ease; }
+  .slide.active { opacity: 1; }
+  .slide h2 { font-size: 26px; font-weight: 600; margin-bottom: 20px; color: #fff; }
+  .slide p { font-size: 15px; color: #9aa0a6; text-align: center; max-width: 450px; margin-bottom: 16px; }
+  .data-table { border-collapse: collapse; width: 90%; max-width: 500px; }
+  .data-table th { background: #16162b; padding: 10px 16px; text-align: left; font-size: 13px; color: #8ab4f8; font-weight: 500; border-bottom: 1px solid #2a2a3e; }
+  .data-table td { padding: 10px 16px; font-size: 14px; color: #bdc1c6; border-bottom: 1px solid #1e1e36; }
+  .highlight-cell { color: #55efc4 !important; font-weight: 600; }
+  .bullet-list { text-align: left; max-width: 450px; }
+  .bullet-list li { padding: 6px 0; font-size: 15px; color: #bdc1c6; list-style: disc inside; }
+  .participants { width: 200px; display: flex; flex-direction: column; gap: 8px; }
+  .participant { background: #292a2d; border-radius: 8px; aspect-ratio: 16/9; display: flex; align-items: center; justify-content: center; position: relative; }
+  .participant .avatar-lg { width: 40px; height: 40px; border-radius: 50%; }
+  .participant .p-name { position: absolute; bottom: 6px; left: 8px; font-size: 11px; color: #bdc1c6; }
+
+  /* Chat panel */
+  .chat-panel { background: #1a1a2e; border-radius: 12px; padding: 20px; margin: 0 16px 16px; }
+  .chat-panel h3 { font-size: 15px; font-weight: 500; margin-bottom: 12px; color: #ccc; }
+  .timer-bar { height: 4px; background: #333; border-radius: 2px; margin-bottom: 16px; overflow: hidden; }
+  .timer-fill { height: 100%; background: #ea4335; width: 100%; transition: width 0.1s linear; }
+  .timer-label { font-size: 12px; color: #ea4335; margin-bottom: 8px; display: none; }
+  .question-text { font-size: 14px; color: #fbbc05; margin-bottom: 12px; display: none; font-style: italic; }
+  .chat-input-row { display: flex; gap: 10px; }
+  .chat-input-row input { flex: 1; background: #16162b; border: 1px solid #2a2a3e; border-radius: 8px; padding: 10px 14px; color: #e0e0e0; font-size: 14px; outline: none; }
+  .chat-input-row input:focus { border-color: #8ab4f8; }
+  .chat-input-row button { padding: 10px 20px; background: #8ab4f8; border: none; border-radius: 8px; color: #202124; font-size: 14px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+  .status { font-size: 13px; color: #666; margin-top: 10px; min-height: 20px; }
+  .meet-controls { background: #292a2d; padding: 12px 24px; display: flex; align-items: center; justify-content: center; gap: 16px; border-top: 1px solid #3c4043; }
+  .ctrl-btn { width: 44px; height: 44px; border-radius: 50%; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 18px; background: #3c4043; color: #e0e0e0; }
+  .ctrl-end { background: #ea4335; color: #fff; padding: 10px 24px; border-radius: 24px; font-size: 14px; width: auto; }
+  .slide-indicator { position: absolute; bottom: 12px; right: 16px; font-size: 12px; color: #666; }
+</style>
+</head>
+<body>
+<div id="loading"><div class="spinner"></div></div>
+<div class="meet-header">
+  <div class="meet-logo">Google Meet</div>
+  <div class="meet-title">Strategy Meeting — Regional Analysis</div>
+  <div class="meet-time" id="meetTime">--:--</div>
+</div>
+<div class="meet-body">
+  <div class="slide-area">
+    <div class="slide active" id="slide0">
+      <h2>Regional Performance</h2>
+      <p>Market share breakdown by region</p>
+    </div>
+    <div class="slide" id="slide1">
+      <h2>Market Share by Region</h2>
+      <table class="data-table">
+        <thead><tr><th>Region</th><th>Market Share</th><th>YoY Change</th></tr></thead>
+        <tbody>
+          <tr><td>NA</td><td>32%</td><td>+2%</td></tr>
+          <tr><td>EMEA</td><td>28%</td><td>+1%</td></tr>
+          <tr><td>APAC</td><td class="highlight-cell">40%</td><td class="highlight-cell">+8%</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="slide" id="slide2">
+      <h2>Investment Priorities</h2>
+      <ul class="bullet-list">
+        <li>Expand into emerging APAC markets</li>
+        <li>Strengthen EMEA partnerships</li>
+        <li>Maintain NA market position</li>
+      </ul>
+    </div>
+    <div class="slide" id="slide3">
+      <h2>Summary</h2>
+      <p>APAC shows strongest momentum. Investment decisions need to reflect this data.</p>
+    </div>
+    <div class="slide-indicator" id="slideIndicator">Slide 1 / 4</div>
+  </div>
+  <div class="participants">
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #ea4335, #fbbc05);"></div><div class="p-name">VP Strategy</div></div>
+    <div class="participant"><div class="avatar-lg" style="background: linear-gradient(135deg, #34a853, #8ab4f8);"></div><div class="p-name">You</div></div>
+  </div>
+</div>
+<div class="chat-panel">
+  <h3>Meeting Q&A</h3>
+  <div class="timer-label" id="timerLabel">Time remaining: 15s</div>
+  <div class="timer-bar"><div class="timer-fill" id="timerFill"></div></div>
+  <div class="question-text" id="questionText"></div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Type your answer here..." autocomplete="off">
+    <button id="sendBtn">Send</button>
+  </div>
+  <div class="status" id="status"></div>
+</div>
+<div class="meet-controls">
+  <button class="ctrl-btn">&#127908;</button>
+  <button class="ctrl-btn">&#127909;</button>
+  <button class="ctrl-btn ctrl-end">Leave</button>
+</div>
+<script>
+  const slides = document.querySelectorAll('.slide');
+  let answeredInTime = false;
+  let timerExpired = false;
+  let timerInterval;
+
+  const slideAudio = [
+    "Let's look at the regional performance data for this quarter.",
+    "As you can see, APAC has the highest market share at forty percent, with an impressive eight percent year-over-year growth.",
+    "Here are our investment priorities going forward.",
+    "Let me wrap up with the summary."
+  ];
+
+  function showSlide(idx) {
+    slides.forEach((s, i) => s.classList.toggle('active', i === idx));
+    document.getElementById('slideIndicator').textContent = `Slide ${idx + 1} / ${slides.length}`;
+  }
+
+  function startTimer() {
+    const timerLabel = document.getElementById('timerLabel');
+    const timerFill = document.getElementById('timerFill');
+    const questionText = document.getElementById('questionText');
+    timerLabel.style.display = 'block';
+    questionText.style.display = 'block';
+    questionText.textContent = 'Based on slide 2, which region should we prioritize?';
+    let remaining = 15;
+    timerLabel.textContent = `Time remaining: ${remaining}s`;
+    timerFill.style.width = '100%';
+    timerInterval = setInterval(() => {
+      remaining--;
+      timerLabel.textContent = `Time remaining: ${remaining}s`;
+      timerFill.style.width = ((remaining / 15) * 100) + '%';
+      if (remaining <= 0) {
+        clearInterval(timerInterval);
+        timerExpired = true;
+        timerLabel.textContent = 'Time expired!';
+        timerLabel.style.color = '#ea4335';
+      }
+    }, 1000);
+  }
+
+  function advanceSlides() {
+    showSlide(0);
+    let idx = 0;
+    function speakForSlide(i) {
+      if (i >= slideAudio.length) return;
+      const u = new SpeechSynthesisUtterance(slideAudio[i]);
+      u.rate = 0.9;
+      u.lang = 'en-US';
+      u.onend = () => {
+        // After slide 2 (index 1), ask the question
+        if (i === 1) {
+          const q = new SpeechSynthesisUtterance("Based on slide 2, which region should we prioritize?");
+          q.rate = 0.9;
+          q.lang = 'en-US';
+          q.onend = () => { startTimer(); };
+          speechSynthesis.speak(q);
+        }
+        setTimeout(() => {
+          idx++;
+          if (idx < slides.length) {
+            showSlide(idx);
+            speakForSlide(idx);
+          }
+        }, (i === 1) ? 18000 : 2000);
+      };
+      speechSynthesis.speak(u);
+    }
+    speakForSlide(0);
+  }
+
+  function updateClock() {
+    const now = new Date();
+    document.getElementById('meetTime').textContent = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  setInterval(updateClock, 1000); updateClock();
+
+  document.getElementById('sendBtn').addEventListener('click', () => {
+    const val = document.getElementById('chatInput').value.toLowerCase().trim();
+    if (val.includes('apac') && !timerExpired) {
+      answeredInTime = true;
+      clearInterval(timerInterval);
+      document.getElementById('timerLabel').textContent = 'Answered!';
+      document.getElementById('timerLabel').style.color = '#34a853';
+    }
+    const r = window.getTaskResult();
+    document.getElementById('status').textContent = r === 'answer_correct' ? 'Correct!' : (timerExpired ? 'Time expired.' : 'Submit before time runs out.');
+  });
+
+  window.getTaskResult = function() {
+    const val = document.getElementById('chatInput').value.toLowerCase().trim();
+    if (val.includes('apac') && (answeredInTime || !timerExpired)) return 'answer_correct';
+    return 'incorrect';
+  };
+
+  setTimeout(() => {
+    document.getElementById('loading').style.opacity = '0';
+    setTimeout(() => document.getElementById('loading').style.display = 'none', 500);
+    setTimeout(advanceSlides, 500);
+  }, 2000);
+</script>
+</body>
+</html>
