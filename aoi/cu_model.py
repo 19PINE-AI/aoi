@@ -390,6 +390,10 @@ SOTA_MODELS = {
     "gpt-5.4":            ("openai",    "gpt-5.4"),
     "gpt-5":              ("openai",    "gpt-5"),
     "gpt-4o":             ("openai",    "gpt-4o"),
+    # GPT-5.4 routed through OpenRouter (same OpenAICUModel adapter); used when
+    # the direct OpenAI key lacks model.request scope.  Set OPENAI_BASE_URL=
+    # https://openrouter.ai/api/v1 and OPENAI_API_KEY=$OPENROUTER_API_KEY.
+    "gpt-5.4-or":         ("openai",    "openai/gpt-5.4"),
     # Google — use dedicated CU preview model where available
     "gemini-3-flash":     ("google",    "gemini-3-flash-preview"),
     "gemini-2.5-flash":   ("google",    "gemini-2.5-flash"),

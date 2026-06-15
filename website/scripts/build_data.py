@@ -202,6 +202,35 @@ narration = [
     {"mode": "aoi_full", "label": "Narration persists (AOI full)", **rate(load("v9_full_100_claude_aoi.json"))},
 ]
 
+# ── 12. Keyframe-in-context: keyframe images' marginal value WITH narration present ──
+# aoi_audio = scaffold + ASR + narration, NO keyframes; aoi_full adds keyframes.
+# (aoi_full - aoi_audio) is the keyframe-image contribution in the deployed context.
+KF_CONTEXT = [
+    ("Claude Sonnet 4.6", "v9_full_100_claude_aoi.json",        "v10_claudeaudio_aoi_audio.json"),
+    ("Gemini 2.5 Flash",  "v9_full_100_gemini25flash_aoi.json", "v10_gem25audio_aoi_audio.json"),
+    # GPT-5.4 measured via OpenRouter (both modes, same adapter) because the
+    # direct OpenAI key lost model.request scope; the OpenAI-direct
+    # v10_gpt54audio_aoi_audio.INVALID_401.json run was a 401 failure (0/100).
+    ("GPT-5.4",           "v10_gpt54or_aoi_full.json",          "v10_gpt54or_aoi_audio.json"),
+    ("Gemini 3 Flash",    "v10c_gemini3flash_aoi_full.json",    "v12_g3flash_aoi_audio.json"),
+]
+keyframe_context = []
+for model, full_f, audio_f in KF_CONTEXT:
+    if not (RES / full_f).exists() or not (RES / audio_f).exists():
+        continue
+    full, audio = load(full_f), load(audio_f)
+    if len(audio) < 100:
+        continue
+    rf, ra = rate(full), rate(audio)
+    pcf, pca = per_category(full), per_category(audio)
+    per_cat_delta = {c: pcf[c]["pass"] - pca.get(c, {"pass": 0}).get("pass", 0) for c in pcf}
+    keyframe_context.append({
+        "model": model,
+        "aoi_audio": ra, "aoi_full": rf,
+        "kf_delta": round(rf["rate"] - ra["rate"], 1),
+        "per_category_delta": per_cat_delta,
+    })
+
 results = {
     "main_results": main_results,
     "ablation": ablation,
@@ -215,6 +244,7 @@ results = {
     "oss_replication": oss_repl,
     "prompt_decomposition": prompt_decomp,
     "narration_ablation": narration,
+    "keyframe_context": keyframe_context,
     "categories": CATEGORIES,
 }
 (OUT / "results.json").write_text(json.dumps(results, indent=1))

@@ -1,0 +1,74 @@
+[
+  {
+    "model": "Claude Sonnet 4.6",
+    "aoi_audio": 72,
+    "aoi_full": 82,
+    "kf_delta": 10,
+    "per_cat_delta": {
+      "A": 1,
+      "B": 1,
+      "C": 1,
+      "D": 2,
+      "E": 0,
+      "F": 4,
+      "G": 0,
+      "H": 1,
+      "I": 1,
+      "J": -1
+    }
+  },
+  {
+    "model": "Gemini 2.5 Flash",
+    "aoi_audio": 63,
+    "aoi_full": 69,
+    "kf_delta": 6,
+    "per_cat_delta": {
+      "A": 1,
+      "B": -1,
+      "C": 1,
+      "D": 2,
+      "E": 0,
+      "F": 3,
+      "G": 2,
+      "H": -1,
+      "I": -1,
+      "J": 0
+    }
+  },
+  {
+    "model": "GPT-5.4 (OpenRouter)",
+    "aoi_audio": 72,
+    "aoi_full": 70,
+    "kf_delta": -2,
+    "per_cat_delta": {
+      "A": 0,
+      "B": -3,
+      "C": -1,
+      "D": -1,
+      "E": 2,
+      "F": 0,
+      "G": 0,
+      "H": 1,
+      "I": 0,
+      "J": 0
+    }
+  },
+  {
+    "model": "Gemini 3 Flash",
+    "aoi_audio": 57,
+    "aoi_full": 45,
+    "kf_delta": -12,
+    "per_cat_delta": {
+      "A": -3,
+      "B": -3,
+      "C": -3,
+      "D": 2,
+      "E": 0,
+      "F": -2,
+      "G": -2,
+      "H": -1,
+      "I": 0,
+      "J": 0
+    }
+  }
+]

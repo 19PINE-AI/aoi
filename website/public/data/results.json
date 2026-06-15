@@ -1997,6 +1997,112 @@
    "rate": 82.0
   }
  ],
+ "keyframe_context": [
+  {
+   "model": "Claude Sonnet 4.6",
+   "aoi_audio": {
+    "pass": 72,
+    "total": 100,
+    "rate": 72.0
+   },
+   "aoi_full": {
+    "pass": 82,
+    "total": 100,
+    "rate": 82.0
+   },
+   "kf_delta": 10.0,
+   "per_category_delta": {
+    "A_podcast": 1,
+    "B_meeting": 1,
+    "C_video": 1,
+    "D_carousel": 2,
+    "E_dashboard": 0,
+    "F_transient": 4,
+    "G_phone": 0,
+    "H_interview": 1,
+    "I_collab": 1,
+    "J_game": -1
+   }
+  },
+  {
+   "model": "Gemini 2.5 Flash",
+   "aoi_audio": {
+    "pass": 63,
+    "total": 100,
+    "rate": 63.0
+   },
+   "aoi_full": {
+    "pass": 69,
+    "total": 100,
+    "rate": 69.0
+   },
+   "kf_delta": 6.0,
+   "per_category_delta": {
+    "A_podcast": 1,
+    "B_meeting": -1,
+    "C_video": 1,
+    "D_carousel": 2,
+    "E_dashboard": 0,
+    "F_transient": 3,
+    "G_phone": 2,
+    "H_interview": -1,
+    "I_collab": -1,
+    "J_game": 0
+   }
+  },
+  {
+   "model": "GPT-5.4",
+   "aoi_audio": {
+    "pass": 72,
+    "total": 100,
+    "rate": 72.0
+   },
+   "aoi_full": {
+    "pass": 70,
+    "total": 100,
+    "rate": 70.0
+   },
+   "kf_delta": -2.0,
+   "per_category_delta": {
+    "A_podcast": 0,
+    "B_meeting": -3,
+    "C_video": -1,
+    "D_carousel": -1,
+    "E_dashboard": 2,
+    "F_transient": 0,
+    "G_phone": 0,
+    "H_interview": 1,
+    "I_collab": 0,
+    "J_game": 0
+   }
+  },
+  {
+   "model": "Gemini 3 Flash",
+   "aoi_audio": {
+    "pass": 57,
+    "total": 100,
+    "rate": 57.0
+   },
+   "aoi_full": {
+    "pass": 45,
+    "total": 100,
+    "rate": 45.0
+   },
+   "kf_delta": -12.0,
+   "per_category_delta": {
+    "A_podcast": -3,
+    "B_meeting": -3,
+    "C_video": -3,
+    "D_carousel": 2,
+    "E_dashboard": 0,
+    "F_transient": -2,
+    "G_phone": -2,
+    "H_interview": -1,
+    "I_collab": 0,
+    "J_game": 0
+   }
+  }
+ ],
  "categories": {
   "A_podcast": [
    "A",

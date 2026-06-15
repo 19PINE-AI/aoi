@@ -74,6 +74,13 @@ export function Results({ data }: { data: ResultsData | null }) {
     'AOI full': m.aoi_full.rate,
   }))
 
+  const kfContext = (data.keyframe_context ?? []).map((k) => ({
+    model: k.model.replace(' Flash', ' Flash').replace('Claude Sonnet 4.6', 'Claude 4.6'),
+    'AOI audio (no KF)': k.aoi_audio.rate,
+    'AOI full (+ KF)': k.aoi_full.rate,
+    delta: k.kf_delta,
+  }))
+
   return (
     <section className="block" id="results">
       <div className="wrap">
@@ -178,14 +185,16 @@ export function Results({ data }: { data: ResultsData | null }) {
               </BarChart>
             </ResponsiveContainer>
             <p className="note">
-              Keyframes +20 pp, ASR +6 pp, narration +18 pp. A narration-discarded control splits the
-              narration gain into +8 pp persistent text memory (p = 0.039) + 10 pp inference-time
+              The first step (+20 pp) bundles inter-step keyframes with the structured prompt scaffold that
+              bare <code>standard</code> lacks: the scaffold carries +19 pp, the keyframe images +1 pp as raw
+              input (Prompt-format chart below). ASR +6 pp, narration +18 pp. A narration-discarded control
+              splits the narration gain into +8 pp persistent text memory (p = 0.039) + 10 pp inference-time
               chain-of-thought (p = 0.12).
             </p>
           </div>
 
           <div className="card card-pad">
-            <h3>Selection doesn’t matter, capture does</h3>
+            <h3>Selection doesn’t matter — and keyframes pay off through narration</h3>
             <div className="sub">Four keyframe selection strategies are statistically indistinguishable (McNemar p &gt; 0.5)</div>
             <ResponsiveContainer width="100%" height={250}>
               <BarChart data={selectionChart} layout="vertical" margin={{ top: 0, right: 44, left: 10, bottom: 0 }}>
@@ -201,7 +210,8 @@ export function Results({ data }: { data: ResultsData | null }) {
             <p className="note">
               Claude Sonnet 4.6, keyframes-only modes (no ASR / narration). Replicated on open-source
               Qwen3-VL-32B: {data.oss_selection.map((o) => `${o.label.toLowerCase()} ${o.rate}%`).join(', ')} on the
-              50-task visual subset. What matters is capturing inter-step frames at all — not how you pick them.
+              50-task visual subset. How frames are picked doesn’t matter — and the raw images add little on their
+              own (+1 pp). Their value is realized through narration: see the keyframe×narration chart below.
             </p>
           </div>
         </div>
@@ -267,9 +277,9 @@ export function Results({ data }: { data: ResultsData | null }) {
             </ResponsiveContainer>
             <p className="note">
               Audio adds +12 pp and the structured scaffold +9 pp, but the keyframe-image stream —
-              uniformly positive on every earlier model — flips to <b>−12 pp</b> on Gemini 3. Dropping
-              keyframes (AOI audio) recovers +21 pp over standard. Component selection must become
-              per-model.
+              worth +10 pp on Claude via narration — flips to <b>−12 pp</b> on Gemini 3 (image-token
+              dilution). Dropping keyframes (AOI audio) recovers +21 pp over standard. The keyframe channel
+              is the most model-dependent component; selection must become per-model.
             </p>
           </div>
 
@@ -296,6 +306,42 @@ export function Results({ data }: { data: ResultsData | null }) {
             </p>
           </div>
         </div>
+
+        {kfContext.length > 0 && (
+          <div className="card card-pad" style={{ marginBottom: 22 }}>
+            <h3>Keyframes pay off only through narration</h3>
+            <div className="sub">
+              AOI&nbsp;audio (scaffold + ASR + narration, <b>no keyframes</b>) vs. AOI&nbsp;full (+ inter-step
+              keyframes), 100 tasks each. The gap is the keyframe images’ marginal value <em>in the deployed
+              context</em>.
+            </div>
+            <ResponsiveContainer width="100%" height={300}>
+              <BarChart data={kfContext} margin={{ top: 24, right: 8, left: -16, bottom: 0 }} barGap={4}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" vertical={false} />
+                <XAxis dataKey="model" tick={{ fontSize: 12.5, fill: '#4c566a' }} tickLine={false} axisLine={{ stroke: '#d6dbe6' }} />
+                <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
+                <Tooltip cursor={{ fill: 'rgba(94,129,172,0.07)' }} formatter={(v) => [`${v}%`]} />
+                <Legend wrapperStyle={{ fontSize: 13 }} />
+                <Bar dataKey="AOI audio (no KF)" fill={COLORS.sage} radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="AOI audio (no KF)" position="top" style={{ fontSize: 11.5, fill: '#5c7a44', fontWeight: 700 }} formatter={(v) => `${v}`} />
+                </Bar>
+                <Bar dataKey="AOI full (+ KF)" fill={COLORS.aoi} radius={[4, 4, 0, 0]}>
+                  <LabelList dataKey="delta" position="top" style={{ fontSize: 11.5, fill: '#3f5b80', fontWeight: 700 }} formatter={(v) => `${(v as number) > 0 ? '+' : ''}${v} pp`} />
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+            <p className="note">
+              The same keyframe-image stream that adds just +1 pp as raw visual input (no narration) is worth
+              <b> +10 pp on Claude</b> once the model narrates the captured frames into persistent text — a
+              keyframe×narration synergy concentrated on transient-UI and carousel tasks (where content changes
+              between steps). Across four models the contribution spans +10 (Claude) and +6 (Gemini 2.5),
+              through a neutral −2 (GPT-5.4), to <b>−12 pp on Gemini 3 Flash</b> (image-token dilution): the
+              keyframe channel is the most model-dependent AOI component, while audio and narration — both
+              delivered as text — are robust everywhere. (GPT-5.4 measured via OpenRouter, both modes, same
+              adapter.)
+            </p>
+          </div>
+        )}
 
         <div className="grid-2" style={{ marginBottom: 22 }}>
           <div className="card card-pad">

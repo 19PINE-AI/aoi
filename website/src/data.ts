@@ -36,6 +36,13 @@ export interface ResultsData {
   oss_replication: { model: string; standard: Rate; aoi_full: Rate; delta: number }[]
   prompt_decomposition: ({ mode: string; label: string } & Rate)[]
   narration_ablation: ({ mode: string; label: string } & Rate)[]
+  keyframe_context: {
+    model: string
+    aoi_audio: Rate
+    aoi_full: Rate
+    kf_delta: number
+    per_category_delta: Record<string, number>
+  }[]
   categories: Record<string, [string, string]>
 }
 

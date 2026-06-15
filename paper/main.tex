@@ -56,18 +56,18 @@
 % ════════════════════════════════════════════════════════════
 \begin{abstract}
 % ════════════════════════════════════════════════════════════
-SWE-agent~\citep{sweagent} showed that the agent-computer \emph{action} interface is an underexplored design axis for software-engineering agents.  We show the same for the \emph{observation} interface in computer-use (CU) agents: getting it right unlocks dynamic computer use from any existing CU model without retraining.
+SWE-agent~\citep{sweagent} showed that the agent-computer \emph{action} interface is an underexplored design axis for software-engineering agents.  We show the same for the \emph{observation} interface in computer-use (CU) agents: getting it right unlocks dynamic computer use from existing CU models without retraining---though, as our later model studies show, the optimal mix of observation components is model-specific.
 Current CU agents---closed and open-source alike---observe the world through periodic screenshots every 3--5\,s and have no audio perception, leaving them blind to video playback, animations, transient UI events, meetings, notifications, and spoken instructions.
 We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples observation (continuous, adaptive) from action (discrete).
 Its three gated components---inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text---produce almost nothing on static, silent content, reducing the AOI to the standard loop.
 
-On \textbf{DynaCU-Bench}, our benchmark of 100 dynamic browser tasks across 10 categories (plus a 50-task static control), eight CU models---closed and open-source, from 7B to frontier scale---gain +17 to +48\,pp over their screenshot-only baselines with zero retraining (paired McNemar $p<10^{-3}$ for every model); the strongest reaches 82\% on Claude Sonnet~4.6.
+On \textbf{DynaCU-Bench}, our benchmark of 100 dynamic browser tasks across 10 categories (plus a 50-task static control), eight CU models---closed and open-source, from 7B to frontier scale---gain +17 to +48\,pp over their screenshot-only baselines with zero retraining (paired McNemar $p<10^{-3}$ for every model); the strongest, Claude Sonnet~4.6, reaches a 3-seed mean of 78.7\% (best seed 82\%).
 On a 12-task audio-focused subset, two production streaming baselines---OpenAI Realtime~\citep{openairealtime} (3/12) and Gemini~Live~\citep{geminilive} (0/12)---fall far short of the AOI-equipped agent (12/12).
 
 Three findings reframe CU perception.
-\emph{Selection doesn't matter, capture does}: uniform, random, pixel-difference, and CLIP keyframe selection are statistically indistinguishable; what matters is capturing inter-step frames at all.
-\emph{Narration helps mainly by making the model articulate what it sees}: visual narration is the largest single component (+18\,pp), mostly an inference-time articulation effect, with persistent text memory load-bearing on a minority of multi-step tasks.
-\emph{The observation interface is not a fixed bundle}: on Gemini~3~Flash the keyframe stream---positive on every earlier model generation---flips to $\mathbf{-12}$\,pp, a regression a causal probe traces to image-token dilution rather than content; audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
+\emph{Selection doesn't matter, and keyframes pay off only through narration}: uniform, random, pixel-difference, and CLIP keyframe selection are statistically indistinguishable, so no learned or semantic frame selector is needed; and the keyframe images add just $+1$\,pp as raw visual input but $+10$\,pp once the model narrates them into persistent text---a keyframe$\times$narration synergy concentrated on the transient-UI and carousel tasks where content changes between steps.
+\emph{Narration helps mainly by making the model articulate what it sees}: visual narration is the largest of the three gated perception components (+18\,pp), mostly an inference-time articulation effect, with persistent text memory load-bearing on a minority of multi-step tasks.
+\emph{The observation interface is not a fixed bundle}: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $\mathbf{-12}$\,pp, a regression a causal probe traces to image-token dilution rather than content; audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
 Observation-interface components must therefore be selected per model: the observation interface is a separable design axis along which models converge unevenly per component.
 \end{abstract}
 
@@ -80,17 +80,17 @@ Observation-interface components must therefore be selected per model: the obser
 SWE-agent~\citep{sweagent}'s core contribution was not a new model but a careful design of the agent-computer \emph{action} interface---which commands the model is given, how inputs and outputs are formatted, what feedback they return.  Small changes there dramatically affect what a fixed model can accomplish, making the action interface a separable, underexplored design axis.
 We make the analogous argument for the \emph{observation} interface in computer-use (CU) agents.
 Every CU agent we are aware of---closed-source~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source~\citep{uitars2,opencua,fara7b,coact}---ties observation to action: one screenshot per action step.
-We argue that decoupling observation (continuous, adaptive) from action (discrete) is the single change that unlocks dynamic computer use from any existing CU model with zero retraining.
+We argue that decoupling observation (continuous, adaptive) from action (discrete) is the single change that unlocks dynamic computer use from existing CU models with zero retraining---with the caveat, developed in Section~\ref{sec:newer}, that which components help is model-specific.
 
 \textbf{The current state.}
-On OSWorld~\citep{osworld}, screenshot-based agents have moved from sub-10\% at introduction to over 50\% in 2025 (Surfer~2~\citep{surfer2}: 50.7\%; UI-TARS-2~\citep{uitars2}: 47.5\%), closing most of the gap to the 72.4\% human baseline.
+On OSWorld~\citep{osworld}, screenshot-based agents have moved from sub-10\% at introduction to over 50\% in 2025 (Surfer~2~\citep{surfer2}: 50.7\%; UI-TARS-2~\citep{uitars2}: 47.5\%), closing much of the gap to the 72.4\% human baseline.
 These agents can fill forms, navigate websites, edit documents, and use professional software.
 
 \textbf{The blind spot.}
 All these agents observe through \emph{discrete static screenshots} every 3--5 seconds, and are entirely deaf.  Between screenshots, they are blind.
 They cannot understand on-screen video, catch transient UI events that auto-dismiss between observations, hear meeting speech or notification sounds, or perceive animations.
 A comprehensive survey~\citep{cusurvey} catalogues many open challenges but does not identify the observation modality as a gap.
-Quantitative evidence is mounting: GUI-World~\citep{guiworld} shows video LLMs fail on all temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; CUA-Suite~\citep{cuasuite} catalogues 55 hours of temporal dynamics that screenshot-based agents miss entirely.
+Quantitative evidence is mounting: GUI-World~\citep{guiworld} shows video LLMs struggle across temporal GUI tasks; VideoWebArena~\citep{videowebarena} reports that long-context models perform \emph{worse} with video than without; VideoGameBench~\citep{videogamebench} finds even paused-game evaluation yields only 1.6\% completion; CUA-Suite~\citep{cuasuite} catalogues 55 hours of temporal dynamics that screenshot-based agents miss entirely.
 
 \textbf{Why existing approaches fall short.}
 Retraining CU models on video data is expensive, model-specific, and undemonstrated at scale.
@@ -337,7 +337,7 @@ For tasks spanning many steps, the agent loses all visual memory of earlier cont
 Audio transcriptions persist naturally as text in the trajectory, but visual observations have no analogous persistence.
 
 At each step, the CU model outputs both an action and a brief visual narration---a text description of what is visually new in the current keyframes.
-This narration is generated in the same inference call that produces the action (zero additional compute) and persists indefinitely in the trajectory, even after the corresponding images are pruned.
+This narration is generated in the same inference call that produces the action---adding no extra inference call, only a small number of output tokens---and persists indefinitely in the trajectory, even after the corresponding images are pruned.
 Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations are generated by the CU model itself (no separate captioner) and are task-relevant rather than generic.
 
 \subsection{Observation Record}
@@ -657,7 +657,7 @@ Pairwise differences between selection methods (e.g., 56\% vs.\ 58\%) are not si
 
 \textbf{Claude Sonnet~4.6} improves from 38\% to 82\% (+44 pp) with the full AOI.
 This is the strongest absolute result.
-The ablation modes reveal that all inter-step visual capture methods converge to 56--58\% (a +18--20\,pp gain from additional frames alone, regardless of selection method), adding ASR reaches 64\%, and visual narration provides the largest single-component gain, reaching 82\% (mechanism decomposed in Section~\ref{sec:narration_discard}).
+The ablation modes reveal that all inter-step visual capture methods converge to 56--58\% (a +18--20\,pp gain over the raw-screenshot baseline, regardless of selection method---though, as Sections~\ref{sec:ablation} and~\ref{sec:keyframe_context} show, this transition also turns on the structured prompt scaffold: most of the jump is the scaffold, with the keyframe images contributing $+10$\,pp in context through narration), adding ASR reaches 64\%, and visual narration provides the largest single-component content gain, reaching 82\% (mechanism decomposed in Section~\ref{sec:narration_discard}).
 
 \textbf{GPT-5.4} improves from 37\% to 57\% (+20\,pp).
 The gain is consistent with Claude's but the absolute ceiling is lower, suggesting GPT-5.4's CU capabilities are the binding constraint once perception is adequate.
@@ -1050,7 +1050,7 @@ AOI visual + ASR & 64 & 1 & 4 & \textbf{10} & 4 & \textbf{9} \\
     ylabel style={font=\small},
     symbolic x coords={Screenshot, {+Keyframes}, {+ASR}, {+Narration}},
     xtick={Screenshot, {+Keyframes}, {+ASR}, {+Narration}},
-    xticklabels={Screenshot, +Keyframes, +ASR, +Narration},
+    xticklabels={Screenshot, {+Scaffold/KF}, +ASR, +Narration},
     xticklabel style={font=\small},
     ytick={0,20,40,60,80},
     yticklabel style={font=\small},
@@ -1089,9 +1089,9 @@ AOI visual + ASR & 64 & 1 & 4 & \textbf{10} & 4 & \textbf{9} \\
 \end{axis}
 \end{tikzpicture}
 \caption{\textbf{Ablation: progressive contribution of each AOI component} (Claude Sonnet~4.6).
-Inter-step keyframes provide +20\,pp (any selection method achieves this; see Table~\ref{tab:ablation}).
+The first step (+20\,pp; any selection method achieves it, Table~\ref{tab:ablation}) \emph{bundles} inter-step keyframes with the structured prompt scaffold that bare \texttt{standard} lacks; the scaffold carries $+19$ of it, and the keyframe images add $+1$\,pp as raw input but $+10$\,pp once narration is present (Sections~\ref{sec:ablation},~\ref{sec:keyframe_context}).
 ASR adds +6\,pp (directional; $p=0.18$ for this transition alone, Table~\ref{tab:ablation_stats}).
-Visual narration adds +18\,pp---the largest single-component gain; Section~\ref{sec:narration_discard} decomposes its mechanism.
+Visual narration adds +18\,pp---the largest single-component content gain; Section~\ref{sec:narration_discard} decomposes its mechanism.
 Error bars are approximate 95\% intervals using a symmetric Gaussian span (exact Wilson intervals in Table~\ref{tab:main}).}
 \label{fig:ablation}
 \end{figure}
@@ -1100,8 +1100,15 @@ Table~\ref{tab:ablation} and Figure~\ref{fig:ablation} reveal the contribution o
 
 \textbf{Selection method does not affect accuracy (56--58\%).}
 The five visual-only keyframe strategies (Section~\ref{sec:keyframes}: uniform 1 and 3\,FPS, pixel-diff, random, and the two-stage CLIP filter of Algorithm~\ref{alg:keyframe}) converge to a narrow band of 56--58\%, with no significant pairwise McNemar difference (every $p > 0.5$; Table~\ref{tab:ablation_stats}).
-The +18--20\,pp gain over the single-screenshot baseline ($p=8.8\times10^{-5}$ for Standard $\to$ Uniform~1\,FPS) comes from breaking the agent's blindness between steps, regardless of how frames are chosen.
 Practitioners can therefore use whatever keyframe strategy fits their latency and compute budget; for the CLIP variant, a sweep of the distance threshold $\theta$ across a $15\times$ range shows no significant sensitivity either (Appendix~\ref{app:theta}, Figure~\ref{fig:theta}).
+
+\textbf{The keyframe images pay off only through narration.}
+The $+18$--$20$\,pp lift from the raw \texttt{standard} baseline to any keyframe tier ($p=8.8\times10^{-5}$ for Standard $\to$ Uniform~1\,FPS) overstates the keyframe images' direct value: this transition also turns on the AOI's structured prompt scaffold (the \texttt{[PAGE ELEMENTS]} DOM list and prior-step trajectory wrapping), which \texttt{standard} lacks and which Section~\ref{sec:structured} shows carries $+19$\,pp on its own for Claude ($38\to57$).
+Holding the scaffold fixed, the keyframe \emph{images} on their own add only $+1$\,pp (\texttt{standard\_structured} $57\to$ AOI~visual-only $58$, with no audio or narration).
+But that is not the deployed configuration.
+When the model also narrates what it sees, the same keyframe images are worth $+10$\,pp: an \texttt{aoi\_audio} run (structured scaffold $+$ ASR $+$ narration, but \emph{no} keyframes) scores $72/100$, and adding the keyframe stream back recovers the full $82$ (Section~\ref{sec:keyframe_context}, Table~\ref{tab:keyframe_context}).
+The keyframe channel is thus \emph{synergistic with narration}---worth $+1$\,pp as raw images but $+10$\,pp once the model converts the captured frames into persistent text---and that $+10$\,pp concentrates on exactly the categories where content changes \emph{between} steps (transient-UI~F $+4$, carousel~D $+2$), not on the audio or static-dashboard categories where one screenshot per step already suffices.
+The selection-invariance finding is unaffected: whatever the keyframe channel contributes, it does so regardless of how frames are chosen.
 
 \textbf{Open-source replication on Qwen3-VL-32B.}
 To rule out a Claude-specific phenomenon, we replicate the convergence on
@@ -1203,9 +1210,9 @@ indicating that both the inference-time chain-of-thought effect
 ($+10$\,pp from ASR to ND) and the narration-persistence effect
 ($+8$\,pp from ND to full) contribute to the full $+18$\,pp gain.
 Only the persistence effect reaches significance at $N{=}100$; a
-content audit of the discordant tasks (body text) finds genuine
-memory recall in 2 of the 10 wins, with the rest within-step
-phenomena.}
+content audit of the discordant tasks (body text) finds literal
+memory recall in 2 of the 10 wins, the rest operating through
+within-step inputs and trajectory-level priming.}
 \label{tab:narration}
 \small
 \setlength{\tabcolsep}{3pt}
@@ -1253,17 +1260,111 @@ screenshot, current audio, or the narration generated at that same
 step); three of the eight have zero prior narrations because the winning
 action lands at the first step.
 
-The refined reading: persistent text memory is genuinely load-bearing on
-the minority of tasks whose answer accumulates across multiple
-frames---not as a uniform $+8$\,pp lift; the rest of the gap is decoding
-variance and within-step differences that $N{=}100$ cannot separate from
-noise.  The full $+18$\,pp visual-narration contribution is therefore
-best summarised as ${\sim}+10$\,pp from inference-time chain-of-thought
-(directional, $p=0.12$), $+2$--$4$\,pp from persistent memory on
-genuinely multi-step tasks (the two audited memory hits), and the
-remainder sampling variance.  Narration's primary mechanism is making
-the model \emph{articulate} what it sees; its persistence matters where
-information genuinely spans steps.
+The refined reading: because the narration-discarded run changes
+\emph{only} whether the narration text persists, the $+8$\,pp
+($74\to82$, $p=0.039$) is causally attributable to persistence---the
+audit refines the persistence effect's \emph{mechanism}, not its
+existence.  Explicit memory recall (prior narrations literally
+containing the load-bearing fact) is the mechanism on 2 of the 10
+discordant wins, both on genuinely multi-step tasks (C-H3 video
+breakpoints, C-M2 sequential page titles).  On the other 8 the
+load-bearing fact is present within the winning step itself, so
+persistence cannot be supplying a verbatim answer there; it instead
+helps by steering earlier steps onto a better trajectory, and on the
+three first-step wins (no prior narration exists yet) the discordance is
+pure decoding variance.  The full $+18$\,pp visual-narration
+contribution is therefore best summarised as ${\sim}+10$\,pp from
+inference-time chain-of-thought (directional, $p=0.12$) plus a real
+$+8$\,pp persistence effect ($p=0.039$) whose mechanism is literal
+memory recall on the minority of multi-step tasks and weaker
+trajectory-level priming elsewhere.  Narration's primary mechanism is
+making the model \emph{articulate} what it sees; its persistence matters
+most where information genuinely spans steps.
+
+\subsection{Keyframes Pay Off Through Narration: the \texttt{aoi\_audio} Decomposition}
+\label{sec:keyframe_context}
+
+Section~\ref{sec:ablation} showed that, holding the structured scaffold
+fixed, the keyframe \emph{images} on their own add only $+1$\,pp on
+Claude (\texttt{standard\_structured} $57\to$ \texttt{aoi\_visual} $58$).
+That measurement, however, switches off audio and narration---not the
+configuration in which the AOI is deployed.
+To measure the keyframe images' marginal value \emph{in context}, we run
+\texttt{aoi\_audio} (structured scaffold $+$ ASR $+$ visual narration,
+with the keyframe stream disabled) and compare it to \texttt{aoi\_full}
+(which adds the keyframes back); the difference isolates the keyframe
+images with audio and narration both present.
+Crucially, \texttt{aoi\_audio} still has the model narrate---it narrates
+the single post-action screenshot each step---so the contrast asks
+specifically whether the \emph{extra inter-step frames} carry
+information beyond one screenshot per step.
+
+\begin{table}[t]
+\centering
+\caption{Keyframe images' marginal value \emph{in context}:
+\texttt{aoi\_audio} (scaffold $+$ ASR $+$ narration, \emph{no}
+keyframes) vs.\ \texttt{aoi\_full} (keyframes added back), 100 dynamic
+tasks.  $\Delta_\text{KF}$ is the keyframe-image contribution with audio
+and narration both present.  Contrast with the $+1$\,pp the same images
+add without narration (Section~\ref{sec:ablation}): the keyframe channel
+is synergistic with narration on Claude and the most model-dependent AOI
+component overall, spanning $+10$ to $-12$\,pp across four models (cf.\
+the $-12$\,pp on Gemini~3, traced to image-token dilution in
+Section~\ref{sec:keyframe_probe}).
+$^\dagger$GPT-5.4 is measured through OpenRouter (both modes, same
+adapter) because its direct OpenAI key lacked the inference scope at
+revision time; its \texttt{aoi\_full} runs higher here than the
+OpenAI-direct $57$ of Table~\ref{tab:main} (a backend/snapshot
+difference), so only its within-backend $\Delta_\text{KF}$ is comparable
+to the other rows.}
+\label{tab:keyframe_context}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{@{}l ccc@{}}
+\toprule
+\textbf{Model} & \textbf{\texttt{aoi\_audio} (no KF)} & \textbf{\texttt{aoi\_full} ($+$KF)} & \textbf{$\Delta_\text{KF}$ (pp)} \\
+\midrule
+Claude Sonnet 4.6 & 72 & \textbf{82} & $+$10 \\
+Gemini 2.5 Flash  & 63 & \textbf{69} & $+$6 \\
+GPT-5.4$^\dagger$ & \textbf{72} & 70 & $-$2 \\
+Gemini 3 Flash    & \textbf{57} & 45 & $-$12 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:keyframe_context} reports the result.
+On Claude the keyframe images are worth $+10$\,pp in context
+($72\to82$)---an order of magnitude more than the $+1$\,pp they add as
+raw input without narration.
+The two measurements together identify a \textbf{keyframe$\times$narration
+synergy}: the captured inter-step frames matter not as extra pixels the
+policy attends to directly, but as raw material the model converts into
+persistent text.
+Narration of one screenshot per step (\texttt{aoi\_audio}) already
+recovers most of the perception gain; the extra inter-step frames add a
+further $+10$\,pp, and that increment concentrates on exactly the
+categories where content changes \emph{between} steps---transient-UI~F
+($+4$) and carousel~D ($+2$)---and is near-zero on the audio (A, B, G, H)
+and static-dashboard (E) categories where one screenshot per step
+already suffices.
+Gemini~2.5~Flash shows the same pattern at smaller magnitude ($63\to69$,
+$+6$\,pp, again concentrated on F~$+3$ and D~$+2$).
+GPT-5.4 sits at the neutral point ($72\to70$, $-2$\,pp, within sampling
+noise): the inter-step frames neither help nor hurt once it is already
+narrating.
+On Gemini~3~Flash the same contrast runs the other way
+(\texttt{aoi\_audio} $57$ vs.\ \texttt{aoi\_full} $45$, $-12$\,pp): the
+identical image stream that helps Claude through narration overwhelms
+Gemini~3's action grounding (Section~\ref{sec:keyframe_probe}).
+The keyframe-image channel is thus the most model-dependent AOI
+component, spanning a $+10$\,pp gain on Claude and $+6$\,pp on Gemini~2.5
+(both realised through narration), through GPT-5.4's neutral $-2$\,pp, to
+a $-12$\,pp \emph{penalty} on Gemini~3---while audio transcription and
+narration, both delivered as \emph{text}, are robustly positive across
+every model.  This sharpens the operative rule of
+Section~\ref{sec:diagmap}: deliver observation to the model as text
+(transcripts and narration) wherever possible, and treat the raw
+keyframe-image stream as a per-model toggle.
 
 \subsection{Per-Step Observation Statistics}
 \label{sec:perstep}
@@ -1599,7 +1700,8 @@ audio categories where every CU model is fundamentally deaf (A podcast,
 B meeting, G phone, H interview), Gemini~3 gains
 $+6/+4/+5/+1 = +16$\,pp---in line with Gemini~2.5 ($+24$\,pp), Claude
 ($+27$\,pp), and GPT-5.4 ($+8$\,pp) on the same categories
-(per-category numbers in Table~\ref{tab:percategory}).  On the four
+(Gemini~3 per-category numbers in Table~\ref{tab:gemini3_percat}; the
+other models in Table~\ref{tab:percategory}).  On the four
 visual-temporal categories (C video, D carousel, I collab, J games) it
 gains $+2/+1/+0/+0 = +3$\,pp, comparable to other models' $+2$ to $+12$.
 The entire shortfall vs.\ the $+48$ Gemini~2.5 gain sits on two
@@ -1608,6 +1710,30 @@ where Gemini~3 alone \emph{regresses} ($-7$ and $-3$\,pp; no other
 model regresses there: Claude $+0/+5$, GPT-5.4 $+3/+6$, Gemini~2.5
 $+8/+9$).  Whatever shrinks the net residual lives entirely in this
 E$+$F regression, not in any global internalisation.
+
+\begin{table}[t]
+\centering
+\caption{Gemini~3~Flash per-category success (pass/10), standard vs.\
+AOI~full, on the 100 dynamic tasks---the per-category breakdown
+underlying the Section~\ref{sec:why_g3} measurements (Gemini~3 is
+omitted from Table~\ref{tab:percategory} for width).  The four audio
+categories (A, B, G, H) gain $+16$\,pp in aggregate; the shortfall vs.\
+the Gemini~2.5 $+48$\,pp gain is concentrated in the E and F
+regressions.}
+\label{tab:gemini3_percat}
+\small
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{@{}l cccccccccc c@{}}
+\toprule
+\textbf{Mode} & A & B & C & D & E & F & G & H & I & J & \textbf{Total} \\
+\midrule
+Standard & 0 & 2 & 4 & 4 & \textbf{8} & 3 & 1 & 7 & 5 & 2 & 36 \\
+AOI full & \textbf{6} & \textbf{6} & \textbf{6} & \textbf{5} & 1 & 0 & \textbf{6} & \textbf{8} & 5 & 2 & 45 \\
+\midrule
+$\Delta$ & $+$6 & $+$4 & $+$2 & $+$1 & $-$7 & $-$3 & $+$5 & $+$1 & 0 & 0 & $+$9 \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \textbf{Measurement 2: action-grammar shift is universal; premature
 termination is Gemini-3-specific.}
@@ -1650,6 +1776,12 @@ categories where the listed input id resolves the targeting question
 \emph{subtracts} $4$\,pp on the E live-dashboard plus F transient-UI
 tasks (E: $6\to1$, F: $1\to2$) for the
 \texttt{fill$\to$done}-without-submit reason traced in Measurement 2.
+The scaffold effect is also path-dependent: measured with audio present
+(this $+9$\,pp) it differs from the audio-free path in
+Table~\ref{tab:gemini3_decomp} ($\Delta_\text{prompt}=-7$\,pp,
+\texttt{standard} $36\to$ \texttt{standard\_structured} $29$), an
+audio$\times$scaffold interaction rather than a contradiction; we report
+the audio-present value because \texttt{aoi\_full} always includes audio.
 \item \emph{Keyframes: $-12$\,pp} (\texttt{aoi\_audio} $57 \to$
 \texttt{aoi\_full} $45$).  Not predicted by the prior-generation
 framing, which treated extra keyframes as monotonically additive
@@ -1661,7 +1793,7 @@ novel visual information---summing to the $+12$\,pp total.
 Section~\ref{sec:keyframe_probe} probes the mechanism causally.
 \end{itemize}
 
-The net $(+12)+(+9)+(-12)=+9$\,pp matches the \texttt{aoi\_full} residual, but reframes what the small net means: Gemini~3 has substantial slack the AOI can recover ($\sim$$+21$\,pp with the right component mix, reaching $57/100$ from $36$); the default bundle is just mis-tuned for this model.  One component (keyframes) crosses from net-positive on Gemini~2.5-era models to net-negative on Gemini~3, while another (structured scaffold) flips from uniformly positive to task-dependent.
+The net $(+12)+(+9)+(-12)=+9$\,pp matches the \texttt{aoi\_full} residual, but reframes what the small net means: Gemini~3 has substantial slack the AOI can recover ($\sim$$+21$\,pp with the right component mix, reaching $57/100$ from $36$); the default bundle is just mis-tuned for this model.  One component (the keyframe images) crosses from net-positive on earlier models---$+10$\,pp on Claude and $+6$\,pp on Gemini~2.5, both realised through narration (Section~\ref{sec:keyframe_context})---to net-negative ($-12$\,pp) on Gemini~3, while another (the structured scaffold) flips from uniformly positive to task-dependent.
 
 \begin{table}[t]
 \centering
@@ -1781,8 +1913,8 @@ Pulling the case studies together with the Section~\ref{sec:static} decompositio
 
 \begin{itemize}
 \item \emph{Gemini~3~Flash:} not perception- or audio-saturated.  Net $+9$ is a three-way cancellation ($+12$ audio, $+9$ scaffold with bi-directional per-category effects, $-12$ keyframes).  Audio$+$scaffold-only (\texttt{aoi\_audio}) reaches $57/100$---a $+21$\,pp recovery, $+12$ above \texttt{aoi\_full}.  Components must be tuned per-model rather than bundled.
-\item \emph{Gemini~2.5~Flash:} $+25$, $+23$.  Both prompt-format and perception useful; neither internalised.
-\item \emph{Claude Sonnet 4.6:} $+19$, $+25$.  Both useful; perception the larger lift.
+\item \emph{Gemini~2.5~Flash:} $+25$, $+23$.  Both prompt-format and perception useful; neither internalised.  Within perception the keyframe images add $+6$\,pp, and only through narration (Section~\ref{sec:keyframe_context}).
+\item \emph{Claude Sonnet 4.6:} $+19$, $+25$.  Both useful; perception the larger lift.  Within perception the keyframe images contribute $+10$\,pp---but only via narration ($+1$\,pp as raw input); audio and narration carry the rest (Section~\ref{sec:keyframe_context}).
 \item \emph{Fara-7B:} $+4$, $+13$.  Reasoning-capacity-bottlenecked; the model cannot leverage richer prompt presentation.
 \item \emph{Grok-4 (original):} latency-bottlenecked.  The AOI~full ceiling of 25 decomposes (via Grok-4-fast vs.\ Grok-4.3) into ${\sim}{+}22$ from removing latency and ${\sim}{+}18$ from base-model improvement.
 \end{itemize}
@@ -1974,9 +2106,10 @@ Each cell in our main table is one trial of 100 binary tasks; we use paired McNe
 \textbf{Persistent-memory effect smaller than the headline.}
 The narration-persistence gap is significant at $N{=}100$ ($p=0.039$),
 but the content audit of the ten discordant tasks in
-Section~\ref{sec:narration_discard} finds prior narrations containing
-the load-bearing fact in only two of the ten wins; the rest are
-within-step phenomena and decoding variance.  Persistent memory is load-bearing on a
+Section~\ref{sec:narration_discard} finds prior narrations literally
+containing the load-bearing fact in only two of the ten wins; the rest
+operate through trajectory-level priming and, on first-step wins,
+decoding variance.  Persistent memory acts as literal recall on a
 minority of genuinely multi-step tasks, not as a uniform lift, and a
 larger benchmark with more memory-heavy tasks would be needed to measure
 the memory effect in isolation.
@@ -1990,9 +2123,12 @@ Our implementation uses Whisper for speech-only ASR rather than a multimodal aud
 Non-speech audio events (notification sounds, alert beeps) are not transcribed.
 A multimodal audio model (e.g., Qwen3 Omni) could extend coverage to the full audio scene.
 
-\textbf{Benchmark scope.}
+\textbf{Benchmark scope and external validity.}
 DynaCU-Bench tasks execute in a controlled browser environment with synthesized audio.
 Performance on real-world dynamic content (live video calls, real YouTube, native desktop applications) may differ.
+We also do not report AOI numbers on existing dynamic-GUI benchmarks (GUI-World~\citep{guiworld}, VideoWebArena~\citep{videowebarena}, CUA-Suite~\citep{cuasuite}, VideoGameBench~\citep{videogamebench}).
+These either evaluate offline video question-answering over pre-recorded clips rather than a live screenshot--action loop (GUI-World, CUA-Suite), or supply video as fixed context to a web agent rather than a continuously observed environment with a separate audio channel (VideoWebArena), so wrapping them with the AOI's inter-step capture and volume-gated audio would require re-instrumenting each harness around our observe--act loop.
+Because every headline number here comes from our own benchmark, this re-instrumentation is the most direct external-validity test of the AOI and is the clearest item of future work.
 
 \textbf{Open-source replication on a substitute model.}
 For the selection-method convergence finding we additionally evaluate
@@ -2017,13 +2153,13 @@ future work.
 
 Computer-use agents cannot perceive dynamic content because observation is tied to action: one screenshot per step.
 We argue the agent-computer \emph{observation} interface is a separable, underexplored design axis---the natural counterpart to the action interface SWE-agent~\citep{sweagent} surfaced---and introduce the AOI, a perception layer transparent for static tasks, adaptive for dynamic content, and compatible with any existing CU model without retraining.
-Eight CU agents equipped with the AOI---six in the main table plus a two-model Qwen3-VL replication---gain +17 to +48\,pp on DynaCU-Bench (paired McNemar $p<10^{-3}$ for every model); the strongest reaches 82\% on Claude Sonnet~4.6 (3-seed mean 78.7\%, std 3.1\,pp).
+Eight CU agents equipped with the AOI---six in the main table plus a two-model Qwen3-VL replication---gain +17 to +48\,pp on DynaCU-Bench (paired McNemar $p<10^{-3}$ for every model); the strongest, Claude Sonnet~4.6, reaches a 3-seed mean of 78.7\% (std 3.1\,pp; best seed 82\%).
 
 Three findings reframe how we think about CU perception.
-First, keyframe \emph{selection} does not significantly affect accuracy---uniform, random, pixel-difference, and CLIP-based methods are statistically indistinguishable (56--58\% on Claude, replicated on the open-source Qwen3-VL-32B)---so the critical factor is capturing \emph{any} inter-step frames, not how they are selected.
-Second, the largest single contributor is visual narration ($+18$\,pp): roughly $+10$\,pp from inference-time chain-of-thought during narration generation plus $+8$\,pp from persisting the narration as text, which a content audit attributes to genuine memory recall on the minority of tasks whose answer spans multiple steps.
+First, keyframe \emph{selection} does not significantly affect accuracy---uniform, random, pixel-difference, and CLIP-based methods are statistically indistinguishable (56--58\% on Claude, replicated on the open-source Qwen3-VL-32B)---so no learned or semantic frame selector is needed; and the keyframe \emph{images} pay off only through narration, adding $+1$\,pp as raw visual input but $+10$\,pp once the model narrates the captured frames into persistent text (Claude, Section~\ref{sec:keyframe_context}).
+Second, among the AOI's content components the largest single contributor is visual narration ($+18$\,pp): roughly $+10$\,pp from inference-time chain-of-thought during narration generation plus $+8$\,pp from persisting the narration as text, which a content audit attributes to literal memory recall on a minority of multi-step tasks and to weaker trajectory-level priming elsewhere.
 Narration's primary mechanism is making the model articulate what it sees; persistence matters where information genuinely accumulates.
-Third, the observation interface is not a fixed bundle: on Gemini~3~Flash the keyframe stream---positive on every earlier model generation---flips to $-12$\,pp, a regression that a causal probe attributes to image-token dilution rather than content (Section~\ref{sec:keyframe_probe}); audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
+Third, the observation interface is not a fixed bundle: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $-12$\,pp, a regression that a causal probe attributes to image-token dilution rather than content (Section~\ref{sec:keyframe_probe}); audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
 Observation-interface components must be selected per model.
 
 Three further results sharpen the picture.
