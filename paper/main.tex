@@ -59,7 +59,7 @@
 SWE-agent~\citep{sweagent} showed that the agent-computer \emph{action} interface is an underexplored design axis for software-engineering agents.  We show the same for the \emph{observation} interface in computer-use (CU) agents: getting it right unlocks dynamic computer use from existing CU models without retraining---though, as our later model studies show, the optimal mix of observation components is model-specific.
 Current CU agents---closed and open-source alike---observe the world through periodic screenshots every 3--5\,s and have no audio perception, leaving them blind to video playback, animations, transient UI events, meetings, notifications, and spoken instructions.
 We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples observation (continuous, adaptive) from action (discrete).
-Its three gated components---inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text---produce almost nothing on static, silent content, reducing the AOI to the standard loop.
+Its three gated components---inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text---produce almost nothing on static, silent content, reducing the perception layer to the standard loop (its structured observation-record format remains, and never degrades static work---it slightly helps it).
 
 On \textbf{DynaCU-Bench}, our benchmark of 100 dynamic browser tasks across 10 categories (plus a 50-task static control), eight CU models---closed and open-source, from 7B to frontier scale---gain +17 to +48\,pp over their screenshot-only baselines with zero retraining (paired McNemar $p<10^{-3}$ for every model); the strongest, Claude Sonnet~4.6, reaches a 3-seed mean of 78.7\% (best seed 82\%).
 On a 12-task audio-focused subset, two production streaming baselines---OpenAI Realtime~\citep{openairealtime} (3/12) and Gemini~Live~\citep{geminilive} (0/12)---fall far short of the AOI-equipped agent (12/12).
@@ -67,7 +67,7 @@ On a 12-task audio-focused subset, two production streaming baselines---OpenAI R
 Three findings reframe CU perception.
 \emph{Selection doesn't matter, and keyframes pay off only through narration}: uniform, random, pixel-difference, and CLIP keyframe selection are statistically indistinguishable, so no learned or semantic frame selector is needed; and the keyframe images add just $+1$\,pp as raw visual input but $+10$\,pp once the model narrates them into persistent text---a keyframe$\times$narration synergy concentrated on the transient-UI and carousel tasks where content changes between steps.
 \emph{Narration helps mainly by making the model articulate what it sees}: visual narration is the largest of the three gated perception components (+18\,pp), mostly an inference-time articulation effect, with persistent text memory load-bearing on a minority of multi-step tasks.
-\emph{The observation interface is not a fixed bundle}: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $\mathbf{-12}$\,pp, a regression a causal probe traces to image-token dilution rather than content; audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
+\emph{The observation interface is not a fixed bundle}: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $\mathbf{-12}$\,pp, a regression a causal probe (underpowered at $N{=}50$, so directional) traces to image-token dilution rather than content; audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
 Observation-interface components must therefore be selected per model: the observation interface is a separable design axis along which models converge unevenly per component.
 \end{abstract}
 
@@ -140,7 +140,8 @@ Four categories of content are systematically missed:
 % ════════════════════════════════════════════════════════════
 
 The AOI sits between the environment and any existing CU model, observing the entire interval between agent steps and providing the model with additional keyframes, audio descriptions, and accumulated text context---all in the standard image + text format that every CU model already accepts.
-For static, silent tasks, the AOI produces nothing and behaviour is identical to the standard loop; for dynamic tasks, the model receives strictly more information.
+For static, silent tasks, the AOI's perception gates produce nothing and behaviour reduces to the standard loop wrapped in the structured observation-record format (which does not degrade static work---Section~\ref{sec:static50} shows it slightly helps); for dynamic tasks, the model additionally receives the inter-step keyframes, audio transcripts, and narration.
+This is strictly more \emph{information}, but not always a strictly better \emph{outcome}: the per-step observation work adds latency, which on action-bound tasks (browser games, Section~\ref{sec:eval}) can cost more than the perception gains---the AOI targets human-paced computer use, not real-time interaction.
 No retraining is needed.
 
 \subsection{Architecture Overview}
@@ -321,7 +322,8 @@ If below the silence threshold, the audio model call is skipped entirely.
 Cost: ${\sim}0$\,ms for the majority of steps.
 
 When audio is present, we use Whisper large-v3~\citep{whisper} for speech transcription, operating on 16\,kHz mono audio captured from the system audio output via PulseAudio virtual devices.
-The audio buffer spans the full inter-step interval including the post-action buffer, capturing action feedback sounds (click confirmations, error beeps).
+Our implementation transcribes \emph{speech} only; non-speech audio events (notification chimes, error beeps) trip the volume gate but produce no useful transcript, so the audio channel's contribution throughout this paper is spoken content---a multimodal audio model would be needed to cover the full audio scene (Section~\ref{sec:limitations}).
+The audio buffer spans the full inter-step interval including the post-action buffer, so speech that begins just after an action (e.g.\ a spoken confirmation) is still captured.
 
 \textbf{Overlapping windows.}
 Agent step boundaries are determined by model inference latency, not by speech content.
@@ -344,7 +346,7 @@ Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations a
 \label{sec:obsrecord}
 
 At each step, the CU model receives a structured document combining text context from recent prior steps (audio transcriptions, visual narrations, actions taken) and raw observations from the current interval (new audio transcription, any captured keyframe images, and the post-action screenshot).
-For static, silent tasks, this document contains only the post-action screenshot---identical to the standard loop.
+For static, silent tasks, the raw-observation part of this document reduces to just the post-action screenshot---no keyframes, no audio---but the surrounding structured format (DOM element list, prior-step text trajectory) is still present, so it is not identical to a raw-screenshot loop; Section~\ref{sec:static50} shows this format alone gives a small no-degradation gain on purely static work.
 Figure~\ref{fig:obsrecord} shows a concrete example of the document format; Figure~\ref{fig:realkf} grounds the pipeline in real pixels and verbatim narrations from a recorded benchmark run.
 
 \begin{figure}[t]
@@ -654,6 +656,7 @@ The AOI produces large, consistent gains across all six models, all highly signi
 \emph{Note on statistical power:} Each configuration is evaluated once on 100 binary-outcome tasks (no repeated trials).
 We use paired McNemar's exact mid-$p$ tests on the discordant tasks to assess significance and report 95\% Wilson confidence intervals on the marginal success rates.
 Pairwise differences between selection methods (e.g., 56\% vs.\ 58\%) are not significant ($p>0.5$ for every pair, see Table~\ref{tab:ablation}); the large between-tier gaps are.
+The same single-trial caveat applies to every per-category, ablation, and per-difficulty cell in the paper: the three-seed sweep of Table~\ref{tab:variance} puts the decoding-noise band at ${\sim}3$\,pp on a 100-task total, so small differences (a few points on a 100-task total, $\pm1$--$2$ on a per-category /10) should be read as within that band unless a paired test says otherwise.
 
 \textbf{Claude Sonnet~4.6} improves from 38\% to 82\% (+44 pp) with the full AOI.
 This is the strongest absolute result.
@@ -1106,7 +1109,7 @@ Practitioners can therefore use whatever keyframe strategy fits their latency an
 The $+18$--$20$\,pp lift from the raw \texttt{standard} baseline to any keyframe tier ($p=8.8\times10^{-5}$ for Standard $\to$ Uniform~1\,FPS) overstates the keyframe images' direct value: this transition also turns on the AOI's structured prompt scaffold (the \texttt{[PAGE ELEMENTS]} DOM list and prior-step trajectory wrapping), which \texttt{standard} lacks and which Section~\ref{sec:structured} shows carries $+19$\,pp on its own for Claude ($38\to57$).
 Holding the scaffold fixed, the keyframe \emph{images} on their own add only $+1$\,pp (\texttt{standard\_structured} $57\to$ AOI~visual-only $58$, with no audio or narration).
 But that is not the deployed configuration.
-When the model also narrates what it sees, the same keyframe images are worth $+10$\,pp: an \texttt{aoi\_audio} run (structured scaffold $+$ ASR $+$ narration, but \emph{no} keyframes) scores $72/100$, and adding the keyframe stream back recovers the full $82$ (Section~\ref{sec:keyframe_context}, Table~\ref{tab:keyframe_context}).
+When the model also narrates what it sees, the same keyframe images are worth $+10$\,pp: an \texttt{aoi\_audio} run (structured scaffold $+$ ASR $+$ narration, but \emph{no} keyframes---the name marks the absent channel, it is not an audio-only mode) scores $72/100$, and adding the keyframe stream back recovers the full $82$ (Section~\ref{sec:keyframe_context}, Table~\ref{tab:keyframe_context}).
 The keyframe channel is thus \emph{synergistic with narration}---worth $+1$\,pp as raw images but $+10$\,pp once the model converts the captured frames into persistent text---and that $+10$\,pp concentrates on exactly the categories where content changes \emph{between} steps (transient-UI~F $+4$, carousel~D $+2$), not on the audio or static-dashboard categories where one screenshot per step already suffices.
 The selection-invariance finding is unaffected: whatever the keyframe channel contributes, it does so regardless of how frames are chosen.
 
@@ -1340,6 +1343,18 @@ The two measurements together identify a \textbf{keyframe$\times$narration
 synergy}: the captured inter-step frames matter not as extra pixels the
 policy attends to directly, but as raw material the model converts into
 persistent text.
+One caveat bounds this attribution: the two contrasts differ in audio as
+well as narration---the $+1$\,pp measurement (\texttt{standard\_structured}
+$57\to$ \texttt{aoi\_visual} $58$) has neither audio nor narration, while
+the $+10$\,pp measurement (\texttt{aoi\_audio} $72\to$ \texttt{aoi\_full}
+$82$) has both, so the increment is strictly the keyframe images' value
+\emph{in the deployed in-context configuration}, and we cannot fully
+exclude a keyframe$\times$audio component from this pair alone.
+What pins the effect to narration rather than audio is the category
+concentration: the $+10$\,pp lands on the visual transient-UI~(F) and
+carousel~(D) categories where keyframes carry novel between-step content
+and audio never fires, not on the audio categories---an audio interaction
+would show the opposite pattern.
 Narration of one screenshot per step (\texttt{aoi\_audio}) already
 recovers most of the perception gain; the extra inter-step frames add a
 further $+10$\,pp, and that increment concentrates on exactly the
@@ -2159,7 +2174,7 @@ Three findings reframe how we think about CU perception.
 First, keyframe \emph{selection} does not significantly affect accuracy---uniform, random, pixel-difference, and CLIP-based methods are statistically indistinguishable (56--58\% on Claude, replicated on the open-source Qwen3-VL-32B)---so no learned or semantic frame selector is needed; and the keyframe \emph{images} pay off only through narration, adding $+1$\,pp as raw visual input but $+10$\,pp once the model narrates the captured frames into persistent text (Claude, Section~\ref{sec:keyframe_context}).
 Second, among the AOI's content components the largest single contributor is visual narration ($+18$\,pp): roughly $+10$\,pp from inference-time chain-of-thought during narration generation plus $+8$\,pp from persisting the narration as text, which a content audit attributes to literal memory recall on a minority of multi-step tasks and to weaker trajectory-level priming elsewhere.
 Narration's primary mechanism is making the model articulate what it sees; persistence matters where information genuinely accumulates.
-Third, the observation interface is not a fixed bundle: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $-12$\,pp, a regression that a causal probe attributes to image-token dilution rather than content (Section~\ref{sec:keyframe_probe}); audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
+Third, the observation interface is not a fixed bundle: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $-12$\,pp, a regression that a causal probe (at $N{=}50$, strong directional rather than definitive) attributes to image-token dilution rather than content (Section~\ref{sec:keyframe_probe}); audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
 Observation-interface components must be selected per model.
 
 Three further results sharpen the picture.
