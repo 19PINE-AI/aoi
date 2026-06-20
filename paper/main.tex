@@ -69,7 +69,7 @@ Three findings reframe CU perception.
 \emph{Selection doesn't matter, and keyframes pay off only through narration}: uniform, random, pixel-difference, and CLIP keyframe selection are statistically indistinguishable, so no learned or semantic frame selector is needed; and the keyframe images add just $+1$\,pp as raw visual input but $+10$\,pp once the model narrates them into persistent text---a keyframe$\times$narration synergy concentrated on the transient-UI and carousel tasks where content changes between steps.
 \emph{Narration helps mainly by making the model articulate what it sees}: visual narration is the largest of the three gated perception components (+18\,pp), mostly an inference-time articulation effect, with persistent text memory load-bearing on a minority of multi-step tasks.
 \emph{The observation interface is not a fixed bundle}: on Gemini~3~Flash the keyframe stream---never regressive on the earlier model generations we measured---flips to $\mathbf{-12}$\,pp, a regression a causal probe (underpowered at $N{=}50$, so directional) traces to image-token dilution rather than content; audio and the structured scaffold stay positive, and dropping keyframes recovers $+21$\,pp over standard.
-Observation-interface components must therefore be selected per model: the observation interface is a separable design axis along which models converge unevenly per component.
+The observation interface is thus a separable design axis along which models converge unevenly---its components must be selected per model.
 \end{abstract}
 
 % ════════════════════════════════════════════════════════════
@@ -608,24 +608,22 @@ AOI (visual + ASR) & 64 \scriptsize[54.2, 72.7] & --- & --- & --- & --- & --- \\
     every node near coord/.append style={above=2pt},
     clip=false,
 ]
-% Standard bars with 95% Wilson CIs
-\addplot[fill=cStandard!70, draw=cStandard!90,
-         error bars/.cd, y dir=both, y explicit, error bar style={cGray!80, thick}]
+% Standard bars
+\addplot[fill=cStandard!70, draw=cStandard!90]
     coordinates {
-      (Claude 4.6,    38) +- (0, 9.78)
-      (GPT-5.4,       37) +- (0, 9.45)
-      (Gemini 2.5,    21) +- (0, 7.92)
-      (EvoCUA-32B,    18) +- (0, 7.50)
-      (Fara-7B,       17) +- (0, 7.31)
+      (Claude 4.6,    38)
+      (GPT-5.4,       37)
+      (Gemini 2.5,    21)
+      (EvoCUA-32B,    18)
+      (Fara-7B,       17)
     };
-\addplot[fill=cAOI!70, draw=cAOI!90,
-         error bars/.cd, y dir=both, y explicit, error bar style={cGray!80, thick}]
+\addplot[fill=cAOI!70, draw=cAOI!90]
     coordinates {
-      (Claude 4.6,    82) +- (0, 7.49)
-      (GPT-5.4,       57) +- (0, 9.55)
-      (Gemini 2.5,    69) +- (0, 8.92)
-      (EvoCUA-32B,    55) +- (0, 9.61)
-      (Fara-7B,       34) +- (0, 9.09)
+      (Claude 4.6,    82)
+      (GPT-5.4,       57)
+      (Gemini 2.5,    69)
+      (EvoCUA-32B,    55)
+      (Fara-7B,       34)
     };
 \legend{Standard, AOI (full)}
 
@@ -648,7 +646,7 @@ The AOI produces large gains across CU models without any retraining.
 Green numbers show absolute improvement in percentage points.
 Gemini~2.5 Flash shows the largest absolute gain (+48\,pp) and relative gain ($3.3\times$), while Claude achieves the highest absolute score (82\%, seed~1; 3-seed mean 78.7\%).
 Five of the six models tested are plotted here; Grok-4 (standard~4, AOI~full~25, $\Delta\!+\!21$\,pp) is omitted from the chart for legibility and reported separately in Table~\ref{tab:grok} (Section~\ref{sec:grok}).
-Error bars are approximate 95\% intervals using a symmetric Gaussian span; exact (asymmetric) Wilson intervals are tabulated in Table~\ref{tab:main} and used for all reported $p$-values.}
+Exact (asymmetric) 95\% Wilson confidence intervals on every bar are tabulated in Table~\ref{tab:main} and used for all reported $p$-values.}
 \label{fig:mainresults}
 \end{figure}
 
@@ -1008,9 +1006,141 @@ Summary: the AOI is consistently cheaper in dollars, but for fast-inference mode
 For batch automation or cost-sensitive production the AOI is unambiguously preferred; for latency-sensitive interactive use, the trade-off is per-model.
 
 % ════════════════════════════════════════════════════════════
+\section{Decomposing the Gain: Prompt Format vs.\ Perception}
+\label{sec:static}
+% ════════════════════════════════════════════════════════════
+
+Before attributing the gains of Section~\ref{sec:eval} to perception, we rule out the worst-case confound: that the AOI helps only by re-formatting the prompt.
+We do this in two steps---first showing the AOI does not degrade purely static work and that its static-task gain is a prompt-format effect (Section~\ref{sec:static50}), then measuring the prompt-format and perception components separately on the dynamic benchmark (Sections~\ref{sec:structured}--\ref{sec:promptsub}).
+This split sets the baseline against which Section~\ref{sec:analysis} dissects the individual perception components.
+
+\subsection{Static-50: No Degradation on Static Work}
+\label{sec:static50}
+
+A key design claim is that the AOI does not degrade performance on purely static, silent desktop work.
+We verify this on \textbf{Static-50}, a 50-task baseline (22~easy, 16~medium, 12~hard) of pure HTML tasks: form filling, table reading, calculation, sequence puzzles, and policy reasoning.
+None of the pages contain animations, timers, video, or audio; the rendered DOM is identical at $t=0$ and $t=\infty$.
+This is large enough to detect a 5--10\,pp difference between modes with reasonable power; Table~\ref{tab:static} reports the result.
+
+\begin{table}[t]
+\centering
+\caption{Static-50 verification: Claude Sonnet~4.6 on 50 pure-HTML tasks (no dynamic content).
+The AOI's gates suppress almost all extraction---7 keyframes across all 50 tasks (all incidental UI feedback such as form-field focus changes) and 0 audio segments: the perception pipeline runs but produces almost no observations, validating the gates' suppression behaviour.
+The AOI does not degrade static work; its higher score is a prompt-format effect (see body text).}
+\label{tab:static}
+\small
+\begin{tabular}{@{}l cc cc@{}}
+\toprule
+\textbf{Mode} & \textbf{Pass/50} & \textbf{Avg Steps} & \textbf{Total KF} & \textbf{Audio Seg.} \\
+\midrule
+Standard & 43 \scriptsize(86.0\%) & 3.26 & 0 & 0 \\
+AOI full & \textbf{50} \scriptsize(100.0\%) & \textbf{1.62} & 7 & 0 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Across all 50 AOI-mode runs, the pixel gate captured only 7 keyframes total (0.09 per step, all incidental UI feedback such as form-field focus or checkbox state changes) and the volume gate never fired.
+The AOI scores 50/50 vs.\ Standard's 43/50.
+The 7 Standard failures are all multi-element form tasks (S-E3 dropdown
+selection, S-E4 contact form, S-E9 reference-code copy, S-M2 address
+form, S-M8 settings toggles, S-M9 meeting schedule, S-H5 email
+reply)---exactly the workload where the structured observation record's
+DOM element list and prior-step text trajectory help most.
+A perfect score on a workload with near-zero perception extraction is
+consistent with a prompt-format effect, not a hidden perception gain.
+
+\subsection{Prompt Format vs.\ Perception: A Direct Measurement}
+\label{sec:structured}
+The $+14$\,pp Static-50 advantage is therefore a \emph{prompt-format} effect---the AOI's structured observation record (DOM element list, prior-step trajectory summary, explicit context/new sectioning) over a raw screenshot---not a perception gain.
+We measure this directly on DynaCU-Bench via the \texttt{standard\_structured} mode, which supplies the AOI's prompt scaffolding while disabling all keyframe and audio extraction: its gain over Standard is the prompt-format effect, and AOI~full minus standard\_structured is the perception-only effect.
+
+\begin{table}[t]
+\centering
+\caption{Decomposing the AOI gain into prompt-format vs.\ perception on
+DynaCU-Bench (100 tasks).  \textbf{Standard} is a raw screenshot.
+\textbf{standard\_structured} adds the AOI's structured observation-record
+prompt format (DOM element list, prior-step text trajectory) but no
+keyframes and no audio.  \textbf{AOI~full} is the full perception layer.
+$\Delta_\text{prompt}$ isolates the prompt-format effect;
+$\Delta_\text{percept}$ isolates the keyframe + audio + narration
+contribution.
+Gemini~3~Flash is reported separately in Table~\ref{tab:gemini3_decomp}.}
+\label{tab:structured}
+\small
+\setlength{\tabcolsep}{3.0pt}
+\begin{tabular}{@{}l ccc cc@{}}
+\toprule
+\textbf{Model} & \textbf{Standard} & \textbf{std\_structured} & \textbf{AOI full}
+& \textbf{$\Delta_\text{prompt}$} & \textbf{$\Delta_\text{percept}$} \\
+\midrule
+Claude Sonnet 4.6   & 38 & \textbf{57}  & 82 & \textbf{$+$19} & \textbf{$+$25} \\
+GPT-5.4             & 37 & \textbf{48}  & 57 & \textbf{$+$11} & \textbf{$+$9} \\
+Gemini 2.5 Flash    & 21 & \textbf{46}  & 69 & \textbf{$+$25} & \textbf{$+$23} \\
+\midrule
+\multicolumn{6}{@{}l}{\emph{Open-source local models}} \\
+EvoCUA-32B          & 18 & 34 & 55 & $+$16 & $+$21 \\
+Fara-7B             & 17 & \textbf{21} & 34 & \textbf{$+$4} & \textbf{$+$13} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab:structured} reports the decomposition for five models (three cloud + two open-source); Gemini~3~Flash is deferred to Table~\ref{tab:gemini3_decomp} (Section~\ref{sec:why_g3}).
+Both $\Delta_\text{prompt}$ and $\Delta_\text{percept}$ are positive for every model: the structured prompt format and the perception channel each contribute independently rather than one re-explaining the other.  The split varies with model---Claude Sonnet~4.6 is perception-leaning ($+25$ vs.\ $+19$\,pp), Gemini~2.5~Flash and GPT-5.4 are roughly balanced ($+23$ vs.\ $+25$ and $+9$ vs.\ $+11$\,pp), and Fara-7B is sharply perception-leaning ($+13$ vs.\ $+4$\,pp), consistent with the smallest model being reasoning-capacity-bottlenecked and unable to leverage a richer prompt format.
+Across all five models the worst-case framing that the entire AOI gain is a prompt-format artifact is decisively ruled out; the most favourable (perception is the only mechanism) is also too strong.
+For Gemini~2.5---which scored only 21/100 with raw screenshots---the prompt-format component alone recovers $+25$\,pp: for video-native models, part of what the AOI buys is not new visual information but a better way to present the existing visual + textual context.
+
+\subsection{Which Prompt Sub-Component Carries the Load?}
+\label{sec:promptsub}
+The \texttt{standard\_structured} mode adds two pieces relative to the
+\texttt{standard} baseline: the \texttt{[PAGE ELEMENTS]} DOM-id list and
+the structured trajectory wrapping (\texttt{[CONTEXT]}/\texttt{[NEW]}/%
+\texttt{[TASK]} sectioning around the prior-step text).  To isolate which
+sub-component carries the load we run two further Claude Sonnet~4.6
+controls: \texttt{standard\_minimal} (task instruction plus screenshot
+only---no action history, no DOM list, no sectioning) and
+\texttt{standard\_pageel\_only} (the minimal prompt plus the
+\texttt{[PAGE ELEMENTS]} list).  Table~\ref{tab:a2_decomp} reports the
+result.
+
+\begin{table}[t]
+\centering
+\caption{Sub-component decomposition of the prompt-format effect on
+Claude Sonnet~4.6 (100 dynamic tasks).  Two new controls flank the
+existing \texttt{standard} and \texttt{standard\_structured}
+configurations; ``trajectory'' covers prior-step action/text history
+and the structured sectioning.}
+\label{tab:a2_decomp}
+\small
+\begin{tabular}{@{}l ccc@{}}
+\toprule
+\textbf{Mode} & \textbf{Pass/100} & \textbf{Trajectory?} & \textbf{\texttt{[PAGE EL]}?} \\
+\midrule
+standard\_minimal      & 16 & no  & no  \\
+standard               & 38 & yes & no  \\
+standard\_pageel\_only & 46 & no  & yes \\
+standard\_structured   & \textbf{57} & yes & yes \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Both sub-components carry load, sub-additively.
+The DOM-id list is the single largest lever: added to the minimal prompt
+it buys $+30$\,pp ($16 \to 46$, McNemar $p = 1.5\times10^{-8}$), more
+than the trajectory alone ($16 \to 38$, $+22$\,pp,
+$p = 4.8\times10^{-7}$).
+Neither alone reaches the combined effect: the trajectory still adds a
+significant $+11$\,pp on top of the DOM list ($46 \to 57$, $p = 0.013$).
+The sub-additivity ($+30$ and $+22$ individually vs.\ $+41$ jointly)
+suggests the two partially overlap in function---both help the model
+track what it has already done and what on the page remains actionable.
+
+% ════════════════════════════════════════════════════════════
 \section{Component Analysis: Ablations and Mechanisms}
 \label{sec:analysis}
 % ════════════════════════════════════════════════════════════
+
+Section~\ref{sec:static} split the AOI gain into a prompt-format component and a perception component.
+We now open up the perception component itself, asking what each channel---keyframe selection, keyframe images, audio, and visual narration---contributes and through what mechanism.
 
 \subsection{Ablation: Observation Mode Analysis}
 \label{sec:ablation}
@@ -1067,18 +1197,14 @@ AOI visual + ASR & 64 & 1 & 4 & \textbf{10} & 4 & \textbf{9} \\
     nodes near coords style={font=\small\bfseries, /pgf/number format/fixed},
     every node near coord/.append style={above=1pt},
 ]
-\addplot[fill=cStandard!60, draw=cStandard!80,
-         error bars/.cd, y dir=both, y explicit, error bar style={cGray!80, thick}]
-    coordinates {(Screenshot, 38) +- (0, 9.78)};
-\addplot[fill=cVisual!60, draw=cVisual!80,
-         error bars/.cd, y dir=both, y explicit, error bar style={cGray!80, thick}]
-    coordinates {({+Keyframes}, 58) +- (0, 9.55)};
-\addplot[fill=cASR!60, draw=cASR!80,
-         error bars/.cd, y dir=both, y explicit, error bar style={cGray!80, thick}]
-    coordinates {({+ASR}, 64) +- (0, 9.27)};
-\addplot[fill=cAOI!70, draw=cAOI!90,
-         error bars/.cd, y dir=both, y explicit, error bar style={cGray!80, thick}]
-    coordinates {({+Narration}, 82) +- (0, 7.49)};
+\addplot[fill=cStandard!60, draw=cStandard!80]
+    coordinates {(Screenshot, 38)};
+\addplot[fill=cVisual!60, draw=cVisual!80]
+    coordinates {({+Keyframes}, 58)};
+\addplot[fill=cASR!60, draw=cASR!80]
+    coordinates {({+ASR}, 64)};
+\addplot[fill=cAOI!70, draw=cAOI!90]
+    coordinates {({+Narration}, 82)};
 
 % Delta annotations inside the axis using axis cs
 \draw[->, thick, cDelta!70!black]
@@ -1096,7 +1222,7 @@ AOI visual + ASR & 64 & 1 & 4 & \textbf{10} & 4 & \textbf{9} \\
 The first step (+20\,pp; any selection method achieves it, Table~\ref{tab:ablation}) \emph{bundles} inter-step keyframes with the structured prompt scaffold that bare \texttt{standard} lacks; the scaffold carries $+19$ of it, and the keyframe images add $+1$\,pp as raw input but $+10$\,pp once narration is present (Sections~\ref{sec:ablation},~\ref{sec:keyframe_context}).
 ASR adds +6\,pp (directional; $p=0.18$ for this transition alone, Table~\ref{tab:ablation_stats}).
 Visual narration adds +18\,pp---the largest single-component content gain; Section~\ref{sec:narration_discard} decomposes its mechanism.
-Error bars are approximate 95\% intervals using a symmetric Gaussian span (exact Wilson intervals in Table~\ref{tab:main}).}
+Per-tier 95\% Wilson confidence intervals and McNemar significance tests are in Tables~\ref{tab:main} and~\ref{tab:ablation_stats}.}
 \label{fig:ablation}
 \end{figure}
 
@@ -1488,131 +1614,6 @@ CU-model pretraining is harder than it sounds and is left to follow-up
 work (Section~\ref{sec:limitations}).
 Harness details, per-task breakdown, and asset sources are in
 Appendix~\ref{app:realcontent}.
-
-% ════════════════════════════════════════════════════════════
-\section{Decomposing the Gain: Prompt Format vs.\ Perception}
-\label{sec:static}
-% ════════════════════════════════════════════════════════════
-
-\subsection{Static-50: No Degradation on Static Work}
-\label{sec:static50}
-
-A key design claim is that the AOI does not degrade performance on purely static, silent desktop work.
-We verify this on \textbf{Static-50}, a 50-task baseline (22~easy, 16~medium, 12~hard) of pure HTML tasks: form filling, table reading, calculation, sequence puzzles, and policy reasoning.
-None of the pages contain animations, timers, video, or audio; the rendered DOM is identical at $t=0$ and $t=\infty$.
-This is large enough to detect a 5--10\,pp difference between modes with reasonable power; Table~\ref{tab:static} reports the result.
-
-\begin{table}[t]
-\centering
-\caption{Static-50 verification: Claude Sonnet~4.6 on 50 pure-HTML tasks (no dynamic content).
-The AOI's gates suppress almost all extraction---7 keyframes across all 50 tasks (all incidental UI feedback such as form-field focus changes) and 0 audio segments: the perception pipeline runs but produces almost no observations, validating the gates' suppression behaviour.
-The AOI does not degrade static work; its higher score is a prompt-format effect (see body text).}
-\label{tab:static}
-\small
-\begin{tabular}{@{}l cc cc@{}}
-\toprule
-\textbf{Mode} & \textbf{Pass/50} & \textbf{Avg Steps} & \textbf{Total KF} & \textbf{Audio Seg.} \\
-\midrule
-Standard & 43 \scriptsize(86.0\%) & 3.26 & 0 & 0 \\
-AOI full & \textbf{50} \scriptsize(100.0\%) & \textbf{1.62} & 7 & 0 \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Across all 50 AOI-mode runs, the pixel gate captured only 7 keyframes total (0.09 per step, all incidental UI feedback such as form-field focus or checkbox state changes) and the volume gate never fired.
-The AOI scores 50/50 vs.\ Standard's 43/50.
-The 7 Standard failures are all multi-element form tasks (S-E3 dropdown
-selection, S-E4 contact form, S-E9 reference-code copy, S-M2 address
-form, S-M8 settings toggles, S-M9 meeting schedule, S-H5 email
-reply)---exactly the workload where the structured observation record's
-DOM element list and prior-step text trajectory help most.
-A perfect score on a workload with near-zero perception extraction is
-consistent with a prompt-format effect, not a hidden perception gain.
-
-\subsection{Prompt Format vs.\ Perception: A Direct Measurement}
-\label{sec:structured}
-The $+14$\,pp Static-50 advantage is therefore a \emph{prompt-format} effect---the AOI's structured observation record (DOM element list, prior-step trajectory summary, explicit context/new sectioning) over a raw screenshot---not a perception gain.
-We measure this directly on DynaCU-Bench via the \texttt{standard\_structured} mode, which supplies the AOI's prompt scaffolding while disabling all keyframe and audio extraction: its gain over Standard is the prompt-format effect, and AOI~full minus standard\_structured is the perception-only effect.
-
-\begin{table}[t]
-\centering
-\caption{Decomposing the AOI gain into prompt-format vs.\ perception on
-DynaCU-Bench (100 tasks).  \textbf{Standard} is a raw screenshot.
-\textbf{standard\_structured} adds the AOI's structured observation-record
-prompt format (DOM element list, prior-step text trajectory) but no
-keyframes and no audio.  \textbf{AOI~full} is the full perception layer.
-$\Delta_\text{prompt}$ isolates the prompt-format effect;
-$\Delta_\text{percept}$ isolates the keyframe + audio + narration
-contribution.
-Gemini~3~Flash is reported separately in Table~\ref{tab:gemini3_decomp}.}
-\label{tab:structured}
-\small
-\setlength{\tabcolsep}{3.0pt}
-\begin{tabular}{@{}l ccc cc@{}}
-\toprule
-\textbf{Model} & \textbf{Standard} & \textbf{std\_structured} & \textbf{AOI full}
-& \textbf{$\Delta_\text{prompt}$} & \textbf{$\Delta_\text{percept}$} \\
-\midrule
-Claude Sonnet 4.6   & 38 & \textbf{57}  & 82 & \textbf{$+$19} & \textbf{$+$25} \\
-GPT-5.4             & 37 & \textbf{48}  & 57 & \textbf{$+$11} & \textbf{$+$9} \\
-Gemini 2.5 Flash    & 21 & \textbf{46}  & 69 & \textbf{$+$25} & \textbf{$+$23} \\
-\midrule
-\multicolumn{6}{@{}l}{\emph{Open-source local models}} \\
-EvoCUA-32B          & 18 & 34 & 55 & $+$16 & $+$21 \\
-Fara-7B             & 17 & \textbf{21} & 34 & \textbf{$+$4} & \textbf{$+$13} \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Table~\ref{tab:structured} reports the decomposition for five models (three cloud + two open-source); Gemini~3~Flash is deferred to Table~\ref{tab:gemini3_decomp} (Section~\ref{sec:why_g3}).
-Both $\Delta_\text{prompt}$ and $\Delta_\text{percept}$ are positive for every model: the structured prompt format and the perception channel each contribute independently rather than one re-explaining the other.  The split varies with model---Claude Sonnet~4.6 is perception-leaning ($+25$ vs.\ $+19$\,pp), Gemini~2.5~Flash and GPT-5.4 are roughly balanced ($+23$ vs.\ $+25$ and $+9$ vs.\ $+11$\,pp), and Fara-7B is sharply perception-leaning ($+13$ vs.\ $+4$\,pp), consistent with the smallest model being reasoning-capacity-bottlenecked and unable to leverage a richer prompt format.
-Across all five models the worst-case framing that the entire AOI gain is a prompt-format artifact is decisively ruled out; the most favourable (perception is the only mechanism) is also too strong.
-For Gemini~2.5---which scored only 21/100 with raw screenshots---the prompt-format component alone recovers $+25$\,pp: for video-native models, part of what the AOI buys is not new visual information but a better way to present the existing visual + textual context.
-
-\subsection{Which Prompt Sub-Component Carries the Load?}
-\label{sec:promptsub}
-The \texttt{standard\_structured} mode adds two pieces relative to the
-\texttt{standard} baseline: the \texttt{[PAGE ELEMENTS]} DOM-id list and
-the structured trajectory wrapping (\texttt{[CONTEXT]}/\texttt{[NEW]}/%
-\texttt{[TASK]} sectioning around the prior-step text).  To isolate which
-sub-component carries the load we run two further Claude Sonnet~4.6
-controls: \texttt{standard\_minimal} (task instruction plus screenshot
-only---no action history, no DOM list, no sectioning) and
-\texttt{standard\_pageel\_only} (the minimal prompt plus the
-\texttt{[PAGE ELEMENTS]} list).  Table~\ref{tab:a2_decomp} reports the
-result.
-
-\begin{table}[t]
-\centering
-\caption{Sub-component decomposition of the prompt-format effect on
-Claude Sonnet~4.6 (100 dynamic tasks).  Two new controls flank the
-existing \texttt{standard} and \texttt{standard\_structured}
-configurations; ``trajectory'' covers prior-step action/text history
-and the structured sectioning.}
-\label{tab:a2_decomp}
-\small
-\begin{tabular}{@{}l ccc@{}}
-\toprule
-\textbf{Mode} & \textbf{Pass/100} & \textbf{Trajectory?} & \textbf{\texttt{[PAGE EL]}?} \\
-\midrule
-standard\_minimal      & 16 & no  & no  \\
-standard               & 38 & yes & no  \\
-standard\_pageel\_only & 46 & no  & yes \\
-standard\_structured   & \textbf{57} & yes & yes \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-Both sub-components carry load, sub-additively.
-The DOM-id list is the single largest lever: added to the minimal prompt
-it buys $+30$\,pp ($16 \to 46$, McNemar $p = 1.5\times10^{-8}$), more
-than the trajectory alone ($16 \to 38$, $+22$\,pp,
-$p = 4.8\times10^{-7}$).
-Neither alone reaches the combined effect: the trajectory still adds a
-significant $+11$\,pp on top of the DOM list ($46 \to 57$, $p = 0.013$).
-The sub-additivity ($+30$ and $+22$ individually vs.\ $+41$ jointly)
-suggests the two partially overlap in function---both help the model
-track what it has already done and what on the page remains actionable.
 
 % ════════════════════════════════════════════════════════════
 \section{Model Case Studies: Later-Released Models}
