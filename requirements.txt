@@ -1,0 +1,25 @@
+# Core perception layer
+torch
+clip @ git+https://github.com/openai/CLIP.git   # OpenAI CLIP ViT-B/16 (keyframe filtering)
+faster-whisper                                   # Whisper large-v3 speech transcription
+numpy
+scipy
+Pillow
+soundfile
+
+# Browser environment & benchmark
+playwright                                       # run `playwright install chromium` after pip install
+edge-tts                                         # high-quality TTS for benchmark audio
+requests
+
+# Whisper ASR microservice
+fastapi
+uvicorn
+
+# CU-model API clients
+anthropic
+openai                                           # also used for OpenRouter / xAI OpenAI-compatible endpoints
+google-genai
+
+# Local model serving (optional; only for EvoCUA / Fara / Qwen local runs)
+# vllm
