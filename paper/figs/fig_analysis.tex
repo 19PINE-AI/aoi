@@ -1,0 +1,66 @@
+% Figure: narration mechanism (a) and keyframe-image value across models (b).
+\begin{figure}[t]
+\centering
+\begin{subfigure}{0.48\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\textwidth, height=4.7cm, ybar, bar width=15pt,
+    ymin=55, ymax=88, ylabel={Success (\%)}, ylabel style={font=\scriptsize},
+    symbolic x coords={Vis+ASR, Narr.\ disc., Full},
+    xtick=data, xticklabel style={font=\scriptsize},
+    ytick={60,70,80}, yticklabel style={font=\scriptsize},
+    grid=major, major grid style={cLightGray!60},
+    axis line style={cGray}, tick style={cGray}, enlarge x limits=0.28,
+    nodes near coords, nodes near coords style={font=\scriptsize\bfseries},
+]
+\addplot[fill=cASR!55,draw=cASR!80] coordinates {(Vis+ASR,64)};
+\addplot[fill=cNarr!60,draw=cNarr!90] coordinates {(Narr.\ disc.,74)};
+\addplot[fill=cAOI!70,draw=cAOI!90] coordinates {(Full,82)};
+\draw[->,thick,cGray] (axis cs:Vis+ASR,66) -- (axis cs:Narr.\ disc.,72)
+  node[midway,above,font=\tiny\bfseries,text=cGray,sloped]{+10 CoT$^\dagger$};
+\draw[->,thick,gaincolor] (axis cs:Narr.\ disc.,76) -- (axis cs:Full,80)
+  node[midway,above,font=\tiny\bfseries,text=gaincolor,sloped]{+8 persist};
+\end{axis}
+\end{tikzpicture}
+\caption{Narration mechanism (Claude).}
+\label{fig:narr}
+\end{subfigure}\hfill
+\begin{subfigure}{0.48\textwidth}
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\textwidth, height=4.7cm, ybar, bar width=13pt,
+    ymin=-15, ymax=13, ylabel={$\Delta$ keyframe images (pp)}, ylabel style={font=\scriptsize},
+    symbolic x coords={Claude, Gemini 2.5, GPT-5.4, Gemini 3},
+    xtick={Claude, Gemini 2.5, GPT-5.4, Gemini 3},
+    xticklabels={Claude, Gem 2.5, GPT-5.4, Gem 3},
+    xticklabel style={font=\scriptsize},
+    ytick={-12,-8,-4,0,4,8,12}, yticklabel style={font=\scriptsize},
+    grid=major, major grid style={cLightGray!60},
+    axis line style={cGray}, tick style={cGray}, enlarge x limits=0.18,
+    nodes near coords, nodes near coords style={font=\scriptsize\bfseries},
+    nodes near coords align={vertical},
+    every axis plot/.append style={bar shift=0pt},
+]
+\addplot[draw=gaincolor!70,fill=cDelta!70] coordinates {(Claude,10) (Gemini 2.5,6)};
+\addplot[draw=cStandard!80,fill=cStandard!55] coordinates {(GPT-5.4,-2) (Gemini 3,-12)};
+\draw[cGray!60,dashed] (axis cs:Claude,0) -- (axis cs:Gemini 3,0);
+\end{axis}
+\end{tikzpicture}
+\caption{Keyframe-image value, in context.}
+\label{fig:kfmodel}
+\end{subfigure}
+\caption{\textbf{What narration and keyframes contribute.}
+\textbf{(a)} Visual narration lifts Claude from 64\% (visual+ASR, no narration) to
+82\%: discarding the narration text after it is generated keeps 74\%, splitting
+the $+18$\,pp into ${\sim}{+}10$\,pp inference-time articulation
+($^\dagger$directional, $p{=}0.12$) and $+8$\,pp from persisting it as memory
+($p{=}0.039$).
+\textbf{(b)} The marginal value of the inter-step keyframe \emph{images}, measured
+with audio and narration already present, is model-specific: $+10$/$+6$\,pp on
+Claude/Gemini~2.5 (realised only through narration---just $+1$\,pp as raw input),
+neutral on GPT-5.4, and a $-12$\,pp \emph{penalty} on Gemini~3 (image-token
+dilution, Section~\ref{sec:keyframe_probe}).}
+\label{fig:analysis}
+\end{figure}

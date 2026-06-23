@@ -1,0 +1,69 @@
+% Figure: the CU agent loop and its blind spots (Background).
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}[
+    >=Stealth,
+    font=\small,
+    obox/.style={draw, rounded corners=3pt, align=center, font=\footnotesize,
+                 minimum height=0.95cm, minimum width=2.5cm},
+    sense/.style={obox, fill=cLightGray!45, draw=cGray!70},
+    model/.style={obox, fill=cDelta!18, draw=cDelta!80!black, minimum width=2.7cm},
+    act/.style={obox, fill=cStandard!14, draw=cStandard!75},
+    envb/.style={obox, fill=cAccent!22, draw=cAccent!85, minimum width=2.7cm},
+    sp/.style={font=\scriptsize, text=cGray},
+  ]
+
+  % ---- The cycle (clockwise) ----
+  \node[sense] (obs) at (0,2.2)   {\textbf{Observe}\\one screenshot $s_t$};
+  \node[model] (mdl) at (4.4,2.2) {\textbf{CU model}\\$a_t \sim \pi(\cdot \mid s_t,\,\tau)$};
+  \node[act]   (act) at (4.4,0)   {\textbf{Act} $a_t$};
+  \node[envb]  (env) at (0,0)     {\textbf{Environment}\\(browser)};
+
+  \draw[->, thick, cGray!80] (obs) -- (mdl);
+  \draw[->, thick, cGray!80] (mdl) -- (act);
+  \draw[->, thick, cGray!80] (act) -- (env);
+  \draw[->, thick, cGray!80] (env) -- (obs);
+  \node[sp, left=1pt of $(env)!0.5!(obs)$, xshift=-2pt] {wait $\delta$};
+
+  % ---- Observation space (left annotation) ----
+  \node[sp, align=left, anchor=east] at (-1.9,2.2) {%
+    \textbf{Obs.\ space}\\$\mathcal{S}=\{$RGB frame$\}$};
+  \draw[->, cGray!50] (-1.9,2.2) -- (obs.west);
+
+  % ---- Action space (right annotation) ----
+  \node[sp, align=left, anchor=west] at (6.0,1.1) {%
+    \textbf{Action space}\\$\mathcal{A}=\{$\texttt{click}, \texttt{type},\\
+    \texttt{scroll}, \texttt{wait}, \texttt{done}$\}$};
+  \draw[->, cGray!50] (6.0,0.9) -- (act.east);
+
+  % ---- Timeline of the blind interval (below, well separated) ----
+  \def\ty{-3.1}
+  \node[font=\scriptsize\bfseries, text=cStandard] at (2.2,\ty+1.05)
+     {\textsc{blind \& deaf between snapshots}};
+  \draw[decorate, decoration={brace, amplitude=4pt}, cStandard!70]
+     (-1.9,\ty+0.78) -- (6.3,\ty+0.78);
+  \draw[thick, cGray!45] (-2.2,\ty) -- (6.6,\ty);
+  \foreach \x in {-2.2, 6.6} {
+     \draw[thick, cStandard!85] (\x,\ty-0.16) -- (\x,\ty+0.16);
+     \draw[cGray!55, fill=cLightGray!60] (\x-0.22,\ty+0.20) rectangle (\x+0.22,\ty+0.62);
+  }
+  \node[sp, anchor=south] at (-2.2,\ty+0.64) {$s_t$};
+  \node[sp, anchor=south] at (6.6,\ty+0.64)  {$s_{t+1}$};
+  \node[sp] at (2.2,\ty-0.42) {one observation interval $\approx 3$--$5$\,s};
+  \foreach \x/\lab in {-0.2/{video}, 2.2/{audio}, 4.6/{toast}} {
+     \node[font=\scriptsize, text=cStandard] at (\x,\ty) {\ding{55}};
+     \node[sp, text=cStandard!85!black, anchor=south] at (\x,\ty+0.12) {\lab};
+  }
+
+\end{tikzpicture}
+\caption{\textbf{The computer-use agent loop and its blind spots.}
+A CU agent repeats \emph{observe\,$\to$\,reason\,$\to$\,act}: it captures a
+single screenshot $s_t$ (observation space $\mathcal{S}$), the model samples an
+action $a_t$ from a small grammar $\mathcal{A}$
+(\texttt{click}/\texttt{type}/\texttt{scroll}/\texttt{wait}/\texttt{done}), the
+browser executes it, and after a buffer $\delta$ the next screenshot is taken.
+The interval is 3--5\,s; \emph{between} snapshots the agent is blind to anything
+that moves (video, animation, an auto-dismissing toast) and has no audio channel
+at all, so spoken content is never observed.}
+\label{fig:culoop}
+\end{figure}

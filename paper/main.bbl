@@ -1,4 +1,4 @@
-\begin{thebibliography}{39}
+\begin{thebibliography}{42}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -39,6 +39,14 @@ Liang Chen et~al.
   benchmarking.
 \newblock \emph{arXiv preprint arXiv:2510.10142}, 2025.
 
+\bibitem[Deng et~al.(2023)Deng, Gu, Zheng, Chen, Stevens, Wang, Sun, and
+  Su]{mind2web}
+Xiang Deng, Yu~Gu, Boyuan Zheng, Shijie Chen, Sam Stevens, Boshi Wang, Huan
+  Sun, and Yu~Su.
+\newblock {Mind2Web}: Towards a generalist agent for the web.
+\newblock In \emph{Advances in Neural Information Processing Systems
+  (NeurIPS)}, 2023.
+
 \bibitem[{Google}(2025)]{geminilive}
 {Google}.
 \newblock Live {API} (gemini live).
@@ -48,12 +56,6 @@ Liang Chen et~al.
 {Google DeepMind}.
 \newblock {Gemini 2.5 Computer Use}.
 \newblock \url{https://deepmind.google/models/gemini/computer-use/}, 2025.
-
-\bibitem[{Google DeepMind}(2026)]{gemini3flash}
-{Google DeepMind}.
-\newblock {Gemini 3 Flash}.
-\newblock \url{https://deepmind.google/models/gemini/}, 2026.
-\newblock Accessed 2026-05-15; model id \texttt{gemini-3-flash-preview}.
 
 \bibitem[He et~al.(2024)]{webvoyager}
 Hongliang He et~al.
@@ -163,16 +165,24 @@ Haoming Wang et~al.
   reinforcement learning.
 \newblock \emph{arXiv preprint arXiv:2509.02544}, 2025{\natexlab{a}}.
 
+\bibitem[Wang et~al.(2024{\natexlab{a}})Wang, Chen, Yuan, Zhang, Li, Peng, and
+  Ji]{codeact}
+Xingyao Wang, Yangyi Chen, Lifan Yuan, Yizhe Zhang, Yunzhu Li, Hao Peng, and
+  Heng Ji.
+\newblock Executable code actions elicit better {LLM} agents.
+\newblock In \emph{International Conference on Machine Learning (ICML)},
+  2024{\natexlab{a}}.
+
 \bibitem[Wang et~al.(2025{\natexlab{b}})]{opencua}
 Xinyuan Wang et~al.
 \newblock {OpenCUA}: Open foundations for computer-use agents.
 \newblock \emph{arXiv preprint arXiv:2508.09123}, 2025{\natexlab{b}}.
 
-\bibitem[Wang et~al.(2024)]{videotree}
+\bibitem[Wang et~al.(2024{\natexlab{b}})]{videotree}
 Ziyang Wang et~al.
 \newblock {VideoTree}: Adaptive tree-based video representation for {LLM}
   reasoning on long videos.
-\newblock \emph{arXiv preprint arXiv:2405.19209}, 2024.
+\newblock \emph{arXiv preprint arXiv:2405.19209}, 2024{\natexlab{b}}.
 
 \bibitem[{xAI}(2026)]{xai2026grok4}
 {xAI}.
@@ -192,6 +202,12 @@ Haolin Yang et~al.
 \newblock {StreamAgent}: Towards anticipatory agents for streaming video
   understanding.
 \newblock \emph{arXiv preprint arXiv:2508.01875}, 2025.
+
+\bibitem[Yang et~al.(2023)Yang, Zhang, Li, Zou, Li, and Gao]{setofmark}
+Jianwei Yang, Hao Zhang, Feng Li, Xueyan Zou, Chunyuan Li, and Jianfeng Gao.
+\newblock Set-of-mark prompting unleashes extraordinary visual grounding in
+  {GPT-4V}.
+\newblock \emph{arXiv preprint arXiv:2310.11441}, 2023.
 
 \bibitem[Yang et~al.(2024)]{sweagent}
 John Yang et~al.
@@ -214,6 +230,11 @@ Alex~L. Zhang et~al.
 Ce~Zhang et~al.
 \newblock A simple {LLM} framework for long-range video question-answering.
 \newblock \emph{arXiv preprint arXiv:2312.17235}, 2023.
+
+\bibitem[Zheng et~al.(2024)Zheng, Gou, Kil, Sun, and Su]{seeact}
+Boyuan Zheng, Boyu Gou, Jihyung Kil, Huan Sun, and Yu~Su.
+\newblock {GPT-4V(ision)} is a generalist web agent, if grounded.
+\newblock In \emph{International Conference on Machine Learning (ICML)}, 2024.
 
 \bibitem[Zhou et~al.(2023)]{webarena}
 Shuyan Zhou et~al.

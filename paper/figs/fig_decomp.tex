@@ -1,0 +1,34 @@
+% Figure: prompt-format vs perception decomposition (stacked bars).
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=0.95\columnwidth, height=5.6cm, ybar stacked, bar width=20pt,
+    ymin=0, ymax=92, ylabel={Task success (\%)}, ylabel style={font=\small},
+    symbolic x coords={Claude, Gemini 2.5, GPT-5.4, EvoCUA, Fara},
+    xtick=data, xticklabel style={font=\scriptsize},
+    ytick={0,20,40,60,80}, yticklabel style={font=\small},
+    legend style={at={(0.5,1.18)}, anchor=north, legend columns=3, font=\scriptsize,
+                  draw=cGray!30, /tikz/every even column/.append style={column sep=8pt}},
+    grid=major, major grid style={cLightGray!60}, axis line style={cGray}, tick style={cGray},
+    enlarge x limits=0.12,
+]
+\addplot[fill=cLightGray!75, draw=cGray!60] coordinates
+   {(Claude,38) (Gemini 2.5,21) (GPT-5.4,37) (EvoCUA,18) (Fara,17)};
+\addplot[fill=cAccent!75, draw=cAccent!90] coordinates
+   {(Claude,19) (Gemini 2.5,25) (GPT-5.4,11) (EvoCUA,16) (Fara,4)};
+\addplot[fill=cAOI!70, draw=cAOI!90] coordinates
+   {(Claude,25) (Gemini 2.5,23) (GPT-5.4,9) (EvoCUA,21) (Fara,13)};
+\legend{Standard (screenshot), $+$prompt format, $+$perception}
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{The AOI gain splits into a prompt-format and a perception
+component---both positive for every model.} Bars stack the raw-screenshot
+baseline, the gain from the AOI's structured observation record alone (no
+keyframes/audio), and the further gain from perception
+(keyframes\,+\,audio\,+\,narration). The worst-case view that the gain is ``just
+reformatting'' is ruled out; the split is model-specific (Claude
+perception-leaning, Gemini~2.5 prompt-leaning, the small Fara-7B unable to exploit
+a richer prompt). Per-model numbers in Appendix~\ref{app:promptdecomp}.}
+\label{fig:decomp}
+\end{figure}

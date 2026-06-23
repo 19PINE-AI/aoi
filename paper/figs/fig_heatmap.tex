@@ -1,0 +1,40 @@
+% Figure: per-family AOI gain heatmap (Delta = AOI full - Standard, tasks/10).
+\begin{figure}[t]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth, height=5.4cm,
+    enlargelimits=false, axis on top,
+    colormap={div}{color=(cStandard) color=(cStandard!15) color=(white) color=(cDelta!70) color=(gaincolor!60)},
+    point meta min=-9, point meta max=9,
+    xtick={0,1,2,3,4,5,6,7,8,9},
+    xticklabels={Podcast,Meeting,Phone,Interview,Screencast,Carousel,Dashboard,Transient,Collab,Games},
+    xticklabel style={rotate=40, anchor=east, font=\scriptsize},
+    ytick={0,1,2,3,4},
+    yticklabels={Fara-7B,EvoCUA-32B,GPT-5.4,Gemini 2.5,Claude 4.6},
+    yticklabel style={font=\scriptsize},
+    xtick style={draw=none}, ytick style={draw=none},
+    nodes near coords={\pgfmathprintnumber[print sign]\pgfplotspointmeta},
+    nodes near coords style={font=\tiny\bfseries, anchor=center, text=black},
+    colorbar, colorbar style={width=7pt, font=\scriptsize,
+       ytick={-8,-4,0,4,8}, yticklabel={\pgfmathprintnumber[print sign]\tick}},
+]
+\addplot[matrix plot*, mesh/cols=10, point meta=explicit] coordinates {
+ (0,0)[3] (1,0)[4] (2,0)[3] (3,0)[2] (4,0)[2] (5,0)[2] (6,0)[0] (7,0)[-1] (8,0)[2] (9,0)[0]
+ (0,1)[8] (1,1)[5] (2,1)[8] (3,1)[2] (4,1)[3] (5,1)[1] (6,1)[2] (7,1)[5] (8,1)[3] (9,1)[0]
+ (0,2)[3] (1,2)[1] (2,2)[3] (3,2)[1] (4,2)[3] (5,2)[1] (6,2)[3] (7,2)[6] (8,2)[1] (9,2)[-2]
+ (0,3)[8] (1,3)[6] (2,3)[8] (3,3)[2] (4,3)[1] (5,3)[3] (6,3)[8] (7,3)[9] (8,3)[4] (9,3)[-1]
+ (0,4)[9] (1,4)[8] (2,4)[8] (3,4)[2] (4,4)[5] (5,4)[5] (6,4)[0] (7,4)[5] (8,4)[5] (9,4)[-3]
+};
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Per-family AOI gain} (AOI~full $-$ Standard, in tasks per 10)
+across five models, families grouped by primary axis (audio, visual, interaction).
+Green = AOI helps, red = AOI hurts.
+Gains are positive almost everywhere and largest on the audio families
+(Podcast, Phone, Meeting), which are impossible from screenshots alone; the lone
+consistent regression is \textsc{Games}, where action latency---not
+perception---is the bottleneck. Absolute per-cell scores are in
+Appendix~\ref{app:fullresults}.}
+\label{fig:heatmap}
+\end{figure}
