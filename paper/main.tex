@@ -687,12 +687,17 @@ Exact (asymmetric) 95\% Wilson confidence intervals on every bar are tabulated i
 \label{fig:mainresults}
 \end{figure}
 
-Table~\ref{tab:main} and Figure~\ref{fig:mainresults} present the main results.
-The AOI produces large, consistent gains across all six models, all highly significant by paired McNemar's exact test ($p<10^{-3}$ for every model; $p<10^{-9}$ for Claude and Gemini, $p<10^{-8}$ for EvoCUA).
-\emph{Note on statistical power:} Each configuration is evaluated once on 100 binary-outcome tasks (no repeated trials).
-We use paired McNemar's exact mid-$p$ tests on the discordant tasks to assess significance and report 95\% Wilson confidence intervals on the marginal success rates.
-Pairwise differences between selection methods (e.g., 56\% vs.\ 58\%) are not significant ($p>0.5$ for every pair; Appendix~\ref{app:stats}); the large between-tier gaps are.
-The same single-trial caveat applies to every per-family, ablation, and per-difficulty cell in the paper: the three-seed sweep below puts the decoding-noise band at ${\sim}3$\,pp on a 100-task total, so small differences (a few points on a 100-task total, $\pm1$--$2$ on a per-family /10) should be read as within that band unless a paired test says otherwise.
+Table~\ref{tab:main} and Figure~\ref{fig:mainresults} present the main results:
+large, consistent gains across all six models, every one significant by paired
+McNemar's exact test ($p<10^{-3}$).
+\emph{Statistical protocol.}
+Each configuration is one trial of 100 binary tasks (no repeats); we report 95\%
+Wilson confidence intervals on success rates and assess differences with paired
+McNemar exact mid-$p$ tests on the discordant tasks.
+This single-trial caveat applies to every per-family and ablation cell in the
+paper---small differences (a few points on a 100-task total, $\pm1$--$2$ on a
+per-family /10) sit within the ${\sim}3$\,pp decoding-noise band quantified
+next, and should be read as noise unless a paired test says otherwise.
 
 \textbf{Claude Sonnet~4.6} is the strongest model, improving from 38\% to 82\%
 ($+44$\,pp); Section~\ref{sec:static} decomposes how the components combine to
