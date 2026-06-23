@@ -135,11 +135,14 @@ Section~\ref{sec:streaming}).
 We take a different view, by analogy to SWE-agent~\citep{sweagent}: its lever was
 not a new model but the agent-computer \emph{action} interface---which commands
 the model is given, how inputs and feedback are formatted.
-We argue the \emph{observation} interface is the analogous, underexplored lever
-for CU agents, and that the operative principle is \emph{decoupling observation
-(continuous, adaptive) from action (discrete)}: every CU agent we are aware
+We argue the \emph{observation} interface is the analogous lever for CU agents.
+Prior work enriches \emph{what} a single snapshot encodes---accessibility trees,
+element overlays, text surrogates---but leaves fixed the dimension we target:
+\emph{when} the agent looks and through which senses.
+Our operative principle is \emph{decoupling observation (continuous, adaptive,
+multimodal) from action (discrete)}: every CU agent we are aware
 of~\citep{anthropic2024claude,openai2025cua,gemini25cu,uitars2,opencua,fara7b,coact}
-ties the two together at one screenshot per step.
+ties the two together at one static screenshot per step, and is deaf.
 
 \textbf{Our approach.}
 The \textbf{Agent-Computer Observation Interface (AOI)} is a lightweight
@@ -454,11 +457,11 @@ The task instruction is appended at the end.}
 
 \begin{figure*}[t]
 \centering
-\setlength{\tabcolsep}{3pt}
+\setlength{\tabcolsep}{2pt}
 \begin{tabular}{ccc}
-\includegraphics[width=0.30\textwidth]{figures/de2_kf1.png} &
-\includegraphics[width=0.30\textwidth]{figures/de2_kf2.png} &
-\includegraphics[width=0.30\textwidth]{figures/de2_kf3.png} \\
+\includegraphics[width=0.305\textwidth]{figures/de2_kf1.png} &
+\includegraphics[width=0.305\textwidth]{figures/de2_kf2.png} &
+\includegraphics[width=0.305\textwidth]{figures/de2_kf3.png} \\
 {\footnotesize step 1: testimonial 2/5 (Tom Lee)} &
 {\footnotesize step 2: testimonial 5/5 (Amy Patel)} &
 {\footnotesize step 3: testimonial 1/5 (Maria Johnson)} \\
@@ -485,16 +488,14 @@ The narrations persist as text in the trajectory, letting the agent accumulate e
 \subsection{Implementation}
 \label{sec:implementation}
 
-The AOI is implemented in Python (${\sim}2{,}600$ lines) as a modular layer that wraps any CU model (full software/hardware/hyperparameter details in Appendix~\ref{app:implementation}).
-Screen capture uses a headless browser (Playwright) at ${\sim}3$\,Hz.
-Audio capture and injection use PulseAudio virtual devices (virtual speaker and monitor source) at 16\,kHz mono.
-CLIP-ViT-B/16 runs on GPU (${\sim}150$\,MB VRAM).
-Whisper large-v3 runs as a separate HTTP service on CPU to avoid GPU contention with the CU model.
-Audio synthesis for benchmark tasks uses the Web Speech API (\texttt{speechSynthesis}).
-
-CU models are accessed through their native APIs.
-Cloud models (Claude Sonnet~4.6, GPT-5.4, Gemini~2.5 Flash) use HTTP APIs.
-Local models (EvoCUA-32B, Fara-7B) are served via vLLM with 4-bit quantization on a single NVIDIA RTX PRO 6000 (96\,GB VRAM).
+The AOI is a modular Python layer (${\sim}2{,}600$ lines) that wraps any CU model.
+Screen and audio are captured through a headless browser and virtual audio
+devices; the keyframe encoder runs on GPU and speech transcription as a separate
+CPU service to avoid contention with the model.
+Cloud models are called through their native APIs and local models served on a
+single GPU.
+Full software, hardware, and hyperparameter details are in
+Appendix~\ref{app:implementation}.
 
 % ════════════════════════════════════════════════════════════
 \section{DynaCU-Bench}
@@ -693,9 +694,9 @@ We use paired McNemar's exact mid-$p$ tests on the discordant tasks to assess si
 Pairwise differences between selection methods (e.g., 56\% vs.\ 58\%) are not significant ($p>0.5$ for every pair; Appendix~\ref{app:stats}); the large between-tier gaps are.
 The same single-trial caveat applies to every per-family, ablation, and per-difficulty cell in the paper: the three-seed sweep below puts the decoding-noise band at ${\sim}3$\,pp on a 100-task total, so small differences (a few points on a 100-task total, $\pm1$--$2$ on a per-family /10) should be read as within that band unless a paired test says otherwise.
 
-\textbf{Claude Sonnet~4.6} improves from 38\% to 82\% (+44 pp) with the full AOI.
-This is the strongest absolute result.
-The ablation modes reveal that all inter-step visual capture methods converge to 56--58\% (a +18--20\,pp gain over the raw-screenshot baseline, regardless of selection method---though, as Sections~\ref{sec:ablation} and~\ref{sec:keyframe_context} show, this transition also turns on the structured prompt scaffold: most of the jump is the scaffold, with the keyframe images contributing $+10$\,pp in context through narration), adding ASR reaches 64\%, and visual narration provides the largest single-component content gain, reaching 82\% (mechanism decomposed in Section~\ref{sec:narration_discard}).
+\textbf{Claude Sonnet~4.6} is the strongest model, improving from 38\% to 82\%
+($+44$\,pp); Section~\ref{sec:static} decomposes how the components combine to
+reach it.
 
 \textbf{GPT-5.4} improves from 37\% to 57\% (+20\,pp).
 The gain is consistent with Claude's but the absolute ceiling is lower, suggesting GPT-5.4's CU capabilities are the binding constraint once perception is adequate.
@@ -879,11 +880,19 @@ instrumented breakdown is in Appendix~\ref{app:detailed},
 Table~\ref{tab:efficiency}.
 
 % ════════════════════════════════════════════════════════════
-\section{Decomposing the Gain: Prompt Format vs.\ Perception}
+\section{Decomposing the Gain}
 \label{sec:static}
 % ════════════════════════════════════════════════════════════
 
-Before crediting these gains to perception, we rule out the worst-case
+Where does the AOI gain come from?
+We answer in two layers: first separating a prompt-format effect from a genuine
+perception effect (Section~\ref{sec:promptperc}), then opening up the perception
+effect channel by channel (Sections~\ref{sec:ablation}--\ref{sec:keyframe_context}).
+
+\subsection{Prompt Format vs.\ Perception}
+\label{sec:promptperc}
+
+Before crediting the gains to perception, we rule out the worst-case
 confound---that the AOI helps only by reformatting the prompt.
 Two checks settle it.%
 \label{sec:static50}\label{sec:structured}\label{sec:promptsub}
@@ -910,19 +919,12 @@ to present context it already had), and the small Fara-7B cannot exploit the
 richer prompt at all.
 Within the prompt-format component a DOM-element list is the single largest lever
 (Appendix~\ref{app:promptdecomp}).
-
-% ════════════════════════════════════════════════════════════
-\section{Component Analysis: What Drives the Gain}
-\label{sec:analysis}
-% ════════════════════════════════════════════════════════════
-
-Section~\ref{sec:static} split the AOI gain into a prompt-format component and a
-perception component.
-We now open up the perception component: what each channel---keyframe selection,
-keyframe images, audio, narration---contributes, and how.
+The rest of this section opens up the \emph{perception} component---what each
+channel (keyframe selection, keyframe images, audio, narration) contributes, and
+how.
 
 \subsection{Keyframe Selection Is Immaterial; Images Pay Off Through Narration}
-\label{sec:ablation}
+\label{sec:analysis}\label{sec:ablation}
 
 \begin{figure}[t]
 \centering
@@ -1197,15 +1199,18 @@ for a perception layer that persists what it heard as text.
 Much agent progress comes from reshaping the agent--computer interface rather than
 the weights.
 On the \emph{action} side, SWE-agent~\citep{sweagent} redesigned the command set and
-feedback format; web and CU agents expand the action space with executable code
-actions~\citep{codeact}, accessibility-tree and DOM-element
-actions~\citep{mind2web,webarena}, and click targets grounded by set-of-mark
-prompting~\citep{setofmark,seeact}.
-The \emph{observation} side is comparatively untouched---these systems still read
-one static frame, or its element list, per step.
-We treat observation as the analogous lever: expanding \emph{what} and \emph{when}
-the agent perceives, continuously and across modalities, with the model and action
-space unchanged.
+feedback format, and agents adopt executable code actions~\citep{codeact} and
+element-grounded actions~\citep{mind2web}.
+The \emph{observation} side is also well studied---but almost entirely as richer
+encodings of a \emph{single static snapshot}: accessibility trees and HTML/DOM text
+surrogates~\citep{webarena,mind2web} (which serve as both observation and action
+representations), and set-of-mark element overlays that ground vision models on the
+screenshot~\citep{setofmark,seeact}.
+What none of these representations change is \emph{when} the agent looks---one
+snapshot per action, and no audio.
+We expand observation along the orthogonal axes they leave out, time (continuous,
+between-step capture) and modality (sound); this is complementary to single-frame
+encodings and composes with them.
 
 \textbf{Computer-use agents.}
 The CU agent landscape spans closed-source systems~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source models~\citep{uitars2,opencua,fara7b,guiowl,coact}.
