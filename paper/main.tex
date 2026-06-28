@@ -1973,17 +1973,17 @@ AOI full      & 3/3 & 3/3 & 2/3 & 3/3 & \textbf{11} \scriptsize(92\%) \\
 To rule out the explanation that the streaming baselines' weak
 audio-subset numbers (Section~\ref{sec:streaming}) are an artifact of our
 adapter rather than a model limitation, we evaluate both adapters on a
-small purely-visual sanity set of five tasks across four categories: C
+small purely-visual sanity-check set of five tasks across four categories: C
 (video / static recording), E (live dashboard), F (transient UI; two
 tasks, one banner-accept and one cookie-accept subtype), and I
 (collaborative document).
-All chosen so the answer can be reached without any audio comprehension.
+All categories are chosen such that the answer can be reached without any audio comprehension.
 The exact set is C-E1, E-E1, F-E1, F-E2, and I-E1.
 For each baseline, we open one streaming session per task, send the
 post-action screenshot as a multimodal turn, and translate any returned
 tool calls into browser actions through the same path used in the main
 audio-subset evaluation.
-The success criterion is the same DOM check as the main benchmark.
+The success criterion is the same DOM check as in the main benchmark.
 Table~\ref{tab:streaming_sanity_detail} reports the per-task outcome and
 the modal failure mode where applicable.
 
