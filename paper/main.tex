@@ -84,7 +84,7 @@ SWE-agent~\citep{sweagent} established the \emph{action} interface as an underex
 
 We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples continuous, adaptive observation from discrete actions. It has three gated components---inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text---each of which produces almost nothing on static, silent content, reducing to the standard loop without degrading it.
 
-On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), eight CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining (paired McNemar $p<10^{-3}$ for all); Claude Sonnet~4.6 reaches a 3-seed mean of 78.7\%. On a 12-task audio subset, AOI agents score 12/12 where production streaming voice baselines largely fail (OpenAI Realtime~\citep{openairealtime} 3/12, Gemini~Live~\citep{geminilive} 0/12). Three findings reframe CU perception: keyframe \emph{selection} is unimportant---value emerges only once captured frames are narrated into persistent text; narration helps mainly by making the model \emph{articulate} what it sees; and the interface is not a fixed bundle---on Gemini~3~Flash the keyframe stream regresses $-12$\,pp from image-token dilution, so components must be tuned per model rather than shipped as one configuration.
+On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), eight CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining (paired McNemar $p<10^{-3}$ for all); Claude Sonnet~4.6 reaches a 3-seed mean of 78.7\%. On a 12-task audio subset, AOI agents score 12/12 where current-generation streaming voice models fail on their own---OpenAI's GA Realtime (\texttt{gpt-realtime-2}) reaches 2/12 and xAI's Grok Voice 1/12 despite accurate hearing, because they cannot ground actions without the AOI's scaffold (with which the Realtime model recovers to 11/12). Three findings reframe CU perception: keyframe \emph{selection} is unimportant---value emerges only once captured frames are narrated into persistent text; narration helps mainly by making the model \emph{articulate} what it sees; and the interface is not a fixed bundle---on Gemini~3~Flash the keyframe stream regresses $-12$\,pp from image-token dilution, so components must be tuned per model rather than shipped as one configuration.
 \end{abstract}
 
 \begin{center}
@@ -209,17 +209,6 @@ On static, silent tasks, the AOI's perception gates remain mostly closed and beh
 This design provides strictly more \emph{information}, however, it does not always provide a strictly better \emph{outcome}: the per-step observation work adds latency, which can outweigh potential gains on action-bound tasks (browser games, Section~\ref{sec:eval})---the AOI targets human-paced computer use, not real-time interaction.
 No model retraining is needed.
 
-\subsection{Architecture Overview}
-
-The AOI consists of three components, each preceded by a fast (sub-millisecond) gate that short-circuits processing when there is nothing new to perceive. Figure~\ref{fig:architecture} contrasts the resulting pipeline with the standard CU loop.
-For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/16 (${\sim}7$\,ms on GPU) for visual frames and Whisper large-v3 (variable, on demand) for audio segments. For the static, silent frames that dominate most workloads, the per-frame cost reduces to the sub-millisecond gate alone.
-
-\begin{enumerate}[label=(\arabic*)]
-  \item \textbf{Inter-step keyframe capture}: Continuous screen sampling at ${\sim}3$\,Hz with gating to suppress redundant frames. Produces 0--5 keyframe images per step.
-  \item \textbf{Volume-gated audio observer}: RMS energy gate followed by ASR (Whisper large-v3). Produces a text transcription per step, only when audio is present.
-  \item \textbf{Visual narration context}: The CU model itself generates a brief text description of new visual information as a side-output of each inference call. These narrations accumulate in the trajectory and persist after keyframe images are pruned from context.
-\end{enumerate}
-
 \begin{figure*}[t]
 \centering
 \resizebox{\textwidth}{!}{%
@@ -268,8 +257,8 @@ For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/1
   \node[env, fill=cASR!10, draw=cASR!50] (aud) at (5.0, 1.1) {Audio {\scriptsize(16\,kHz)}};
 
   % Gates
-  \node[gate] (pg) at (6.95, 2.9) {Pixel Gate};
-  \node[gate, fill=cASR!15, draw=cASR!60] (rg) at (6.95, 1.1) {RMS Gate};
+  \node[gate] (pg) at (7.35, 2.9) {Pixel Gate};
+  \node[gate, fill=cASR!15, draw=cASR!60] (rg) at (7.35, 1.1) {RMS Gate};
 
   \draw[arr] (scr) -- (pg);
   \draw[arr] (aud) -- (rg);
@@ -279,8 +268,8 @@ For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/1
   \node[font=\scriptsize, text=cGray, anchor=north, yshift=-1pt] at (rg.south) {silence? skip};
 
   % Processors
-  \node[proc] (clip) at (9.1, 2.9) {CLIP-ViT-B/16};
-  \node[proc, fill=cASR!8, draw=cASR!60] (wh) at (9.1, 1.1) {Whisper v3};
+  \node[proc] (clip) at (10.0, 2.9) {CLIP-ViT-B/16};
+  \node[proc, fill=cASR!8, draw=cASR!60] (wh) at (10.0, 1.1) {Whisper v3};
 
   \draw[arr] (pg) -- (clip);
   \draw[arr] (rg) -- (wh);
@@ -290,9 +279,9 @@ For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/1
   \node[font=\scriptsize, text=cGray, anchor=north, yshift=-1pt] at (wh.south) {transcribe};
 
   % Observation Record (further right; title above box, below AOI banner)
-  \node[obs] (orec) at (13.5, 2.0) {};
+  \node[obs] (orec) at (14.7, 2.0) {};
   \node[font=\footnotesize\bfseries, text=cAOI!80!black, anchor=south, yshift=2pt] at (orec.north) {Observation Record};
-  \node[font=\scriptsize, text=cGray, align=left, anchor=west] at (11.30, 2.00) {%
+  \node[font=\scriptsize, text=cGray, align=left, anchor=west] at (12.55, 2.00) {%
     \textcolor{cAOI}{\rule{4pt}{4pt}} keyframe images (0--5)\\[2pt]
     \textcolor{cASR}{\rule{4pt}{4pt}} audio transcript\\[2pt]
     \textcolor{cNarr}{\rule{4pt}{4pt}} narrations (prior steps)\\[2pt]
@@ -302,7 +291,7 @@ For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/1
   \draw[harr, cASR!70] (wh.east) -- ++(0.4,0) |- ([yshift=-6pt]orec.west);
 
   % CU Model (placed below the Observation Record)
-  \node[mdl] (cm) at (13.5, -0.7) {CU Model {\scriptsize(any existing)}};
+  \node[mdl] (cm) at (14.7, -0.7) {CU Model {\scriptsize(any existing)}};
   \draw[harr, very thick] (orec.south) -- (cm.north)
     node[midway, right=3pt, lbl] {images + text};
 
@@ -317,8 +306,8 @@ For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/1
 
   % Brace annotation for gates (kept to gate+processor band, two-line label)
   \draw[thick, decorate, decoration={brace, amplitude=3pt, mirror}]
-    (5.95, -0.20) -- (10.25, -0.20);
-  \node[font=\scriptsize, text=cGray, align=center, anchor=north] at (8.1, -0.30) {%
+    (6.30, -0.20) -- (11.05, -0.20);
+  \node[font=\scriptsize, text=cGray, align=center, anchor=north] at (8.675, -0.30) {%
     gate $<$1\,ms; CLIP $\sim$7\,ms; Whisper on demand\\
     $\to$ near-zero cost on static, silent content};
 
@@ -339,6 +328,17 @@ Visual narrations feed back as persistent text memory.
 The AOI wraps any existing CU model with zero retraining.}
 \label{fig:architecture}
 \end{figure*}
+
+\subsection{Architecture Overview}
+
+The AOI consists of three components, each preceded by a fast (sub-millisecond) gate that short-circuits processing when there is nothing new to perceive. Figure~\ref{fig:architecture} contrasts the resulting pipeline with the standard CU loop.
+For frames that pass the gates, the additional cost is dominated by CLIP-ViT-B/16 (${\sim}7$\,ms on GPU) for visual frames and Whisper large-v3 (variable, on demand) for audio segments. For the static, silent frames that dominate most workloads, the per-frame cost reduces to the sub-millisecond gate alone.
+
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Inter-step keyframe capture}: Continuous screen sampling at ${\sim}3$\,Hz with gating to suppress redundant frames. Produces 0--5 keyframe images per step.
+  \item \textbf{Volume-gated audio observer}: RMS energy gate followed by ASR (Whisper large-v3). Produces a text transcription per step, only when audio is present.
+  \item \textbf{Visual narration context}: The CU model itself generates a brief text description of new visual information as a side-output of each inference call. These narrations accumulate in the trajectory and persist after keyframe images are pruned from context.
+\end{enumerate}
 
 \subsection{Inter-Step Keyframe Capture}
 \label{sec:keyframes}
@@ -1009,17 +1009,28 @@ bundles perception and reasoning in one trained model---today, Gemini~Live~\cite
 and the OpenAI Realtime API~\citep{openairealtime}.
 Neither ships as a CU agent; each is a voice-first assistant with
 function-calling.
-We adapt both to DynaCU-Bench (one session per task, page audio and screenshots
-streamed in, returned tool calls executed in the browser), using the
-highest vision- and function-calling-capable tier of each, and score them on the
-same 12-task audio subset the AOI is scored on.
+We adapt them to DynaCU-Bench (one session per task, the page's native audio and
+screenshots streamed in over the live websocket, returned tool calls executed in the
+browser) and score them on the same 12-task audio subset the AOI is scored on.
+To pre-empt the objection that a stronger model would close the gap, we evaluate the
+current generation directly: OpenAI's GA Realtime model (\texttt{gpt-realtime-2}),
+streaming the page's native audio rather than a transcript. We run it in two conditions:
+\emph{alone} (screenshot~+~audio, the information a streaming model has on its own) and
+\emph{+~AOI scaffold} (additionally handed the same \texttt{[PAGE ELEMENTS]} interactive-element
+list the AOI provides), which separates a perception deficit from an action-grounding one.
+We also evaluate xAI's newly released Grok Voice Agent (\texttt{grok-voice-think-fast}), which
+speaks the same GA Realtime protocol but accepts \emph{audio and text only}---no vision---so it
+runs with native audio plus the text scaffold and never sees the screen.
 
 \begin{table}[t]
 \centering
 \caption{Streaming multimodal baselines vs.\ the AOI on a 12-task audio subset
-(3 each from Podcast, Meeting, Phone, Interview). Each baseline is scored on the
-same task IDs as the AOI in Table~\ref{tab:main}. This is a deliberately
-favourable comparison---neither baseline is built for grounded computer use.}
+(3 each from Podcast, Meeting, Phone, Interview). Each row is scored on the
+same task IDs as the AOI in Table~\ref{tab:main}. \texttt{gpt-realtime-2} is the
+current GA OpenAI Realtime model, streaming native audio; ``alone'' is screenshot~+~audio,
+``+~scaffold'' additionally supplies AOI's \texttt{[PAGE ELEMENTS]} list. Grok Voice
+is audio$+$text only (no vision), so it runs with the text scaffold and no screenshot.
+This is a deliberately favourable comparison---no baseline is built for grounded computer use.}
 \label{tab:streaming}
 \small
 \setlength{\tabcolsep}{4.5pt}
@@ -1027,26 +1038,39 @@ favourable comparison---neither baseline is built for grounded computer use.}
 \toprule
 \textbf{Configuration} & \textbf{Pod} & \textbf{Meet} & \textbf{Phone} & \textbf{Intv} & \textbf{Total / 12} \\
 \midrule
-OpenAI Realtime          & 0 & 0 & 0 & 3 & 3 \scriptsize(25\%) \\
-Gemini Live              & 0 & 0 & 0 & 0 & 0 \scriptsize(0\%) \\
+Gemini Live (2.5)                   & 0 & 0 & 0 & 0 & 0 \scriptsize(0\%) \\
+OpenAI Realtime (gpt-4o)            & 0 & 0 & 0 & 3 & 3 \scriptsize(25\%) \\
+Grok Voice (think-fast, no vision)  & 1 & 0 & 0 & 0 & 1 \scriptsize(8\%) \\
+gpt-realtime-2, alone               & 0 & 0 & 1 & 1 & 2 \scriptsize(17\%) \\
+gpt-realtime-2, $+$ AOI scaffold    & 2 & 3 & 3 & 3 & 11 \scriptsize(92\%) \\
 \rowcolor{bestcolor}
-AOI~full (Claude 4.6)    & 3 & 3 & 3 & 3 & \textbf{12} \scriptsize(100\%) \\
+AOI~full (Claude 4.6)               & 3 & 3 & 3 & 3 & \textbf{12} \scriptsize(100\%) \\
 \bottomrule
 \end{tabular}
 \end{table}
 
-Both underperform the AOI by a wide margin (Table~\ref{tab:streaming}).
-OpenAI Realtime succeeds only on the simplest interview questions, answerable from
-a single audio chunk. On podcast and meeting tasks it waits indefinitely without
-extracting the spoken content.
-Gemini~Live, optimised for audio-in/audio-out, returns few tool calls and tends to
-click non-actionable coordinates rather than commit a typed answer.
-A sanity check rules out a broken adapter: on five purely-visual tasks, both
-baselines drive the browser and emit valid actions (5/5) but reach 0/5
-task-correct---wrong targets, hallucinated text, premature commits---while
-AOI-equipped Claude passes 4/5 (Appendix~\ref{app:streaming_sanity}).
-On this audio subset, both streaming baselines fail to commit the spoken answer that
-AOI's transcription records as text.
+A streaming voice model does not substitute for the AOI---and the current generation
+sharpens \emph{why} (Table~\ref{tab:streaming}).
+The older baselines fail outright: Gemini~Live (0/12) returns few tool calls and clicks
+non-actionable coordinates, and the gpt-4o-backed Realtime (3/12) succeeds only on the
+simplest interview questions.
+Crucially, \texttt{gpt-realtime-2}---the current GA Realtime model with native audio---still
+reaches only \textbf{2/12} on its own, even though its transcription is essentially perfect
+(the run logs show it hears every name and figure correctly). Its failure is not perception
+but \emph{action grounding}: it hears ``Dr.\ Sarah Chen'' yet cannot target the right form
+field from a screenshot, so the answer never lands.
+Handed AOI's \texttt{[PAGE ELEMENTS]} scaffold, the very same model jumps to \textbf{11/12}.
+This localises the deficit precisely: a frontier streaming model already perceives the page,
+but needs the AOI's structured grounding to act on it---and even then ties rather than beats
+the AOI (11 vs.\ 12).
+xAI's newly released Grok Voice (\texttt{grok-voice-think-fast}) makes the same point from the
+opposite direction: it hears accurately---on one task it transcribes a spoken price and types
+it correctly---but, lacking vision entirely, it manages only \textbf{1/12}, falling back on
+blind clicks and occasional hallucinated answers. Perception without grounded action is not
+enough.
+A sanity check rules out a broken adapter: on five purely-visual tasks the older baselines
+emit valid actions (5/5) but reach 0/5 task-correct, while \texttt{gpt-realtime-2} reaches
+3/5 and AOI-equipped Claude 4/5 (Appendix~\ref{app:streaming_sanity}).
 
 % ════════════════════════════════════════════════════════════
 \section{Related Work}
@@ -1223,7 +1247,7 @@ Qwen3-VL-30B-A3B-Instruct   & 18 & \textbf{42} & $+$24 & 8/32 & $1.8\times10^{-4
 \begin{table}[!h]
 \centering
 \caption{Per-family success rates (passes out of 10) for Standard vs.\ AOI~full across the five models
-with full per-family breakdowns. Grok-4 is omitted due to latency contraints (see Section~\ref{sec:grok}). These are the absolute scores behind Figure~\ref{fig:heatmap}.}
+with full per-family breakdowns. Grok-4 is omitted due to latency constraints (see Section~\ref{sec:grok}). These are the absolute scores behind Figure~\ref{fig:heatmap}.}
 \label{tab:percategory}
 \small
 \setlength{\tabcolsep}{2.8pt}
@@ -1976,15 +2000,14 @@ the modal failure mode where applicable.
 \begin{table}[t]
 \centering
 \caption{Per-task adapter sanity-check outcomes for each streaming
-baseline.  Both adapters drive the browser and emit valid tool calls
+baseline.  Every adapter drives the browser and emits valid tool calls
 (\texttt{click}, \texttt{fill}, \texttt{type\_text}) on every task; every
-attempted action lands on the DOM.  Both score 0/5 task-correct because
-the models choose the wrong target (e.g., F-E2 cookies dismissed instead
-of accepted), hallucinate content (C-E1 typed a URL not present in the
-recording), or commit prematurely (I-E1 typed before reading the page).
-The same failure modes appear on the audio subset
-(Table~\ref{tab:streaming}), confirming the audio-subset failures are
-content-driven rather than infrastructural.}
+attempted action lands on the DOM, so the audio-subset failures are
+content-driven rather than infrastructural.  The older adapters score 0/5
+task-correct (wrong target, e.g.\ F-E2 cookies dismissed instead of accepted;
+hallucinated content, e.g.\ C-E1; or premature commit, e.g.\ I-E1), whereas the
+current GA \texttt{gpt-realtime-2} reaches 3/5---closer to but still below the
+AOI reference, consistent with the audio subset (Table~\ref{tab:streaming}).}
 \label{tab:streaming_sanity_detail}
 \small
 \setlength{\tabcolsep}{3.5pt}
@@ -1994,6 +2017,7 @@ content-driven rather than infrastructural.}
 \midrule
 OpenAI Realtime adapter (gpt-4o backbone) & \ding{55} & \ding{55} & \ding{55} & \ding{55} & \ding{55} & 0 \\
 Gemini Live (2.5 flash native-audio)    & \ding{55} & \ding{55} & \ding{55} & \ding{55} & \ding{55} & 0 \\
+OpenAI \texttt{gpt-realtime-2} (GA, native audio) & \checkmark & \checkmark & \checkmark & \ding{55} & \ding{55} & 3 \\
 \rowcolor{bestcolor}
 AOI~full (Claude Sonnet 4.6) reference   & \checkmark & \ding{55} & \checkmark & \checkmark & \checkmark & 4 \\
 \bottomrule

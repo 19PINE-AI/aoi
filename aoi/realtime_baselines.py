@@ -710,10 +710,24 @@ class OpenAIRealtimeWSBaseline:
     """
 
     def __init__(self, model: str = "gpt-realtime-2",
-                 max_steps: int = 15, step_interval_s: float = 2.0):
+                 max_steps: int = 15, step_interval_s: float = 2.0,
+                 provide_page_elements: bool = True,
+                 ws_base: str = "wss://api.openai.com/v1/realtime",
+                 api_key_env: str = "OPENAI_API_KEY",
+                 send_images: bool = True):
         self.model = model
         self.max_steps = max_steps
         self.step_interval_s = step_interval_s
+        # When True, hand the model the same [PAGE ELEMENTS] id list the AOI
+        # scaffold provides (isolates audio perception). When False, screenshot
+        # only — matches the original streaming baselines (model alone).
+        self.provide_page_elements = provide_page_elements
+        # Provider-agnostic: OpenAI GA Realtime and xAI Grok Voice both speak the
+        # GA Realtime protocol. ws_base/api_key_env/send_images switch providers.
+        # Grok Voice accepts no image input, so send_images=False there.
+        self.ws_base = ws_base
+        self.api_key_env = api_key_env
+        self.send_images = send_images
         self._llm_evaluator = LLMEvaluator()
 
     def _ga_tools(self):
@@ -728,8 +742,8 @@ class OpenAIRealtimeWSBaseline:
     def run_task(self, task: Task) -> RealtimeEvalResult:
         import websocket  # websocket-client (sync), avoids asyncio/greenlet clashes
 
-        url = f"wss://api.openai.com/v1/realtime?model={self.model}"
-        key = os.environ["OPENAI_API_KEY"]
+        url = f"{self.ws_base}?model={self.model}"
+        key = os.environ[self.api_key_env]
 
         env = BrowserEnvironment(
             html_file=task.html_file, width=1280, height=720,
@@ -754,6 +768,7 @@ class OpenAIRealtimeWSBaseline:
         heard = []  # transcripts of page audio the model received, for logging
 
         ws = None
+        last_grab = None  # wall-time of previous audio capture, so no audio is dropped
         try:
             ws = websocket.create_connection(
                 url, header=[f"Authorization: Bearer {key}"], timeout=30,
@@ -784,10 +799,15 @@ class OpenAIRealtimeWSBaseline:
             if env.get_elapsed_s() > task.duration_s or ws is None:
                 break
             time.sleep(self.step_interval_s)
+            if last_grab is None:
+                last_grab = t_start
 
-            # 1. Native audio for this step → append + commit (only if non-trivial)
+            # 1. Native audio since the last grab → append + commit (no audio dropped
+            #    during response latency). Window capped at the ring-buffer length.
             try:
-                audio_f32, _, _ = audio_proc.capture.get_audio(self.step_interval_s)
+                window = min(time.time() - last_grab, audio_proc.capture.buffer_duration_s)
+                last_grab = time.time()
+                audio_f32, _, _ = audio_proc.capture.get_audio(window)
                 pcm = _f32_to_pcm16_24k(audio_f32, src_rate=audio_proc.capture.sample_rate)
                 if len(pcm) >= 24000 * 2 * 0.12:  # >=120 ms required to commit
                     self._send(ws, {"type": "input_audio_buffer.append",
@@ -796,20 +816,30 @@ class OpenAIRealtimeWSBaseline:
             except Exception as e:
                 log.warning("audio append failed step %d: %s", step, e)
 
-            # 2. Screenshot + instruction as a user turn
+            # 2. Screenshot (if the provider accepts vision) + instruction as a user turn
             try:
-                img = env.get_screenshot()
-                buf = io.BytesIO()
-                img.save(buf, format="JPEG", quality=70)
-                img_b64 = base64.b64encode(buf.getvalue()).decode()
+                content = []
+                # Give the baseline the same interactive-element id list the AOI
+                # scaffold provides, so failures reflect perception, not selector
+                # guessing (keeps the comparison favourable to the baseline).
+                try:
+                    page_elems = env.get_interactive_elements() if self.provide_page_elements else ""
+                except Exception:
+                    page_elems = ""
+                step_text = f"Step {step}. Choose exactly one tool call to drive the browser."
+                if page_elems:
+                    step_text += "\n" + page_elems
+                content.append({"type": "input_text", "text": step_text})
+                if self.send_images:  # Grok Voice accepts audio+text only
+                    img = env.get_screenshot()
+                    buf = io.BytesIO()
+                    img.save(buf, format="JPEG", quality=70)
+                    img_b64 = base64.b64encode(buf.getvalue()).decode()
+                    content.append({"type": "input_image",
+                                    "image_url": f"data:image/jpeg;base64,{img_b64}"})
                 self._send(ws, {
                     "type": "conversation.item.create",
-                    "item": {"type": "message", "role": "user", "content": [
-                        {"type": "input_text",
-                         "text": f"Step {step}. Choose exactly one tool call to drive the browser."},
-                        {"type": "input_image",
-                         "image_url": f"data:image/jpeg;base64,{img_b64}"},
-                    ]},
+                    "item": {"type": "message", "role": "user", "content": content},
                 })
                 self._send(ws, {"type": "response.create"})
             except Exception as e:
@@ -890,6 +920,10 @@ class OpenAIRealtimeWSBaseline:
         # Stash what the model heard for the appendix/debugging.
         result.heard_audio = " | ".join(h for h in heard if h)[:2000]
         return result
+
+    def _inject_page_audio(self, env, audio_proc):
+        """Same TTS injection as the other baselines (edge-tts → virtual_speaker)."""
+        return GeminiLiveBaseline._inject_page_audio(self, env, audio_proc)
 
     @staticmethod
     def _send(ws, ev):

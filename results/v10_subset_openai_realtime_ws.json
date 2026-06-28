@@ -1,0 +1,612 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "guest_name_correct",
+    "steps_taken": 3,
+    "total_time_s": 9.993817567825317,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.911712646484375
+      },
+      {
+        "step": 2,
+        "action": "fill(#guestName, \"Dr. Sarah Chen\")",
+        "tool_call": "fill({\"id\": \"guestName\", \"text\": \"Dr. Sarah Chen\"})",
+        "result_val": "guest_name_correct",
+        "elapsed_s": 6.952246427536011
+      },
+      {
+        "step": 3,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "guest_name_correct",
+        "elapsed_s": 9.927797079086304
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Welcome to Tech Talk. | Today we're joined by Dr. Sarah Chen, Professor of Artificial Intelligence.",
+    "wall_s": 11.9
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 5,
+    "total_time_s": 16.44422483444214,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.6645216941833496
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.144648790359497
+      },
+      {
+        "step": 3,
+        "action": "fill(#priceInput, \"$99\")",
+        "tool_call": "fill({\"id\": \"priceInput\", \"text\": \"$99\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.318612337112427
+      },
+      {
+        "step": 4,
+        "action": "click(640, 749)",
+        "tool_call": "click({\"x\": 640, \"y\": 749})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.35465955734253
+      },
+      {
+        "step": 5,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.37541651725769
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "They were reviewing the new sound piece | were reviewing the new Soundpeak headphones. | they offer incredible value for the price point. | you | you",
+    "wall_s": 18.3
+  },
+  {
+    "task_id": "A-M1",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "both_correct",
+    "steps_taken": 5,
+    "total_time_s": 15.788362264633179,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.6378986835479736
+      },
+      {
+        "step": 2,
+        "action": "fill(#bookTitle, \"The Alignment Problem\")",
+        "tool_call": "fill({\"id\": \"bookTitle\", \"text\": \"The Alignment Problem\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.635154962539673
+      },
+      {
+        "step": 3,
+        "action": "fill(#bookAuthor, \"Brian Christian\")",
+        "tool_call": "fill({\"id\": \"bookAuthor\", \"text\": \"Brian Christian\"})",
+        "result_val": "both_correct",
+        "elapsed_s": 9.654093742370605
+      },
+      {
+        "step": 4,
+        "action": "click(640, 772)",
+        "tool_call": "click({\"x\": 640, \"y\": 772})",
+        "result_val": "both_correct",
+        "elapsed_s": 12.812276363372803
+      },
+      {
+        "step": 5,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "both_correct",
+        "elapsed_s": 15.722274780273438
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "I've been reading the alignment | I've been reading The Alignment Problem by Brian Christian. | It changed how I think about AI safety. | you",
+    "wall_s": 17.7
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "date_correct",
+    "steps_taken": 7,
+    "total_time_s": 25.116461992263794,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.198106527328491
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.616376876831055
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.051756381988525
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.06354284286499
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.58717393875122
+      },
+      {
+        "step": 6,
+        "action": "fill(#launchDate, \"April 28\")",
+        "tool_call": "fill({\"id\": \"launchDate\", \"text\": \"April 28\"})",
+        "result_val": "date_correct",
+        "elapsed_s": 21.922610759735107
+      },
+      {
+        "step": 7,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "date_correct",
+        "elapsed_s": 25.052431344985962
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Welcome everyone! | Let's go through the agenda for today's product launch planning meeting. | planning meeting. We have four items to cover. | cover. Here's the team. | As you can see we have strong cross-functional coverage. | we've moved the launch date to April 28.",
+    "wall_s": 27.2
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "room_correct",
+    "steps_taken": 6,
+    "total_time_s": 22.22318458557129,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.870441436767578
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.476529836654663
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.451866388320923
+      },
+      {
+        "step": 4,
+        "action": "fill(#roomInput, \"301\")",
+        "tool_call": "fill({\"id\": \"roomInput\", \"text\": \"301\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.212072372436523
+      },
+      {
+        "step": 5,
+        "action": "fill(#roomInput, \"407\")",
+        "tool_call": "fill({\"id\": \"roomInput\", \"text\": \"407\"})",
+        "result_val": "room_correct",
+        "elapsed_s": 19.220183849334717
+      },
+      {
+        "step": 6,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "room_correct",
+        "elapsed_s": 22.153999090194702
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Good morning, everyone! | Good morning everyone. Here are this week's | updates. We have a few logistical changes to go over. | Now looking at the floor plan for those | meeting will be in room 407 on the third floor. It's not on this map because",
+    "wall_s": 24.4
+  },
+  {
+    "task_id": "B-M1",
+    "category": "B_meeting",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "value_correct",
+    "steps_taken": 9,
+    "total_time_s": 31.11666202545166,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.021711349487305
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.452869892120361
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.940712928771973
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.326894998550415
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.85792064666748
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.334567070007324
+      },
+      {
+        "step": 7,
+        "action": "fill(#valueInput, \"14.6%\")",
+        "tool_call": "fill({\"id\": \"valueInput\", \"text\": \"14.6%\"})",
+        "result_val": "value_correct",
+        "elapsed_s": 24.511067867279053
+      },
+      {
+        "step": 8,
+        "action": "click(1196, 596)",
+        "tool_call": "click({\"x\": 1196, \"y\": 596})",
+        "result_val": "value_correct",
+        "elapsed_s": 27.70190119743347
+      },
+      {
+        "step": 9,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "value_correct",
+        "elapsed_s": 31.050316095352173
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "maintenance. Let's start with the | We'll cover Revenue, Customer Acquisition, Growth | customer acquisition, growth rates, and projections. | Revenue is looking strong. North America continues to grow. | but APAC is growing fast. Now the growth rate... | Q1 was 11.2, Q2 12.8 | 2, Q2 12.8, and the growth rate for Q3 was | 6% Q4 came in at 16%. | Looking ahead, we're projecting 18%",
+    "wall_s": 33.1
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "number_correct",
+    "steps_taken": 5,
+    "total_time_s": 16.509560346603394,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.3220648765563965
+      },
+      {
+        "step": 2,
+        "action": "fill(#callbackNum, \"555-0134\")",
+        "tool_call": "fill({\"id\": \"callbackNum\", \"text\": \"555-0134\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.371594190597534
+      },
+      {
+        "step": 3,
+        "action": "fill(#callbackNum, \"555-0147\")",
+        "tool_call": "fill({\"id\": \"callbackNum\", \"text\": \"555-0147\"})",
+        "result_val": "number_correct",
+        "elapsed_s": 10.385135889053345
+      },
+      {
+        "step": 4,
+        "action": "click(640, 543)",
+        "tool_call": "click({\"x\": 640, \"y\": 543})",
+        "result_val": "number_correct",
+        "elapsed_s": 13.454107522964478
+      },
+      {
+        "step": 5,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "number_correct",
+        "elapsed_s": 16.445740222930908
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Bye, this is Janus | from Westfield Medical. Please call us back at 555-833-4222. | at 5 5 5 0 1 4 7 | you",
+    "wall_s": 18.4
+  },
+  {
+    "task_id": "G-E2",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "name_correct",
+    "steps_taken": 4,
+    "total_time_s": 12.23557448387146,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#callerName, \"Jennifer\")",
+        "tool_call": "fill({\"id\": \"callerName\", \"text\": \"Jennifer\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.2589144706726074
+      },
+      {
+        "step": 2,
+        "action": "click(640, 543)",
+        "tool_call": "click({\"x\": 640, \"y\": 543})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.2244603633880615
+      },
+      {
+        "step": 3,
+        "action": "fill(#callerName, \"Jennifer Martinez\")",
+        "tool_call": "fill({\"id\": \"callerName\", \"text\": \"Jennifer Martinez\"})",
+        "result_val": "name_correct",
+        "elapsed_s": 9.231207609176636
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "name_correct",
+        "elapsed_s": 12.170159816741943
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Hello, this is Jennifer | Hello, this is Jennifer Martinez calling about your appointment on | Please confirm by calling us back.",
+    "wall_s": 14.2
+  },
+  {
+    "task_id": "G-M1",
+    "category": "G_phone",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "support_selected",
+    "steps_taken": 2,
+    "total_time_s": 6.485867977142334,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(722, 416)",
+        "tool_call": "click({\"x\": 722, \"y\": 416})",
+        "result_val": "support_selected",
+        "elapsed_s": 3.465380907058716
+      },
+      {
+        "step": 2,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "support_selected",
+        "elapsed_s": 6.423341512680054
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Welcome!",
+    "wall_s": 8.4
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "answer_heard_correct",
+    "steps_taken": 4,
+    "total_time_s": 12.775308609008789,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Paris\")",
+        "tool_call": "speak({\"text\": \"Paris\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.195946216583252
+      },
+      {
+        "step": 2,
+        "action": "fill(#fallbackInput, \"Paris\")",
+        "tool_call": "fill({\"id\": \"fallbackInput\", \"text\": \"Paris\"})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 6.716548442840576
+      },
+      {
+        "step": 3,
+        "action": "click(822, 451)",
+        "tool_call": "click({\"x\": 822, \"y\": 451})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 9.71987009048462
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "answer_heard_correct",
+        "elapsed_s": 12.705995082855225
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Let's start with a simple test. | Let's start with a simple question. | of France.",
+    "wall_s": 18.7
+  },
+  {
+    "task_id": "H-E2",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "name_spoken_correct",
+    "steps_taken": 4,
+    "total_time_s": 11.992429256439209,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.1900599002838135
+      },
+      {
+        "step": 2,
+        "action": "fill(#fallbackInput, \"Alexander Thompson\")",
+        "tool_call": "fill({\"id\": \"fallbackInput\", \"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 6.09415340423584
+      },
+      {
+        "step": 3,
+        "action": "click(822, 521)",
+        "tool_call": "click({\"x\": 822, \"y\": 521})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 8.985160112380981
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 11.923088550567627
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Please state your full name as shown on your profile. | Please state your full name as shown on your profile. | you",
+    "wall_s": 17.8
+  },
+  {
+    "task_id": "H-M1",
+    "category": "H_interview",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "revenue_spoken_correct",
+    "steps_taken": 4,
+    "total_time_s": 12.354755878448486,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The total revenue shown is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown is $4.2 million.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.256202220916748
+      },
+      {
+        "step": 2,
+        "action": "fill(#fallbackInput, \"$4.2M\")",
+        "tool_call": "fill({\"id\": \"fallbackInput\", \"text\": \"$4.2M\"})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 6.357832908630371
+      },
+      {
+        "step": 3,
+        "action": "click(842, 355)",
+        "tool_call": "click({\"x\": 842, \"y\": 355})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 9.343637943267822
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "revenue_spoken_correct",
+        "elapsed_s": 12.289265632629395
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Looking at the report on your screen. | What is the total revenue figure? | you",
+    "wall_s": 18.3
+  }
+]
