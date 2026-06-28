@@ -1307,19 +1307,20 @@ RTX Pro~6000 GPU on which these experiments were run.
 \label{app:fullresults}
 % ════════════════════════════════════════════════════════════
 
-This appendix collects the per-cell numbers summarised by the figures in the
-body: per-family success for every model (Table~\ref{tab:percategory}, the
-absolute scores behind the gain heatmap, Figure~\ref{fig:heatmap}), the
-difficulty breakdown (Table~\ref{tab:difficulty}), efficiency and cost
-(Table~\ref{tab:efficiency}), and the full per-family ablation sweep
-(Table~\ref{tab:fullablation}).
+This appendix provides the per-cell numbers summarised by the figures in the main paper.
+\begin{itemize}
+  \item Per-family success for every model (Table~\ref{tab:percategory}, the
+absolute scores behind the gain heatmap in Figure~\ref{fig:heatmap});
+\item the difficulty breakdown (Table~\ref{tab:difficulty});
+\item efficiency and cost (Table~\ref{tab:efficiency});
+\item the full per-family ablation sweep (Table~\ref{tab:fullablation}).
+\end{itemize}
+
 
 \begin{table}[!h]
 \centering
-\caption{Per-family success (pass/10), Standard vs.\ AOI~full, for the five models
-with full per-family breakdowns. Grok-4 is omitted (latency-limited;
-Section~\ref{sec:grok}). These are the absolute scores behind
-Figure~\ref{fig:heatmap}.}
+\caption{Per-family success rates (passes out of 10) for Standard vs.\ AOI~full across the five models
+with full per-family breakdowns. Grok-4 is omitted due to latency contraints (see Section~\ref{sec:grok}). These are the absolute scores behind Figure~\ref{fig:heatmap}.}
 \label{tab:percategory}
 \small
 \setlength{\tabcolsep}{2.8pt}
@@ -1368,14 +1369,13 @@ Fara-7B & 9/30 & 5/40 & 3/30 & 19/30 & 11/40 & 4/30 \\
 
 \begin{table}[!h]
 \centering
-\caption{Efficiency and cost on the 100-task benchmark (Grok-4 omitted;
-latency floor distorts the picture).
-Steps = mean steps/task; Time = mean wall-clock/task; Lat.\ = total inference
-latency/task; Obs = total observation processing/task; Tokens = input+output/task
-(estimated, same estimator for every row); \$/100 tasks at May 2026 list prices
+\caption{Efficiency and cost on the 100-task DynaCU-Bench. Grok-4 is omitted due to inference latency constraints that distort the comparison.
+Steps = mean steps per task; Time = mean wall-clock per task; Lat.\ = total inference
+latency per task; Obs = total observation processing time per task; Tokens = input + output tokens per task
+(estimated, same estimator for every row); \$/100 = cost per 100 tasks at May 2026 list prices
 (local models free).
-The AOI is cheaper in dollars on every cloud model because the step count drops
-faster than per-step input grows.}
+The AOI reduces token cost on every cloud model because the reduction step count more than offsets 
+the increased input size.}
 \label{tab:efficiency}
 \small
 \setlength{\tabcolsep}{4.0pt}
@@ -1436,17 +1436,19 @@ AOI visual+ASR & 1 & 4 & 10 & 9 & 9 & 9 & 4 & 9 & 6 & 3 & 64 \\
 \label{app:promptdecomp}
 % ════════════════════════════════════════════════════════════
 
-Numbers behind Figure~\ref{fig:decomp}.
-Table~\ref{tab:static} is the Static-50 no-degradation check;
-Table~\ref{tab:structured} is the per-model prompt/perception split; and
-Table~\ref{tab:a2_decomp} shows that within the prompt-format effect a DOM-element
-list is the single largest lever.
+These are the numbers behind Figure~\ref{fig:decomp}.
+\begin{itemize}
+  \item Table~\ref{tab:static}: The Static-50 no-degradation check;
+  \item Table~\ref{tab:structured}: The per-model prompt/perception split;
+  \item Table~\ref{tab:a2_decomp}: Fine-grained breakdown of the prompt-format effect, showing that a DOM-element
+list is the single largest contributor.
+\end{itemize}
 
 \begin{table}[!h]
 \centering
-\caption{Static-50 (50 purely static, silent tasks), Claude Sonnet~4.6. The gates
+\caption{Static-50 (50 purely static, silent tasks) on Claude Sonnet~4.6. The gates
 suppress almost all extraction (7 keyframes total, no audio), yet the AOI scores
-50/50---a prompt-format effect, not perception, and no degradation on static work.}
+50/50---this shows the presence of a prompt-format effect, not improved perception, as well as no degradation on static work.}
 \label{tab:static}
 \small
 \begin{tabular}{@{}l cc cc@{}}
@@ -1461,10 +1463,10 @@ AOI full & \textbf{50} \scriptsize(100\%) & \textbf{1.62} & 7 & 0 \\
 
 \begin{table}[!h]
 \centering
-\caption{Prompt-format vs.\ perception split on DynaCU-Bench (100 tasks).
-A structured-record control with no keyframes/audio isolates
-$\Delta_\text{prompt}$; the remainder up to AOI~full is $\Delta_\text{percept}$.
-Both are positive for every model. (Gemini~3~Flash, where the split differs, is in
+\caption{Prompt-format vs.\ perception decomposition on DynaCU-Bench (100 tasks).
+A structured-record control with no keyframes/audio isolates the prompt format gain
+$\Delta_\text{prompt}$; the remainder up to AOI~full is pure perception gain $\Delta_\text{percept}$.
+Both components are positive for every model. (Results for Gemini~3~Flash, where the split differs, is in
 Appendix~\ref{app:gemini3}.)}
 \label{tab:structured}
 \small
@@ -1508,12 +1510,13 @@ $+$both (=\,$+$format)      & \textbf{57} & yes & yes \\
 \label{app:stats}
 % ════════════════════════════════════════════════════════════
 
-The per-tier significance tests behind Figure~\ref{fig:ablation}
-(Table~\ref{tab:ablation_stats}), the open-source replication of the
-selection-invariance finding (Table~\ref{tab:oss_selection}), the per-family
-narration decomposition behind Figure~\ref{fig:analysis}a
-(Table~\ref{tab:narration}), and the in-context keyframe-image decomposition
-behind Figure~\ref{fig:analysis}b (Table~\ref{tab:keyframe_context}).
+This appendix includes:
+\begin{itemize}
+  \item The per-tier significance tests behind Figure~\ref{fig:ablation} (Table~\ref{tab:ablation_stats});
+\item The open-source replication of the selection-invariance finding (Table~\ref{tab:oss_selection});
+\item The per-family narration decomposition behind Figure~\ref{fig:analysis}a (Table~\ref{tab:narration});
+\item The in-context keyframe-image decomposition behind Figure~\ref{fig:analysis}b (Table~\ref{tab:keyframe_context}).
+\end{itemize}
 
 \begin{table}[!h]
 \centering
@@ -1610,9 +1613,9 @@ Gemini 3 Flash    & \textbf{57} & 45 & $-$12 \\
 
 The gates suppress processing on the majority of steps: only ${\sim}28\%$ produce
 a keyframe and ${\sim}14\%$ activate audio (Table~\ref{tab:perstep}), and
-weighted by step count ${\sim}61\%$ of steps are fully idle
+weighted by step count, ${\sim}61\%$ of steps are fully idle
 (Figure~\ref{fig:obsactivity}). Audio-only families produce zero keyframes and
-visual-only families zero audio, confirming clean channel separation.
+visual-only families produce zero audio activations, confirming clean channel separation.
 
 \begin{table}[!h]
 \centering
@@ -1677,12 +1680,12 @@ idle overall.}
 \label{app:gemini3}
 % ════════════════════════════════════════════════════════════
 
-Tables underlying the Gemini~3 case study (Figure~\ref{fig:gemini3}).
-Table~\ref{tab:gemini3_audio_only} is the four-way decomposition behind the
-waterfall; Table~\ref{tab:gemini3_percat} is the per-family AOI~$\Delta$ (the
-shortfall vs.\ Gemini~2.5 sits entirely on Dashboard and Transient, where
-Gemini~3 alone regresses); Table~\ref{tab:keyframe_probe} is the causal probe
-that pins the keyframe regression to image-token dilution.
+This appendix provides the tables underlying the Gemini~3 case study (Figure~\ref{fig:gemini3}).
+\begin{itemize}
+  \item Table~\ref{tab:gemini3_audio_only} is the four-way decomposition behind the waterfall; 
+  \item Table~\ref{tab:gemini3_percat} is the per-family AOI~$\Delta$ (the shortfall vs.\ Gemini~2.5 sits entirely on Dashboard and Transient, where Gemini~3 alone regresses); 
+  \item Table~\ref{tab:keyframe_probe} is the causal probe that pins the keyframe regression to image-token dilution.
+\end{itemize}
 
 \begin{table}[!h]
 \centering
@@ -1758,8 +1761,7 @@ Keyframes after screenshot   & 22 & 44\% & position effect \\
 \label{app:tasklist}
 % ════════════════════════════════════════════════════════════
 
-Each of the 100 tasks is identified by a category letter (A--J) and a difficulty-indexed ID.
-Easy tasks: E1, E2, E3. Medium tasks: M1, M2, M3, M4. Hard tasks: H1, H2, H3.
+Each of the 100 tasks is identified by a category letter (A--J) and a difficulty-indexed ID (Easy tasks: E1, E2, E3; Medium tasks: M1, M2, M3, M4; Hard tasks: H1, H2, H3).
 
 Example tasks by category:
 \begin{itemize}
@@ -1847,7 +1849,7 @@ The bimodal distribution of CLIP distances---near-zero for unchanged content, la
 \label{fig:theta}
 \end{figure}
 
-Figure~\ref{fig:theta} shows the CLIP threshold $\theta$ sweep across a 15$\times$ range from 0.02 to 0.30, evaluated on the 40 visual tasks (categories C--F) where keyframe selection is relevant.
+Figure~\ref{fig:theta} shows the CLIP threshold $\theta$ sweeps across a 15$\times$ range from 0.02 to 0.30, evaluated on the 40 visual tasks (categories C--F) where keyframe selection is relevant.
 Point estimates remain within an 80--90\% band throughout, demonstrating that for practitioners who choose the CLIP-based variant, threshold selection is not critical.
 There is no cliff: even at $\theta = 0.30$ (very aggressive filtering that captures only major visual changes), the point estimate remains at 85\%.
 At $\theta = 0.02$ (very sensitive, capturing small changes), it is 82.5\%.
