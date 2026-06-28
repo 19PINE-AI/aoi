@@ -1,4 +1,4 @@
-\begin{thebibliography}{43}
+\begin{thebibliography}{44}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -56,6 +56,12 @@ Xiang Deng, Yu~Gu, Boyuan Zheng, Shijie Chen, Sam Stevens, Boshi Wang, Huan
 {Google DeepMind}.
 \newblock {Gemini 2.5 Computer Use}.
 \newblock \url{https://deepmind.google/models/gemini/computer-use/}, 2025.
+
+\bibitem[{Google DeepMind}(2026)]{gemini3flash}
+{Google DeepMind}.
+\newblock {Gemini 3 Flash}.
+\newblock \url{https://deepmind.google/models/gemini/}, 2026.
+\newblock Accessed 2026-05-15; model id \texttt{gemini-3-flash-preview}.
 
 \bibitem[He et~al.(2024)]{webvoyager}
 Hongliang He et~al.

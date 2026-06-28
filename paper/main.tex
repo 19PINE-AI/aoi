@@ -113,13 +113,13 @@ meetings, answering voice prompts, and reacting to transient dialogs.
 
 \textbf{The gap is real and unaddressed.}
 On static GUI benchmarks such as OSWorld~\citep{osworld}, screenshot agents have
-improved from sub-10\% to above 50\% sucess~\citep{surfer2,uitars2}, approaching the
+improved from sub-10\% to above 50\% success~\citep{surfer2,uitars2}, approaching the
 human baseline in filling forms, navigating sites, editing documents, and operating
 professional software.
-However, the dynamic-and-audible regime is documented but largely unaddressed gap:
+However, the dynamic-and-audible regime remains a documented but largely unaddressed gap:
 video-LLM GUI agents struggle across temporal tasks~\citep{guiworld},
 long-context models do \emph{worse} with video input than without~\citep{videowebarena},
-paused-frame game evaluation reach only single-digit
+paused-frame game evaluations reach only single-digit
 completion~\citep{videogamebench}, and screenshot agents miss dozens of hours of temporal dynamics~\citep{cuasuite}. Even a recent CU survey catalogues
 many open challenges but not the observation modality itself~\citep{cusurvey}.
 
@@ -158,9 +158,9 @@ No retraining is required, although the optimal component mix is model-specific.
 \textbf{Contributions.}
 \begin{enumerate}
   \item We identify the \textbf{observation interface} as a separable CU design axis, complementary to SWE-agent's action interface, with \emph{decoupling observation from action} as the core principle (Sections~\ref{sec:intro}--\ref{sec:design}).
-  \item We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer with three gated components. We releast AOI together with \textbf{DynaCU-Bench}, a benchmark of 100 dynamic tasks across 10 categories, and a static task set for degradation control.
+  \item We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer with three gated components. We release AOI together with \textbf{DynaCU-Bench}, a benchmark of 100 dynamic tasks across 10 categories, and a static task set for degradation control.
   \item Across eight CU models from 7B to frontier scale, the AOI delivers significant gains on dynamic tasks with zero retraining (Section~\ref{sec:eval}), while staying transparent on static work.
-  \item We provide a detailed decomposition of the gains: keyframe \emph{selection} is largely irrelevant, most value emerges only once frames are narrated into persistent text, and the component mix must be tuned per model, with one component even becoming harmful on a newer model (Sections~\ref{sec:analysis}--\ref{sec:newer}).
+  \item We provide a detailed decomposition of the gains: keyframe \emph{selection} is largely irrelevant, most value emerges only once frames are narrated into persistent text, and the component mix must be tuned per model, with one component even becoming harmful on a newer model (Sections~\ref{sec:static}--\ref{sec:newer}).
 \end{enumerate}
 
 % ════════════════════════════════════════════════════════════
@@ -205,7 +205,7 @@ touching the model or $\mathcal{A}$.
 % ════════════════════════════════════════════════════════════
 
 The AOI is inserted between the environment and any existing CU model. It continuously observes the entire interval between agent steps and provides the model with additional keyframes, audio descriptions, and accumulated visual narration, all in the standard image + text format that every CU model already accepts.
-On static, silent tasks, the AOI's perception gates remain mostly closed and behaviour reduces to the standard loop wrapped in AOI's structured observation-record format (which does not degrade static work, and Section~\ref{sec:static50} shows it slightly helps). On dynamic tasks, the model additionally receives the inter-step keyframes, audio transcripts, and narration.
+On static, silent tasks, the AOI's perception gates remain mostly closed and behaviour reduces to the standard loop wrapped in AOI's structured observation-record format (which does not degrade static work, and Section~\ref{sec:promptperc} shows it slightly helps). On dynamic tasks, the model additionally receives the inter-step keyframes, audio transcripts, and narration.
 This design provides strictly more \emph{information}. However, it does not always provide a strictly better \emph{outcome}: the per-step observation work adds latency, which can outweigh potential gains on action-bound tasks (browser games, Section~\ref{sec:eval}). The AOI targets human-paced computer use, not real-time interaction.
 No model retraining is needed.
 
@@ -410,7 +410,7 @@ Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations a
 \label{sec:obsrecord}
 
 At each step, the CU model receives a structured document combining text context from recent prior steps (audio transcriptions, visual narrations, actions taken) and raw observations from the current interval (new audio transcription, any captured keyframe images, and the post-action screenshot).
-For static, silent tasks, the raw-observation part of this document reduces to just the post-action screenshot. However, the surrounding structured format (DOM element list, prior-step text trajectory) is still present. As a result, the input is not identical to a raw-screenshot loop. Furthermore, Section~\ref{sec:static50} shows this format alone gives a small gain on purely static work.
+For static, silent tasks, the raw-observation part of this document reduces to just the post-action screenshot. However, the surrounding structured format (DOM element list, prior-step text trajectory) is still present. As a result, the input is not identical to a raw-screenshot loop. Furthermore, Section~\ref{sec:promptperc} shows this format alone gives a small gain on purely static work.
 Figure~\ref{fig:obsrecord} shows a concrete example of the document format and Figure~\ref{fig:realkf} grounds the pipeline in real pixels and verbatim narrations from a recorded benchmark run.
 
 \begin{figure}[t]
@@ -674,7 +674,7 @@ Standard (screenshot) & 38 \scriptsize[29.1, 47.8] & 37 \scriptsize[28.2, 46.8] 
 The AOI produces large gains across CU models without any retraining.
 Green numbers show absolute improvement in percentage points.
 Gemini~2.5 Flash shows the largest absolute gain (+48\,pp) and relative gain ($3.3\times$), while Claude achieves the highest absolute score (82\% at seed~1, 3-seed mean 78.7\%).
-Five of the six models tested are plotted here. Grok-4 (standard~4, AOI~full~25, $\Delta\!+\!21$\,pp) is omitted from the chart for legibility and is reported separately in Section~\ref{sec:newer}.
+Five of the six models tested are plotted here. Grok-4 (standard~4, AOI~full~25, $\Delta\!+\!21$\,pp) is omitted from the chart for legibility and is reported separately in Section~\ref{sec:grok}.
 Exact (asymmetric) 95\% Wilson confidence intervals on every bar are tabulated in Table~\ref{tab:main} and used for all reported $p$-values.}
 \label{fig:mainresults}
 \end{figure}
@@ -692,7 +692,7 @@ quantified below should be read as noise unless a paired test says otherwise.
 The per-model numbers (Table~\ref{tab:main}) carry three points beyond the raw gains.
 \emph{Claude Sonnet~4.6} reaches the highest absolute score. Section~\ref{sec:static} decomposes how its components combine.
 \emph{GPT-5.4} gains as reliably as Claude but tops out lower, suggesting its CU capability, not perception, is the binding constraint once observation is adequate.
-\emph{Gemini 2.5 Flash} posts the largest absolute gain despite being video-native: the standard agent loop feeds it only periodic screenshots, so its streaming architecture lies idle. Section~\ref{sec:static} (Table~\ref{tab:structured}) splits this into $+25$\,pp from the structured prompt format and $+23$\,pp from new inter-step perception. It benefits from \emph{both}.
+\emph{Gemini 2.5 Flash} posts the largest absolute gain despite being video-native: the standard agent loop feeds it only periodic screenshots, so its streaming architecture lies idle. Section~\ref{sec:promptperc} (Table~\ref{tab:structured}) splits this into $+25$\,pp from the structured prompt format and $+23$\,pp from new inter-step perception. It benefits from \emph{both}.
 
 Among the open-source models, \emph{EvoCUA-32B} (32B) barely functions on dynamic tasks without the AOI yet rises to rival GPT-5.4's AOI score, while \emph{Fara-7B} (7B), the most reasoning-constrained, still benefits substantially. The pattern that gains track reasoning capacity recurs in the Qwen3-VL replication below.
 
@@ -761,7 +761,6 @@ We address this question in two stages. First, we separate the contributions fro
 Before attributing the gains to improved perception, we rule out the most concerning
 confounding factor: that the AOI helps only by reformatting the prompt.
 Two targeted checks confirm this is not the case.
-\label{sec:static50}\label{sec:structured}\label{sec:promptsub}
 
 \input{figs/fig_decomp}
 
@@ -787,7 +786,7 @@ channel (keyframe selection, keyframe images, audio, narration) contributes, and
 how.
 
 \subsection{Keyframe Selection Is Immaterial, and Images Pay Off Through Narration}
-\label{sec:analysis}\label{sec:ablation}
+\label{sec:ablation}
 
 \begin{figure}[t]
 \centering
@@ -839,7 +838,7 @@ how.
 \caption{\textbf{Progressive contribution of each AOI component} (Claude Sonnet~4.6).
 The first step (+20\,pp) \emph{bundles} inter-step keyframes with the structured
 prompt scaffold that bare screenshots lack. The scaffold carries $+19$ of it
-(Section~\ref{sec:structured}), the keyframe images $+1$\,pp as raw input but
+(Section~\ref{sec:promptperc}), the keyframe images $+1$\,pp as raw input but
 $+10$\,pp once narration is present (Figure~\ref{fig:analysis}b).
 ASR adds $+6$\,pp (directional, $p=0.18$). Visual narration adds $+18$\,pp, the
 largest single content component. Per-tier significance tests are in
@@ -856,13 +855,13 @@ random, and the two-stage CLIP filter of Algorithm~\ref{alg:keyframe}) all land
 in a 56--58\% band and are statistically indistinguishable (every pairwise McNemar
 $p>0.5$, Appendix~\ref{app:stats}).
 Any inter-step frame breaks the agent's blindness, and \emph{how} it is chosen does
-not matter. This result also holds on an open-source model (Qwen3-VL-32B,
+not matter. This result also holds on an open-source model (Qwen3-VL-32B~\citep{qwen3vl},
 $p>0.4$ for every pair, Appendix~\ref{app:stats}) and is insensitive to the CLIP
 threshold across a $15\times$ range (Appendix~\ref{app:theta}).
 No learned or semantic frame selector is needed.
 
 \emph{The images pay off only once narrated.}
-The initial $+20$\,pp gain from adding keyframes is driven almost entirely by the structured observation scaffold that bare screenshots lack ($+19$\,pp on its own, Section~\ref{sec:structured}). Holding the scaffold fixed, the raw keyframe images themselves contribute only +1\,pp.
+The initial $+20$\,pp gain from adding keyframes is driven almost entirely by the structured observation scaffold that bare screenshots lack ($+19$\,pp on its own, Section~\ref{sec:promptperc}). Holding the scaffold fixed, the raw keyframe images themselves contribute only +1\,pp.
 However, once the model narrates what it sees, the same keyframes increase their worth to $+10$\,pp
 (Figure~\ref{fig:analysis}b). This lift occurs precisely on the task families where
 content changes \emph{between} steps (Transient, Carousel), rather than where one
@@ -941,8 +940,7 @@ We run three additional 100-task evaluations with the same harness
 Together with the original Grok-4 results, they form two instructive case studies: a
 family where the binding constraint is inference \emph{latency} rather than
 perception (Grok), and a model where one AOI component \emph{reduces} performance
-(Gemini~3).%
-\label{sec:grok}\label{sec:why_g3}\label{sec:keyframe_probe}\label{sec:diagmap}
+(Gemini~3).
 
 \begin{table}[t]
 \centering
@@ -964,7 +962,8 @@ Grok-4-fast-reasoning        & 19  & 47  & $+$28  & $4.9\times10^{-6}$ \\
 \end{tabular}
 \end{table}
 
-\textbf{Grok: latency, not perception, is the ceiling.}
+\subsection{Grok: Latency, Not Perception, Is the Ceiling}
+\label{sec:grok}
 The original Grok-4 scored only 4/100 in the standard setting and 25 with AOI ($+21$\,pp,
 $p=3\times10^{-6}$): actions are valid, but a single model call takes 80--180\,s, causing
 the agent to time out after one or two steps on harder tasks.
@@ -974,9 +973,10 @@ Follow-up evaluations confirm this: a lower-latency variant reaches 47, and the 
 Grok-4.3 reaches 65, decomposing the ceiling into ${\sim}{+}22$\,pp from lowering
 latency and ${\sim}{+}18$\,pp from base-model improvement.
 
-\textbf{Gemini~3: a component reduces performance.}
+\subsection{Gemini~3: A Component Reduces Performance}
+\label{sec:why_g3}
 \input{figs/fig_gemini3}
-Gemini~3~Flash nets only $+9$\,pp ($p=0.18$), down from Gemini~2.5's $+48$.
+Gemini~3~Flash~\citep{gemini3flash} nets only $+9$\,pp ($p=0.18$), down from Gemini~2.5's $+48$.
 This does not reflect the model having internalised the AOI: a four-way decomposition
 (Figure~\ref{fig:gemini3}, with tables in Appendix~\ref{app:gemini3}) shows it is a
 \emph{cancellation} of effects.
@@ -990,7 +990,8 @@ regardless of content, rather than distraction by what the frames show.
 The operating rule for this model is simple: deliver observation as text and turn
 the keyframe-image stream off.
 
-\textbf{A diagnostic map of model slack.}
+\subsection{A Diagnostic Map of Model Slack}
+\label{sec:diagmap}
 Read this way, the AOI's residual gain is a diagnostic of \emph{where} a model has
 headroom, along richer axes than perception alone: prompt-handling
 (Gemini~2.5 leans prompt-format, $+25/+23$), perception (Claude leans perception,
@@ -1302,7 +1303,7 @@ Steps = mean steps per task. Time = mean wall-clock per task. Lat.\ = total infe
 latency per task. Obs = total observation processing time per task. Tokens = input + output tokens per task
 (estimated, same estimator for every row). \$/100 = cost per 100 tasks at May 2026 list prices
 (local models free).
-The AOI reduces token cost on every cloud model because the reduction step count more than offsets 
+The AOI reduces token cost on every cloud model because the reduction in step count more than offsets
 the increased input size.}
 \label{tab:efficiency}
 \small
@@ -1778,7 +1779,7 @@ Example tasks by category:
 \begin{itemize}
   \item \textbf{A-E1} (Podcast, Easy): Listen to a podcast segment and identify the guest's name.
   \item \textbf{B-M2} (Meeting, Medium): During a meeting with slides, count the number of items in a presented chart.
-  \item \textbf{C-H1} (Video, Hard): Watch a terminal recording and describe the full workflow demonstrated.
+  \item \textbf{C-H1} (Screencast, Hard): Watch a terminal recording and describe the full workflow demonstrated.
   \item \textbf{D-M4} (Carousel, Medium): Identify a specific product name from a rotating carousel.
   \item \textbf{E-E3} (Dashboard, Easy): Read the current warning level from a live-updating dashboard.
   \item \textbf{F-E2} (Transient UI, Easy): Click ``Accept'' on a cookie consent banner before it auto-dismisses.
@@ -1893,7 +1894,7 @@ open-source diagnostic.}
 Standard & --- & --- & --- & --- & \checkmark & Table~\ref{tab:main} \\
 Minimal prompt & --- & --- & --- & --- & --- & App.~\ref{app:promptdecomp} \\
 $+$element list & --- & --- & --- & \checkmark & --- & App.~\ref{app:promptdecomp} \\
-$+$format (scaffold) & --- & --- & --- & \checkmark & \checkmark & \S\ref{sec:static} \\
+$+$format (scaffold) & --- & --- & --- & \checkmark & \checkmark & \S\ref{sec:promptperc} \\
 Standard$+$audio & --- & \checkmark & --- & --- & \checkmark & App.~\ref{app:gemini3} \\
 \midrule
 Selection variants & variant & --- & --- & \checkmark & \checkmark & \S\ref{sec:ablation} \\
@@ -1921,7 +1922,7 @@ Cloud models (Claude, GPT-5.4, Gemini~2.5 Flash) are accessed via HTTP APIs.
 Local models (EvoCUA-32B, Fara-7B) are served via vLLM with 4-bit quantization (\texttt{bitsandbytes}).
 Whisper runs on CPU to avoid GPU contention.
 Running the two local models in the \texttt{standard\_structured} mode
-(Section~\ref{sec:structured}) required patching vLLM~0.19.0 around an
+(Section~\ref{sec:promptperc}) required patching vLLM~0.19.0 around an
 NVML/userspace driver mismatch on our host: the CUDA platform plugin
 trusts \texttt{pynvml.nvmlInit()} alone, and an overly strict
 free-memory assertion fired when the Whisper service released GPU
