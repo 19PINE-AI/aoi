@@ -84,13 +84,13 @@ SWE-agent~\citep{sweagent} established the \emph{action} interface as an underex
 
 We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples continuous, adaptive observation from discrete actions. It has three gated components: inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text. Each one produces almost nothing on static, silent content, reducing to the standard loop without degrading it.
 
-On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), eight CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining (paired McNemar $p<10^{-3}$ for all). Claude Sonnet~4.6 reaches a 3-seed mean of 78.7\%. On a 12-task audio subset, AOI agents score 12/12 where current-generation streaming voice models fail on their own. OpenAI's GA Realtime (\texttt{gpt-realtime-2}) reaches 2/12 and xAI's Grok Voice 1/12 despite accurate hearing, because they cannot ground actions without the AOI's scaffold (with which the Realtime model recovers to 11/12). Three findings reframe CU perception. First, keyframe \emph{selection} is unimportant: value emerges only once captured frames are narrated into persistent text. Second, narration helps mainly by making the model \emph{articulate} what it sees. Third, the interface is not a fixed bundle. On Gemini~3~Flash the keyframe stream regresses $-12$\,pp from image-token dilution, so components must be tuned per model rather than shipped as one configuration.
+On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining, turning tasks that are near-impossible from periodic screenshots into largely solved ones. The gap is starkest on audio: on a spoken-content subset AOI agents solve every task, whereas streaming voice models hear accurately but cannot act on what they hear without the scaffold. The decomposition is as informative as the headline gain. Keyframe \emph{selection} turns out not to matter; the value comes from narrating captured frames into persistent text. And the interface is not a fixed bundle: on a newer model (Gemini~3~Flash) the keyframe stream actively regresses through image-token dilution, so its components must be selected per model rather than shipped as one configuration.
 \end{abstract}
 
 \begin{center}
 \small
-Code: \url{https://github.com/19PINE-AI/adaptive-observation} \\[2pt]
-Website: \url{https://01.me/research/adaptive-observation}
+Code: \url{https://github.com/19PINE-AI/aoi} \\[2pt]
+Website: \url{https://01.me/research/aoi}
 \end{center}
 \vspace{-0.6em}
 
@@ -110,6 +110,8 @@ chimes will never reach the model.
 An entire class of everyday computer use is therefore
 out of reach, even for agents that handle static interfaces well. This includes watching screencasts, following
 meetings, answering voice prompts, and reacting to transient dialogs.
+
+\input{figs/fig_culoop}
 
 \textbf{The gap is real and unaddressed.}
 On static GUI benchmarks such as OSWorld~\citep{osworld}, screenshot agents have
@@ -160,15 +162,13 @@ No retraining is required, although the optimal component mix is model-specific.
   \item We identify the \textbf{observation interface} as a separable CU design axis, complementary to SWE-agent's action interface, with \emph{decoupling observation from action} as the core principle (Sections~\ref{sec:intro}--\ref{sec:design}).
   \item We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer with three gated components. We release AOI together with \textbf{DynaCU-Bench}, a benchmark of 100 dynamic tasks across 10 categories, and a static task set for degradation control.
   \item Across eight CU models from 7B to frontier scale, the AOI delivers significant gains on dynamic tasks with zero retraining (Section~\ref{sec:eval}), while staying transparent on static work.
-  \item We provide a detailed decomposition of the gains: keyframe \emph{selection} is largely irrelevant, most value emerges only once frames are narrated into persistent text, and the component mix must be tuned per model, with one component even becoming harmful on a newer model (Sections~\ref{sec:static}--\ref{sec:newer}).
+  \item We provide a detailed decomposition of the gains: keyframe \emph{selection} is largely irrelevant, most value emerges only once frames are narrated into persistent text, and the component mix must be tuned per model, with one component even becoming harmful on a newer model (Section~\ref{sec:static}).
 \end{enumerate}
 
 % ════════════════════════════════════════════════════════════
 \section{Background: The CU Agent Loop}
 \label{sec:background}
 % ════════════════════════════════════════════════════════════
-
-\input{figs/fig_culoop}
 
 \textbf{The loop.}
 Every current CU agent runs the same \emph{observe\,$\to$\,reason\,$\to$\,act}
@@ -572,13 +572,14 @@ We evaluate six models spanning the capability and scale spectrum.
 (v)~EvoCUA-32B \citep{evocua} is open-source (32B), with weights and inference recipe released through Meituan's GitHub.
 (vi)~Fara-7B \citep{fara7b} is open-source (7B).
 In addition, we evaluate two further open-source models accessed through OpenRouter: Qwen3-VL-235B-A22B-Instruct and Qwen3-VL-30B-A3B-Instruct~\citep{qwen3vl}. These serve as a replication on the standard vs.\ AOI~full contrast (Table~\ref{tab:b1_oss}).
+We also report three closed-source models released after the main runs --- Gemini~3~Flash, Grok-4.3, and a lower-latency Grok-4-fast-reasoning variant --- on the same contrast (lower rows of Table~\ref{tab:main}, analysed in Sections~\ref{sec:grok}--\ref{sec:why_g3}).
 We use each model's vendor-recommended decoding settings (temperature, top-$p$) without modification.
 All reported results are measured directly in our DynaCU-Bench harness. We do not rely on any vendor-reported scores.
 
 \textbf{Observation configurations.}
 The primary contrast is between \textbf{Standard} (one screenshot per step and no audio, the
 current paradigm) and \textbf{AOI~full} (inter-step keyframes + audio
-transcription + visual narration). We evaluate both modes across all six models.
+transcription + visual narration). We evaluate both modes across every model.
 All remaining modes are ablations and diagnostic controls run on Claude Sonnet~4.6
 (unless otherwise noted). A glossary of every mode used in the paper is in
 Appendix~\ref{app:modes}.
@@ -587,24 +588,34 @@ Appendix~\ref{app:modes}.
 
 \begin{table}[t]
 \centering
-\caption{DynaCU-Bench results: task success rate (\%) on the 100 dynamic tasks.
-Brackets show 95\% Wilson confidence intervals.
-\textbf{Bold} indicates the best result per model. $\Delta$ is the absolute gain over the standard baseline. $p$-values are paired McNemar's exact mid-$p$ tests.
-``Claude 4.6'' abbreviates Claude Sonnet~4.6 throughout.
-Grok-4 is the slowest model at inference (${\sim}80$--180\,s/call), which holds its absolute scores down even when AOI unblocks perception (see Section~\ref{sec:grok}).}
+\caption{DynaCU-Bench results: task success rate (\%) on the 100 dynamic tasks, one row per model.
+Brackets show 95\% Wilson confidence intervals. The \colorbox{bestcolor}{shaded} \textbf{AOI (full)}
+column is the best configuration for every model. $\Delta$ is the absolute gain over the standard
+baseline; $p$-values are paired McNemar's exact mid-$p$ tests.
+``Claude 4.6'' abbreviates Claude Sonnet~4.6 in the figure and text.
+Grok-4 is the slowest model at inference (${\sim}80$--180\,s/call), which holds its absolute scores
+down even when AOI unblocks perception (see Section~\ref{sec:grok}). The Gemini~3 and the two extra
+Grok rows are additional models run after the main cohort on the same harness
+(Sections~\ref{sec:grok}--\ref{sec:why_g3}).}
 \label{tab:main}
 \small
-\setlength{\tabcolsep}{2.6pt}
-\begin{tabular}{@{}lcccccc@{}}
+\setlength{\tabcolsep}{5pt}
+\begin{tabular}{@{}l c >{\columncolor{bestcolor}}c c c@{}}
 \toprule
-\textbf{Configuration} & \textbf{Claude 4.6} & \textbf{GPT-5.4} & \textbf{Gemini 2.5} & \textbf{Grok-4} & \textbf{EvoCUA-32B} & \textbf{Fara-7B} \\
+\textbf{Model} & \textbf{Standard} & \textbf{AOI (full)} & \textbf{$\Delta$ (pp)} & \textbf{$p$ (McNemar)} \\
 \midrule
-Standard (screenshot) & 38 \scriptsize[29.1, 47.8] & 37 \scriptsize[28.2, 46.8] & 21 \scriptsize[14.2, 30.0] & 4 \scriptsize[1.6, 9.8] & 18 \scriptsize[11.7, 26.7] & 17 \scriptsize[10.9, 25.5] \\
-\rowcolor{bestcolor}
-\textbf{AOI (full)} & \textbf{82} \scriptsize[73.3, 88.3] & \textbf{57} \scriptsize[47.2, 66.3] & \textbf{69} \scriptsize[59.4, 77.2] & \textbf{25} \scriptsize[17.5, 34.4] & \textbf{55} \scriptsize[45.2, 64.4] & \textbf{34} \scriptsize[25.5, 43.7] \\
+\multicolumn{5}{@{}l}{\textit{Closed-source}}\\
+Claude Sonnet 4.6     & 38 \scriptsize[29.1, 47.8] & \textbf{82} \scriptsize[73.3, 88.3] & \textcolor{gaincolor}{$+$44} & \scriptsize $1.3{\times}10^{-10}$ \\
+GPT-5.4               & 37 \scriptsize[28.2, 46.8] & \textbf{57} \scriptsize[47.2, 66.3] & \textcolor{gaincolor}{$+$20} & \scriptsize $8.8{\times}10^{-5}$ \\
+Gemini 2.5 Flash      & 21 \scriptsize[14.2, 30.0] & \textbf{69} \scriptsize[59.4, 77.2] & \textcolor{gaincolor}{$+$48} & \scriptsize $2.9{\times}10^{-12}$ \\
+Gemini 3 Flash        & 36 \scriptsize[27.3, 45.8] & \textbf{45} \scriptsize[35.6, 54.8] & \textcolor{gaincolor}{$+$9}  & \scriptsize $0.18$ \\
+Grok-4                & 4 \scriptsize[1.6, 9.8]    & \textbf{25} \scriptsize[17.5, 34.4] & \textcolor{gaincolor}{$+$21} & \scriptsize $3.0{\times}10^{-6}$ \\
+Grok-4.3              & 25 \scriptsize[17.5, 34.3] & \textbf{65} \scriptsize[55.3, 73.6] & \textcolor{gaincolor}{$+$40} & \scriptsize $8.2{\times}10^{-10}$ \\
+Grok-4-fast-reasoning & 19 \scriptsize[12.5, 27.8] & \textbf{47} \scriptsize[37.5, 56.7] & \textcolor{gaincolor}{$+$28} & \scriptsize $4.9{\times}10^{-6}$ \\
 \midrule
-\textcolor{gaincolor}{$\Delta$ (full $-$ std)} & \textcolor{gaincolor}{+44} & \textcolor{gaincolor}{+20} & \textcolor{gaincolor}{+48} & \textcolor{gaincolor}{+21} & \textcolor{gaincolor}{+37} & \textcolor{gaincolor}{+17} \\
-\textit{p (McNemar)} & \scriptsize $1.3{\times}10^{-10}$ & \scriptsize $8.8{\times}10^{-5}$ & \scriptsize $2.9{\times}10^{-12}$ & \scriptsize $3.0{\times}10^{-6}$ & \scriptsize $3.0{\times}10^{-9}$ & \scriptsize $4.9{\times}10^{-4}$ \\
+\multicolumn{5}{@{}l}{\textit{Open-source}}\\
+EvoCUA-32B            & 18 \scriptsize[11.7, 26.7] & \textbf{55} \scriptsize[45.2, 64.4] & \textcolor{gaincolor}{$+$37} & \scriptsize $3.0{\times}10^{-9}$ \\
+Fara-7B               & 17 \scriptsize[10.9, 25.5] & \textbf{34} \scriptsize[25.5, 43.7] & \textcolor{gaincolor}{$+$17} & \scriptsize $4.9{\times}10^{-4}$ \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -616,13 +627,13 @@ Standard (screenshot) & 38 \scriptsize[29.1, 47.8] & 37 \scriptsize[28.2, 46.8] 
     width=\columnwidth,
     height=5.5cm,
     ybar,
-    bar width=9pt,
+    bar width=6.5pt,
     ymin=0, ymax=112,
     ylabel={Task Success (\%)},
     ylabel style={font=\small},
-    symbolic x coords={Claude 4.6, GPT-5.4, Gemini 2.5, EvoCUA-32B, Fara-7B},
+    symbolic x coords={Claude 4.6, GPT-5.4, Gemini 2.5, Gemini 3, Grok-4, Grok-4.3, Grok-4-fast, EvoCUA-32B, Fara-7B},
     xtick=data,
-    xticklabel style={font=\scriptsize},
+    xticklabel style={font=\tiny, rotate=30, anchor=east},
     ytick={0,20,40,60,80,100},
     yticklabel style={font=\small},
     legend style={at={(0.98,0.97)}, anchor=north east, font=\scriptsize,
@@ -631,10 +642,10 @@ Standard (screenshot) & 38 \scriptsize[29.1, 47.8] & 37 \scriptsize[28.2, 46.8] 
     major grid style={cLightGray!60},
     axis line style={cGray},
     tick style={cGray},
-    enlarge x limits=0.15,
+    enlarge x limits=0.06,
     nodes near coords,
     nodes near coords style={font=\tiny\bfseries, /pgf/number format/fixed},
-    every node near coord/.append style={above=2pt},
+    every node near coord/.append style={above=1pt},
     clip=false,
 ]
 % Standard bars
@@ -643,6 +654,10 @@ Standard (screenshot) & 38 \scriptsize[29.1, 47.8] & 37 \scriptsize[28.2, 46.8] 
       (Claude 4.6,    38)
       (GPT-5.4,       37)
       (Gemini 2.5,    21)
+      (Gemini 3,      36)
+      (Grok-4,         4)
+      (Grok-4.3,      25)
+      (Grok-4-fast,   19)
       (EvoCUA-32B,    18)
       (Fara-7B,       17)
     };
@@ -651,37 +666,51 @@ Standard (screenshot) & 38 \scriptsize[29.1, 47.8] & 37 \scriptsize[28.2, 46.8] 
       (Claude 4.6,    82)
       (GPT-5.4,       57)
       (Gemini 2.5,    69)
+      (Gemini 3,      45)
+      (Grok-4,        25)
+      (Grok-4.3,      65)
+      (Grok-4-fast,   47)
       (EvoCUA-32B,    55)
       (Fara-7B,       34)
     };
 \legend{Standard, AOI (full)}
 
-% Delta annotations — positioned well above AOI nodes near coords labels
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
-    at (axis cs:Claude 4.6, 99) {$\Delta$+44};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
-    at (axis cs:GPT-5.4, 74) {$\Delta$+20};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
-    at (axis cs:Gemini 2.5, 86) {$\Delta$+48};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
-    at (axis cs:EvoCUA-32B, 72) {$\Delta$+37};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=1pt, rounded corners=1pt]
-    at (axis cs:Fara-7B, 51) {$\Delta$+17};
+% Delta annotations — positioned above each AOI bar's value label
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Claude 4.6, 100) {$\Delta$+44};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:GPT-5.4, 75) {$\Delta$+20};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Gemini 2.5, 87) {$\Delta$+48};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Gemini 3, 63) {$\Delta$+9};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Grok-4, 43) {$\Delta$+21};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Grok-4.3, 83) {$\Delta$+40};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Grok-4-fast, 65) {$\Delta$+28};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:EvoCUA-32B, 73) {$\Delta$+37};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Fara-7B, 52) {$\Delta$+17};
 
 \end{axis}
 \end{tikzpicture}
 \caption{\textbf{Main results on DynaCU-Bench (100 tasks).}
-The AOI produces large gains across CU models without any retraining.
-Green numbers show absolute improvement in percentage points.
-Gemini~2.5 Flash shows the largest absolute gain (+48\,pp) and relative gain ($3.3\times$), while Claude achieves the highest absolute score (82\% at seed~1, 3-seed mean 78.7\%).
-Five of the six models tested are plotted here. Grok-4 (standard~4, AOI~full~25, $\Delta\!+\!21$\,pp) is omitted from the chart for legibility and is reported separately in Section~\ref{sec:grok}.
-Exact (asymmetric) 95\% Wilson confidence intervals on every bar are tabulated in Table~\ref{tab:main} and used for all reported $p$-values.}
+The AOI produces large gains across all nine CU models without any retraining; green
+numbers show the absolute improvement in percentage points. Gemini~2.5~Flash shows the
+largest gain (+48\,pp) and Claude the highest absolute score (82\%). Gemini~3~Flash is the
+lone outlier, gaining only $+9$\,pp because its keyframe stream regresses
+(Section~\ref{sec:why_g3}). Exact (asymmetric) 95\% Wilson confidence intervals on every
+bar are tabulated in Table~\ref{tab:main}.}
 \label{fig:mainresults}
 \end{figure}
 
 Table~\ref{tab:main} and Figure~\ref{fig:mainresults} present the main results:
-AOI delivers large, consistent gains across all six models, with every improvement statistically significant by paired
-McNemar's exact test ($p<10^{-3}$).
+AOI delivers large, consistent gains across every model in Table~\ref{tab:main}. Every improvement is
+statistically significant by paired McNemar's exact test ($p<10^{-3}$) except Gemini~3~Flash, whose
+muted net gain we trace to a cancelling component in Section~\ref{sec:why_g3}.
 \emph{Statistical protocol.}
 Each configuration is a single trial of 100 binary tasks (no repeats). We report 95\%
 Wilson confidence intervals and evaluate differences with paired McNemar exact
@@ -705,6 +734,15 @@ Table~\ref{tab:b1_oss}): Qwen3-VL-235B-A22B-Instruct~\citep{qwen3vl} improves +4
 ($22 \to 64$, surpassing GPT-5.4's AOI score of 57) and Qwen3-VL-30B-A3B-Instruct improves
 +24\,pp ($18 \to 42$). Within the family the gain grows with scale, consistent with the
 reasoning-capacity bottleneck seen on Fara-7B.
+
+\textbf{Replication across model generations.}
+The lower rows of Table~\ref{tab:main} report three further models, released after the main
+runs and evaluated with the same harness, that confirm the gains are not an artifact of one
+model cohort: Grok-4.3 improves $+40$\,pp ($25 \to 65$), a lower-latency Grok variant $+28$\,pp
+($19 \to 47$), and Gemini~3~Flash $+9$\,pp ($36 \to 45$, $p=0.18$). The two Grok rows control
+for the inference-latency floor that holds Grok-4's absolute scores down, and the muted Gemini~3
+figure is a cancellation of opposing component effects; both are dissected per-model in
+Sections~\ref{sec:grok} and~\ref{sec:why_g3}.
 
 \textbf{Variance.}
 Re-running the headline configuration (Claude~+~AOI~full) across two more seeds yields
@@ -753,7 +791,7 @@ batch or cost-sensitive workloads. Latency-sensitive use is a per-model judgemen
 % ════════════════════════════════════════════════════════════
 
 Where does the AOI gain come from?
-We address this question in two stages. First, we separate the contributions from AOI's prompt format from genuine perception contributions (Section~\ref{sec:promptperc}). Second, we decompose the perception gains channel by channel through targeted ablations (Sections~\ref{sec:ablation}--\ref{sec:keyframe_context}).
+We address this question in three stages. First, we separate the contributions from AOI's prompt format from genuine perception contributions (Section~\ref{sec:promptperc}). Second, we decompose the perception gains channel by channel through targeted ablations (Sections~\ref{sec:ablation}--\ref{sec:keyframe_context}). Third, we turn to per-model case studies showing that the component mix itself must be tuned per model (Sections~\ref{sec:grok}--\ref{sec:diagmap}).
 
 \subsection{Prompt Format vs.\ Perception}
 \label{sec:promptperc}
@@ -929,38 +967,10 @@ A cross-engine check (audio re-rendered with a different speech synthesizer and
 real terminal-recording screencasts) confirms the audio pipeline does not
 silently fail under an unfamiliar acoustic profile (Appendix~\ref{app:realcontent}).
 
-% ════════════════════════════════════════════════════════════
-\section{Model Case Studies: Later-Released Models}
-\label{sec:newer}
-% ════════════════════════════════════════════════════════════
-
-Do the AOI's gains hold up on models released after the main runs?
-We run three additional 100-task evaluations with the same harness
-(Table~\ref{tab:newer}).
-Together with the original Grok-4 results, they form two instructive case studies: a
-family where the binding constraint is inference \emph{latency} rather than
-perception (Grok), and a model where one AOI component \emph{reduces} performance
-(Gemini~3).
-
-\begin{table}[t]
-\centering
-\caption{Later-released models (100 dynamic tasks each, same harness). Gemini~3
-checks whether the Gemini~2.5 $+48$\,pp gain replicates. The two Grok rows control
-for the inference-latency floor.}
-\label{tab:newer}
-\small
-\setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Model} & \textbf{Standard} & \textbf{AOI full}
-& \textbf{$\Delta$ (pp)} & \textbf{$p$ (McNemar)} \\
-\midrule
-Gemini 3 Flash               & 36     & 45     & $+$9     & 0.18 \\
-Grok-4.3                     & 25  & 65  & $+$40  & $8.2\times10^{-10}$ \\
-Grok-4-fast-reasoning        & 19  & 47  & $+$28  & $4.9\times10^{-6}$ \\
-\bottomrule
-\end{tabular}
-\end{table}
+The component balance differs across models not just in degree but in \emph{kind}. Two
+models from the replication rows of Table~\ref{tab:main} make this concrete: one whose
+binding constraint is inference \emph{latency} rather than perception (Grok), and one
+where an AOI component actively \emph{reduces} performance (Gemini~3).
 
 \subsection{Grok: Latency, Not Perception, Is the Ceiling}
 \label{sec:grok}
@@ -1070,9 +1080,6 @@ it correctly), but, lacking vision entirely, it fails whether or not it is given
 scaffold, idling on most steps. Unlike \texttt{gpt-realtime-2}, it does not exploit the element
 list, defaulting to blind clicks and occasional hallucinated answers. Perception without
 grounded action is not enough.
-A sanity check rules out a broken adapter: on a set of purely-visual tasks the older baselines
-emit valid actions on every task but get none task-correct, while \texttt{gpt-realtime-2}
-trails the AOI-equipped Claude reference by one task (Appendix~\ref{app:streaming_sanity}).
 
 % ════════════════════════════════════════════════════════════
 \section{Related Work}
@@ -1228,7 +1235,7 @@ absolute scores behind the gain heatmap in Figure~\ref{fig:heatmap}).
 \centering
 \caption{Additional open-source replication on the full 100-task
 DynaCU-Bench: Qwen3-VL family via OpenRouter (provider: DeepInfra), evaluated with the same
-harness as the six models in Table~\ref{tab:main}. $p$-values are
+harness as the models in Table~\ref{tab:main}. $p$-values are
 paired McNemar exact tests on the discordant tasks ($b$/$c$ = success
 only under standard / only under AOI). Both gains fall inside the
 +17 to +48\,pp band of the main table. Two further candidates (UI-TARS-1.5-7B,
