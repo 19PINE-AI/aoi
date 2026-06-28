@@ -16,6 +16,7 @@
 \usepackage{booktabs}
 \usepackage{amsmath,amssymb}
 \usepackage{graphicx}
+\usepackage{float}
 \usepackage{xcolor}
 \usepackage{multirow}
 \usepackage{array}
@@ -80,19 +81,100 @@
 % ════════════════════════════════════════════════════════════
 \begin{abstract}
 % ════════════════════════════════════════════════════════════
-SWE-agent~\citep{sweagent} established the \emph{action} interface as an underexplored design axis for software-engineering agents. We make the analogous case for the \emph{observation} interface in computer-use (CU) agents. Current CU agents, both closed and open-source, tie observation to action: one screenshot every 3--5\,s, with no audio. Between screenshots they are blind and deaf to video, animations, transient UI events, meetings, and spoken instructions.
+SWE-agent established the \emph{action} interface as an underexplored design axis for software-engineering agents; we make the analogous case for the \emph{observation} interface in computer-use (CU) agents. Current CU agents, closed and open-source alike, tie observation to action---one screenshot every 3--5\,s, no audio---leaving them blind and deaf between screenshots to video, animations, transient UI events, meetings, and spoken instructions. We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples continuous, adaptive observation from discrete actions through three gated components: inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text. Each produces almost nothing on static, silent content, reducing to the standard loop without degrading it.
 
-We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples continuous, adaptive observation from discrete actions. It has three gated components: inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text. Each one produces almost nothing on static, silent content, reducing to the standard loop without degrading it.
-
-On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining, turning tasks that are near-impossible from periodic screenshots into largely solved ones. The gap is starkest on audio: on a spoken-content subset AOI agents solve every task, whereas streaming voice models hear accurately but cannot act on what they hear without the scaffold. The decomposition is as informative as the headline gain. Keyframe \emph{selection} turns out not to matter; the value comes from narrating captured frames into persistent text. And the interface is not a fixed bundle: on a newer model (Gemini~3~Flash) the keyframe stream actively regresses through image-token dilution, so its components must be selected per model rather than shipped as one configuration.
+On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining; on a spoken-content subset AOI agents solve every task, whereas streaming voice models hear accurately but cannot act without the scaffold. The decomposition is as informative as the headline: keyframe \emph{selection} does not matter---value comes from narrating captured frames into persistent text---and the interface is not a fixed bundle, since on a newer model (Gemini~3~Flash) the keyframe stream regresses through image-token dilution, so components must be selected per model.
 \end{abstract}
 
 \begin{center}
 \small
-Code: \url{https://github.com/19PINE-AI/aoi} \\[2pt]
-Website: \url{https://01.me/research/aoi}
+Code: \url{https://github.com/19PINE-AI/aoi} \quad\textbar\quad Website: \url{https://01.me/research/aoi}
 \end{center}
 \vspace{-0.6em}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+\begin{axis}[
+    width=\columnwidth,
+    height=4.7cm,
+    ybar,
+    bar width=6.5pt,
+    ymin=0, ymax=112,
+    ylabel={Task Success (\%)},
+    ylabel style={font=\small},
+    symbolic x coords={Claude 4.6, GPT-5.4, Gemini 2.5, Gemini 3, Grok-4, Grok-4.3, Grok-4-fast, EvoCUA-32B, Fara-7B},
+    xtick=data,
+    xticklabel style={font=\tiny, rotate=30, anchor=east},
+    ytick={0,20,40,60,80,100},
+    yticklabel style={font=\small},
+    legend style={at={(0.98,0.97)}, anchor=north east, font=\scriptsize,
+                  draw=cGray!30, fill=white, fill opacity=0.9},
+    grid=major,
+    major grid style={cLightGray!60},
+    axis line style={cGray},
+    tick style={cGray},
+    enlarge x limits=0.06,
+    nodes near coords,
+    nodes near coords style={font=\tiny\bfseries, /pgf/number format/fixed},
+    every node near coord/.append style={above=1pt},
+    clip=false,
+]
+% Standard bars
+\addplot[fill=cStandard!70, draw=cStandard!90]
+    coordinates {
+      (Claude 4.6,    38)
+      (GPT-5.4,       37)
+      (Gemini 2.5,    21)
+      (Gemini 3,      36)
+      (Grok-4,         4)
+      (Grok-4.3,      25)
+      (Grok-4-fast,   19)
+      (EvoCUA-32B,    18)
+      (Fara-7B,       17)
+    };
+\addplot[fill=cAOI!70, draw=cAOI!90]
+    coordinates {
+      (Claude 4.6,    82)
+      (GPT-5.4,       57)
+      (Gemini 2.5,    69)
+      (Gemini 3,      45)
+      (Grok-4,        25)
+      (Grok-4.3,      65)
+      (Grok-4-fast,   47)
+      (EvoCUA-32B,    55)
+      (Fara-7B,       34)
+    };
+\legend{Standard, AOI (full)}
+
+% Delta annotations — positioned above each AOI bar's value label
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Claude 4.6, 100) {$\Delta$+44};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:GPT-5.4, 75) {$\Delta$+20};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Gemini 2.5, 87) {$\Delta$+48};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Gemini 3, 63) {$\Delta$+9};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Grok-4, 43) {$\Delta$+21};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Grok-4.3, 83) {$\Delta$+40};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Grok-4-fast, 65) {$\Delta$+28};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:EvoCUA-32B, 73) {$\Delta$+37};
+\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
+    at (axis cs:Fara-7B, 52) {$\Delta$+17};
+
+\end{axis}
+\end{tikzpicture}
+\caption{\textbf{Main results: the AOI lifts every CU model on DynaCU-Bench (100 dynamic
+tasks), with zero retraining.} Green numbers are absolute gains in percentage points over
+each model's screenshot baseline ($+9$ to $+48$\,pp). Full numbers, confidence intervals,
+and the per-model analysis are in Section~\ref{sec:eval} (Table~\ref{tab:main}).}
+\label{fig:mainresults}
+\end{figure}
 
 % ════════════════════════════════════════════════════════════
 \section{Introduction}
@@ -170,6 +252,7 @@ No retraining is required, although the optimal component mix is model-specific.
 \label{sec:background}
 % ════════════════════════════════════════════════════════════
 
+
 \textbf{The loop.}
 Every current CU agent runs the same \emph{observe\,$\to$\,reason\,$\to$\,act}
 cycle shown in Figure~\ref{fig:culoop}: it captures a screenshot $s_t$, samples an action
@@ -204,12 +287,7 @@ touching the model or $\mathcal{A}$.
 \label{sec:design}
 % ════════════════════════════════════════════════════════════
 
-The AOI is inserted between the environment and any existing CU model. It continuously observes the entire interval between agent steps and provides the model with additional keyframes, audio descriptions, and accumulated visual narration, all in the standard image + text format that every CU model already accepts.
-On static, silent tasks, the AOI's perception gates remain mostly closed and behaviour reduces to the standard loop wrapped in AOI's structured observation-record format (which does not degrade static work, and Section~\ref{sec:promptperc} shows it slightly helps). On dynamic tasks, the model additionally receives the inter-step keyframes, audio transcripts, and narration.
-This design provides strictly more \emph{information}. However, it does not always provide a strictly better \emph{outcome}: the per-step observation work adds latency, which can outweigh potential gains on action-bound tasks (browser games, Section~\ref{sec:eval}). The AOI targets human-paced computer use, not real-time interaction.
-No model retraining is needed.
-
-\begin{figure*}[t]
+\begin{figure}[t]
 \centering
 \resizebox{\textwidth}{!}{%
 \begin{tikzpicture}[
@@ -327,7 +405,50 @@ When gates fire, keyframe extraction (shown here with optional CLIP filtering, s
 Visual narrations feed back as persistent text memory.
 The AOI wraps any existing CU model with zero retraining.}
 \label{fig:architecture}
-\end{figure*}
+\end{figure}
+
+The AOI is inserted between the environment and any existing CU model. It continuously observes the entire interval between agent steps and provides the model with additional keyframes, audio descriptions, and accumulated visual narration, all in the standard image + text format that every CU model already accepts.
+On static, silent tasks, the AOI's perception gates remain mostly closed and behaviour reduces to the standard loop wrapped in AOI's structured observation-record format (which does not degrade static work, and Section~\ref{sec:promptperc} shows it slightly helps). On dynamic tasks, the model additionally receives the inter-step keyframes, audio transcripts, and narration.
+This design provides strictly more \emph{information}. However, it does not always provide a strictly better \emph{outcome}: the per-step observation work adds latency, which can outweigh potential gains on action-bound tasks (browser games, Section~\ref{sec:eval}). The AOI targets human-paced computer use, not real-time interaction.
+No model retraining is needed.
+
+\begin{figure}[t]
+\centering
+\begin{tcolorbox}[
+  colback=gray!3, colframe=black!40,
+  title={\small\bfseries Observation Record --- Step $N$ (Meeting task)},
+  fonttitle=\small, coltitle=white, colbacktitle=black!60,
+  width=0.95\textwidth, boxrule=0.4pt,
+]
+\ttfamily\scriptsize
+\textcolor{blue!70!black}{\# CONTEXT --- text from prior steps (no images)}\\[2pt]
+\textbf{Step N-1} (t $\approx$ 18.5--22.0\,s):\\
+\quad AUDIO: ``Here's the team. As you can see we\\
+\qquad have strong cross-functional coverage.''\\
+\quad VISUAL: ``Meeting slide shows Project Team\\
+\qquad with 6 members listed in a grid.''\\
+\quad ACTION: wait()\\[4pt]
+%
+\textcolor{blue!70!black}{\# NEW --- current interval observations}\\[2pt]
+\textbf{Step N} (t $\approx$ 22.0--25.5\,s):\\
+\quad AUDIO: ``And I want to mention, we've moved\\
+\qquad the launch date to April 28th.\\
+\qquad Please update your calendars.''\\[2pt]
+\quad \textcolor{gray}{[IMAGE: post-action screenshot]}\\[4pt]
+%
+\textcolor{blue!70!black}{\# TASK}\\
+\quad Read the meeting slides and listen to the\\
+\quad discussion. What is the new launch date?\\
+\quad Enter it in the Launch Date field.
+\end{tcolorbox}
+\caption{Example observation record sent to the CU model at step $N$ of a meeting task.
+The \textbf{context} section provides text from prior steps (audio transcriptions and visual narrations persist after images are pruned).
+The \textbf{new} section contains the current audio transcription and the post-action screenshot (image).
+In this case, no keyframes were captured (the slide did not change), so only the screenshot is included as an image.
+The task instruction is appended at the end.}
+\label{fig:obsrecord}
+\end{figure}
+
 
 \subsection{Architecture Overview}
 
@@ -413,73 +534,6 @@ At each step, the CU model receives a structured document combining text context
 For static, silent tasks, the raw-observation part of this document reduces to just the post-action screenshot. However, the surrounding structured format (DOM element list, prior-step text trajectory) is still present. As a result, the input is not identical to a raw-screenshot loop. Furthermore, Section~\ref{sec:promptperc} shows this format alone gives a small gain on purely static work.
 Figure~\ref{fig:obsrecord} shows a concrete example of the document format and Figure~\ref{fig:realkf} grounds the pipeline in real pixels and verbatim narrations from a recorded benchmark run.
 
-\begin{figure}[t]
-\centering
-\begin{tcolorbox}[
-  colback=gray!3, colframe=black!40,
-  title={\small\bfseries Observation Record --- Step $N$ (Meeting task)},
-  fonttitle=\small, coltitle=white, colbacktitle=black!60,
-  width=0.95\textwidth, boxrule=0.4pt,
-]
-\ttfamily\scriptsize
-\textcolor{blue!70!black}{\# CONTEXT --- text from prior steps (no images)}\\[2pt]
-\textbf{Step N-1} (t $\approx$ 18.5--22.0\,s):\\
-\quad AUDIO: ``Here's the team. As you can see we\\
-\qquad have strong cross-functional coverage.''\\
-\quad VISUAL: ``Meeting slide shows Project Team\\
-\qquad with 6 members listed in a grid.''\\
-\quad ACTION: wait()\\[4pt]
-%
-\textcolor{blue!70!black}{\# NEW --- current interval observations}\\[2pt]
-\textbf{Step N} (t $\approx$ 22.0--25.5\,s):\\
-\quad AUDIO: ``And I want to mention, we've moved\\
-\qquad the launch date to April 28th.\\
-\qquad Please update your calendars.''\\[2pt]
-\quad \textcolor{gray}{[IMAGE: post-action screenshot]}\\[4pt]
-%
-\textcolor{blue!70!black}{\# TASK}\\
-\quad Read the meeting slides and listen to the\\
-\quad discussion. What is the new launch date?\\
-\quad Enter it in the Launch Date field.
-\end{tcolorbox}
-\caption{Example observation record sent to the CU model at step $N$ of a meeting task.
-The \textbf{context} section provides text from prior steps (audio transcriptions and visual narrations persist after images are pruned).
-The \textbf{new} section contains the current audio transcription and the post-action screenshot (image).
-In this case, no keyframes were captured (the slide did not change), so only the screenshot is included as an image.
-The task instruction is appended at the end.}
-\label{fig:obsrecord}
-\end{figure}
-
-\begin{figure*}[t]
-\centering
-\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccc}
-\includegraphics[width=0.305\textwidth]{figures/de2_kf1.png} &
-\includegraphics[width=0.305\textwidth]{figures/de2_kf2.png} &
-\includegraphics[width=0.305\textwidth]{figures/de2_kf3.png} \\
-{\footnotesize step 1: testimonial 2/5 (Tom Lee)} &
-{\footnotesize step 2: testimonial 5/5 (Amy Patel)} &
-{\footnotesize step 3: testimonial 1/5 (Maria Johnson)} \\
-\end{tabular}
-
-\vspace{4pt}
-\begin{tcolorbox}[colback=gray!3, colframe=black!40, width=0.96\textwidth, boxrule=0.4pt,
-  title={\small\bfseries Visual narrations accumulated in the trajectory (verbatim from the evaluation log)},
-  fonttitle=\small, coltitle=white, colbacktitle=black!60]
-\ttfamily\scriptsize
-\textbf{Step 1} (0 keyframes): ``The carousel shows testimonial 2/5 from Tom Lee with a 4-star rating about fast delivery and good packaging, with no mention of `excellent'.''\hfill ACTION: click(567, 400)\\[3pt]
-\textbf{Step 2} (1 keyframe): ``The carousel now shows testimonial 5/5 from Amy Patel with a 4-star rating about fantastic value, quality, and modern design --- no mention of `excellent'.''\hfill ACTION: click(567, 401)\\[3pt]
-\textbf{Step 3} (2 keyframes): ``The carousel has cycled back to testimonial 1/5 from Maria Johnson with `Excellent customer service!' --- and the transition keyframe also shows a Sarah Robinson testimonial partially visible\ldots''\hfill ACTION: fill(``2'') \textcolor{green!50!black}{\checkmark}
-\end{tcolorbox}
-\caption{\textbf{What the agent actually sees: real frames and narrations from a recorded benchmark run}
-(Carousel task: ``How many reviews mention the word `excellent'?'' Claude Sonnet~4.6 + AOI~full, the run reported in Table~\ref{tab:main}, passed in 3 steps.)
-The testimonial carousel rotates every few seconds, so no single screenshot can show more than one of the five reviews.
-\emph{Top:} screen states observed across the three agent steps (frames from the run recording, recorder status bar cropped).
-\emph{Bottom:} the visual narrations the CU model generated at each step, quoted verbatim from the evaluation log.
-The narrations persist as text in the trajectory, letting the agent accumulate evidence across carousel states and answer ``2'' at step~3.}
-\label{fig:realkf}
-\end{figure*}
-
 \subsection{Implementation}
 \label{sec:implementation}
 
@@ -518,7 +572,7 @@ Throughout the paper, we name each family descriptively (Table~\ref{tab:categori
 Each task family has 10 tasks (3 easy, 4 medium, 3 hard). Representative examples
 appear in Appendix~\ref{app:tasklist}.
 
-\begin{table}[t]
+\begin{table}[ht!]
 \centering
 \caption{DynaCU-Bench task families.
 Axes: \textsc{Aud} = audio perception, \textsc{Vis} = visual-temporal
@@ -543,6 +597,36 @@ Each family contains 3 easy, 4 medium, and 3 hard tasks.}
 \bottomrule
 \end{tabular}
 \end{table}
+
+\begin{figure*}[t]
+\centering
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{ccc}
+\includegraphics[width=0.305\textwidth]{figures/de2_kf1.png} &
+\includegraphics[width=0.305\textwidth]{figures/de2_kf2.png} &
+\includegraphics[width=0.305\textwidth]{figures/de2_kf3.png} \\
+{\footnotesize step 1: testimonial 2/5 (Tom Lee)} &
+{\footnotesize step 2: testimonial 5/5 (Amy Patel)} &
+{\footnotesize step 3: testimonial 1/5 (Maria Johnson)} \\
+\end{tabular}
+
+\vspace{4pt}
+\begin{tcolorbox}[colback=gray!3, colframe=black!40, width=0.96\textwidth, boxrule=0.4pt,
+  title={\small\bfseries Visual narrations accumulated in the trajectory (verbatim from the evaluation log)},
+  fonttitle=\small, coltitle=white, colbacktitle=black!60]
+\ttfamily\scriptsize
+\textbf{Step 1} (0 keyframes): ``The carousel shows testimonial 2/5 from Tom Lee with a 4-star rating about fast delivery and good packaging, with no mention of `excellent'.''\hfill ACTION: click(567, 400)\\[3pt]
+\textbf{Step 2} (1 keyframe): ``The carousel now shows testimonial 5/5 from Amy Patel with a 4-star rating about fantastic value, quality, and modern design --- no mention of `excellent'.''\hfill ACTION: click(567, 401)\\[3pt]
+\textbf{Step 3} (2 keyframes): ``The carousel has cycled back to testimonial 1/5 from Maria Johnson with `Excellent customer service!' --- and the transition keyframe also shows a Sarah Robinson testimonial partially visible\ldots''\hfill ACTION: fill(``2'') \textcolor{green!50!black}{\checkmark}
+\end{tcolorbox}
+\caption{\textbf{What the agent actually sees: real frames and narrations from a recorded benchmark run}
+(Carousel task: ``How many reviews mention the word `excellent'?'' Claude Sonnet~4.6 + AOI~full, the run reported in Table~\ref{tab:main}, passed in 3 steps.)
+The testimonial carousel rotates every few seconds, so no single screenshot can show more than one of the five reviews.
+\emph{Top:} screen states observed across the three agent steps (frames from the run recording, recorder status bar cropped).
+\emph{Bottom:} the visual narrations the CU model generated at each step, quoted verbatim from the evaluation log.
+The narrations persist as text in the trajectory, letting the agent accumulate evidence across carousel states and answer ``2'' at step~3.}
+\label{fig:realkf}
+\end{figure*}
 
 \subsection{Evaluation Protocol}
 
@@ -619,93 +703,6 @@ Fara-7B               & 17 \scriptsize[10.9, 25.5] & \textbf{34} \scriptsize[25.
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure}[t]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    width=\columnwidth,
-    height=5.5cm,
-    ybar,
-    bar width=6.5pt,
-    ymin=0, ymax=112,
-    ylabel={Task Success (\%)},
-    ylabel style={font=\small},
-    symbolic x coords={Claude 4.6, GPT-5.4, Gemini 2.5, Gemini 3, Grok-4, Grok-4.3, Grok-4-fast, EvoCUA-32B, Fara-7B},
-    xtick=data,
-    xticklabel style={font=\tiny, rotate=30, anchor=east},
-    ytick={0,20,40,60,80,100},
-    yticklabel style={font=\small},
-    legend style={at={(0.98,0.97)}, anchor=north east, font=\scriptsize,
-                  draw=cGray!30, fill=white, fill opacity=0.9},
-    grid=major,
-    major grid style={cLightGray!60},
-    axis line style={cGray},
-    tick style={cGray},
-    enlarge x limits=0.06,
-    nodes near coords,
-    nodes near coords style={font=\tiny\bfseries, /pgf/number format/fixed},
-    every node near coord/.append style={above=1pt},
-    clip=false,
-]
-% Standard bars
-\addplot[fill=cStandard!70, draw=cStandard!90]
-    coordinates {
-      (Claude 4.6,    38)
-      (GPT-5.4,       37)
-      (Gemini 2.5,    21)
-      (Gemini 3,      36)
-      (Grok-4,         4)
-      (Grok-4.3,      25)
-      (Grok-4-fast,   19)
-      (EvoCUA-32B,    18)
-      (Fara-7B,       17)
-    };
-\addplot[fill=cAOI!70, draw=cAOI!90]
-    coordinates {
-      (Claude 4.6,    82)
-      (GPT-5.4,       57)
-      (Gemini 2.5,    69)
-      (Gemini 3,      45)
-      (Grok-4,        25)
-      (Grok-4.3,      65)
-      (Grok-4-fast,   47)
-      (EvoCUA-32B,    55)
-      (Fara-7B,       34)
-    };
-\legend{Standard, AOI (full)}
-
-% Delta annotations — positioned above each AOI bar's value label
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Claude 4.6, 100) {$\Delta$+44};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:GPT-5.4, 75) {$\Delta$+20};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Gemini 2.5, 87) {$\Delta$+48};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Gemini 3, 63) {$\Delta$+9};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Grok-4, 43) {$\Delta$+21};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Grok-4.3, 83) {$\Delta$+40};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Grok-4-fast, 65) {$\Delta$+28};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:EvoCUA-32B, 73) {$\Delta$+37};
-\node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:Fara-7B, 52) {$\Delta$+17};
-
-\end{axis}
-\end{tikzpicture}
-\caption{\textbf{Main results on DynaCU-Bench (100 tasks).}
-The AOI produces large gains across all nine CU models without any retraining; green
-numbers show the absolute improvement in percentage points. Gemini~2.5~Flash shows the
-largest gain (+48\,pp) and Claude the highest absolute score (82\%). Gemini~3~Flash is the
-lone outlier, gaining only $+9$\,pp because its keyframe stream regresses
-(Section~\ref{sec:why_g3}). Exact (asymmetric) 95\% Wilson confidence intervals on every
-bar are tabulated in Table~\ref{tab:main}.}
-\label{fig:mainresults}
-\end{figure}
 
 Table~\ref{tab:main} and Figure~\ref{fig:mainresults} present the main results:
 AOI delivers large, consistent gains across every model in Table~\ref{tab:main}. Every improvement is
@@ -1015,33 +1012,26 @@ The interface is not a fixed bundle. Its components must be selected per model.
 \label{sec:streaming}
 % ════════════════════════════════════════════════════════════
 
-A natural alternative is a \emph{streaming, end-to-end multimodal model} that
-bundles perception and reasoning in one trained model. Today, these are Gemini~Live~\citep{geminilive}
-and the OpenAI Realtime API~\citep{openairealtime}.
-Neither ships as a CU agent. Each is a voice-first assistant with
-function-calling.
-We adapt them to DynaCU-Bench (one session per task, the page's native audio and
-screenshots streamed in over the live websocket, returned tool calls executed in the
-browser) and score them on the same 12-task audio subset the AOI is scored on.
-To pre-empt the objection that a stronger model would close the gap, we evaluate the
-current generation directly: OpenAI's GA Realtime model (\texttt{gpt-realtime-2}),
-streaming the page's native audio rather than a transcript. We run it in two conditions:
-\emph{alone} (screenshot~+~audio, the information a streaming model has on its own) and
-\emph{+~AOI scaffold} (additionally handed the same \texttt{[PAGE ELEMENTS]} interactive-element
-list the AOI provides), which separates a perception deficit from an action-grounding one.
-We also evaluate xAI's newly released Grok Voice Agent (\texttt{grok-voice-think-fast}), which
-speaks the same GA Realtime protocol but accepts \emph{audio and text only} (no vision), so it
-runs with native audio plus the text scaffold and never sees the screen.
+A natural alternative is a \emph{streaming, end-to-end multimodal model} that bundles
+perception and reasoning in one trained model: Gemini~Live~\citep{geminilive} and the
+OpenAI Realtime API~\citep{openairealtime}. Neither ships as a CU agent; each is a
+voice-first assistant with function-calling, which we adapt to DynaCU-Bench (one session
+per task, native audio and screenshots streamed over the live websocket, returned tool
+calls executed in the browser) and score on the same 12-task audio subset as the AOI.
+To test whether a stronger model closes the gap, we also evaluate the current generation:
+OpenAI's GA \texttt{gpt-realtime-2}, streaming native audio, in two conditions,
+\emph{alone} (screenshot~+~audio) and \emph{+~AOI scaffold} (additionally handed AOI's
+\texttt{[PAGE ELEMENTS]} interactive-element list), which separates a perception deficit
+from an action-grounding one; and xAI's Grok Voice (\texttt{grok-voice-think-fast}), which
+accepts audio and text only and so never sees the screen.
 
 \begin{table}[t]
 \centering
 \caption{Streaming multimodal baselines vs.\ the AOI on a 12-task audio subset
-(3 each from Podcast, Meeting, Phone, Interview). Each row is scored on the
-same task IDs as the AOI in Table~\ref{tab:main}. \texttt{gpt-realtime-2} is the
-current GA OpenAI Realtime model, streaming native audio. ``alone'' is screenshot~+~audio,
-and ``+~scaffold'' additionally supplies AOI's \texttt{[PAGE ELEMENTS]} list. Grok Voice
-is audio$+$text only (no vision), shown in both conditions. This is a deliberately
-favourable comparison, as no baseline is built for grounded computer use.}
+(3 each from Podcast, Meeting, Phone, Interview), scored on the same task IDs as the
+AOI in Table~\ref{tab:main}. ``alone'' is screenshot~+~audio; ``+~scaffold'' adds AOI's
+\texttt{[PAGE ELEMENTS]} list. Grok Voice is audio$+$text only (no vision). A
+deliberately favourable comparison: no baseline is built for grounded computer use.}
 \label{tab:streaming}
 \small
 \setlength{\tabcolsep}{4.5pt}
@@ -1066,20 +1056,16 @@ sharpens \emph{why} (Table~\ref{tab:streaming}).
 The older baselines fail outright: Gemini~Live returns few tool calls and clicks
 non-actionable coordinates, and the gpt-4o-backed Realtime succeeds only on the
 simplest interview questions.
-Crucially, \texttt{gpt-realtime-2}, the current GA Realtime model with native audio, still
-fails on its own, even though its transcription is essentially perfect
-(the run logs show it hears every name and figure correctly). Its failure is not perception
-but \emph{action grounding}: it hears ``Dr.\ Sarah Chen'' yet cannot target the right form
-field from a screenshot, so the answer never lands.
-Handed AOI's \texttt{[PAGE ELEMENTS]} scaffold, the very same model recovers most of the gap,
-which localises the deficit precisely: a frontier streaming model already perceives the page,
-but needs the AOI's structured grounding to act on it, and even then only ties the AOI.
-xAI's newly released Grok Voice (\texttt{grok-voice-think-fast}) makes the same point from the
-opposite direction. It hears accurately (on one task it transcribes a spoken price and types
-it correctly), but, lacking vision entirely, it fails whether or not it is given the text
-scaffold, idling on most steps. Unlike \texttt{gpt-realtime-2}, it does not exploit the element
-list, defaulting to blind clicks and occasional hallucinated answers. Perception without
-grounded action is not enough.
+\texttt{gpt-realtime-2} still fails on its own despite near-perfect transcription
+(the logs show it hears every name and figure): the failure is \emph{action grounding},
+not perception, as it hears ``Dr.\ Sarah Chen'' yet cannot target the right form field
+from a screenshot. Handed AOI's scaffold, the same model recovers most of the gap and
+ties the AOI, localising the deficit precisely: a frontier streaming model already
+perceives the page but needs AOI's structured grounding to act on it.
+Grok Voice makes the same point from the opposite direction: it hears accurately but,
+lacking vision, fails with or without the text scaffold, and unlike \texttt{gpt-realtime-2}
+cannot exploit the element list, defaulting to blind clicks. Perception without grounded
+action is not enough.
 
 % ════════════════════════════════════════════════════════════
 \section{Related Work}
