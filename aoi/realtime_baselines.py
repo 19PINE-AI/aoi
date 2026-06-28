@@ -182,6 +182,7 @@ class RealtimeEvalResult:
     steps: list = field(default_factory=list)
     error: Optional[str] = None
     final_score: float = 0.0
+    heard_audio: str = ""
 
     def to_dict(self):
         d = asdict(self)
@@ -545,6 +546,8 @@ class OpenAIRealtimeBaseline:
         last_result = "pending"
         prior_tool_calls = []
         full_audio_history = ""
+        api_failures = 0          # count steps where the model call raised
+        last_api_error = None
 
         # OpenAI Responses API with function calling
         tools_for_responses = [{"type": "function", "function": t} for t in ACTION_TOOLS]
@@ -600,6 +603,11 @@ class OpenAIRealtimeBaseline:
                 else:
                     tool_name, tool_args = "wait", {}
             except Exception as e:
+                # Do NOT silently degrade to wait(): a bad model id / 404 would
+                # otherwise masquerade as a genuine all-wait "0/N" result. Track
+                # it so the task is flagged invalid rather than scored as a real 0.
+                api_failures += 1
+                last_api_error = str(e)
                 log.warning("API call failed at step %d: %s", step, e)
                 tool_name, tool_args = "wait", {}
 
@@ -641,6 +649,14 @@ class OpenAIRealtimeBaseline:
         env.stop()
         audio_proc.stop()
 
+        # If every step failed at the API layer, the model never actually drove
+        # the browser — this is an invalid run (e.g. wrong/unavailable model id),
+        # not a legitimate 0. Surface it so downstream aggregation can exclude it.
+        run_error = None
+        if steps_log and api_failures >= len(steps_log):
+            run_error = (f"INVALID: all {api_failures} model calls failed "
+                         f"(model={self.model!r}); last error: {last_api_error}")
+
         return RealtimeEvalResult(
             task_id=task.task_id, category=task.category.value,
             difficulty=task.difficulty.value, model_name=self.model,
@@ -650,9 +666,267 @@ class OpenAIRealtimeBaseline:
             steps_taken=len(steps_log),
             total_time_s=time.time() - t_start,
             steps=steps_log,
+            error=run_error,
             final_score=eval_outcome.final_score,
         )
 
     def _inject_page_audio(self, env, audio_proc):
         """Same TTS injection logic as GeminiLiveBaseline."""
         return GeminiLiveBaseline._inject_page_audio(self, env, audio_proc)
+
+
+# ──────────────────────────────────────────────────────────────────────
+# OpenAI Realtime GA baseline (true websocket, native audio)
+# ──────────────────────────────────────────────────────────────────────
+
+def _f32_to_pcm16_24k(audio_f32: "np.ndarray", src_rate: int = 16000) -> bytes:
+    """Resample float32 [-1,1] mono audio to 24 kHz and encode as PCM16 LE."""
+    if audio_f32 is None or len(audio_f32) == 0:
+        return b""
+    if src_rate != 24000:
+        n_out = int(round(len(audio_f32) * 24000 / src_rate))
+        if n_out <= 0:
+            return b""
+        x_old = np.linspace(0.0, 1.0, num=len(audio_f32), endpoint=False)
+        x_new = np.linspace(0.0, 1.0, num=n_out, endpoint=False)
+        audio_f32 = np.interp(x_new, x_old, audio_f32).astype(np.float32)
+    clipped = np.clip(audio_f32, -1.0, 1.0)
+    return (clipped * 32767.0).astype("<i2").tobytes()
+
+
+class OpenAIRealtimeWSBaseline:
+    """OpenAI Realtime GA API (gpt-realtime / gpt-realtime-2) as a CU agent.
+
+    Unlike OpenAIRealtimeBaseline (which routed a transcript through
+    chat-completions), this connects to the real Realtime websocket and streams
+    the page's *native audio* (PCM16 @ 24 kHz) plus periodic screenshots, so the
+    model hears the page exactly as the streaming-voice product would. One
+    websocket session per task; we drive turns manually (server VAD disabled) and
+    execute the returned function calls in the browser.
+
+    API call failures and server `error` events are recorded (never silently
+    degraded to wait()), so a misconfigured run is flagged INVALID rather than
+    scored as a real 0.
+    """
+
+    def __init__(self, model: str = "gpt-realtime-2",
+                 max_steps: int = 15, step_interval_s: float = 2.0):
+        self.model = model
+        self.max_steps = max_steps
+        self.step_interval_s = step_interval_s
+        self._llm_evaluator = LLMEvaluator()
+
+    def _ga_tools(self):
+        # GA flattens the chat-completions {function:{...}} wrapper.
+        return [
+            {"type": "function", "name": t["name"],
+             "description": t.get("description", ""),
+             "parameters": t.get("parameters") or {"type": "object", "properties": {}}}
+            for t in ACTION_TOOLS
+        ]
+
+    def run_task(self, task: Task) -> RealtimeEvalResult:
+        import websocket  # websocket-client (sync), avoids asyncio/greenlet clashes
+
+        url = f"wss://api.openai.com/v1/realtime?model={self.model}"
+        key = os.environ["OPENAI_API_KEY"]
+
+        env = BrowserEnvironment(
+            html_file=task.html_file, width=1280, height=720,
+            task_timeout_s=task.duration_s + 30,
+        )
+        env.start()
+        time.sleep(1.0)
+
+        audio_proc = AudioProcessor(layer1_duration_s=self.step_interval_s,
+                                    layer2_duration_s=15.0, silence_threshold=0.01)
+        audio_proc.start()
+        try:
+            self._inject_page_audio(env, audio_proc)
+        except Exception as e:
+            log.warning("Audio injection failed: %s", e)
+
+        steps_log = []
+        t_start = time.time()
+        last_result = "pending"
+        api_failures = 0
+        last_api_error = None
+        heard = []  # transcripts of page audio the model received, for logging
+
+        ws = None
+        try:
+            ws = websocket.create_connection(
+                url, header=[f"Authorization: Bearer {key}"], timeout=30,
+            )
+            self._send(ws, {
+                "type": "session.update",
+                "session": {
+                    "type": "realtime",
+                    "instructions": SYSTEM_PROMPT + f"\n\nTASK: {task.instruction}",
+                    "tools": self._ga_tools(),
+                    "tool_choice": "required",
+                    "output_modalities": ["text"],
+                    "audio": {
+                        "input": {
+                            "format": {"type": "audio/pcm", "rate": 24000},
+                            "transcription": {"model": "whisper-1"},
+                            "turn_detection": None,  # we drive turns manually
+                        }
+                    },
+                },
+            })
+        except Exception as e:
+            api_failures += 1
+            last_api_error = f"connect/session.update failed: {e}"
+            log.error("Realtime connect failed: %s", e)
+
+        for step in range(1, self.max_steps + 1):
+            if env.get_elapsed_s() > task.duration_s or ws is None:
+                break
+            time.sleep(self.step_interval_s)
+
+            # 1. Native audio for this step → append + commit (only if non-trivial)
+            try:
+                audio_f32, _, _ = audio_proc.capture.get_audio(self.step_interval_s)
+                pcm = _f32_to_pcm16_24k(audio_f32, src_rate=audio_proc.capture.sample_rate)
+                if len(pcm) >= 24000 * 2 * 0.12:  # >=120 ms required to commit
+                    self._send(ws, {"type": "input_audio_buffer.append",
+                                    "audio": base64.b64encode(pcm).decode()})
+                    self._send(ws, {"type": "input_audio_buffer.commit"})
+            except Exception as e:
+                log.warning("audio append failed step %d: %s", step, e)
+
+            # 2. Screenshot + instruction as a user turn
+            try:
+                img = env.get_screenshot()
+                buf = io.BytesIO()
+                img.save(buf, format="JPEG", quality=70)
+                img_b64 = base64.b64encode(buf.getvalue()).decode()
+                self._send(ws, {
+                    "type": "conversation.item.create",
+                    "item": {"type": "message", "role": "user", "content": [
+                        {"type": "input_text",
+                         "text": f"Step {step}. Choose exactly one tool call to drive the browser."},
+                        {"type": "input_image",
+                         "image_url": f"data:image/jpeg;base64,{img_b64}"},
+                    ]},
+                })
+                self._send(ws, {"type": "response.create"})
+            except Exception as e:
+                api_failures += 1
+                last_api_error = str(e)
+                log.warning("response.create failed step %d: %s", step, e)
+                steps_log.append(RealtimeStepLog(
+                    step=step, action="(error)", tool_call=f"ERROR: {str(e)[:120]}",
+                    result_val=last_result, elapsed_s=time.time() - t_start))
+                continue
+
+            # 3. Drain events until this response completes; capture the tool call
+            tool_name, tool_args, step_err = self._await_tool_call(ws, heard)
+            if step_err:
+                api_failures += 1
+                last_api_error = step_err
+                log.warning("Realtime step %d error: %s", step, step_err[:160])
+                steps_log.append(RealtimeStepLog(
+                    step=step, action="(error)", tool_call=f"ERROR: {step_err[:120]}",
+                    result_val=last_result, elapsed_s=time.time() - t_start))
+                continue
+
+            action = tool_call_to_action(tool_name, tool_args) if tool_name else "wait()"
+            try:
+                env.execute_action(action)
+            except Exception as e:
+                log.warning("execute action failed: %s", e)
+            time.sleep(0.3)
+            try:
+                _, result_val = env.check_success()
+            except Exception:
+                result_val = last_result
+            last_result = result_val
+
+            steps_log.append(RealtimeStepLog(
+                step=step, action=action[:200],
+                tool_call=f"{tool_name}({json.dumps(tool_args, default=str)[:120]})" if tool_name else "(none)",
+                result_val=result_val, elapsed_s=time.time() - t_start))
+            log.info("[%s rt-ws %s] step %d: %s -> %s",
+                     task.task_id, self.model, step, action[:60], result_val)
+
+            if tool_name == "done" or action == "done":
+                break
+
+        if ws is not None:
+            try:
+                ws.close()
+            except Exception:
+                pass
+
+        try:
+            _, final_result = env.check_success()
+        except Exception:
+            final_result = last_result
+        try:
+            agent_response = env.get_page_text()
+        except Exception:
+            agent_response = ""
+
+        eval_outcome = self._llm_evaluator.evaluate_task(
+            task, dom_result=final_result, agent_response=agent_response)
+
+        env.stop()
+        audio_proc.stop()
+
+        run_error = None
+        if not steps_log or (api_failures >= max(len(steps_log), 1)):
+            run_error = (f"INVALID: {api_failures} model-call failures "
+                         f"(model={self.model!r}); last error: {last_api_error}")
+
+        result = RealtimeEvalResult(
+            task_id=task.task_id, category=task.category.value,
+            difficulty=task.difficulty.value, model_name=self.model,
+            observation_mode="openai_realtime_ws",
+            success=eval_outcome.final_passed, result_val=final_result,
+            steps_taken=len(steps_log), total_time_s=time.time() - t_start,
+            steps=steps_log, error=run_error, final_score=eval_outcome.final_score)
+        # Stash what the model heard for the appendix/debugging.
+        result.heard_audio = " | ".join(h for h in heard if h)[:2000]
+        return result
+
+    @staticmethod
+    def _send(ws, ev):
+        ws.send(json.dumps(ev))
+
+    def _await_tool_call(self, ws, heard):
+        """Read server events until response.done; return (name, args, error)."""
+        name, args_str = None, ""
+        deadline = time.time() + 45
+        while time.time() < deadline:
+            try:
+                raw = ws.recv()
+            except Exception as e:
+                return None, {}, f"recv failed: {e}"
+            if not raw:
+                continue
+            try:
+                ev = json.loads(raw)
+            except Exception:
+                continue
+            t = ev.get("type", "")
+            if t == "error":
+                return None, {}, "server error: " + json.dumps(ev.get("error", ev))[:300]
+            if t == "conversation.item.input_audio_transcription.completed":
+                heard.append(ev.get("transcript", ""))
+            elif t == "response.function_call_arguments.done":
+                name = ev.get("name") or name
+                args_str = ev.get("arguments") or args_str
+            elif t == "response.output_item.done":
+                item = ev.get("item", {})
+                if item.get("type") == "function_call":
+                    name = item.get("name") or name
+                    args_str = item.get("arguments") or args_str
+            elif t == "response.done":
+                break
+        try:
+            args = json.loads(args_str) if args_str else {}
+        except Exception:
+            args = {}
+        return name, args, None

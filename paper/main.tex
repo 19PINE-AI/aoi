@@ -65,9 +65,9 @@
 
 % Author email (not for publication): Noah Shi <noahshi@cs.washington.edu>
 \author{%
-  \begin{tabular}[t]{c@{\hspace{4em}}c}
-    Bojie Li & Noah Shi \\[2pt]
-    \normalsize Pine AI & \normalsize University of Washington
+  \begin{tabular}{@{}c@{\hspace{4em}}c@{}}
+    Bojie Li & Noah Shi \\
+    Pine AI & University of Washington
   \end{tabular}%
 }
 \date{}
@@ -683,149 +683,35 @@ Table~\ref{tab:main} and Figure~\ref{fig:mainresults} present the main results:
 AOI delivers large, consistent gains across all six models, with every improvement statistically significant by paired
 McNemar's exact test ($p<10^{-3}$).
 \emph{Statistical protocol.}
-Each configuration consists of a single trial of 100 binary tasks (no repeats). We report 95\%
-Wilson confidence intervals on success rates and evaluate differences with paired
-McNemar exact mid-$p$ tests on the discordant tasks.
-This single-trial design applies to every per-family and ablation cell in the
-paper. Small differences (a few points on a 100-task total, $\pm1$--$2$ on a
-per-family /10) fall within the ${\sim}3$\,pp decoding-noise band quantified
-later, and should be read as noise unless a paired test says otherwise.
+Each configuration is a single trial of 100 binary tasks (no repeats); we report 95\%
+Wilson confidence intervals and evaluate differences with paired McNemar exact
+mid-$p$ tests on the discordant tasks. This design applies to every per-family and
+ablation cell in the paper. Differences within the ${\sim}3$\,pp decoding-noise band
+quantified below should be read as noise unless a paired test says otherwise.
 
-\textbf{Claude Sonnet~4.6} is the strongest model, improving from 38\% to 82\%
-($+44$\,pp). Section~\ref{sec:static} decomposes how the components combine to
-reach it.
+The per-model numbers (Table~\ref{tab:main}) carry three points beyond the raw gains.
+\emph{Claude Sonnet~4.6} reaches the highest absolute score; Section~\ref{sec:static} decomposes how its components combine.
+\emph{GPT-5.4} gains as reliably as Claude but tops out lower, suggesting its CU capability---not perception---is the binding constraint once observation is adequate.
+\emph{Gemini 2.5 Flash} posts the largest absolute gain despite being video-native: the standard agent loop feeds it only periodic screenshots, so its streaming architecture lies idle. Section~\ref{sec:static} (Table~\ref{tab:structured}) splits this into $+25$\,pp from the structured prompt format and $+23$\,pp from new inter-step perception---it benefits from \emph{both}.
 
-\textbf{GPT-5.4} improves from 37\% to 57\% (+20\,pp).
-The gain is consistent with Claude's but the absolute ceiling is lower, suggesting GPT-5.4's CU capabilities are the binding constraint once perception is adequate.
+Among the open-source models, \emph{EvoCUA-32B} (32B) barely functions on dynamic tasks without the AOI yet rises to rival GPT-5.4's AOI score, while \emph{Fara-7B} (7B)---the most reasoning-constrained---still benefits substantially. The pattern that gains track reasoning capacity recurs in the Qwen3-VL replication below.
 
-\textbf{Gemini 2.5 Flash} scores only 21\% on the standard baseline despite being a video-native model with built-in streaming capabilities.
-This confirms that video-native architectures do not automatically solve the observation problem---the standard CU agent loop still constrains Gemini to periodic screenshots.
-With the AOI, Gemini improves to 69\% (+48\,pp)---the largest absolute gain of any model tested.
-Section~\ref{sec:static} (Table~\ref{tab:structured}) decomposes this gain into $+25$\,pp from the AOI's structured prompt format and $+23$\,pp from new inter-step perception---a video-native model benefits from \emph{both} better presentation of existing context and explicit between-step perception.
-
-\textbf{EvoCUA-32B} improves from 18\% to 55\% ($3\times$ improvement, +37\,pp).
-This open-source 32B model, which barely functions on dynamic tasks without the AOI, becomes competitive with GPT-5.4's AOI-equipped performance.
-
-\textbf{Fara-7B} improves from 17\% to 34\% (+17\,pp), doubling its score.
-As the smallest model (7B parameters), it is the most constrained by reasoning capacity, yet it still benefits substantially from improved perception.
-
-Figure~\ref{fig:trajectories} illustrates the mechanism behind these gains through two side-by-side trajectories. On a meeting task, the standard agent exhausts its entire step budget because it cannot hear the spoken answer, while the AOI agent transcribes it and acts in two steps. On a video task, the AOI agent's narration captures the answer in a single step.
+Two side-by-side trajectories illustrate the mechanism (Figure~\ref{fig:trajectories}, Appendix~\ref{app:perstep}): on a meeting task the standard agent exhausts its entire step budget because it cannot hear the spoken answer, while the AOI agent transcribes it and acts in two steps; on a screencast task the AOI agent's narration captures the answer in a single step.
 
 \textbf{Additional open-source replication (Qwen3-VL family).}
-To further validate the model-agnostic claim, we run the same standard vs.\ AOI~full contrast on two more open-source vision-language models via OpenRouter (provider: DeepInfra): \textbf{Qwen3-VL-235B-A22B-Instruct}~\citep{qwen3vl}, the largest open-source VLM MoE available at evaluation time, and the smaller \textbf{Qwen3-VL-30B-A3B-Instruct}.
-Both models land inside the +17 to +48\,pp improvement range observed in Table~\ref{tab:main} (Table~\ref{tab:b1_oss}): the 235B model improves by +42\,pp ($22 \to 64$, McNemar $p = 4.5\times10^{-10}$) and the 30B model improves by +24\,pp ($18 \to 42$, $p = 1.8\times10^{-4}$).
-Notably, the 235B model's AOI~full score (64) surpasses GPT-5.4's (57), and within the Qwen family, the AOI gain grows with scale (+24 vs.\ +42\,pp). This pattern is consistent with the reasoning-capacity bottleneck observed on Fara-7B.
-(Two additional candidates, UI-TARS-1.5-7B and GLM-4.5V, were unavailable through our OpenRouter provider list at the time of evaluation.)
-
-\begin{table}[t]
-\centering
-\caption{Additional open-source replication on the full 100-task
-DynaCU-Bench: Qwen3-VL family via OpenRouter, evaluated with the same
-harness as the six models in Table~\ref{tab:main}.  $p$-values are
-paired McNemar exact tests on the discordant tasks ($b$/$c$ = success
-only under standard / only under AOI).  Both gains fall inside the
-+17 to +48\,pp band of the main table.}
-\label{tab:b1_oss}
-\small
-\begin{tabular}{@{}l cc cc c@{}}
-\toprule
-\textbf{Model} & \textbf{Standard} & \textbf{AOI full}
-& \textbf{$\Delta$ (pp)} & \textbf{$b$/$c$} & \textbf{$p$ (McNemar)} \\
-\midrule
-Qwen3-VL-235B-A22B-Instruct & 22 & \textbf{64} & $+$42 & 4/46 & $4.5\times10^{-10}$ \\
-Qwen3-VL-30B-A3B-Instruct   & 18 & \textbf{42} & $+$24 & 8/32 & $1.8\times10^{-4}$ \\
-\bottomrule
-\end{tabular}
-\end{table}
-
-\begin{figure}[t]
-\centering
-\begin{tcolorbox}[
-  colback=white, colframe=black!50,
-  title={\small\bfseries Meeting task --- ``What is the new launch date?''},
-  fonttitle=\small, coltitle=white, colbacktitle=black!70,
-  width=\textwidth, boxrule=0.5pt,
-]
-\small
-\begin{minipage}[t]{0.47\textwidth}
-\textbf{Standard (screenshot-only)} --- \textcolor{red}{\textbf{FAIL}}\\[2pt]
-\textcolor{gray}{\scriptsize 15 steps, 51.2\,s}
-\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- sees static slide}
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
-  \item[\vdots]
-  \item[15.] \texttt{wait()} \textcolor{red}{\scriptsize \texttimes\ step budget exhausted}
-\end{enumerate}
-\vspace{4pt}
-\textcolor{red}{\scriptsize Agent never hears the spoken date.}\\
-\textcolor{red}{\scriptsize Waits all 15 steps without ever acting.}
-\end{minipage}%
-\hfill\vrule\hfill%
-\begin{minipage}[t]{0.47\textwidth}
-\textbf{AOI (full)} --- \textcolor{green!50!black}{\textbf{PASS}}\\[2pt]
-\textcolor{gray}{\scriptsize 2 steps, 26.2\,s}
-\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
-  \item \texttt{wait()}\\
-    {\scriptsize \textbf{Audio:} ``Here's the team. As you can see we have strong cross-functional coverage.''}\\
-    {\scriptsize \textbf{Narration:} ``Meeting slide shows Project Team with 6 members.''}
-  \item \texttt{fill(``April 28th'')} \textcolor{green!50!black}{\scriptsize \checkmark}\\
-    {\scriptsize \textbf{Audio:} ``We've moved the launch date to April 28th. Please update.''}\\
-    {\scriptsize \textbf{Narration:} ``Audio announced the new launch date.''}
-\end{enumerate}
-\vspace{4pt}
-\textcolor{green!50!black}{\scriptsize Agent hears ``April 28th'' and fills the form immediately.}
-\end{minipage}
-\end{tcolorbox}
-
-\vspace{6pt}
-
-\begin{tcolorbox}[
-  colback=white, colframe=black!50,
-  title={\small\bfseries Screencast task --- ``What was the first command in the terminal recording?''},
-  fonttitle=\small, coltitle=white, colbacktitle=black!70,
-  width=\textwidth, boxrule=0.5pt,
-]
-\small
-\begin{minipage}[t]{0.47\textwidth}
-\textbf{Standard} --- \textcolor{green!50!black}{\textbf{PASS}} (6 steps)\\[2pt]
-\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- recording playing}
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- missed first command}
-  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- scrolling through}
-  \item \texttt{wait()}
-  \item \texttt{wait()}
-  \item \texttt{fill(\ldots)} \textcolor{green!50!black}{\scriptsize \checkmark\ lucky timing}
-\end{enumerate}
-\end{minipage}%
-\hfill\vrule\hfill%
-\begin{minipage}[t]{0.47\textwidth}
-\textbf{AOI} --- \textcolor{green!50!black}{\textbf{PASS}} (1 step)\\[2pt]
-\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
-  \item \texttt{fill(``git clone \ldots'')} \textcolor{green!50!black}{\scriptsize \checkmark}\\
-    {\scriptsize \textbf{Narration:} ``The terminal recording shows the first command was git clone\ldots''}
-\end{enumerate}
-\vspace{4pt}
-\textcolor{green!50!black}{\scriptsize Narration captures the command from the recording immediately.}
-\end{minipage}
-\end{tcolorbox}
-\caption{Trajectory comparison on two representative tasks (\emph{illustrative; cherry-picked to expose the mechanism}).
-\textbf{Top:} Meeting task where the launch date is spoken aloud.
-The standard agent cannot hear it and exhausts its step budget on 15 \texttt{wait()} steps.
-The AOI agent transcribes the audio, hears ``April 28th,'' and acts in 2 steps.
-\textbf{Bottom:} Screencast task where the answer appears in a terminal recording.
-The standard agent needs 6 steps with lucky timing; the AOI agent's narration captures the content in 1 step.}
-\label{fig:trajectories}
-\end{figure}
+Two more open-source models run through the same contrast via OpenRouter both land inside
+the +17 to +48\,pp band of Table~\ref{tab:main} (full numbers in Appendix~\ref{app:fullresults},
+Table~\ref{tab:b1_oss}): Qwen3-VL-235B-A22B-Instruct~\citep{qwen3vl} improves +42\,pp
+($22 \to 64$, surpassing GPT-5.4's AOI score of 57) and Qwen3-VL-30B-A3B-Instruct improves
++24\,pp ($18 \to 42$). Within the family the gain grows with scale, consistent with the
+reasoning-capacity bottleneck seen on Fara-7B.
 
 \textbf{Variance.}
-Each reported result above is from a single trial of 100 binary tasks at the model's default sampling
-temperature, so decoding noise is folded into the score.
 Re-running the headline configuration (Claude~+~AOI~full) across two more seeds yields
-82\%, 78\%, 76\% (mean 78.7\%, std 3.1\,pp). The reported 82\% thus sits at the upper end of a $\sim$3\,pp decoding variability band.
-This decoding variances is separate from the McNemar tests: the latter assesses whether two configurations differ on the same set of stochastic runs (paired on discordant tasks), while the seed sweep quantifies how much a single configuration's absolute score can shift under fresh sampling.
+82\%, 78\%, 76\% (mean 78.7\%, std 3.1\,pp), so the reported 82\% sits at the upper end
+of the $\sim$3\,pp decoding-noise band. This spread is orthogonal to the McNemar tests,
+which compare two configurations on the \emph{same} stochastic runs rather than measuring
+a single score's variability.
 
 \subsection{Per-Family Analysis}
 
@@ -842,7 +728,7 @@ consistently. The Dashboard family benefits the least, as periodic values are of
 Finally, \textsc{Games} is the one family that regresses across models. Being tightly action-latency bound rather than perception-limited, the added per-step observation overhead pushes the agent past its reaction window. AOI is designed for human-paced computer use, not real-time interaction.
 Two additional model-level observations emerge: the open-source EvoCUA-32B gains most on audio tasks
 (weak visual grounding leaves more headroom there), while Dashboard
-and Games cells stay flat-to-negative for every model. This isolates AOI's benefits to genuine perceptual bottlenecks.
+and Games cells stay flat-to-negative for every model---the gains concentrate on families with a genuine perceptual bottleneck and are absent where screenshots already suffice.
 
 \subsection{Difficulty Breakdown}
 
@@ -856,12 +742,10 @@ On the smallest model (Fara-7B), gains on medium/hard tasks stay small, while ga
 Better perception leads to fewer but better-aimed steps, resulting in a counter-intuitive
 cost consequence: \emph{the AOI is cheaper than the screenshot baseline}. Despite its per-step observation overhead, token costs drop by 15--50\% across all cloud models
 (Claude and Gemini~$-50\%$, GPT-5.4~$-15\%$). The reduction in step count (roughly 50\%) outweighs the richer per-step input.
-Wall-clock time shows the opposite trend: it \emph{rises} for fast-inference models, where the observation work time exceeds the latency saved from lower step count, and falls only
-for the slowest model, where step reduction dominates.
-Overall, AOI is unambiguously preferable for batch or cost-sensitive workloads. For latency-sensitive use, a
-per-model judgement call needs to be made. The full
-instrumented breakdown is in Appendix~\ref{app:detailed},
-Table~\ref{tab:efficiency}.
+Wall-clock time shows the opposite trend: it \emph{rises} for fast-inference models, where observation work exceeds the latency saved by fewer steps, and falls only
+for the slowest model, where step reduction dominates. AOI thus lowers cost for
+batch or cost-sensitive workloads; latency-sensitive use is a per-model judgement call
+(full instrumented breakdown in Appendix~\ref{app:detailed}, Table~\ref{tab:efficiency}).
 
 % ════════════════════════════════════════════════════════════
 \section{Decomposing the Gain}
@@ -1099,13 +983,11 @@ This does not reflect the model having internalised the AOI: a four-way decompos
 Audio still helps ($+12$\,pp, with $+10$ on the audio families alone---Gemini~3 is
 not audio-saturated), and the structured scaffold still helps on balance
 ($+9$\,pp), but the inter-step keyframe images now \emph{regress} $-12$\,pp.
-Dropping just the keyframes recovers $57/100$, a $+21$\,pp gain---indicating the slack remains and the default bundle is simply miscalibrated.
-A causal probe isolates the mechanism (Appendix~\ref{app:gemini3}): replacing the
-keyframes with pure-noise images of the same size reproduces the full penalty,
-and the cost does not scale with keyframe count or position. This points to
-\emph{image-token dilution} (extra images degrade Gemini~3's action grounding
-regardless of content), not distraction by what the frames show.
-The resulting operation rule for this model is simple: deliver observation as text and turn
+Dropping just the keyframes recovers $57/100$, a $+21$\,pp gain---the slack remains and the default bundle is simply miscalibrated.
+A causal probe (Appendix~\ref{app:gemini3}) isolates the mechanism as
+\emph{image-token dilution}---extra images degrade Gemini~3's action grounding
+regardless of content---rather than distraction by what the frames show.
+The operating rule for this model is simple: deliver observation as text and turn
 the keyframe-image stream off.
 
 \textbf{A diagnostic map of model slack.}
@@ -1163,8 +1045,8 @@ A sanity check rules out a broken adapter: on five purely-visual tasks, both
 baselines drive the browser and emit valid actions (5/5) but reach 0/5
 task-correct---wrong targets, hallucinated text, premature commits---while
 AOI-equipped Claude passes 4/5 (Appendix~\ref{app:streaming_sanity}).
-The takeaway is a streaming voice model with function-calling is not a substitute
-for a perception layer that persists what it heard as text.
+On this audio subset, both streaming baselines fail to commit the spoken answer that
+AOI's transcription records as text.
 
 % ════════════════════════════════════════════════════════════
 \section{Related Work}
@@ -1289,9 +1171,8 @@ observation gains from model-side gains.
 \section*{Acknowledgements}
 % ════════════════════════════════════════════════════════════
 
-Pine Copilot, Claude Code, and Claude Opus~4.8 were used during
-this research. We thank BSQL Networking for hosting the NVIDIA
-RTX Pro~6000 GPU on which these experiments were run.
+We thank BSQL Networking for hosting the RTX PRO 6000 GPU.
+AI tools including Pine Copilot, Claude Code with Claude Opus 4.8 were used during this research.
 
 % ════════════════════════════════════════════════════════════
 \bibliographystyle{plainnat}
@@ -1313,9 +1194,31 @@ This appendix provides the per-cell numbers summarised by the figures in the mai
 absolute scores behind the gain heatmap in Figure~\ref{fig:heatmap});
 \item the difficulty breakdown (Table~\ref{tab:difficulty});
 \item efficiency and cost (Table~\ref{tab:efficiency});
-\item the full per-family ablation sweep (Table~\ref{tab:fullablation}).
+\item the full per-family ablation sweep (Table~\ref{tab:fullablation});
+\item the additional open-source replication on the Qwen3-VL family (Table~\ref{tab:b1_oss}).
 \end{itemize}
 
+\begin{table}[!h]
+\centering
+\caption{Additional open-source replication on the full 100-task
+DynaCU-Bench: Qwen3-VL family via OpenRouter (provider: DeepInfra), evaluated with the same
+harness as the six models in Table~\ref{tab:main}. $p$-values are
+paired McNemar exact tests on the discordant tasks ($b$/$c$ = success
+only under standard / only under AOI). Both gains fall inside the
++17 to +48\,pp band of the main table. Two further candidates (UI-TARS-1.5-7B,
+GLM-4.5V) were unavailable through our provider list at evaluation time.}
+\label{tab:b1_oss}
+\small
+\begin{tabular}{@{}l cc cc c@{}}
+\toprule
+\textbf{Model} & \textbf{Standard} & \textbf{AOI full}
+& \textbf{$\Delta$ (pp)} & \textbf{$b$/$c$} & \textbf{$p$ (McNemar)} \\
+\midrule
+Qwen3-VL-235B-A22B-Instruct & 22 & \textbf{64} & $+$42 & 4/46 & $4.5\times10^{-10}$ \\
+Qwen3-VL-30B-A3B-Instruct   & 18 & \textbf{42} & $+$24 & 8/32 & $1.8\times10^{-4}$ \\
+\bottomrule
+\end{tabular}
+\end{table}
 
 \begin{table}[!h]
 \centering
@@ -1616,6 +1519,89 @@ a keyframe and ${\sim}14\%$ activate audio (Table~\ref{tab:perstep}), and
 weighted by step count, ${\sim}61\%$ of steps are fully idle
 (Figure~\ref{fig:obsactivity}). Audio-only families produce zero keyframes and
 visual-only families produce zero audio activations, confirming clean channel separation.
+Figure~\ref{fig:trajectories} traces this step-by-step on two representative tasks.
+
+\begin{figure}[!h]
+\centering
+\begin{tcolorbox}[
+  colback=white, colframe=black!50,
+  title={\small\bfseries Meeting task --- ``What is the new launch date?''},
+  fonttitle=\small, coltitle=white, colbacktitle=black!70,
+  width=\textwidth, boxrule=0.5pt,
+]
+\small
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{Standard (screenshot-only)} --- \textcolor{red}{\textbf{FAIL}}\\[2pt]
+\textcolor{gray}{\scriptsize 15 steps, 51.2\,s}
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- sees static slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- same slide}
+  \item[\vdots]
+  \item[15.] \texttt{wait()} \textcolor{red}{\scriptsize \texttimes\ step budget exhausted}
+\end{enumerate}
+\vspace{4pt}
+\textcolor{red}{\scriptsize Agent never hears the spoken date.}\\
+\textcolor{red}{\scriptsize Waits all 15 steps without ever acting.}
+\end{minipage}%
+\hfill\vrule\hfill%
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{AOI (full)} --- \textcolor{green!50!black}{\textbf{PASS}}\\[2pt]
+\textcolor{gray}{\scriptsize 2 steps, 26.2\,s}
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{wait()}\\
+    {\scriptsize \textbf{Audio:} ``Here's the team. As you can see we have strong cross-functional coverage.''}\\
+    {\scriptsize \textbf{Narration:} ``Meeting slide shows Project Team with 6 members.''}
+  \item \texttt{fill(``April 28th'')} \textcolor{green!50!black}{\scriptsize \checkmark}\\
+    {\scriptsize \textbf{Audio:} ``We've moved the launch date to April 28th. Please update.''}\\
+    {\scriptsize \textbf{Narration:} ``Audio announced the new launch date.''}
+\end{enumerate}
+\vspace{4pt}
+\textcolor{green!50!black}{\scriptsize Agent hears ``April 28th'' and fills the form immediately.}
+\end{minipage}
+\end{tcolorbox}
+
+\vspace{6pt}
+
+\begin{tcolorbox}[
+  colback=white, colframe=black!50,
+  title={\small\bfseries Screencast task --- ``What was the first command in the terminal recording?''},
+  fonttitle=\small, coltitle=white, colbacktitle=black!70,
+  width=\textwidth, boxrule=0.5pt,
+]
+\small
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{Standard} --- \textcolor{green!50!black}{\textbf{PASS}} (6 steps)\\[2pt]
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- recording playing}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- missed first command}
+  \item \texttt{wait()} \textcolor{gray}{\scriptsize --- scrolling through}
+  \item \texttt{wait()}
+  \item \texttt{wait()}
+  \item \texttt{fill(\ldots)} \textcolor{green!50!black}{\scriptsize \checkmark\ lucky timing}
+\end{enumerate}
+\end{minipage}%
+\hfill\vrule\hfill%
+\begin{minipage}[t]{0.47\textwidth}
+\textbf{AOI} --- \textcolor{green!50!black}{\textbf{PASS}} (1 step)\\[2pt]
+\begin{enumerate}[leftmargin=*, label=\arabic*., itemsep=1pt]
+  \item \texttt{fill(``git clone \ldots'')} \textcolor{green!50!black}{\scriptsize \checkmark}\\
+    {\scriptsize \textbf{Narration:} ``The terminal recording shows the first command was git clone\ldots''}
+\end{enumerate}
+\vspace{4pt}
+\textcolor{green!50!black}{\scriptsize Narration captures the command from the recording immediately.}
+\end{minipage}
+\end{tcolorbox}
+\caption{Trajectory comparison on two representative tasks (\emph{illustrative; cherry-picked to expose the mechanism}).
+\textbf{Top:} Meeting task where the launch date is spoken aloud.
+The standard agent cannot hear it and exhausts its step budget on 15 \texttt{wait()} steps.
+The AOI agent transcribes the audio, hears ``April 28th,'' and acts in 2 steps.
+\textbf{Bottom:} Screencast task where the answer appears in a terminal recording.
+The standard agent needs 6 steps with lucky timing; the AOI agent's narration captures the content in 1 step.}
+\label{fig:trajectories}
+\end{figure}
 
 \begin{table}[!h]
 \centering
