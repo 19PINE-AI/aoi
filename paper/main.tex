@@ -1029,9 +1029,8 @@ runs with native audio plus the text scaffold and never sees the screen.
 same task IDs as the AOI in Table~\ref{tab:main}. \texttt{gpt-realtime-2} is the
 current GA OpenAI Realtime model, streaming native audio; ``alone'' is screenshot~+~audio,
 ``+~scaffold'' additionally supplies AOI's \texttt{[PAGE ELEMENTS]} list. Grok Voice
-is audio$+$text only (no vision) and scores 1/12 with or without the text scaffold (the
-row shows the scaffold condition). This is a deliberately favourable comparison---no
-baseline is built for grounded computer use.}
+is audio$+$text only (no vision), shown in both conditions. This is a deliberately
+favourable comparison---no baseline is built for grounded computer use.}
 \label{tab:streaming}
 \small
 \setlength{\tabcolsep}{4.5pt}
@@ -1041,7 +1040,8 @@ baseline is built for grounded computer use.}
 \midrule
 Gemini Live (2.5)                   & 0 & 0 & 0 & 0 & 0 \scriptsize(0\%) \\
 OpenAI Realtime (gpt-4o)            & 0 & 0 & 0 & 3 & 3 \scriptsize(25\%) \\
-Grok Voice (think-fast, no vision)  & 1 & 0 & 0 & 0 & 1 \scriptsize(8\%) \\
+Grok Voice (no vision), audio only  & 1 & 0 & 0 & 0 & 1 \scriptsize(8\%) \\
+Grok Voice (no vision), $+$ scaffold & 1 & 0 & 0 & 0 & 1 \scriptsize(8\%) \\
 gpt-realtime-2, alone               & 0 & 0 & 1 & 1 & 2 \scriptsize(17\%) \\
 gpt-realtime-2, $+$ AOI scaffold    & 2 & 3 & 3 & 3 & 11 \scriptsize(92\%) \\
 \rowcolor{bestcolor}
@@ -1052,27 +1052,26 @@ AOI~full (Claude 4.6)               & 3 & 3 & 3 & 3 & \textbf{12} \scriptsize(10
 
 A streaming voice model does not substitute for the AOI---and the current generation
 sharpens \emph{why} (Table~\ref{tab:streaming}).
-The older baselines fail outright: Gemini~Live (0/12) returns few tool calls and clicks
-non-actionable coordinates, and the gpt-4o-backed Realtime (3/12) succeeds only on the
+The older baselines fail outright: Gemini~Live returns few tool calls and clicks
+non-actionable coordinates, and the gpt-4o-backed Realtime succeeds only on the
 simplest interview questions.
 Crucially, \texttt{gpt-realtime-2}---the current GA Realtime model with native audio---still
-reaches only \textbf{2/12} on its own, even though its transcription is essentially perfect
+fails on its own, even though its transcription is essentially perfect
 (the run logs show it hears every name and figure correctly). Its failure is not perception
 but \emph{action grounding}: it hears ``Dr.\ Sarah Chen'' yet cannot target the right form
 field from a screenshot, so the answer never lands.
-Handed AOI's \texttt{[PAGE ELEMENTS]} scaffold, the very same model jumps to \textbf{11/12}.
-This localises the deficit precisely: a frontier streaming model already perceives the page,
-but needs the AOI's structured grounding to act on it---and even then ties rather than beats
-the AOI (11 vs.\ 12).
+Handed AOI's \texttt{[PAGE ELEMENTS]} scaffold, the very same model recovers most of the gap,
+which localises the deficit precisely: a frontier streaming model already perceives the page,
+but needs the AOI's structured grounding to act on it---and even then only ties the AOI.
 xAI's newly released Grok Voice (\texttt{grok-voice-think-fast}) makes the same point from the
 opposite direction: it hears accurately---on one task it transcribes a spoken price and types
-it correctly---but, lacking vision entirely, it manages only \textbf{1/12}, \emph{with or
-without} the text scaffold (72\% of its steps are idle \texttt{wait()}s). Unlike
-\texttt{gpt-realtime-2}, it does not exploit the element list, defaulting to blind clicks and
-occasional hallucinated answers. Perception without grounded action is not enough.
-A sanity check rules out a broken adapter: on five purely-visual tasks the older baselines
-emit valid actions (5/5) but reach 0/5 task-correct, while \texttt{gpt-realtime-2} reaches
-3/5 and AOI-equipped Claude 4/5 (Appendix~\ref{app:streaming_sanity}).
+it correctly---but, lacking vision entirely, it fails whether or not it is given the text
+scaffold, idling on most steps. Unlike \texttt{gpt-realtime-2}, it does not exploit the element
+list, defaulting to blind clicks and occasional hallucinated answers. Perception without
+grounded action is not enough.
+A sanity check rules out a broken adapter: on a set of purely-visual tasks the older baselines
+emit valid actions on every task but get none task-correct, while \texttt{gpt-realtime-2}
+trails the AOI-equipped Claude reference by one task (Appendix~\ref{app:streaming_sanity}).
 
 % ════════════════════════════════════════════════════════════
 \section{Related Work}
