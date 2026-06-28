@@ -83,7 +83,7 @@
 % ════════════════════════════════════════════════════════════
 SWE-agent established the \emph{action} interface as an underexplored design axis for software-engineering agents; we make the analogous case for the \emph{observation} interface in computer-use (CU) agents. Current CU agents, closed and open-source alike, tie observation to action---one screenshot every 3--5\,s, no audio---leaving them blind and deaf between screenshots to video, animations, transient UI events, meetings, and spoken instructions. We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer that decouples continuous, adaptive observation from discrete actions through three gated components: inter-step keyframe capture, volume-gated audio transcription, and CU-model-generated visual narration that persists as text. Each produces almost nothing on static, silent content, reducing to the standard loop without degrading it.
 
-On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining; on a spoken-content subset AOI agents solve every task, whereas streaming voice models hear accurately but cannot act without the scaffold. The decomposition is as informative as the headline: keyframe \emph{selection} does not matter---value comes from narrating captured frames into persistent text---and the interface is not a fixed bundle, since on a newer model (Gemini~3~Flash) the keyframe stream regresses through image-token dilution, so components must be selected per model.
+On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), CU models from 7B to frontier scale gain $+17$ to $+48$\,pp over their screenshot baselines with zero retraining, turning tasks that are near-impossible from periodic screenshots into largely solved ones. The gap is starkest on audio: on a spoken-content subset AOI agents solve every task, whereas streaming voice models hear accurately but cannot act on what they hear without the scaffold. The decomposition is as informative as the headline gain: keyframe \emph{selection} turns out not to matter---the value comes from narrating captured frames into persistent text---and the interface is not a fixed bundle, since on a newer model (Gemini~3~Flash) the keyframe stream actively regresses through image-token dilution, so its components must be selected per model rather than shipped as one configuration.
 \end{abstract}
 
 \begin{center}
@@ -108,7 +108,8 @@ Code: \url{https://github.com/19PINE-AI/aoi} \quad\textbar\quad Website: \url{ht
     xticklabel style={font=\tiny, rotate=30, anchor=east},
     ytick={0,20,40,60,80,100},
     yticklabel style={font=\small},
-    legend style={at={(0.98,0.97)}, anchor=north east, font=\scriptsize,
+    legend style={at={(0.98,1.0)}, anchor=north east, font=\scriptsize,
+                  legend columns=2, /tikz/every even column/.append style={column sep=4pt},
                   draw=cGray!30, fill=white, fill opacity=0.9},
     grid=major,
     major grid style={cLightGray!60},
@@ -163,7 +164,7 @@ Code: \url{https://github.com/19PINE-AI/aoi} \quad\textbar\quad Website: \url{ht
 \node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
     at (axis cs:Grok-4-fast, 65) {$\Delta$+28};
 \node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
-    at (axis cs:EvoCUA-32B, 73) {$\Delta$+37};
+    at (axis cs:EvoCUA-32B, 70) {$\Delta$+37};
 \node[font=\tiny\bfseries, text=cDelta!60!black, fill=white, inner sep=0.8pt, rounded corners=1pt]
     at (axis cs:Fara-7B, 52) {$\Delta$+17};
 
@@ -172,7 +173,7 @@ Code: \url{https://github.com/19PINE-AI/aoi} \quad\textbar\quad Website: \url{ht
 \caption{\textbf{Main results: the AOI lifts every CU model on DynaCU-Bench (100 dynamic
 tasks), with zero retraining.} Green numbers are absolute gains in percentage points over
 each model's screenshot baseline ($+9$ to $+48$\,pp). Full numbers, confidence intervals,
-and the per-model analysis are in Section~\ref{sec:eval} (Table~\ref{tab:main}).}
+and the per-model analysis are in Section~\ref{sec:eval}.}
 \label{fig:mainresults}
 \end{figure}
 
@@ -530,6 +531,36 @@ Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations a
 \subsection{Observation Record}
 \label{sec:obsrecord}
 
+\begin{figure*}[t]
+\centering
+\setlength{\tabcolsep}{2pt}
+\begin{tabular}{ccc}
+\includegraphics[width=0.305\textwidth]{figures/de2_kf1.png} &
+\includegraphics[width=0.305\textwidth]{figures/de2_kf2.png} &
+\includegraphics[width=0.305\textwidth]{figures/de2_kf3.png} \\
+{\footnotesize step 1: testimonial 2/5 (Tom Lee)} &
+{\footnotesize step 2: testimonial 5/5 (Amy Patel)} &
+{\footnotesize step 3: testimonial 1/5 (Maria Johnson)} \\
+\end{tabular}
+
+\vspace{4pt}
+\begin{tcolorbox}[colback=gray!3, colframe=black!40, width=0.96\textwidth, boxrule=0.4pt,
+  title={\small\bfseries Visual narrations accumulated in the trajectory (verbatim from the evaluation log)},
+  fonttitle=\small, coltitle=white, colbacktitle=black!60]
+\ttfamily\scriptsize
+\textbf{Step 1} (0 keyframes): ``The carousel shows testimonial 2/5 from Tom Lee with a 4-star rating about fast delivery and good packaging, with no mention of `excellent'.''\hfill ACTION: click(567, 400)\\[3pt]
+\textbf{Step 2} (1 keyframe): ``The carousel now shows testimonial 5/5 from Amy Patel with a 4-star rating about fantastic value, quality, and modern design --- no mention of `excellent'.''\hfill ACTION: click(567, 401)\\[3pt]
+\textbf{Step 3} (2 keyframes): ``The carousel has cycled back to testimonial 1/5 from Maria Johnson with `Excellent customer service!' --- and the transition keyframe also shows a Sarah Robinson testimonial partially visible\ldots''\hfill ACTION: fill(``2'') \textcolor{green!50!black}{\checkmark}
+\end{tcolorbox}
+\caption{\textbf{What the agent actually sees: real frames and narrations from a recorded benchmark run}
+(Carousel task: ``How many reviews mention the word `excellent'?'' Claude Sonnet~4.6 + AOI~full, the run reported in Table~\ref{tab:main}, passed in 3 steps.)
+The testimonial carousel rotates every few seconds, so no single screenshot can show more than one of the five reviews.
+\emph{Top:} screen states observed across the three agent steps (frames from the run recording, recorder status bar cropped).
+\emph{Bottom:} the visual narrations the CU model generated at each step, quoted verbatim from the evaluation log.
+The narrations persist as text in the trajectory, letting the agent accumulate evidence across carousel states and answer ``2'' at step~3.}
+\label{fig:realkf}
+\end{figure*}
+
 At each step, the CU model receives a structured document combining text context from recent prior steps (audio transcriptions, visual narrations, actions taken) and raw observations from the current interval (new audio transcription, any captured keyframe images, and the post-action screenshot).
 For static, silent tasks, the raw-observation part of this document reduces to just the post-action screenshot. However, the surrounding structured format (DOM element list, prior-step text trajectory) is still present. As a result, the input is not identical to a raw-screenshot loop. Furthermore, Section~\ref{sec:promptperc} shows this format alone gives a small gain on purely static work.
 Figure~\ref{fig:obsrecord} shows a concrete example of the document format and Figure~\ref{fig:realkf} grounds the pipeline in real pixels and verbatim narrations from a recorded benchmark run.
@@ -597,36 +628,6 @@ Each family contains 3 easy, 4 medium, and 3 hard tasks.}
 \bottomrule
 \end{tabular}
 \end{table}
-
-\begin{figure*}[t]
-\centering
-\setlength{\tabcolsep}{2pt}
-\begin{tabular}{ccc}
-\includegraphics[width=0.305\textwidth]{figures/de2_kf1.png} &
-\includegraphics[width=0.305\textwidth]{figures/de2_kf2.png} &
-\includegraphics[width=0.305\textwidth]{figures/de2_kf3.png} \\
-{\footnotesize step 1: testimonial 2/5 (Tom Lee)} &
-{\footnotesize step 2: testimonial 5/5 (Amy Patel)} &
-{\footnotesize step 3: testimonial 1/5 (Maria Johnson)} \\
-\end{tabular}
-
-\vspace{4pt}
-\begin{tcolorbox}[colback=gray!3, colframe=black!40, width=0.96\textwidth, boxrule=0.4pt,
-  title={\small\bfseries Visual narrations accumulated in the trajectory (verbatim from the evaluation log)},
-  fonttitle=\small, coltitle=white, colbacktitle=black!60]
-\ttfamily\scriptsize
-\textbf{Step 1} (0 keyframes): ``The carousel shows testimonial 2/5 from Tom Lee with a 4-star rating about fast delivery and good packaging, with no mention of `excellent'.''\hfill ACTION: click(567, 400)\\[3pt]
-\textbf{Step 2} (1 keyframe): ``The carousel now shows testimonial 5/5 from Amy Patel with a 4-star rating about fantastic value, quality, and modern design --- no mention of `excellent'.''\hfill ACTION: click(567, 401)\\[3pt]
-\textbf{Step 3} (2 keyframes): ``The carousel has cycled back to testimonial 1/5 from Maria Johnson with `Excellent customer service!' --- and the transition keyframe also shows a Sarah Robinson testimonial partially visible\ldots''\hfill ACTION: fill(``2'') \textcolor{green!50!black}{\checkmark}
-\end{tcolorbox}
-\caption{\textbf{What the agent actually sees: real frames and narrations from a recorded benchmark run}
-(Carousel task: ``How many reviews mention the word `excellent'?'' Claude Sonnet~4.6 + AOI~full, the run reported in Table~\ref{tab:main}, passed in 3 steps.)
-The testimonial carousel rotates every few seconds, so no single screenshot can show more than one of the five reviews.
-\emph{Top:} screen states observed across the three agent steps (frames from the run recording, recorder status bar cropped).
-\emph{Bottom:} the visual narrations the CU model generated at each step, quoted verbatim from the evaluation log.
-The narrations persist as text in the trajectory, letting the agent accumulate evidence across carousel states and answer ``2'' at step~3.}
-\label{fig:realkf}
-\end{figure*}
 
 \subsection{Evaluation Protocol}
 
@@ -1190,8 +1191,8 @@ observation gains from model-side gains.
 \section*{Acknowledgements}
 % ════════════════════════════════════════════════════════════
 
-This paper was produced using a voice-directed \emph{whisper coding} workflow~\citep{pineai2025whispercoding}, in which the author specifies and reviews the work by voice while AI agents carry out the coding and experiments. AI tools including Pine Copilot and Claude Code with Claude Opus 4.8 were used during this research.
-We thank BSQL Networking for hosting the NVIDIA RTX PRO 6000 Blackwell Workstation Edition GPU.
+This paper was produced using Pine Copilot's voice-directed \emph{whisper coding} workflow~\citep{pineai2025whispercoding}, in which the author specifies and reviews the work by voice while a coding agent---Claude Code with Claude Opus 4.8---carries out the coding and experiments.
+We thank BSQL Networking for hosting the NVIDIA RTX PRO 6000 GPU.
 
 % ════════════════════════════════════════════════════════════
 \bibliographystyle{plainnat}
