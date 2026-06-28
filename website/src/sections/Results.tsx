@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import {
   Bar, BarChart, CartesianGrid, Cell, LabelList, Legend, Line, LineChart,
-  ResponsiveContainer, Tooltip, XAxis, YAxis,
+  ReferenceLine, ResponsiveContainer, Tooltip, XAxis, YAxis,
 } from 'recharts'
 import { COLORS, type ResultsData } from '../data'
 
@@ -12,6 +12,20 @@ const CAT_SHORT: Record<string, string> = {
   D_carousel: 'D · Carousel', E_dashboard: 'E · Dashboard', F_transient: 'F · Transient',
   G_phone: 'G · Phone', H_interview: 'H · Interview', I_collab: 'I · Collab', J_game: 'J · Game',
 }
+
+// Compact axis labels for the 9-model main chart.
+const MODEL_SHORT: Record<string, string> = {
+  'Claude Sonnet 4.6': 'Claude 4.6',
+  'GPT-5.4': 'GPT-5.4',
+  'Gemini 2.5 Flash': 'Gemini 2.5',
+  'Gemini 3 Flash': 'Gemini 3',
+  'Grok-4': 'Grok-4',
+  'Grok-4.3': 'Grok-4.3',
+  'Grok-4-fast-reasoning': 'Grok-4-fast',
+  'EvoCUA-32B': 'EvoCUA-32B',
+  'Fara-7B': 'Fara-7B',
+}
+const short = (m: string) => MODEL_SHORT[m] ?? m
 
 function heatColor(rate: number) {
   // 0 → light red, 50 → pale yellow, 100 → green
@@ -35,11 +49,15 @@ export function Results({ data }: { data: ResultsData | null }) {
   if (!data) return null
 
   const mainChart = data.main_results.map((m) => ({
-    model: m.model.replace(' Flash', ' Flash'),
+    model: short(m.model) + (m.outlier ? ' ★' : ''),
+    group: m.group,
+    outlier: m.outlier,
     Standard: m.standard.rate,
     'AOI full': m.aoi_full.rate,
     delta: m.delta,
   }))
+  const h = data.headline
+  const nClosed = data.main_results.filter((m) => m.group === 'closed').length
 
   const selModel = data.main_results[catModel]
   const ablChart = data.ablation
@@ -68,10 +86,11 @@ export function Results({ data }: { data: ResultsData | null }) {
 
   const promptChart = data.prompt_decomposition.map((p) => ({ name: p.label, rate: p.rate, mode: p.mode }))
   const narrChart = data.narration_ablation.map((p) => ({ name: p.label, rate: p.rate, mode: p.mode }))
-  const newerChart = [...data.newer_models, ...data.oss_replication].map((m) => ({
-    model: m.model.replace('Qwen3-VL-30B-A3B', 'Qwen3 30B').replace('Qwen3-VL-235B-A22B', 'Qwen3 235B'),
+  const ossChart = data.oss_replication.map((m) => ({
+    model: m.model.replace('Qwen3-VL-30B-A3B', 'Qwen3-VL 30B').replace('Qwen3-VL-235B-A22B', 'Qwen3-VL 235B'),
     Standard: m.standard.rate,
     'AOI full': m.aoi_full.rate,
+    delta: m.delta,
   }))
 
   const kfContext = (data.keyframe_context ?? []).map((k) => ({
@@ -93,29 +112,41 @@ export function Results({ data }: { data: ResultsData | null }) {
         </p>
 
         <div className="card card-pad" style={{ marginBottom: 22 }}>
-          <h3>Six CU models, standard loop vs. AOI full — zero retraining</h3>
-          <div className="sub">Task success rate (%) on the 100 dynamic tasks · paired McNemar p &lt; 10⁻³ for every model</div>
-          <ResponsiveContainer width="100%" height={340}>
-            <BarChart data={mainChart} margin={{ top: 24, right: 8, left: -16, bottom: 0 }} barGap={4}>
+          <h3>{h.n_models} CU models, standard loop vs. AOI full — zero retraining</h3>
+          <div className="sub">
+            Task success rate (%) on the 100 dynamic tasks · {h.n_closed} closed-source + {h.n_open} open-source ·
+            paired McNemar p &lt; 10⁻³ for every model except the two starred
+          </div>
+          <ResponsiveContainer width="100%" height={360}>
+            <BarChart data={mainChart} margin={{ top: 24, right: 8, left: -16, bottom: 18 }} barGap={3}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" vertical={false} />
-              <XAxis dataKey="model" tick={{ fontSize: 13, fill: '#4c566a' }} tickLine={false} axisLine={{ stroke: '#d6dbe6' }} />
+              <XAxis dataKey="model" interval={0} angle={-22} textAnchor="end" height={56}
+                tick={{ fontSize: 12, fill: '#4c566a' }} tickLine={false} axisLine={{ stroke: '#d6dbe6' }} />
               <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
               <Tooltip cursor={{ fill: 'rgba(94,129,172,0.07)' }} formatter={(v) => [`${v}%`]} />
+              {/* divider between closed-source and open-source models */}
+              <ReferenceLine x={mainChart[nClosed]?.model} stroke="#c2c9d6" strokeDasharray="4 4"
+                label={{ value: 'open-source →', position: 'top', fontSize: 10.5, fill: '#9aa3b5' }} />
               <Legend wrapperStyle={{ fontSize: 13 }} />
               <Bar dataKey="Standard" fill={COLORS.standard} radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="Standard" position="top" style={{ fontSize: 11.5, fill: '#96434b', fontWeight: 700 }} formatter={(v) => `${v}`} />
+                <LabelList dataKey="Standard" position="top" style={{ fontSize: 11, fill: '#96434b', fontWeight: 700 }} formatter={(v) => `${v}`} />
               </Bar>
               <Bar dataKey="AOI full" fill={COLORS.aoi} radius={[4, 4, 0, 0]}>
-                <LabelList dataKey="AOI full" position="top" style={{ fontSize: 11.5, fill: '#3f5b80', fontWeight: 700 }} formatter={(v) => `${v}`} />
+                {mainChart.map((d) => (
+                  <Cell key={d.model} fill={d.outlier ? '#9aa8c4' : COLORS.aoi} />
+                ))}
+                <LabelList dataKey="AOI full" position="top"
+                  style={{ fontSize: 11, fill: '#3f5b80', fontWeight: 700 }} formatter={(v) => `${v}`} />
               </Bar>
             </BarChart>
           </ResponsiveContainer>
           <p className="note">
-            Gains range from +{Math.min(...data.main_results.map((m) => m.delta))} pp (smallest) to
-            +{Math.max(...data.main_results.map((m) => m.delta))} pp (largest). Claude Sonnet 4.6 seed 1
-            reaches {data.main_results[0]?.aoi_full.rate}% (3-seed mean{' '}
+            Across the {h.n_models} models, AOI lifts task success by <b>+{h.delta_min} to +{h.delta_max} pp</b> with
+            zero retraining — {h.best_abs_model} reaches the highest absolute {h.best_abs_rate}% (3-seed mean{' '}
             {(data.seeds.reduce((s, x) => s + x.rate, 0) / data.seeds.length).toFixed(1)}%:
-            {' '}{data.seeds.map((s) => `${s.rate}%`).join(', ')}).
+            {' '}{data.seeds.map((s) => `${s.rate}%`).join(', ')}). The lone exception is <b>Gemini 3 Flash</b> (★, +9 pp,
+            p = 0.18): its default bundle is dragged down by keyframe-token dilution, so components must be selected
+            per model — see the sign-flip analysis below.
           </p>
         </div>
 
@@ -216,47 +247,54 @@ export function Results({ data }: { data: ResultsData | null }) {
           </div>
         </div>
 
-        <div className="grid-2" style={{ marginBottom: 22 }}>
-          <div className="card card-pad">
-            <h3>AOI vs. production streaming systems</h3>
-            <div className="sub">12-task audio-focused subset, all systems drive the same browser</div>
-            <ResponsiveContainer width="100%" height={210}>
-              <BarChart data={data.streaming} layout="vertical" margin={{ top: 0, right: 60, left: 10, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" horizontal={false} />
-                <XAxis type="number" domain={[0, 12]} tickCount={7} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
-                <YAxis type="category" dataKey="system" width={190} tick={{ fontSize: 12.5, fill: '#4c566a' }} tickLine={false} axisLine={false} />
-                <Tooltip cursor={{ fill: 'rgba(94,129,172,0.07)' }} formatter={(v, _n, p) => [`${v}/${(p.payload as { total: number }).total} tasks`, 'passed']} />
-                <Bar dataKey="pass" radius={[0, 5, 5, 0]} barSize={26}>
-                  {data.streaming.map((s, i) => <Cell key={s.system} fill={i === 0 ? COLORS.aoi : COLORS.gray} />)}
-                  <LabelList dataKey="pass" position="right" style={{ fontSize: 12.5, fontWeight: 750, fill: '#1b2236' }} formatter={(v) => `${v}/12`} />
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-            <p className="note">
-              OpenAI Realtime and Gemini Live are native streaming multimodal APIs adapted to drive the same
-              browser; an adapter sanity check rules out infrastructural failure.
-            </p>
+        <div className="card card-pad" style={{ marginBottom: 22 }}>
+          <h3>AOI vs. production streaming &amp; realtime systems</h3>
+          <div className="sub">
+            12-task spoken-content subset (3 each: podcast, meeting, phone, interview) · every system drives the
+            same browser · ▮ AOI&nbsp;blue = AOI scaffold present
           </div>
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={data.streaming} layout="vertical" margin={{ top: 0, right: 64, left: 10, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" horizontal={false} />
+              <XAxis type="number" domain={[0, 12]} tickCount={7} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="system" width={232} tick={{ fontSize: 12, fill: '#4c566a' }} tickLine={false} axisLine={false} />
+              <Tooltip cursor={{ fill: 'rgba(94,129,172,0.07)' }} formatter={(v, _n, p) => [`${v}/${(p.payload as { total: number }).total} tasks`, 'passed']} />
+              <Bar dataKey="pass" radius={[0, 5, 5, 0]} barSize={24}>
+                {data.streaming.map((s) => (
+                  <Cell key={s.system}
+                    fill={s.system.includes('AOI full') ? COLORS.aoi : s.highlight ? COLORS.sage : COLORS.gray} />
+                ))}
+                <LabelList dataKey="pass" position="right" style={{ fontSize: 12.5, fontWeight: 750, fill: '#1b2236' }} formatter={(v) => `${v}/12`} />
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+          <p className="note">
+            The decisive contrast: <b>gpt-realtime-2</b> — OpenAI's current GA realtime model — solves just
+            2/12 when it drives the browser itself, but <b>11/12</b> once the AOI scaffold handles action
+            grounding (and AOI full reaches <b>12/12</b>). The deficit is <em>action grounding, not perception</em>.
+            Grok Voice (no vision) tops out at 1/12, and the older Gemini Live / OpenAI Realtime (gpt-4o) adapters
+            manage 0–3/12; an adapter sanity check rules out infrastructural failure.
+          </p>
+        </div>
 
-          <div className="card card-pad">
-            <h3>CLIP threshold (θ) sensitivity</h3>
-            <div className="sub">40 visual tasks (categories C–F), Claude Sonnet 4.6</div>
-            <ResponsiveContainer width="100%" height={210}>
-              <LineChart data={thetaChart} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" />
-                <XAxis dataKey="theta" tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} />
-                <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
-                <Tooltip formatter={(v) => [`${v}`]} labelFormatter={(l) => `θ = ${l}`} />
-                <Legend wrapperStyle={{ fontSize: 12.5 }} />
-                <Line type="monotone" dataKey="Success rate (%)" stroke={COLORS.aoi} strokeWidth={2.5} dot={{ r: 4 }} />
-                <Line type="monotone" dataKey="Avg keyframes / step" stroke={COLORS.visual} strokeWidth={2} dot={{ r: 3 }} />
-              </LineChart>
-            </ResponsiveContainer>
-            <p className="note">
-              Success is flat across an order of magnitude of θ while keyframe volume drops — the capture
-              mechanism, not precise tuning, carries the gain.
-            </p>
-          </div>
+        <div className="card card-pad" style={{ marginBottom: 22 }}>
+          <h3>CLIP threshold (θ) sensitivity</h3>
+          <div className="sub">40 visual tasks (categories C–F), Claude Sonnet 4.6 · deployed default θ = 0.04</div>
+          <ResponsiveContainer width="100%" height={230}>
+            <LineChart data={thetaChart} margin={{ top: 8, right: 12, left: -16, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" />
+              <XAxis dataKey="theta" tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
+              <Tooltip formatter={(v) => [`${v}`]} labelFormatter={(l) => `θ = ${l}`} />
+              <Legend wrapperStyle={{ fontSize: 12.5 }} />
+              <Line type="monotone" dataKey="Success rate (%)" stroke={COLORS.aoi} strokeWidth={2.5} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="Avg keyframes / step" stroke={COLORS.visual} strokeWidth={2} dot={{ r: 3 }} />
+            </LineChart>
+          </ResponsiveContainer>
+          <p className="note">
+            Success is flat across an order of magnitude of θ while keyframe volume drops — the capture
+            mechanism, not precise tuning, carries the gain.
+          </p>
         </div>
 
         <div className="grid-2" style={{ marginBottom: 22 }}>
@@ -368,27 +406,27 @@ export function Results({ data }: { data: ResultsData | null }) {
           </div>
 
           <div className="card card-pad">
-            <h3>Later-released models</h3>
-            <div className="sub">Sidebar evaluations + Qwen3-VL open-source replication, standard vs. AOI full</div>
+            <h3>Open-source replication — Qwen3-VL</h3>
+            <div className="sub">Independent re-run via OpenRouter (DeepInfra), 100 tasks, standard vs. AOI full</div>
             <ResponsiveContainer width="100%" height={210}>
-              <BarChart data={newerChart} margin={{ top: 20, right: 8, left: -16, bottom: 0 }} barGap={3}>
+              <BarChart data={ossChart} margin={{ top: 20, right: 8, left: -16, bottom: 0 }} barGap={3}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" vertical={false} />
-                <XAxis dataKey="model" tick={{ fontSize: 11.5, fill: '#4c566a' }} tickLine={false} axisLine={{ stroke: '#d6dbe6' }} interval={0} />
+                <XAxis dataKey="model" tick={{ fontSize: 12, fill: '#4c566a' }} tickLine={false} axisLine={{ stroke: '#d6dbe6' }} interval={0} />
                 <YAxis domain={[0, 100]} tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
                 <Tooltip cursor={{ fill: 'rgba(94,129,172,0.07)' }} formatter={(v) => [`${v}%`]} />
                 <Legend wrapperStyle={{ fontSize: 12.5 }} />
                 <Bar dataKey="Standard" fill={COLORS.standard} radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="Standard" position="top" style={{ fontSize: 11, fill: '#96434b', fontWeight: 700 }} formatter={(v) => `${v}`} />
+                  <LabelList dataKey="Standard" position="top" style={{ fontSize: 11.5, fill: '#96434b', fontWeight: 700 }} formatter={(v) => `${v}`} />
                 </Bar>
                 <Bar dataKey="AOI full" fill={COLORS.aoi} radius={[4, 4, 0, 0]}>
-                  <LabelList dataKey="AOI full" position="top" style={{ fontSize: 11, fill: '#3f5b80', fontWeight: 700 }} formatter={(v) => `${v}`} />
+                  <LabelList dataKey="AOI full" position="top" style={{ fontSize: 11.5, fill: '#3f5b80', fontWeight: 700 }} formatter={(v) => `${v}`} />
                 </Bar>
               </BarChart>
             </ResponsiveContainer>
             <p className="note">
-              Qwen3-VL gains land inside the main-table band (+24 / +42 pp); on Gemini 3 Flash the default
-              bundle's residual shrinks to +9 pp (p = 0.18) — models converge unevenly along the observation
-              axis, and unevenly per component.
+              A fully independent open-source replication lands inside the main-table band: Qwen3-VL-235B-A22B
+              +{ossChart[1]?.delta} pp and Qwen3-VL-30B-A3B +{ossChart[0]?.delta} pp. The effect is not a quirk of
+              one model family or one inference stack.
             </p>
           </div>
         </div>

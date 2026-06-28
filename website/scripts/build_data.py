@@ -74,20 +74,29 @@ def summarize(name, label, model, mode, group=None):
     }
 
 
-# ── 1. Main results: six models, standard vs aoi_full (v9 full 100) ──
+# ── 1. Main results: nine models (Table 1, unified), standard vs aoi_full ──
+# Closed-source first, then open-source, matching the paper's Table 1 ordering.
+# `outlier=True` marks Gemini 3 Flash: keyframe-token dilution regresses it, so it
+# is excluded from the headline "+17 to +48 pp" band (paper abstract).
 MAIN = [
-    ("Claude Sonnet 4.6", "v9_full_100_claude_standard.json", "v9_full_100_claude_aoi.json"),
-    ("GPT-5.4", "v9_full_100_gpt54_standard.json", "v9_full_100_gpt54_aoi.json"),
-    ("Gemini 2.5 Flash", "v9_full_100_gemini25flash_standard.json", "v9_full_100_gemini25flash_aoi.json"),
-    ("Grok-4", "v10_grok4_standard.json", "v10_grok4_aoi_full.json"),
-    ("EvoCUA-32B", "v9_full_100_evocua32b_standard.json", "v9_full_100_evocua32b_aoi.json"),
-    ("Fara-7B", "v9_full_100_fara7b_standard.json", "v9_full_100_fara7b_aoi.json"),
+    # model, standard_file, aoi_file, group, outlier
+    ("Claude Sonnet 4.6", "v9_full_100_claude_standard.json", "v9_full_100_claude_aoi.json", "closed", False),
+    ("GPT-5.4", "v9_full_100_gpt54_standard.json", "v9_full_100_gpt54_aoi.json", "closed", False),
+    ("Gemini 2.5 Flash", "v9_full_100_gemini25flash_standard.json", "v9_full_100_gemini25flash_aoi.json", "closed", False),
+    ("Gemini 3 Flash", "v10c_gemini3flash_standard.json", "v10c_gemini3flash_aoi_full.json", "closed", True),
+    ("Grok-4", "v10_grok4_standard.json", "v10_grok4_aoi_full.json", "closed", False),
+    ("Grok-4.3", "v10c_grok43_standard.json", "v10c_grok43_aoi_full.json", "closed", False),
+    ("Grok-4-fast-reasoning", "v10c_grok4fast_standard.json", "v10c_grok4fast_aoi_full.json", "closed", False),
+    ("EvoCUA-32B", "v9_full_100_evocua32b_standard.json", "v9_full_100_evocua32b_aoi.json", "open", False),
+    ("Fara-7B", "v9_full_100_fara7b_standard.json", "v9_full_100_fara7b_aoi.json", "open", False),
 ]
 main_results = []
-for model, std_f, aoi_f in MAIN:
+for model, std_f, aoi_f, group, outlier in MAIN:
     std, aoi = load(std_f), load(aoi_f)
     main_results.append({
         "model": model,
+        "group": group,
+        "outlier": outlier,
         "standard": rate(std),
         "aoi_full": rate(aoi),
         "delta": round(rate(aoi)["rate"] - rate(std)["rate"], 1),
@@ -100,6 +109,18 @@ for model, std_f, aoi_f in MAIN:
             "aoi_full": per_difficulty(aoi),
         },
     })
+
+# Headline band: min/max delta over the non-outlier models (paper: "+17 to +48 pp").
+_band = [m["delta"] for m in main_results if not m["outlier"]]
+headline = {
+    "delta_min": round(min(_band), 1),
+    "delta_max": round(max(_band), 1),
+    "n_models": len(main_results),
+    "n_closed": sum(1 for m in main_results if m["group"] == "closed"),
+    "n_open": sum(1 for m in main_results if m["group"] == "open"),
+    "best_abs_model": max(main_results, key=lambda m: m["aoi_full"]["rate"])["model"],
+    "best_abs_rate": max(m["aoi_full"]["rate"] for m in main_results),
+}
 
 # ── 2. Ablation tiers (Claude Sonnet 4.6, v9 full 100) ──
 ABLATION = [
@@ -134,17 +155,28 @@ for f in sorted((RES / "theta_sweep").glob("theta_0*.json")):
         avg_kf = round(sum(n_kf) / len(n_kf), 2)
     theta_sweep.append({"theta": theta, **r, "avg_keyframes_per_step": avg_kf})
 
-# ── 5. Streaming baselines (12-task audio subset) ──
-subset_openai = load("v10_subset_openai_realtime_v2.json")
-subset_gemini = load("v10_subset_gemini_live.json")
-subset_ids = [r["task_id"] for r in subset_openai]
+# ── 5. Streaming baselines (12-task audio subset, paper Table 5) ──
+# Native-streaming / realtime systems vs. AOI on the 12 spoken-content tasks
+# (3 each from Podcast, Meeting, Phone, Interview). The decisive contrast is
+# gpt-realtime-2 alone (2/12) vs. the same model behind the AOI scaffold (11/12):
+# the deficit is action-grounding, not perception.
+subset_ids = [r["task_id"] for r in load("v10_subset_gemini_live.json")]
 claude_aoi = load("v9_full_100_claude_aoi.json")
 aoi_on_subset = [r for r in claude_aoi if r["task_id"] in subset_ids]
-streaming = [
-    {"system": "AOI full (Claude Sonnet 4.6)", **rate(aoi_on_subset)},
-    {"system": "OpenAI Realtime", **rate(subset_openai)},
-    {"system": "Gemini Live", **rate(subset_gemini)},
+STREAMING = [
+    # system label, file (None = AOI reference), vision?, highlight?
+    ("Gemini Live (2.5)", "v10_subset_gemini_live.json", False, False),
+    ("OpenAI Realtime (gpt-4o)", "v10_subset_openai_realtime.json", True, False),
+    ("Grok Voice — audio only", "v10_subset_grok_voice_noscaffold.json", False, False),
+    ("Grok Voice — + AOI scaffold", "v10_subset_grok_voice.json", False, False),
+    ("gpt-realtime-2 — alone", "v10_subset_openai_realtime_ws_noscaffold.json", True, False),
+    ("gpt-realtime-2 — + AOI scaffold", "v10_subset_openai_realtime_ws.json", True, True),
+    ("AOI full (Claude Sonnet 4.6)", None, True, True),
 ]
+streaming = []
+for system, fname, vision, highlight in STREAMING:
+    recs = aoi_on_subset if fname is None else load(fname)
+    streaming.append({"system": system, "vision": vision, "highlight": highlight, **rate(recs)})
 
 # ── 6. Newer models / Gemini-3 four-way decomposition ──
 fourway = [
@@ -233,6 +265,7 @@ for model, full_f, audio_f in KF_CONTEXT:
 
 results = {
     "main_results": main_results,
+    "headline": headline,
     "ablation": ablation,
     "oss_selection": oss_selection,
     "theta_sweep": theta_sweep,

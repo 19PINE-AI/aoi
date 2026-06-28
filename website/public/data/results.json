@@ -2,6 +2,8 @@
  "main_results": [
   {
    "model": "Claude Sonnet 4.6",
+   "group": "closed",
+   "outlier": false,
    "standard": {
     "pass": 38,
     "total": 100,
@@ -158,6 +160,8 @@
   },
   {
    "model": "GPT-5.4",
+   "group": "closed",
+   "outlier": false,
    "standard": {
     "pass": 37,
     "total": 100,
@@ -314,6 +318,8 @@
   },
   {
    "model": "Gemini 2.5 Flash",
+   "group": "closed",
+   "outlier": false,
    "standard": {
     "pass": 21,
     "total": 100,
@@ -469,7 +475,167 @@
    }
   },
   {
+   "model": "Gemini 3 Flash",
+   "group": "closed",
+   "outlier": true,
+   "standard": {
+    "pass": 36,
+    "total": 100,
+    "rate": 36.0
+   },
+   "aoi_full": {
+    "pass": 45,
+    "total": 100,
+    "rate": 45.0
+   },
+   "delta": 9.0,
+   "per_category": {
+    "standard": {
+     "A_podcast": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "B_meeting": {
+      "pass": 2,
+      "total": 10,
+      "rate": 20.0
+     },
+     "C_video": {
+      "pass": 4,
+      "total": 10,
+      "rate": 40.0
+     },
+     "D_carousel": {
+      "pass": 4,
+      "total": 10,
+      "rate": 40.0
+     },
+     "E_dashboard": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "F_transient": {
+      "pass": 3,
+      "total": 10,
+      "rate": 30.0
+     },
+     "G_phone": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "H_interview": {
+      "pass": 7,
+      "total": 10,
+      "rate": 70.0
+     },
+     "I_collab": {
+      "pass": 5,
+      "total": 10,
+      "rate": 50.0
+     },
+     "J_game": {
+      "pass": 2,
+      "total": 10,
+      "rate": 20.0
+     }
+    },
+    "aoi_full": {
+     "A_podcast": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "B_meeting": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "C_video": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "D_carousel": {
+      "pass": 5,
+      "total": 10,
+      "rate": 50.0
+     },
+     "E_dashboard": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "F_transient": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "G_phone": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "H_interview": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "I_collab": {
+      "pass": 5,
+      "total": 10,
+      "rate": 50.0
+     },
+     "J_game": {
+      "pass": 2,
+      "total": 10,
+      "rate": 20.0
+     }
+    }
+   },
+   "per_difficulty": {
+    "standard": {
+     "easy": {
+      "pass": 13,
+      "total": 30,
+      "rate": 43.3
+     },
+     "medium": {
+      "pass": 17,
+      "total": 40,
+      "rate": 42.5
+     },
+     "hard": {
+      "pass": 6,
+      "total": 30,
+      "rate": 20.0
+     }
+    },
+    "aoi_full": {
+     "easy": {
+      "pass": 17,
+      "total": 30,
+      "rate": 56.7
+     },
+     "medium": {
+      "pass": 20,
+      "total": 40,
+      "rate": 50.0
+     },
+     "hard": {
+      "pass": 8,
+      "total": 30,
+      "rate": 26.7
+     }
+    }
+   }
+  },
+  {
    "model": "Grok-4",
+   "group": "closed",
+   "outlier": false,
    "standard": {
     "pass": 4,
     "total": 100,
@@ -625,7 +791,325 @@
    }
   },
   {
+   "model": "Grok-4.3",
+   "group": "closed",
+   "outlier": false,
+   "standard": {
+    "pass": 25,
+    "total": 100,
+    "rate": 25.0
+   },
+   "aoi_full": {
+    "pass": 65,
+    "total": 100,
+    "rate": 65.0
+   },
+   "delta": 40.0,
+   "per_category": {
+    "standard": {
+     "A_podcast": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "B_meeting": {
+      "pass": 2,
+      "total": 10,
+      "rate": 20.0
+     },
+     "C_video": {
+      "pass": 5,
+      "total": 10,
+      "rate": 50.0
+     },
+     "D_carousel": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "E_dashboard": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "F_transient": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "G_phone": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "H_interview": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "I_collab": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "J_game": {
+      "pass": 3,
+      "total": 10,
+      "rate": 30.0
+     }
+    },
+    "aoi_full": {
+     "A_podcast": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "B_meeting": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "C_video": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "D_carousel": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "E_dashboard": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "F_transient": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "G_phone": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "H_interview": {
+      "pass": 7,
+      "total": 10,
+      "rate": 70.0
+     },
+     "I_collab": {
+      "pass": 7,
+      "total": 10,
+      "rate": 70.0
+     },
+     "J_game": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     }
+    }
+   },
+   "per_difficulty": {
+    "standard": {
+     "easy": {
+      "pass": 10,
+      "total": 30,
+      "rate": 33.3
+     },
+     "medium": {
+      "pass": 12,
+      "total": 40,
+      "rate": 30.0
+     },
+     "hard": {
+      "pass": 3,
+      "total": 30,
+      "rate": 10.0
+     }
+    },
+    "aoi_full": {
+     "easy": {
+      "pass": 22,
+      "total": 30,
+      "rate": 73.3
+     },
+     "medium": {
+      "pass": 30,
+      "total": 40,
+      "rate": 75.0
+     },
+     "hard": {
+      "pass": 13,
+      "total": 30,
+      "rate": 43.3
+     }
+    }
+   }
+  },
+  {
+   "model": "Grok-4-fast-reasoning",
+   "group": "closed",
+   "outlier": false,
+   "standard": {
+    "pass": 19,
+    "total": 100,
+    "rate": 19.0
+   },
+   "aoi_full": {
+    "pass": 47,
+    "total": 100,
+    "rate": 47.0
+   },
+   "delta": 28.0,
+   "per_category": {
+    "standard": {
+     "A_podcast": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "B_meeting": {
+      "pass": 2,
+      "total": 10,
+      "rate": 20.0
+     },
+     "C_video": {
+      "pass": 5,
+      "total": 10,
+      "rate": 50.0
+     },
+     "D_carousel": {
+      "pass": 3,
+      "total": 10,
+      "rate": 30.0
+     },
+     "E_dashboard": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "F_transient": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "G_phone": {
+      "pass": 0,
+      "total": 10,
+      "rate": 0.0
+     },
+     "H_interview": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "I_collab": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     },
+     "J_game": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     }
+    },
+    "aoi_full": {
+     "A_podcast": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "B_meeting": {
+      "pass": 8,
+      "total": 10,
+      "rate": 80.0
+     },
+     "C_video": {
+      "pass": 4,
+      "total": 10,
+      "rate": 40.0
+     },
+     "D_carousel": {
+      "pass": 3,
+      "total": 10,
+      "rate": 30.0
+     },
+     "E_dashboard": {
+      "pass": 6,
+      "total": 10,
+      "rate": 60.0
+     },
+     "F_transient": {
+      "pass": 3,
+      "total": 10,
+      "rate": 30.0
+     },
+     "G_phone": {
+      "pass": 5,
+      "total": 10,
+      "rate": 50.0
+     },
+     "H_interview": {
+      "pass": 4,
+      "total": 10,
+      "rate": 40.0
+     },
+     "I_collab": {
+      "pass": 7,
+      "total": 10,
+      "rate": 70.0
+     },
+     "J_game": {
+      "pass": 1,
+      "total": 10,
+      "rate": 10.0
+     }
+    }
+   },
+   "per_difficulty": {
+    "standard": {
+     "easy": {
+      "pass": 8,
+      "total": 30,
+      "rate": 26.7
+     },
+     "medium": {
+      "pass": 9,
+      "total": 40,
+      "rate": 22.5
+     },
+     "hard": {
+      "pass": 2,
+      "total": 30,
+      "rate": 6.7
+     }
+    },
+    "aoi_full": {
+     "easy": {
+      "pass": 16,
+      "total": 30,
+      "rate": 53.3
+     },
+     "medium": {
+      "pass": 24,
+      "total": 40,
+      "rate": 60.0
+     },
+     "hard": {
+      "pass": 7,
+      "total": 30,
+      "rate": 23.3
+     }
+    }
+   }
+  },
+  {
    "model": "EvoCUA-32B",
+   "group": "open",
+   "outlier": false,
    "standard": {
     "pass": 18,
     "total": 100,
@@ -782,6 +1266,8 @@
   },
   {
    "model": "Fara-7B",
+   "group": "open",
+   "outlier": false,
    "standard": {
     "pass": 17,
     "total": 100,
@@ -937,6 +1423,15 @@
    }
   }
  ],
+ "headline": {
+  "delta_min": 17.0,
+  "delta_max": 48.0,
+  "n_models": 9,
+  "n_closed": 7,
+  "n_open": 2,
+  "best_abs_model": "Claude Sonnet 4.6",
+  "best_abs_rate": 82.0
+ },
  "ablation": [
   {
    "file": "v9_full_100_claude_standard.json",
@@ -1781,22 +2276,60 @@
  ],
  "streaming": [
   {
+   "system": "Gemini Live (2.5)",
+   "vision": false,
+   "highlight": false,
+   "pass": 0,
+   "total": 12,
+   "rate": 0.0
+  },
+  {
+   "system": "OpenAI Realtime (gpt-4o)",
+   "vision": true,
+   "highlight": false,
+   "pass": 3,
+   "total": 12,
+   "rate": 25.0
+  },
+  {
+   "system": "Grok Voice \u2014 audio only",
+   "vision": false,
+   "highlight": false,
+   "pass": 1,
+   "total": 12,
+   "rate": 8.3
+  },
+  {
+   "system": "Grok Voice \u2014 + AOI scaffold",
+   "vision": false,
+   "highlight": false,
+   "pass": 1,
+   "total": 12,
+   "rate": 8.3
+  },
+  {
+   "system": "gpt-realtime-2 \u2014 alone",
+   "vision": true,
+   "highlight": false,
+   "pass": 2,
+   "total": 12,
+   "rate": 16.7
+  },
+  {
+   "system": "gpt-realtime-2 \u2014 + AOI scaffold",
+   "vision": true,
+   "highlight": true,
+   "pass": 11,
+   "total": 12,
+   "rate": 91.7
+  },
+  {
    "system": "AOI full (Claude Sonnet 4.6)",
+   "vision": true,
+   "highlight": true,
    "pass": 12,
    "total": 12,
    "rate": 100.0
-  },
-  {
-   "system": "OpenAI Realtime",
-   "pass": 0,
-   "total": 12,
-   "rate": 0.0
-  },
-  {
-   "system": "Gemini Live",
-   "pass": 0,
-   "total": 12,
-   "rate": 0.0
   }
  ],
  "gemini3_fourway": [

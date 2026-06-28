@@ -7,7 +7,7 @@ retraining**, plus **DynaCU-Bench**, a benchmark of dynamic browser tasks that
 screenshot-only agents cannot solve.
 
 This repository accompanies the paper *"Agent-Computer Observation Interfaces Enable
-Dynamic Computer Use"* (Bojie Li, Pine AI). The source for the paper is in
+Dynamic Computer Use"* (Bojie Li, Pine AI; Noah Shi, University of Washington). The source for the paper is in
 [`paper/main.tex`](paper/main.tex).
 
 ## What problem does this solve?
@@ -29,8 +29,10 @@ nothing on static, silent content:
 3. **Visual narration** — the CU model itself narrates new visual content as a
    side-output each step; the text persists in the trajectory after images are pruned.
 
-Across eight CU models (closed and open-source, 7B to frontier scale) the AOI yields
-**+17 to +48 pp** on DynaCU-Bench with no retraining. See the paper for the full
+Across nine CU models (closed and open-source, 7B to frontier scale) the AOI yields
+**+17 to +48 pp** on DynaCU-Bench with no retraining — with Gemini 3 Flash the lone
+exception, where keyframe-token dilution means components must be selected per model.
+See the paper for the full
 results, ablations, per-model component analysis, and streaming-baseline comparison.
 
 ## Repository layout
@@ -99,7 +101,7 @@ rationale and [`paper/main.tex`](paper/main.tex) for methodology and results.
 ```bibtex
 @article{li2026aoi,
   title  = {Agent-Computer Observation Interfaces Enable Dynamic Computer Use},
-  author = {Li, Bojie},
+  author = {Li, Bojie and Shi, Noah},
   year   = {2026}
 }
 ```

@@ -83,8 +83,12 @@ body {
   font-size: clamp(32px, 3.8vw, 46px);
   line-height: 1.12; letter-spacing: -0.015em; font-weight: 700;
 }
+.hero .byline {
+  margin-top: 14px; font-size: 14.5px; font-weight: 600; color: #d3dcec;
+}
+.hero .byline span { color: #8e9cba; font-weight: 500; }
 .hero .lede {
-  margin-top: 22px; max-width: 800px; font-size: 16.5px; line-height: 1.65; color: #b7c2d8;
+  margin-top: 18px; max-width: 800px; font-size: 16.5px; line-height: 1.65; color: #b7c2d8;
 }
 
 /* hero architecture figure */
