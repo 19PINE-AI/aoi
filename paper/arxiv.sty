@@ -77,9 +77,12 @@
     {\large\@author\par}%
     \ifx\@date\@empty\else\vskip 0.5em{\small\@date\par}\fi%
   \end{center}%
+  \@thanks%
   \vskip 0.7em%
   {\color{arxivrule}\hrule height 0.8pt}%
   \vskip 1.5em%
+  \global\let\@thanks\@empty%
+  \global\let\thanks\relax%
 }
 
 % --- Abstract: centred heading, narrower measure, ruled-off ------------------

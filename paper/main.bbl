@@ -1,4 +1,4 @@
-\begin{thebibliography}{42}
+\begin{thebibliography}{43}
 \providecommand{\natexlab}[1]{#1}
 \providecommand{\url}[1]{\texttt{#1}}
 \expandafter\ifx\csname urlstyle\endcsname\relax
@@ -105,6 +105,14 @@ Yiqiao Jin et~al.
 Joonsuk Park et~al.
 \newblock {MemGUI-Bench}: Benchmarking memory in {GUI} agents.
 \newblock \emph{arXiv preprint arXiv:2509.12233}, 2025.
+
+\bibitem[{Pine AI}(2025)]{pineai2025whispercoding}
+{Pine AI}.
+\newblock {Pine AI}: The most natural human-computer interface is your voice.
+\newblock Blog post, 2025.
+\newblock URL
+  \url{https://www.19pine.ai/blog/pine-ai-the-most-natural-human-computer-interface-is-your-voice}.
+\newblock Accessed 2026-06-28.
 
 \bibitem[Qian et~al.(2025)]{dispider}
 Rui Qian et~al.
