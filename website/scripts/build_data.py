@@ -263,9 +263,64 @@ for model, full_f, audio_f in KF_CONTEXT:
         "per_category_delta": per_cat_delta,
     })
 
+# ── 13. Per-step gate activity (Claude AOI full) ──
+# Overall stats are computed from the same run shown elsewhere; the per-family
+# visual/audio/both/idle split is the paper's Figure (fig:obsactivity), which
+# uses gate-activation logs for the fine attribution. The any-keyframe and
+# any-audio per-family totals of that figure equal this run's, by construction.
+_steps = [s for r in load("v9_full_100_claude_aoi.json") for s in r.get("steps", [])]
+_n = len(_steps)
+_has_kf = lambda s: (s.get("n_keyframes") or 0) > 0
+_has_au = lambda s: bool((s.get("audio_text") or "").strip())
+gate_activity = {
+    "total_steps": _n,
+    "kf_pct": round(100 * sum(1 for s in _steps if _has_kf(s)) / _n, 1),
+    "audio_pct": round(100 * sum(1 for s in _steps if _has_au(s)) / _n, 1),
+    "idle_pct": round(100 * sum(1 for s in _steps if not _has_kf(s) and not _has_au(s)) / _n, 1),
+    "total_keyframes": sum((s.get("n_keyframes") or 0) for s in _steps),
+    "kf_per_step": round(sum((s.get("n_keyframes") or 0) for s in _steps) / _n, 2),
+    "per_family": [
+        {"family": "Podcast",    "visual": 0.0,  "audio": 34.3, "both": 8.6,  "idle": 57.1},
+        {"family": "Meeting",    "visual": 23.5, "audio": 47.0, "both": 26.5, "idle": 3.0},
+        {"family": "Screencast", "visual": 25.6, "audio": 0.0,  "both": 2.6,  "idle": 71.8},
+        {"family": "Carousel",   "visual": 60.7, "audio": 0.0,  "both": 0.0,  "idle": 39.3},
+        {"family": "Dashboard",  "visual": 28.8, "audio": 0.0,  "both": 0.0,  "idle": 71.2},
+        {"family": "Transient",  "visual": 15.8, "audio": 0.0,  "both": 0.0,  "idle": 84.2},
+        {"family": "Phone",      "visual": 0.0,  "audio": 26.3, "both": 0.0,  "idle": 73.7},
+        {"family": "Interview",  "visual": 0.0,  "audio": 37.0, "both": 0.0,  "idle": 63.0},
+        {"family": "Collab",     "visual": 2.6,  "audio": 10.3, "both": 7.7,  "idle": 79.5},
+        {"family": "Games",      "visual": 36.4, "audio": 0.0,  "both": 0.0,  "idle": 63.6},
+    ],
+}
+
+# ── 14. DynaCU-Real-Local: real recordings + cross-engine ASR (Claude) ──
+# 12 tasks built from real asciinema screencasts and espeak audio (a different
+# TTS engine than the synthetic benchmark). Standard and AOI tie at 11/12.
+REAL_SUB = [("R_pod", "Podcast"), ("R_meet", "Meeting"), ("R_cast", "Screencast"), ("R_voice", "Voice")]
+SUB_ORDER = [name for _, name in REAL_SUB]
+def real_sub(tid):
+    return next((name for pre, name in REAL_SUB if tid.startswith(pre)), "Other")
+def real_row(recs, mode, label):
+    by = defaultdict(lambda: [0, 0])
+    for r in recs:
+        s = real_sub(r["task_id"]); by[s][1] += 1
+        if passed(r):
+            by[s][0] += 1
+    return {"mode": mode, "label": label, **rate(recs),
+            "per_sub": {s: {"pass": by[s][0], "total": by[s][1]} for s in SUB_ORDER}}
+realcontent = {
+    "sub_order": SUB_ORDER,
+    "modes": [
+        real_row(load("v10_realcontent_claude_standard.json"), "standard", "Standard"),
+        real_row(load("v10_realcontent_claude_aoi.json"), "aoi_full", "AOI full"),
+    ],
+}
+
 results = {
     "main_results": main_results,
     "headline": headline,
+    "gate_activity": gate_activity,
+    "realcontent": realcontent,
     "ablation": ablation,
     "oss_selection": oss_selection,
     "theta_sweep": theta_sweep,

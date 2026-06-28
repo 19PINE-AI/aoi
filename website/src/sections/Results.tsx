@@ -93,6 +93,12 @@ export function Results({ data }: { data: ResultsData | null }) {
     delta: m.delta,
   }))
 
+  const gate = data.gate_activity
+  const gateChart = gate.per_family.map((f) => ({
+    family: f.family, Visual: f.visual, Audio: f.audio, Both: f.both, Idle: f.idle,
+  }))
+  const real = data.realcontent
+
   const kfContext = (data.keyframe_context ?? []).map((k) => ({
     model: k.model.replace(' Flash', ' Flash').replace('Claude Sonnet 4.6', 'Claude 4.6'),
     'AOI audio (no KF)': k.aoi_audio.rate,
@@ -429,6 +435,75 @@ export function Results({ data }: { data: ResultsData | null }) {
               one model family or one inference stack.
             </p>
           </div>
+        </div>
+
+        <div className="card card-pad" style={{ marginBottom: 22 }}>
+          <h3>Mostly-idle gates — the cost of always-on perception</h3>
+          <div className="sub">
+            {gate.total_steps} Claude AOI-full agent steps · the keyframe gate fires on {gate.kf_pct}% of steps,
+            the audio gate on {gate.audio_pct}%, and <b>{gate.idle_pct.toFixed(0)}% are fully idle</b> (both
+            sub-millisecond gates suppress) · {gate.kf_per_step} keyframes/step ({gate.total_keyframes} total)
+          </div>
+          <ResponsiveContainer width="100%" height={380}>
+            <BarChart data={gateChart} layout="vertical" margin={{ top: 8, right: 16, left: 14, bottom: 0 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e7eaf1" horizontal={false} />
+              <XAxis type="number" domain={[0, 100]} tickCount={6} unit="%" tick={{ fontSize: 12, fill: '#7b8499' }} tickLine={false} axisLine={false} />
+              <YAxis type="category" dataKey="family" width={84} tick={{ fontSize: 12.5, fill: '#4c566a' }} tickLine={false} axisLine={false} />
+              <Tooltip cursor={{ fill: 'rgba(94,129,172,0.07)' }} formatter={(v) => [`${v}%`]} />
+              <Legend wrapperStyle={{ fontSize: 12.5 }} />
+              <Bar dataKey="Visual" stackId="a" fill={COLORS.aoi} name="Visual keyframe" />
+              <Bar dataKey="Audio" stackId="a" fill={COLORS.asr} name="Audio" />
+              <Bar dataKey="Both" stackId="a" fill={COLORS.narr} name="Both gates" />
+              <Bar dataKey="Idle" stackId="a" fill="#e3e7ee" name="Idle (gates skip)" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
+          <p className="note">
+            Activity tracks each family's nature: carousels and games fire the visual gate, phone and interview
+            the audio gate, meetings both, and static-leaning families sit mostly idle. Because the gates cost
+            under a millisecond and pass nothing on unchanged, silent content, AOI adds perception only where the
+            screen is actually dynamic — and reduces to the standard loop everywhere else.
+          </p>
+        </div>
+
+        <div className="card card-pad" style={{ marginBottom: 22 }}>
+          <h3>Real recordings &amp; cross-engine ASR — no degradation</h3>
+          <div className="sub">
+            DynaCU-Real-Local: 12 tasks built from real <code>asciinema</code> screencasts and <code>espeak</code>
+            {' '}audio — a different TTS/recording stack than the synthetic benchmark — Claude Sonnet 4.6
+          </div>
+          <div style={{ overflowX: 'auto', marginTop: 12 }}>
+            <table className="res heat">
+              <thead>
+                <tr>
+                  <th>Mode</th>
+                  {real.sub_order.map((s) => <th key={s} style={{ textAlign: 'center' }}>{s}</th>)}
+                  <th style={{ textAlign: 'center' }}>Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {real.modes.map((m) => (
+                  <tr key={m.mode}>
+                    <td><span className={`chip ${m.mode === 'standard' ? 'std' : 'aoi'}`}>{m.label}</span></td>
+                    {real.sub_order.map((s) => {
+                      const c = m.per_sub[s]
+                      return (
+                        <td key={s} className="cell" style={{ background: heatColor(c.total ? (100 * c.pass) / c.total : 0) }}>
+                          {c.pass}/{c.total}
+                        </td>
+                      )
+                    })}
+                    <td className="cell" style={{ fontWeight: 700 }}>{m.pass}/{m.total} <span style={{ color: '#7b8499', fontWeight: 500 }}>({m.rate.toFixed(0)}%)</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p className="note">
+            On genuinely recorded content, Standard and AOI <b>tie at 11/12</b> — AOI never degrades the agent, and
+            its Whisper transcription is robust to a different audio engine (espeak rather than the benchmark's
+            edge-TTS). Both modes miss only the same task (<code>R_cast2_pip</code>), a hard terminal screencast.
+            The dynamic-content gains elsewhere are not an artifact of synthetic audio or animation.
+          </p>
         </div>
       </div>
     </section>

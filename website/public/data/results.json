@@ -1432,6 +1432,146 @@
   "best_abs_model": "Claude Sonnet 4.6",
   "best_abs_rate": 82.0
  },
+ "gate_activity": {
+  "total_steps": 481,
+  "kf_pct": 28.3,
+  "audio_pct": 14.1,
+  "idle_pct": 59.9,
+  "total_keyframes": 211,
+  "kf_per_step": 0.44,
+  "per_family": [
+   {
+    "family": "Podcast",
+    "visual": 0.0,
+    "audio": 34.3,
+    "both": 8.6,
+    "idle": 57.1
+   },
+   {
+    "family": "Meeting",
+    "visual": 23.5,
+    "audio": 47.0,
+    "both": 26.5,
+    "idle": 3.0
+   },
+   {
+    "family": "Screencast",
+    "visual": 25.6,
+    "audio": 0.0,
+    "both": 2.6,
+    "idle": 71.8
+   },
+   {
+    "family": "Carousel",
+    "visual": 60.7,
+    "audio": 0.0,
+    "both": 0.0,
+    "idle": 39.3
+   },
+   {
+    "family": "Dashboard",
+    "visual": 28.8,
+    "audio": 0.0,
+    "both": 0.0,
+    "idle": 71.2
+   },
+   {
+    "family": "Transient",
+    "visual": 15.8,
+    "audio": 0.0,
+    "both": 0.0,
+    "idle": 84.2
+   },
+   {
+    "family": "Phone",
+    "visual": 0.0,
+    "audio": 26.3,
+    "both": 0.0,
+    "idle": 73.7
+   },
+   {
+    "family": "Interview",
+    "visual": 0.0,
+    "audio": 37.0,
+    "both": 0.0,
+    "idle": 63.0
+   },
+   {
+    "family": "Collab",
+    "visual": 2.6,
+    "audio": 10.3,
+    "both": 7.7,
+    "idle": 79.5
+   },
+   {
+    "family": "Games",
+    "visual": 36.4,
+    "audio": 0.0,
+    "both": 0.0,
+    "idle": 63.6
+   }
+  ]
+ },
+ "realcontent": {
+  "sub_order": [
+   "Podcast",
+   "Meeting",
+   "Screencast",
+   "Voice"
+  ],
+  "modes": [
+   {
+    "mode": "standard",
+    "label": "Standard",
+    "pass": 11,
+    "total": 12,
+    "rate": 91.7,
+    "per_sub": {
+     "Podcast": {
+      "pass": 3,
+      "total": 3
+     },
+     "Meeting": {
+      "pass": 3,
+      "total": 3
+     },
+     "Screencast": {
+      "pass": 2,
+      "total": 3
+     },
+     "Voice": {
+      "pass": 3,
+      "total": 3
+     }
+    }
+   },
+   {
+    "mode": "aoi_full",
+    "label": "AOI full",
+    "pass": 11,
+    "total": 12,
+    "rate": 91.7,
+    "per_sub": {
+     "Podcast": {
+      "pass": 3,
+      "total": 3
+     },
+     "Meeting": {
+      "pass": 3,
+      "total": 3
+     },
+     "Screencast": {
+      "pass": 2,
+      "total": 3
+     },
+     "Voice": {
+      "pass": 3,
+      "total": 3
+     }
+    }
+   }
+  ]
+ },
  "ablation": [
   {
    "file": "v9_full_100_claude_standard.json",

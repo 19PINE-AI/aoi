@@ -35,9 +35,27 @@ export interface RunSummary {
   per_difficulty: Record<string, Rate>
 }
 
+export interface GateActivity {
+  total_steps: number
+  kf_pct: number
+  audio_pct: number
+  idle_pct: number
+  total_keyframes: number
+  kf_per_step: number
+  per_family: { family: string; visual: number; audio: number; both: number; idle: number }[]
+}
+
+export interface RealContent {
+  sub_order: string[]
+  modes: { mode: string; label: string; pass: number; total: number; rate: number;
+    per_sub: Record<string, { pass: number; total: number }> }[]
+}
+
 export interface ResultsData {
   main_results: ModelResult[]
   headline: Headline
+  gate_activity: GateActivity
+  realcontent: RealContent
   ablation: RunSummary[]
   oss_selection: RunSummary[]
   theta_sweep: { theta: number; pass: number; total: number; rate: number; avg_keyframes_per_step: number | null }[]
