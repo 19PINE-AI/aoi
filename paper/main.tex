@@ -1029,8 +1029,9 @@ runs with native audio plus the text scaffold and never sees the screen.
 same task IDs as the AOI in Table~\ref{tab:main}. \texttt{gpt-realtime-2} is the
 current GA OpenAI Realtime model, streaming native audio; ``alone'' is screenshot~+~audio,
 ``+~scaffold'' additionally supplies AOI's \texttt{[PAGE ELEMENTS]} list. Grok Voice
-is audio$+$text only (no vision), so it runs with the text scaffold and no screenshot.
-This is a deliberately favourable comparison---no baseline is built for grounded computer use.}
+is audio$+$text only (no vision) and scores 1/12 with or without the text scaffold (the
+row shows the scaffold condition). This is a deliberately favourable comparison---no
+baseline is built for grounded computer use.}
 \label{tab:streaming}
 \small
 \setlength{\tabcolsep}{4.5pt}
@@ -1065,9 +1066,10 @@ but needs the AOI's structured grounding to act on it---and even then ties rathe
 the AOI (11 vs.\ 12).
 xAI's newly released Grok Voice (\texttt{grok-voice-think-fast}) makes the same point from the
 opposite direction: it hears accurately---on one task it transcribes a spoken price and types
-it correctly---but, lacking vision entirely, it manages only \textbf{1/12}, falling back on
-blind clicks and occasional hallucinated answers. Perception without grounded action is not
-enough.
+it correctly---but, lacking vision entirely, it manages only \textbf{1/12}, \emph{with or
+without} the text scaffold (72\% of its steps are idle \texttt{wait()}s). Unlike
+\texttt{gpt-realtime-2}, it does not exploit the element list, defaulting to blind clicks and
+occasional hallucinated answers. Perception without grounded action is not enough.
 A sanity check rules out a broken adapter: on five purely-visual tasks the older baselines
 emit valid actions (5/5) but reach 0/5 task-correct, while \texttt{gpt-realtime-2} reaches
 3/5 and AOI-equipped Claude 4/5 (Appendix~\ref{app:streaming_sanity}).
