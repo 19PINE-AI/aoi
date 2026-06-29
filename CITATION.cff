@@ -1,0 +1,43 @@
+cff-version: 1.2.0
+title: >-
+  Agent-Computer Observation Interfaces Enable Dynamic
+  Computer Use
+message: >-
+  If you use this software, benchmark, or results, please
+  cite the accompanying paper.
+type: software
+authors:
+  - given-names: Bojie
+    family-names: Li
+    affiliation: Pine AI
+  - given-names: Noah
+    family-names: Shi
+    affiliation: University of Washington
+repository-code: 'https://github.com/19PINE-AI/aoi'
+url: 'https://01.me/research/aoi'
+abstract: >-
+  A model-agnostic perception layer (the Agent-Computer
+  Observation Interface, AOI) that gives existing
+  computer-use agents adaptive visual and audio perception
+  of dynamic screen content with zero retraining, plus
+  DynaCU-Bench, a benchmark of dynamic browser tasks that
+  screenshot-only agents cannot solve.
+keywords:
+  - computer-use agents
+  - perception interface
+  - benchmark
+  - multimodal
+license: MIT
+preferred-citation:
+  type: article
+  title: >-
+    Agent-Computer Observation Interfaces Enable Dynamic
+    Computer Use
+  authors:
+    - given-names: Bojie
+      family-names: Li
+      affiliation: Pine AI
+    - given-names: Noah
+      family-names: Shi
+      affiliation: University of Washington
+  year: 2026
