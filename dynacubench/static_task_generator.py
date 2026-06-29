@@ -17,7 +17,7 @@ from __future__ import annotations
 from pathlib import Path
 from textwrap import dedent
 
-OUT_DIR = Path("/home/ubuntu/adaptive-observation-paper/benchmark_env/html_tasks")
+OUT_DIR = Path(__file__).resolve().parents[1] / "benchmark_env" / "html_tasks"
 
 PAGE_HEADER = """<!DOCTYPE html>
 <html lang="en">

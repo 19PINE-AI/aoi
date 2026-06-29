@@ -30,7 +30,7 @@ import sys
 from pathlib import Path
 from collections import defaultdict
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 AOI_FULL = ROOT / "results/v9_full_100_claude_aoi.json"

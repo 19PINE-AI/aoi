@@ -11,8 +11,8 @@
 set -eo pipefail
 cd "$(dirname "$0")/../.."
 
-VLLM=/home/ubuntu/aoi-env/bin/vllm
-PY=/home/ubuntu/aoi-env/bin/python
+VLLM="${VLLM:-vllm}"
+PY="${PYTHON:-python}"
 LOG_DIR=$(pwd)/logs
 mkdir -p "$LOG_DIR"
 TS=$(date +%Y%m%d_%H%M%S)

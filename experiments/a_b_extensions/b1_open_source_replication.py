@@ -20,7 +20,7 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 # Ensure VLLM_API_KEY is set so OpenAI-compatible client passes the OR key

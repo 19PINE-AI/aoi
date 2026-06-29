@@ -8,7 +8,7 @@ Idempotent: each call replaces the latest known value, never duplicates.
 import json, math, re, sys
 from pathlib import Path
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[1]
 TEX = ROOT / "paper/main.tex"
 R = ROOT / "results"
 

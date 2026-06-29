@@ -29,8 +29,8 @@ All site content is derived from the repo's raw evaluation outputs:
   reconstructed: page speechSynthesis utterances are captured with timestamps
   and re-rendered with edge-tts (GuyNeural — the same voice the eval harness
   played into the virtual speaker), then muxed into the mp4; agent `speak()`
-  output is voiced with AriaNeural. Run with the aoi-env Python:
-  `/home/ubuntu/aoi-env/bin/python scripts/record_trajectories.py`.
+  output is voiced with AriaNeural. Run with the project Python:
+  `python scripts/record_trajectories.py`.
 - **`public/tasks/`** — verbatim copy of `benchmark_env/html_tasks/` +
   `realcontent_assets/` so tasks run live in the browser.
 - **`public/paper/aoi-paper.pdf`** — copy of `paper/main.pdf`.

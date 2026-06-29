@@ -8,7 +8,7 @@ import json, math, sys
 from pathlib import Path
 from collections import Counter
 
-R = Path("/home/ubuntu/adaptive-observation-paper/results")
+R = Path(__file__).resolve().parents[1] / "results"
 
 def load(name):
     p = R / name

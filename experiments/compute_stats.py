@@ -3,7 +3,7 @@
 import json, math, os, sys
 from pathlib import Path
 
-RESULTS = Path("/home/ubuntu/adaptive-observation-paper/results")
+RESULTS = Path(__file__).resolve().parents[1] / "results"
 
 def wilson_ci(k, n, z=1.96):
     if n == 0:

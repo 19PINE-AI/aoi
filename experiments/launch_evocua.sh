@@ -4,7 +4,7 @@
 
 set -e
 
-source /home/ubuntu/aoi-env/bin/activate
+source "${VENV:-$HOME/aoi-env}/bin/activate"
 
 echo "=== Stopping Fara-7B vLLM server ==="
 pkill -f "vllm serve microsoft/Fara-7B" || true

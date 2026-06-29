@@ -14,7 +14,7 @@ from pathlib import Path
 from collections import defaultdict
 from statistics import mean
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[2]
 EXT = ROOT / "results/extensions"
 
 

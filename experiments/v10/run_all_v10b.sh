@@ -32,12 +32,12 @@ if ! curl -sf http://localhost:8786/health > /dev/null; then
 fi
 
 echo "----- variance seed 2 -----" >> "$LOG"
-/home/ubuntu/aoi-env/bin/python -u experiments/v10/run_variance.py --seeds 2 >> "$LOG" 2>&1
+"${PYTHON:-python}" -u experiments/v10/run_variance.py --seeds 2 >> "$LOG" 2>&1
 
 echo "----- variance seed 3 -----" >> "$LOG"
-/home/ubuntu/aoi-env/bin/python -u experiments/v10/run_variance.py --seeds 3 >> "$LOG" 2>&1
+"${PYTHON:-python}" -u experiments/v10/run_variance.py --seeds 3 >> "$LOG" 2>&1
 
 echo "----- gpt-realtime-2.0 -----" >> "$LOG"
-/home/ubuntu/aoi-env/bin/python -u experiments/v10/run_realtime_v2.py >> "$LOG" 2>&1
+"${PYTHON:-python}" -u experiments/v10/run_realtime_v2.py >> "$LOG" 2>&1
 
 echo "----- done $(date) -----" >> "$LOG"
