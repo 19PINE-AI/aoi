@@ -1,11 +1,34 @@
+# Python
 __pycache__/
 *.pyc
 .pytest_cache/
 *.egg-info/
 dist/
 build/
+
+# Environments
 .env
 .venv/
 venv/
+
+# Node / web
 node_modules/
+
+# Logs & scratch
 logs/
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.blg
+*.toc
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+texput.log
+*.tar.gz
+
+# OS / editor
+.DS_Store
+.claude/settings.local.json
