@@ -24,7 +24,6 @@ probes `standard_{minimal,traj_only,pageel_only}`), `--category`, `--difficulty`
 | `compute_stats.py` | McNemar significance tests + Wilson confidence intervals for the main table and ablations. |
 | `compute_tokens.py` | Token counts and dollar-cost accounting (efficiency table). |
 | `analyze_keyframe_context.py` | Keyframe-in-context marginal value (AOI-full vs AOI-audio) per model. |
-| `generate_tables.py` | Emits LaTeX result tables. |
 | `latency_benchmark.py` | Observation-overhead / latency measurements. |
 
 These read committed files in `results/` (see [`results/README.md`](../results/README.md))
@@ -47,12 +46,15 @@ and need no API keys.
 | `b1_open_source_replication.py` (+ `b1_runner.sh`) | B1 — independent open-source replication (Qwen3-VL via OpenRouter). |
 | `aggregate_results.py`, `apply_patch.py` | Roll up extension results / patch paper placeholders. |
 
-## Author-workflow & one-off runners
+## Author-workflow & one-off runners — `_archive/`
 
-These produced specific runs during the study; they are kept for provenance but are
-not part of the end-user reproduction path.
+These produced specific runs during the study and are kept for provenance only. They
+are **not** part of the end-user reproduction path, may reference archived result
+files, and are not guaranteed to run as-is. They live under `_archive/`:
 
-- `update_paper.py`, `integrate_v10.py` — patch numbers into `paper/main.tex`.
+- `update_paper.py`, `integrate_v10.py`, `generate_tables.py` — patch numbers / emit
+  LaTeX into `paper/main.tex` (superseded by `compute_stats.py` + the website's
+  `build_data.py`).
 - `run_standard_vs_aoi.py`, `run_ablation.py`, `run_theta_sweep.py` / `theta_sweep.py`,
   `run_oss_selection.py`, `run_realtime_subset.py`, `run_v10_experiments.py` — focused
   drivers around `browser_eval`.
@@ -63,9 +65,6 @@ not part of the end-user reproduction path.
   orchestrators.
 - `run_full_eval.py`, `run_10task_eval.py`, `run_headless_ablation.py`,
   `headless_runner.py`, `mock_cu_model.py`, `real_demo.py` — early development
-  harnesses, superseded by `browser_eval.py`.
-
-## Library helpers
-
-`mock_cu_model.py` (offline fixture model) and `headless_runner.py` (synthetic
-no-browser runner) are imported by the dev harnesses above.
+  harnesses, superseded by `browser_eval.py`. `mock_cu_model.py` (offline fixture
+  model) and `headless_runner.py` (synthetic no-browser runner) are imported by the
+  other archived harnesses.

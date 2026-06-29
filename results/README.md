@@ -19,7 +19,7 @@ A task counts as passed when `final_score >= 0.5` (falling back to `success`).
 | `extensions/`     | Appendix experiments: `a1_*` keyframe causal probe, `a2_*` prompt decomposition, `a3_*` narration audit, `b1_*` Qwen3-VL open-source replication. |
 | `theta_sweep/`    | CLIP threshold (θ) calibration sweep, θ = 0.02 … 0.30. |
 | `subset_*`        | 12-task spoken-content subset (3 each: Podcast, Meeting, Phone, Interview) used for the streaming baselines. |
-| `_archive/`       | Superseded development runs (early 10-task and per-category iterations, `full_eval*`, `headless_*`). Kept for provenance; **not** used by any reproduction script. |
+| `_archive/`       | Superseded runs kept for provenance only — **not** used by any reproduction script. Early 10-task and per-category iterations (`full_eval*`, `headless_*`); superseded current-gen pre-runs (`v10_g3flash_*` → `v10c_gemini3flash_*`, `v10_grok43_standard` → `v10c_grok43_*`); streaming sanity probes (`v10_sanity_*`, `v10_openai_realtime`, `v10_subset_openai_realtime_v2`); supplementary structured-prompt runs not in the paper (`v10_structured_{evocua,fara,gemini25,gpt54}`, `v10c_structured_gemini3`); the pre-`v10_static50` Static-50 (`static_claude_*`); and stale generated summaries / notes (`evaluation_analysis.json`, `summary_table.json`, `final_report.md`, `theta_calibration.md`). |
 
 ## Canonical files → paper table / figure / website block
 
