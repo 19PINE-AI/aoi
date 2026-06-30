@@ -15,6 +15,10 @@ authors:
     affiliation: University of Washington
 repository-code: 'https://github.com/19PINE-AI/aoi'
 url: 'https://01.me/research/aoi'
+identifiers:
+  - type: other
+    value: 'arXiv:2606.29472'
+    description: The arXiv preprint of the accompanying paper.
 abstract: >-
   A model-agnostic perception layer (the Agent-Computer
   Observation Interface, AOI) that gives existing
@@ -41,3 +45,9 @@ preferred-citation:
       family-names: Shi
       affiliation: University of Washington
   year: 2026
+  journal: arXiv
+  url: 'https://arxiv.org/abs/2606.29472'
+  identifiers:
+    - type: other
+      value: 'arXiv:2606.29472'
+      description: The arXiv preprint of the accompanying paper.

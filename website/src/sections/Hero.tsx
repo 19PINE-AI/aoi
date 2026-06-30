@@ -1,5 +1,4 @@
 import type { ResultsData } from '../data'
-import { BASE } from '../data'
 
 function HeroArch() {
   return (
@@ -51,7 +50,7 @@ export function Hero({ results }: { results: ResultsData | null }) {
               computer use from any existing CU model with <b>zero retraining</b>.
             </p>
             <div className="hero-actions">
-              <a className="btn primary" href={BASE + 'paper/aoi-paper.pdf'} target="_blank" rel="noreferrer">
+              <a className="btn primary" href="https://arxiv.org/abs/2606.29472" target="_blank" rel="noreferrer">
                 📄 Read the paper
               </a>
               <a className="btn ghost" href="#recordings">▶ Watch agent recordings</a>

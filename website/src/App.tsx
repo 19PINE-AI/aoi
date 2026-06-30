@@ -1,4 +1,4 @@
-import { useJson, type ResultsData, type RunInfo, type TaskInfo, BASE } from './data'
+import { useJson, type ResultsData, type RunInfo, type TaskInfo } from './data'
 import { Hero } from './sections/Hero'
 import { Architecture } from './sections/Architecture'
 import { Results } from './sections/Results'
@@ -24,8 +24,8 @@ export default function App() {
             <a href="#recordings">Recordings</a>
             <a href="#trajectories">Trajectories</a>
             <a href="#benchmark">Benchmark</a>
-            <a className="cta" href={BASE + 'paper/aoi-paper.pdf'} target="_blank" rel="noreferrer">
-              Paper PDF
+            <a className="cta" href="https://arxiv.org/abs/2606.29472" target="_blank" rel="noreferrer">
+              Paper
             </a>
           </div>
         </div>
