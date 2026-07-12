@@ -314,11 +314,8 @@ At each step the model receives a structured record combining persistent text co
 \quad discussion. What is the new launch date?\\
 \quad Enter it in the Launch Date field.
 \end{tcolorbox}
-\caption{Example observation record sent to the CU model at step $N$ of a meeting task.
-The \textbf{context} section provides text from prior steps (audio transcriptions and visual narrations persist after images are pruned).
-The \textbf{new} section contains the current audio transcription and the post-action screenshot (image).
-In this case, no keyframes were captured (the slide did not change), so only the screenshot is included as an image.
-The task instruction is appended at the end.}
+\caption{\textbf{Example observation record at step $N$ of a meeting task.}
+Prior observations persist as text, while the current step contributes a fresh audio transcription and screenshot. In this example, no keyframes are included because the slide does not change.}
 \label{fig:obsrecord}
 \end{figure}
 
@@ -417,11 +414,11 @@ Each configuration is evaluated once on 100 binary tasks. We report paired McNem
 Figure~\ref{fig:mainresults} shows that AOI improves task success for every model, with gains ranging from +17 to +48 percentage points. Claude Sonnet~4.6 achieves the highest absolute score (82\%), while Gemini~2.5 Flash shows the largest gain (+48\,pp). Open-source models also benefit substantially: EvoCUA-32B improves from 18\% to 55\%, and even the 7B Fara model doubles its success rate (17\%$\rightarrow$34\%). These consistent gains indicate that AOI addresses a perception bottleneck rather than exploiting model-specific behavior.
 
 \textbf{Additional open-source replication (Qwen3-VL family).}
-Two additional open-source Qwen3-VL models reproduce the same trend (Table~\ref{tab:b1_oss}): the 235B model improves by +42\,pp (22\%$\rightarrow$64\%) and the 30B model by +24\,pp (18\%$\rightarrow$42\%), reinforcing that AOI's gains are model-agnostic.
+Both Qwen3-VL models reproduce the same trend: the 235B model improves by +42\,pp (22\%$\rightarrow$64\%) and the 30B model by +24\,pp (18\%$\rightarrow$42\%), reinforcing that AOI's gains are model-agnostic.
 
 \begin{table}[t]
 \centering
-\caption{Open-source replication on DynaCU-Bench (100 tasks) using the Qwen3-VL family via OpenRouter. Both models use the same evaluation harness as the main results in Figure~\ref{fig:mainresults}. $p$-values are from paired McNemar exact tests.}
+\caption{Open-source replication on DynaCU-Bench (100 tasks) using Qwen3-VL models. Results use the same evaluation protocol as Figure~\ref{fig:mainresults}.}
 \label{tab:b1_oss}
 \small
 \begin{tabular}{@{}l cc cc c@{}}
@@ -521,8 +518,8 @@ AOI visual+ASR $\to$ AOI full          & 64 / 82 &  $5.3 \times 10^{-4}$ \\
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_analysis.pdf}
 \caption{\textbf{Contribution of narration and keyframes.}
-\textbf{(a)}~Visual narration lifts performance from 64\% to 82\%. A narration-discarded control (74\%) shows most of the gain comes from inference-time articulation, with persistence contributing the rest.
-\textbf{(b)}~The marginal value of keyframe images (with audio and narration already enabled) is model-specific: strongly positive on Claude and Gemini~2.5, neutral on GPT-5.4, and negative on Gemini~3 due to image-token dilution.}
+\textbf{(a)} Visual narration improves performance, with most of the gain arising from inference-time articulation rather than persistent memory.
+\textbf{(b)} The value of keyframes is model-dependent: positive for Claude and Gemini~2.5, neutral for GPT-5.4, and negative for Gemini~3.}
 \label{fig:analysis}
 \end{figure}
 
@@ -541,7 +538,7 @@ We evaluated AOI on three additional models released after the main experiments 
 
 \begin{table}[t]
 \centering
-\caption{Results on later-released models (100 tasks each). Gemini~3~Flash tests replication of the Gemini~2.5 gain, while the Grok rows control for inference latency effects.}
+\caption{Results on later-released models (100 tasks each). Gemini~3~Flash tests whether AOI gains transfer to the next generation, while the Grok rows isolate inference latency.}
 \label{tab:newer}
 \small
 \setlength{\tabcolsep}{4pt}
@@ -565,7 +562,7 @@ The original Grok-4 achieves only +21\,pp with AOI due to frequent timeouts. A l
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_gemini3.pdf}
-\caption{\textbf{Gemini~3~Flash achieves only a small net gain ($+9$\,pp).} Audio and the structured scaffold help as usual, but the keyframe stream regresses by $-12$\,pp due to image-token dilution. Dropping keyframes alone recovers $+21$\,pp over the standard baseline.}
+\caption{\textbf{Gemini~3~Flash achieves only a small net gain ($+9$\,pp).} Audio and the structured scaffold remain beneficial, but keyframes reduce performance by $12$\,pp.}
 \label{fig:gemini3}
 \end{figure}
 
@@ -581,7 +578,7 @@ Neither is a computer-use agent, so we adapt both to DynaCU-Bench by streaming p
 
 \begin{table}[t]
 \centering
-\caption{Streaming multimodal baselines vs. AOI on a 12-task audio subset (3 tasks each from Podcast, Meeting, Phone, and Interview). Baselines are evaluated on the same task IDs as AOI.}
+\caption{Streaming multimodal baselines vs. AOI on a 12-task audio subset (3 tasks each from Podcast, Meeting, Phone, and Interview).}
 \label{tab:streaming}
 \small
 \setlength{\tabcolsep}{4.5pt}
@@ -608,41 +605,28 @@ Streaming multimodal interaction alone is therefore insufficient; the critical c
 % ════════════════════════════════════════════════════════════
 
 \textbf{Interface Design over Model Training.}
-Much agent progress comes from reshaping the agent--computer interface rather than
-the weights.
-On the \emph{action} side, SWE-agent~\citep{sweagent} redesigned the command set and
-feedback format, and agents adopt executable code actions~\citep{codeact} and
-element-grounded actions~\citep{mind2web}.
-On the observation side, prior work has focused on enriching single screenshots using accessibility trees, HTML surrogates~\citep{webarena,mind2web}, and element overlays~\citep{setofmark,seeact}.
-These approaches leave untouched the temporal and multimodal dimensions we target.
+Much agent progress comes from redesigning the agent--computer interface rather than the model weights. Action interfaces have evolved through richer command sets~\citep{sweagent}, executable code actions~\citep{codeact}, and element-grounded actions~\citep{mind2web}.
+Observation interfaces have instead focused on enriching individual screenshots with accessibility trees, HTML surrogates, and overlays~\citep{webarena,mind2web,setofmark,seeact}. None addresses temporal or multimodal observation.
 
 \textbf{Computer-Use Agents.}
-Recent CU agents span closed-source systems~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source models~\citep{uitars2,opencua,fara7b,guiowl,coact}.
-Agent~S3~\citep{agents3} demonstrates competitive open-source performance on OSWorld.
-A recent survey~\citep{cusurvey} catalogs many challenges but does not identify the observation modality as a key gap. All existing agents rely on the standard screenshot-per-step loop.
+Recent CU agents span closed-source systems~\citep{anthropic2024claude,openai2025cua,gemini25cu,surfer2} and open-source models~\citep{uitars2,opencua,fara7b,guiowl,coact}, with
+Agent~S3~\citep{agents3} demonstrates competitive open-source performance.
+Existing surveys~\citep{cusurvey} discuss many challenges but not observation as a distinct design axis; all current agents retain the screenshot-per-step loop.
 
 \textbf{Streaming Multimodal Models.}
 Gemini Live~\citep{geminilive} and OpenAI Realtime~\citep{openairealtime} process continuous streams but bundle perception and reasoning in one model. Section~\ref{sec:streaming} shows they underperform AOI on grounded computer-use tasks. Our work is complementary: AOI provides a modular perception layer usable by any CU model.
 
 \textbf{Video and GUI Understanding.}
-Benchmarks such as GUI-World~\citep{guiworld}, VideoWebArena~\citep{videowebarena}, and CUA-Suite~\citep{cuasuite} highlight limitations of static observation.
-MemGUI-Bench~\citep{memguibench} reveals memory gaps in GUI agents.
-These benchmarks identify the problem but do not propose solutions compatible with existing CU agents.
+Benchmarks such as GUI-World~\citep{guiworld}, VideoWebArena~\citep{videowebarena}, CUA-Suite~\citep{cuasuite}, and MemGUI-Bench~\citep{memguibench} expose the limitations of static observation and GUI memory, but do not provide observation mechanisms compatible with existing CU agents.
 
 \textbf{Keyframe selection.}
-VideoTree~\citep{videotree} and AKS~\citep{aks} use CLIP-based frame selection for offline video QA.
-Apollo~\citep{apollo} finds that FPS sampling outperforms uniform sampling and identifies optimal token budgets.
-All prior work targets offline video understanding; our contribution is real-time observation filtering for CU agents, where the two-stage design (sub-millisecond pixel gate followed by ${\sim}7$\,ms CLIP only on changed frames) keeps the per-frame cost low enough to run continuously in the background between agent steps.
+Prior work studies CLIP-based frame selection and sampling for offline video QA~\citep{videotree,aks,apollo}. In contrast, AOI performs real-time observation filtering for interactive computer use, combining a sub-millisecond pixel gate with CLIP only on changed frames.
 
 \textbf{Adaptive middleware for GUI agents.}
-The closest predecessor to AOI is Cradle~\citep{cradle}, which uses pixel differencing but lacks audio and adaptive gating.
-ScreenLLM~\citep{screenllm} captures stateful screen schemas with keyframe extraction, complementing visual narration but without audio or adaptive observation.
-StreamAgent~\citep{streamagent} and Dispider~\citep{dispider} separate perception from response generation for streaming video, paralleling the AOI's architecture, but neither addresses CU agent observation.
+Cradle~\citep{cradle}, ScreenLLM~\citep{screenllm}, StreamAgent~\citep{streamagent}, and Dispider~\citep{dispider} separate or adapt perception, but none combines adaptive observation, audio, and persistent multimodal memory for computer-use agents.
 
 \textbf{Structured agent interfaces.}
-Complementary work explores structured APIs and protocols (e.g., MCP~\citep{mcp}, NLWeb~\citep{nlweb}) that bypass perception.
-These approaches are powerful where adoption exists, but require website
-cooperation; the AOI enables perception on arbitrary unmodified interfaces.
+Protocols such as MCP~\citep{mcp} and NLWeb~\citep{nlweb} bypass perception through structured APIs. They require website cooperation, whereas AOI operates on arbitrary unmodified interfaces.
 
 % ════════════════════════════════════════════════════════════
 \section{Limitations}
@@ -650,35 +634,27 @@ cooperation; the AOI enables perception on arbitrary unmodified interfaces.
 % ════════════════════════════════════════════════════════════
 
 \textbf{Latency and temporal resolution.}
-The AOI extends perception but not decision speed: CU models still take 1--5\,s per
-step, and the screen is sampled at ${\sim}3$\,Hz, so sub-${\sim}300$\,ms events and
-real-time games fall outside its reach (the Games family regression).
-It targets human-paced computer use, not fast interactive control.
+AOI extends perception but not decision speed: CU models still require 1--5\,s per
+step and the screen is sampled at ${\sim}3$\,Hz, placing sub-${\sim}300$\,ms events
+and real-time games outside its scope.
 
 \textbf{Perception is not reasoning.}
-Better inputs do not improve reasoning over those inputs; on the smallest model the
-gain concentrates on easy tasks and reasoning capacity becomes the binding
-constraint.
+Better observations do not improve reasoning; on smaller models, reasoning capacity
+remains the primary bottleneck.
 
 \textbf{Audio is speech-only and narration can err.}
-We transcribe speech but not non-speech events (chimes, beeps). A multimodal audio
-model would be necessary to cover the full audio scene.
-Long-term visual memory also inherits the CU model's mistakes---a misread number
-persists in the trajectory.
+AOI transcribes speech but not non-speech sounds, and visual narrations can
+propagate recognition errors through the trajectory.
 
 \textbf{External validity.}
-Tasks run in a controlled browser with synthesized audio, so real-world content
-(live calls, native apps) may differ, and we do not yet report AOI numbers on
-existing dynamic-GUI benchmarks---those evaluate offline video QA or fixed-context
-video rather than a live observe--act loop with a separate audio channel, so
-wrapping them with the AOI requires re-instrumenting each harness.
-That re-instrumentation is the clearest external-validity test and the main item of
-future work.
+Experiments use a controlled browser with synthesized audio. Evaluating AOI on
+existing dynamic-GUI benchmarks requires re-instrumenting each benchmark's
+interaction harness and remains future work.
 
 \textbf{Statistical power.}
-Each cell is a single 100-task trial; we use paired McNemar tests for differences
-but the data does not support fine-grained ranking of configurations within a few
-points of each other.
+Each configuration is evaluated once on 100 tasks. Paired McNemar tests support
+comparisons, but differences of only a few percentage points should not be
+over-interpreted.
 
 % ════════════════════════════════════════════════════════════
 \section{Conclusion}
@@ -687,21 +663,9 @@ points of each other.
 
 Computer-use agents are blind between screenshots and deaf to audio because
 observation is tied to action: one screenshot per step.
-We argued the \emph{observation} interface is a separable, underexplored design
-axis---the counterpart to the action interface SWE-agent surfaced---and introduced
-the AOI, a perception layer that is transparent on static work, adaptive on
-dynamic content, and compatible with any existing CU model without retraining.
-Across eight models it turns dynamic tasks that were near-impossible from
-screenshots into largely solvable ones, while reducing token cost.
+We argued the \emph{observation} is a separable design axis and introduced the AOI, a perception layer that is transparent on static work, adaptive on dynamic content, and compatible with existing CU models without retraining. Across eight models, AOI turns many dynamic tasks that are nearly impossible from screenshots into solvable ones while reducing token cost.
 
-Opening up that gain reframes CU perception in three ways: keyframe \emph{selection}
-is immaterial and value emerges only once frames are narrated into persistent text;
-narration helps mainly by making the model articulate what it sees; and the
-interface is not a fixed bundle---one component even reverses sign on a
-later-generation model, so the components must be tuned per model rather than
-shipped as one configuration.
-We release the perception layer and benchmarks so future work can cleanly separate
-observation gains from model-side gains.
+Our analysis further shows that keyframe selection alone contributes little: gains emerge when observations are converted into persistent text, and the best observation recipe is model-dependent rather than universal. We release the AOI and DynaCU-Bench to support future research on observation interfaces for computer-use agents.
 
 % ════════════════════════════════════════════════════════════
 \bibliography{references}
