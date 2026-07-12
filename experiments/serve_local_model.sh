@@ -11,7 +11,6 @@
 set -e
 
 MODEL=${1:-fara-7b}
-VENV=/home/ubuntu/aoi-env
 
 case $MODEL in
     fara-7b)
@@ -47,7 +46,7 @@ case $MODEL in
 esac
 
 echo "Serving $HF_ID on port $PORT..."
-$VENV/bin/python -m vllm.entrypoints.openai.api_server \
+"${PYTHON:-python}" -m vllm.entrypoints.openai.api_server \
     --model "$HF_ID" \
     --port $PORT \
     --host 0.0.0.0 \

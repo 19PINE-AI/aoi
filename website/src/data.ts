@@ -4,11 +4,23 @@ export interface Rate { pass: number; total: number; rate: number }
 
 export interface ModelResult {
   model: string
+  group?: 'closed' | 'open'
+  outlier?: boolean
   standard: Rate
   aoi_full: Rate
   delta: number
   per_category: { standard: Record<string, Rate>; aoi_full: Record<string, Rate> }
   per_difficulty: { standard: Record<string, Rate>; aoi_full: Record<string, Rate> }
+}
+
+export interface Headline {
+  delta_min: number
+  delta_max: number
+  n_models: number
+  n_closed: number
+  n_open: number
+  best_abs_model: string
+  best_abs_rate: number
 }
 
 export interface RunSummary {
@@ -23,12 +35,31 @@ export interface RunSummary {
   per_difficulty: Record<string, Rate>
 }
 
+export interface GateActivity {
+  total_steps: number
+  kf_pct: number
+  audio_pct: number
+  idle_pct: number
+  total_keyframes: number
+  kf_per_step: number
+  per_family: { family: string; visual: number; audio: number; both: number; idle: number }[]
+}
+
+export interface RealContent {
+  sub_order: string[]
+  modes: { mode: string; label: string; pass: number; total: number; rate: number;
+    per_sub: Record<string, { pass: number; total: number }> }[]
+}
+
 export interface ResultsData {
   main_results: ModelResult[]
+  headline: Headline
+  gate_activity: GateActivity
+  realcontent: RealContent
   ablation: RunSummary[]
   oss_selection: RunSummary[]
   theta_sweep: { theta: number; pass: number; total: number; rate: number; avg_keyframes_per_step: number | null }[]
-  streaming: ({ system: string } & Rate)[]
+  streaming: ({ system: string; vision?: boolean; highlight?: boolean } & Rate)[]
   gemini3_fourway: ({ mode: string; label: string } & Rate)[]
   newer_models: { model: string; standard: Rate; aoi_full: Rate; delta: number }[]
   static50: ({ mode: string } & Rate)[]

@@ -8,7 +8,7 @@
 # can't share it cleanly.
 
 set -u
-cd /home/ubuntu/adaptive-observation-paper
+cd "$(dirname "$0")/../.."
 
 export VLLM_API_KEY=${OPENROUTER_API_KEY?must be set}
 mkdir -p logs/extensions

@@ -1,0 +1,37 @@
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+
+Copyright (c) 2026 Bojie Li (Pine AI) and Noah Shi (University of Washington)
+
+The following NON-CODE materials in this repository are licensed under the
+Creative Commons Attribution 4.0 International License (CC BY 4.0):
+
+  - benchmark_env/        the DynaCU-Bench HTML task suite and real-content assets
+  - results/              the raw per-task evaluation records
+  - docs/                 design documents
+  - paper/                the paper source, figures, and compiled PDF
+  - website/public/data/  the derived result/task JSON shipped to the website
+
+You are free to:
+  - Share — copy and redistribute the material in any medium or format.
+  - Adapt — remix, transform, and build upon the material for any purpose,
+    even commercially.
+
+Under the following terms:
+  - Attribution — You must give appropriate credit, provide a link to the
+    license, and indicate if changes were made. You may do so in any
+    reasonable manner, but not in any way that suggests the licensor endorses
+    you or your use.
+
+Suggested attribution:
+  Bojie Li and Noah Shi, "Agent-Computer Observation Interfaces Enable Dynamic
+  Computer Use" (2026). DynaCU-Bench, https://github.com/19PINE-AI/aoi
+  Licensed under CC BY 4.0.
+
+The full legal text of CC BY 4.0 is available at:
+  https://creativecommons.org/licenses/by/4.0/legalcode
+
+Note on benchmark content: DynaCU-Bench tasks are self-contained synthetic
+pages. The DynaCU-Real-Local subset (benchmark_env/realcontent_assets/) is
+built from public-domain texts (Aesop's fables) voiced with open TTS and from
+locally generated terminal recordings; no third-party copyrighted media is
+redistributed.

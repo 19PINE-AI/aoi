@@ -1,0 +1,607 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 43.37813448905945,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.6840879917144775
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.0759758949279785
+      },
+      {
+        "step": 3,
+        "action": "fill(#guest-name, \"Dr. Chen\")",
+        "tool_call": "fill({\"id\": \"guest-name\", \"text\": \"Dr. Chen\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.30074667930603
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.31321048736572
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Today we're joined by | Chen, Professor of Artificial Intelligence at Stanford University."
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 43.318249464035034,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.6079180240631104
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.00530743598938
+      },
+      {
+        "step": 3,
+        "action": "fill(#price, \"$79.99\")",
+        "tool_call": "fill({\"id\": \"price\", \"text\": \"$79.99\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.00396537780762
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.25044083595276
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "reviewing the new | reviewing the new Soundpeak headphones. | 999, they offer incredible value for the price point."
+  },
+  {
+    "task_id": "A-M1",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 44.343056440353394,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.038547039031982
+      },
+      {
+        "step": 2,
+        "action": "fill(#bookTitle, \"The Alignment Problem\")",
+        "tool_call": "fill({\"id\": \"bookTitle\", \"text\": \"The Alignment Problem\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 8.26285982131958
+      },
+      {
+        "step": 3,
+        "action": "fill(#author, \"Brian Christian\")",
+        "tool_call": "fill({\"id\": \"author\", \"text\": \"Brian Christian\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.23395276069641
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.27769732475281
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Reading the alignment. | by Brian Christian. It really changed how I think about AI. | about AI safety."
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 8,
+    "total_time_s": 57.17133188247681,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.9795081615448
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.441755056381226
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.869368076324463
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.273928880691528
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 17.783278465270996
+      },
+      {
+        "step": 6,
+        "action": "fill(#launch-date, \"April 28\")",
+        "tool_call": "fill({\"id\": \"launch-date\", \"text\": \"April 28\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 50.94509506225586
+      },
+      {
+        "step": 7,
+        "action": "click(874, 444)",
+        "tool_call": "click({\"x\": 874, \"y\": 444})",
+        "result_val": "incorrect",
+        "elapsed_s": 54.132293939590454
+      },
+      {
+        "step": 8,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.10764932632446
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Welcome everyone! | Let's go through the agenda for today's product launch planning meeting. | product launch planning meeting. We have four items. | Here's the team. As you can see. | strong cross-functional coverage. And I want to mention | moved the launch date to April 28. Please update \u2714 \u2714 \u2714 \u2714 \u2714 | target to stay on track for launch day."
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 7,
+    "total_time_s": 52.837764501571655,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.6497130393981934
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.962657690048218
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.280341148376465
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.666264533996582
+      },
+      {
+        "step": 5,
+        "action": "fill(#room-number, \"312\")",
+        "tool_call": "fill({\"id\": \"room-number\", \"text\": \"312\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 46.66570329666138
+      },
+      {
+        "step": 6,
+        "action": "type(\"312\")",
+        "tool_call": "type_text({\"text\": \"312\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.75319266319275
+      },
+      {
+        "step": 7,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 52.777979373931885
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Good morning everyone. | Good Morning Everyone. Here are this week's | We have a few logistical changes to go over. | Now looking at the floor plan. | For those of you wondering, the next meeting will be in Rosh Hashanah. | is closed next week for maintenance. | you"
+  },
+  {
+    "task_id": "B-M1",
+    "category": "B_meeting",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 8,
+    "total_time_s": 56.637948513031006,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(400, 200)",
+        "tool_call": "click({\"x\": 400, \"y\": 200})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.7585082054138184
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 7.201431751251221
+      },
+      {
+        "step": 3,
+        "action": "click(400, 200)",
+        "tool_call": "click({\"x\": 400, \"y\": 200})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.235130071640015
+      },
+      {
+        "step": 4,
+        "action": "key(ArrowRight)",
+        "tool_call": "key({\"key\": \"ArrowRight\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.277291059494019
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.816375255584717
+      },
+      {
+        "step": 6,
+        "action": "fill(#missingValue, \"15.4%\")",
+        "tool_call": "fill({\"id\": \"missingValue\", \"text\": \"15.4%\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.96670484542847
+      },
+      {
+        "step": 7,
+        "action": "click(870, 350)",
+        "tool_call": "click({\"x\": 870, \"y\": 350})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.34939765930176
+      },
+      {
+        "step": 8,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 56.56223964691162
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "start with the agenda. | Let's start with the agenda. We'll cover Revenue | acquisition, growth rates, and projections. | looking strong.\"  | America continues to lead but AIPAC is growing fast. | Now the growth rates. Q1 was 11.5% | Looking ahead, we're projecting 18% growth next quarter."
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 43.57099652290344,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.212291717529297
+      },
+      {
+        "step": 2,
+        "action": "fill(#callback-number, \"555-0134\")",
+        "tool_call": "fill({\"id\": \"callback-number\", \"text\": \"555-0134\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.29973649978638
+      },
+      {
+        "step": 3,
+        "action": "click(512, 512)",
+        "tool_call": "click({\"x\": 512, \"y\": 512})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.48691391944885
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.50241661071777
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "This is Janet from West Virginia. | medical. Please call us back at 55501. | you"
+  },
+  {
+    "task_id": "G-E2",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 5,
+    "total_time_s": 47.37898397445679,
+    "steps": [
+      {
+        "step": 1,
+        "action": "type(\"Jennifer\")",
+        "tool_call": "type_text({\"text\": \"Jennifer\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.673360586166382
+      },
+      {
+        "step": 2,
+        "action": "fill(#caller-name, \"Jennifer Martinez\")",
+        "tool_call": "fill({\"id\": \"caller-name\", \"text\": \"Jennifer Martinez\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 37.67866063117981
+      },
+      {
+        "step": 3,
+        "action": "click(512, 398)",
+        "tool_call": "click({\"x\": 512, \"y\": 398})",
+        "result_val": "incorrect",
+        "elapsed_s": 41.24632453918457
+      },
+      {
+        "step": 4,
+        "action": "key(Enter)",
+        "tool_call": "key({\"key\": \"Enter\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.27525997161865
+      },
+      {
+        "step": 5,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 47.31139612197876
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Hello, this is Jennifer. | Jennifer Martinez calling about your appointment on Wednesday. Please confirm. | you | you"
+  },
+  {
+    "task_id": "G-M1",
+    "category": "G_phone",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "support_selected",
+    "steps_taken": 3,
+    "total_time_s": 11.41663932800293,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(544, 496)",
+        "tool_call": "click({\"x\": 544, \"y\": 496})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.3168747425079346
+      },
+      {
+        "step": 2,
+        "action": "click(650, 440)",
+        "tool_call": "click({\"x\": 650, \"y\": 440})",
+        "result_val": "support_selected",
+        "elapsed_s": 8.422969102859497
+      },
+      {
+        "step": 3,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "support_selected",
+        "elapsed_s": 11.357693433761597
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": ". | Press 1 for sales"
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 42.57045769691467,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Paris\")",
+        "tool_call": "speak({\"text\": \"Paris\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.244563102722168
+      },
+      {
+        "step": 2,
+        "action": "fill(#answer, \"Paris\")",
+        "tool_call": "fill({\"id\": \"answer\", \"text\": \"Paris\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 36.2512366771698
+      },
+      {
+        "step": 3,
+        "action": "click(676, 380)",
+        "tool_call": "click({\"x\": 676, \"y\": 380})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.49766230583191
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.50238513946533
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Let's start with a simple question. | a simple question. What is the capital of | you"
+  },
+  {
+    "task_id": "H-E2",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "name_spoken_correct",
+    "steps_taken": 4,
+    "total_time_s": 13.196084260940552,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"Alexander Thompson\")",
+        "tool_call": "speak({\"text\": \"Alexander Thompson\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.1837892532348633
+      },
+      {
+        "step": 2,
+        "action": "type(\"Alexander Thompson\")",
+        "tool_call": "type_text({\"text\": \"Alexander Thompson\"})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 7.273763179779053
+      },
+      {
+        "step": 3,
+        "action": "click(750, 350)",
+        "tool_call": "click({\"x\": 750, \"y\": 350})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 10.286772012710571
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "name_spoken_correct",
+        "elapsed_s": 13.125994682312012
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "Please state your full name as shown in the video. | State your full name as shown on your profile. | you"
+  },
+  {
+    "task_id": "H-M1",
+    "category": "H_interview",
+    "difficulty": "medium",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 14.136062145233154,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 3.452923059463501
+      },
+      {
+        "step": 2,
+        "action": "speak(\"The total revenue shown in the report is $4.2 million.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is $4.2 million.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.5105578899383545
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.167102813720703
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.077006101608276
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Looking at the report on your screen. | report on your screen. What is the total revenue figure? | you"
+  }
+]

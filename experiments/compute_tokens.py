@@ -15,7 +15,7 @@ Pricing (May 2026, public API list prices):
 import json, math
 from pathlib import Path
 
-RESULTS = Path("/home/ubuntu/adaptive-observation-paper/results")
+RESULTS = Path(__file__).resolve().parents[1] / "results"
 
 PRICING = {
     "claude-sonnet-4-6": (3.0, 15.0),

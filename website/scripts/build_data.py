@@ -74,20 +74,29 @@ def summarize(name, label, model, mode, group=None):
     }
 
 
-# ── 1. Main results: six models, standard vs aoi_full (v9 full 100) ──
+# ── 1. Main results: nine models (Table 1, unified), standard vs aoi_full ──
+# Closed-source first, then open-source, matching the paper's Table 1 ordering.
+# `outlier=True` marks Gemini 3 Flash: keyframe-token dilution regresses it, so it
+# is excluded from the headline "+17 to +48 pp" band (paper abstract).
 MAIN = [
-    ("Claude Sonnet 4.6", "v9_full_100_claude_standard.json", "v9_full_100_claude_aoi.json"),
-    ("GPT-5.4", "v9_full_100_gpt54_standard.json", "v9_full_100_gpt54_aoi.json"),
-    ("Gemini 2.5 Flash", "v9_full_100_gemini25flash_standard.json", "v9_full_100_gemini25flash_aoi.json"),
-    ("Grok-4", "v10_grok4_standard.json", "v10_grok4_aoi_full.json"),
-    ("EvoCUA-32B", "v9_full_100_evocua32b_standard.json", "v9_full_100_evocua32b_aoi.json"),
-    ("Fara-7B", "v9_full_100_fara7b_standard.json", "v9_full_100_fara7b_aoi.json"),
+    # model, standard_file, aoi_file, group, outlier
+    ("Claude Sonnet 4.6", "v9_full_100_claude_standard.json", "v9_full_100_claude_aoi.json", "closed", False),
+    ("GPT-5.4", "v9_full_100_gpt54_standard.json", "v9_full_100_gpt54_aoi.json", "closed", False),
+    ("Gemini 2.5 Flash", "v9_full_100_gemini25flash_standard.json", "v9_full_100_gemini25flash_aoi.json", "closed", False),
+    ("Gemini 3 Flash", "v10c_gemini3flash_standard.json", "v10c_gemini3flash_aoi_full.json", "closed", True),
+    ("Grok-4", "v10_grok4_standard.json", "v10_grok4_aoi_full.json", "closed", False),
+    ("Grok-4.3", "v10c_grok43_standard.json", "v10c_grok43_aoi_full.json", "closed", False),
+    ("Grok-4-fast-reasoning", "v10c_grok4fast_standard.json", "v10c_grok4fast_aoi_full.json", "closed", False),
+    ("EvoCUA-32B", "v9_full_100_evocua32b_standard.json", "v9_full_100_evocua32b_aoi.json", "open", False),
+    ("Fara-7B", "v9_full_100_fara7b_standard.json", "v9_full_100_fara7b_aoi.json", "open", False),
 ]
 main_results = []
-for model, std_f, aoi_f in MAIN:
+for model, std_f, aoi_f, group, outlier in MAIN:
     std, aoi = load(std_f), load(aoi_f)
     main_results.append({
         "model": model,
+        "group": group,
+        "outlier": outlier,
         "standard": rate(std),
         "aoi_full": rate(aoi),
         "delta": round(rate(aoi)["rate"] - rate(std)["rate"], 1),
@@ -100,6 +109,18 @@ for model, std_f, aoi_f in MAIN:
             "aoi_full": per_difficulty(aoi),
         },
     })
+
+# Headline band: min/max delta over the non-outlier models (paper: "+17 to +48 pp").
+_band = [m["delta"] for m in main_results if not m["outlier"]]
+headline = {
+    "delta_min": round(min(_band), 1),
+    "delta_max": round(max(_band), 1),
+    "n_models": len(main_results),
+    "n_closed": sum(1 for m in main_results if m["group"] == "closed"),
+    "n_open": sum(1 for m in main_results if m["group"] == "open"),
+    "best_abs_model": max(main_results, key=lambda m: m["aoi_full"]["rate"])["model"],
+    "best_abs_rate": max(m["aoi_full"]["rate"] for m in main_results),
+}
 
 # ── 2. Ablation tiers (Claude Sonnet 4.6, v9 full 100) ──
 ABLATION = [
@@ -134,17 +155,28 @@ for f in sorted((RES / "theta_sweep").glob("theta_0*.json")):
         avg_kf = round(sum(n_kf) / len(n_kf), 2)
     theta_sweep.append({"theta": theta, **r, "avg_keyframes_per_step": avg_kf})
 
-# ── 5. Streaming baselines (12-task audio subset) ──
-subset_openai = load("v10_subset_openai_realtime_v2.json")
-subset_gemini = load("v10_subset_gemini_live.json")
-subset_ids = [r["task_id"] for r in subset_openai]
+# ── 5. Streaming baselines (12-task audio subset, paper Table 5) ──
+# Native-streaming / realtime systems vs. AOI on the 12 spoken-content tasks
+# (3 each from Podcast, Meeting, Phone, Interview). The decisive contrast is
+# gpt-realtime-2 alone (2/12) vs. the same model behind the AOI scaffold (11/12):
+# the deficit is action-grounding, not perception.
+subset_ids = [r["task_id"] for r in load("v10_subset_gemini_live.json")]
 claude_aoi = load("v9_full_100_claude_aoi.json")
 aoi_on_subset = [r for r in claude_aoi if r["task_id"] in subset_ids]
-streaming = [
-    {"system": "AOI full (Claude Sonnet 4.6)", **rate(aoi_on_subset)},
-    {"system": "OpenAI Realtime", **rate(subset_openai)},
-    {"system": "Gemini Live", **rate(subset_gemini)},
+STREAMING = [
+    # system label, file (None = AOI reference), vision?, highlight?
+    ("Gemini Live (2.5)", "v10_subset_gemini_live.json", False, False),
+    ("OpenAI Realtime (gpt-4o)", "v10_subset_openai_realtime.json", True, False),
+    ("Grok Voice — audio only", "v10_subset_grok_voice_noscaffold.json", False, False),
+    ("Grok Voice — + AOI scaffold", "v10_subset_grok_voice.json", False, False),
+    ("gpt-realtime-2 — alone", "v10_subset_openai_realtime_ws_noscaffold.json", True, False),
+    ("gpt-realtime-2 — + AOI scaffold", "v10_subset_openai_realtime_ws.json", True, True),
+    ("AOI full (Claude Sonnet 4.6)", None, True, True),
 ]
+streaming = []
+for system, fname, vision, highlight in STREAMING:
+    recs = aoi_on_subset if fname is None else load(fname)
+    streaming.append({"system": system, "vision": vision, "highlight": highlight, **rate(recs)})
 
 # ── 6. Newer models / Gemini-3 four-way decomposition ──
 fourway = [
@@ -231,8 +263,64 @@ for model, full_f, audio_f in KF_CONTEXT:
         "per_category_delta": per_cat_delta,
     })
 
+# ── 13. Per-step gate activity (Claude AOI full) ──
+# Overall stats are computed from the same run shown elsewhere; the per-family
+# visual/audio/both/idle split is the paper's Figure (fig:obsactivity), which
+# uses gate-activation logs for the fine attribution. The any-keyframe and
+# any-audio per-family totals of that figure equal this run's, by construction.
+_steps = [s for r in load("v9_full_100_claude_aoi.json") for s in r.get("steps", [])]
+_n = len(_steps)
+_has_kf = lambda s: (s.get("n_keyframes") or 0) > 0
+_has_au = lambda s: bool((s.get("audio_text") or "").strip())
+gate_activity = {
+    "total_steps": _n,
+    "kf_pct": round(100 * sum(1 for s in _steps if _has_kf(s)) / _n, 1),
+    "audio_pct": round(100 * sum(1 for s in _steps if _has_au(s)) / _n, 1),
+    "idle_pct": round(100 * sum(1 for s in _steps if not _has_kf(s) and not _has_au(s)) / _n, 1),
+    "total_keyframes": sum((s.get("n_keyframes") or 0) for s in _steps),
+    "kf_per_step": round(sum((s.get("n_keyframes") or 0) for s in _steps) / _n, 2),
+    "per_family": [
+        {"family": "Podcast",    "visual": 0.0,  "audio": 34.3, "both": 8.6,  "idle": 57.1},
+        {"family": "Meeting",    "visual": 23.5, "audio": 47.0, "both": 26.5, "idle": 3.0},
+        {"family": "Screencast", "visual": 25.6, "audio": 0.0,  "both": 2.6,  "idle": 71.8},
+        {"family": "Carousel",   "visual": 60.7, "audio": 0.0,  "both": 0.0,  "idle": 39.3},
+        {"family": "Dashboard",  "visual": 28.8, "audio": 0.0,  "both": 0.0,  "idle": 71.2},
+        {"family": "Transient",  "visual": 15.8, "audio": 0.0,  "both": 0.0,  "idle": 84.2},
+        {"family": "Phone",      "visual": 0.0,  "audio": 26.3, "both": 0.0,  "idle": 73.7},
+        {"family": "Interview",  "visual": 0.0,  "audio": 37.0, "both": 0.0,  "idle": 63.0},
+        {"family": "Collab",     "visual": 2.6,  "audio": 10.3, "both": 7.7,  "idle": 79.5},
+        {"family": "Games",      "visual": 36.4, "audio": 0.0,  "both": 0.0,  "idle": 63.6},
+    ],
+}
+
+# ── 14. DynaCU-Real-Local: real recordings + cross-engine ASR (Claude) ──
+# 12 tasks built from real asciinema screencasts and espeak audio (a different
+# TTS engine than the synthetic benchmark). Standard and AOI tie at 11/12.
+REAL_SUB = [("R_pod", "Podcast"), ("R_meet", "Meeting"), ("R_cast", "Screencast"), ("R_voice", "Voice")]
+SUB_ORDER = [name for _, name in REAL_SUB]
+def real_sub(tid):
+    return next((name for pre, name in REAL_SUB if tid.startswith(pre)), "Other")
+def real_row(recs, mode, label):
+    by = defaultdict(lambda: [0, 0])
+    for r in recs:
+        s = real_sub(r["task_id"]); by[s][1] += 1
+        if passed(r):
+            by[s][0] += 1
+    return {"mode": mode, "label": label, **rate(recs),
+            "per_sub": {s: {"pass": by[s][0], "total": by[s][1]} for s in SUB_ORDER}}
+realcontent = {
+    "sub_order": SUB_ORDER,
+    "modes": [
+        real_row(load("v10_realcontent_claude_standard.json"), "standard", "Standard"),
+        real_row(load("v10_realcontent_claude_aoi.json"), "aoi_full", "AOI full"),
+    ],
+}
+
 results = {
     "main_results": main_results,
+    "headline": headline,
+    "gate_activity": gate_activity,
+    "realcontent": realcontent,
     "ablation": ablation,
     "oss_selection": oss_selection,
     "theta_sweep": theta_sweep,

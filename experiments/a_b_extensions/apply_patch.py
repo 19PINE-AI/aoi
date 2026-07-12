@@ -13,7 +13,7 @@ import json
 import re
 from pathlib import Path
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[2]
 EXT = ROOT / "results/extensions"
 TPL = ROOT / "paper/v12_patch.tex.template"
 OUT = ROOT / "paper/v12_patch.tex"

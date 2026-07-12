@@ -110,7 +110,11 @@ def test_stats_tracking():
     stats = extractor.get_stats()
     assert stats["samples_total"] == 5
     assert stats["pixel_gate_passed"] <= stats["samples_total"]
-    assert stats["keyframes_emitted"] <= stats["clip_gate_passed"]
+    # A keyframe is emitted only after the pixel gate passes, via either the CLIP
+    # path or the large-pixel-change path, so emits are bounded by the pixel gate
+    # and the CLIP-triggered emits are a subset of all emits.
+    assert stats["keyframes_emitted"] <= stats["pixel_gate_passed"]
+    assert stats["clip_gate_passed"] <= stats["keyframes_emitted"]
 
 
 def test_reset_anchor():

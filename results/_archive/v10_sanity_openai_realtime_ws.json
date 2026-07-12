@@ -1,0 +1,192 @@
+[
+  {
+    "task_id": "C-E1",
+    "category": "C_video",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "command_correct",
+    "steps_taken": 3,
+    "total_time_s": 9.2546968460083,
+    "steps": [
+      {
+        "step": 1,
+        "action": "fill(#answerInput, \"git clone https://github.com/example/repo.git\")",
+        "tool_call": "fill({\"id\": \"answerInput\", \"text\": \"git clone https://github.com/example/repo.git\"})",
+        "result_val": "command_correct",
+        "elapsed_s": 3.372319459915161
+      },
+      {
+        "step": 2,
+        "action": "click(640, 613)",
+        "tool_call": "click({\"x\": 640, \"y\": 613})",
+        "result_val": "command_correct",
+        "elapsed_s": 6.2949488162994385
+      },
+      {
+        "step": 3,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "command_correct",
+        "elapsed_s": 9.185915231704712
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "you | you",
+    "wall_s": 30.7
+  },
+  {
+    "task_id": "E-E1",
+    "category": "E_dashboard",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "alert_triggered",
+    "steps_taken": 3,
+    "total_time_s": 9.803914070129395,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "no_alert",
+        "elapsed_s": 3.877861499786377
+      },
+      {
+        "step": 2,
+        "action": "click(640, 595)",
+        "tool_call": "click({\"x\": 640, \"y\": 595})",
+        "result_val": "alert_triggered",
+        "elapsed_s": 6.830669403076172
+      },
+      {
+        "step": 3,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "alert_triggered",
+        "elapsed_s": 9.730745792388916
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "you | you",
+    "wall_s": 31.2
+  },
+  {
+    "task_id": "F-E1",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "form_accepted",
+    "steps_taken": 4,
+    "total_time_s": 13.111653566360474,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 433)",
+        "tool_call": "click({\"x\": 640, \"y\": 433})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 3.3726894855499268
+      },
+      {
+        "step": 2,
+        "action": "fill(#emailInput, \"user@example.com\")",
+        "tool_call": "fill({\"id\": \"emailInput\", \"text\": \"user@example.com\"})",
+        "result_val": "form_not_accepted",
+        "elapsed_s": 7.006655931472778
+      },
+      {
+        "step": 3,
+        "action": "click(640, 433)",
+        "tool_call": "click({\"x\": 640, \"y\": 433})",
+        "result_val": "form_accepted",
+        "elapsed_s": 9.993457078933716
+      },
+      {
+        "step": 4,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "form_accepted",
+        "elapsed_s": 13.037188291549683
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": "you | you | you",
+    "wall_s": 34.5
+  },
+  {
+    "task_id": "F-E2",
+    "category": "F_transient",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "cookies_dismissed",
+    "steps_taken": 2,
+    "total_time_s": 6.493345022201538,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(1194, 880)",
+        "tool_call": "click({\"x\": 1194, \"y\": 880})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 3.5498669147491455
+      },
+      {
+        "step": 2,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "cookies_dismissed",
+        "elapsed_s": 6.42917275428772
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "you",
+    "wall_s": 27.8
+  },
+  {
+    "task_id": "I-E1",
+    "category": "I_collab",
+    "difficulty": "easy",
+    "model_name": "gpt-realtime-2",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "text_incorrect",
+    "steps_taken": 3,
+    "total_time_s": 9.47235631942749,
+    "steps": [
+      {
+        "step": 1,
+        "action": "click(640, 413)",
+        "tool_call": "click({\"x\": 640, \"y\": 413})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 3.3787693977355957
+      },
+      {
+        "step": 2,
+        "action": "type(\"The deadline for the project is next Friday.\")",
+        "tool_call": "type_text({\"text\": \"The deadline for the project is next Friday.\"})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 6.464175224304199
+      },
+      {
+        "step": 3,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "text_incorrect",
+        "elapsed_s": 9.411815881729126
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": "Please type the following into the chat box. | Please type the following into the document, the deadline for the proposal is 06-07-2018. | day.",
+    "wall_s": 13.4
+  }
+]

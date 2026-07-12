@@ -29,7 +29,7 @@ import subprocess
 import time
 from pathlib import Path
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[1]
 ASSETS = ROOT / "benchmark_env" / "realcontent_assets"
 
 

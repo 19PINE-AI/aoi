@@ -30,7 +30,7 @@ import urllib.request
 from pathlib import Path
 from textwrap import dedent
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[1]
 ASSET_DIR = ROOT / "benchmark_env" / "realcontent_assets"
 HTML_DIR = ROOT / "benchmark_env" / "html_tasks"
 

@@ -1,0 +1,978 @@
+[
+  {
+    "task_id": "A-E1",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 57.57506227493286,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.993856430053711
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.695694208145142
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.576509952545166
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.222618103027344
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 25.69943594932556
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.17132568359375
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.85660743713379
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.35021758079529
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.87032341957092
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 48.264408826828
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.057435035705566
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.519057273864746
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "A-E2",
+    "category": "A_podcast",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": true,
+    "result_val": "price_correct",
+    "steps_taken": 9,
+    "total_time_s": 42.458805084228516,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.419440031051636
+      },
+      {
+        "step": 2,
+        "action": "click(400, 300)",
+        "tool_call": "click({\"x\": 400, \"y\": 300})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.577104806900024
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 15.357229948043823
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 19.99318504333496
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 24.4073429107666
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 28.895922660827637
+      },
+      {
+        "step": 7,
+        "action": "click(400, 350)",
+        "tool_call": "click({\"x\": 400, \"y\": 350})",
+        "result_val": "incorrect",
+        "elapsed_s": 33.342047452926636
+      },
+      {
+        "step": 8,
+        "action": "type(\"49.99\")",
+        "tool_call": "type_text({\"text\": \"49.99\"})",
+        "result_val": "price_correct",
+        "elapsed_s": 38.79111409187317
+      },
+      {
+        "step": 9,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "price_correct",
+        "elapsed_s": 42.39940643310547
+      }
+    ],
+    "error": null,
+    "final_score": 1.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "A-M1",
+    "category": "A_podcast",
+    "difficulty": "medium",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 79.68727231025696,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 48.395726442337036
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 51.401143312454224
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 54.2555775642395
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.09877133369446
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 59.91928195953369
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 62.74275207519531
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 65.55543518066406
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 68.37359237670898
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 71.19136762619019
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 74.00447869300842
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 76.82471489906311
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 79.63775706291199
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "B-E1",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 4,
+    "total_time_s": 100.053307056427,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 20.002013206481934
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.193641424179077
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 52.121912479400635
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 99.99421763420105
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "B-E2",
+    "category": "B_meeting",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 79.83126831054688,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 48.24785041809082
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 51.32954549789429
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 54.17812919616699
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 57.02536916732788
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 59.89312958717346
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 62.74392104148865
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 65.59733390808105
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 68.426913022995
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 71.27783274650574
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 74.11821413040161
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 76.94509482383728
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 79.77401232719421
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "B-M1",
+    "category": "B_meeting",
+    "difficulty": "medium",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 51.68548583984375,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.410006999969482
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.42071795463562
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 14.658982992172241
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.721988677978516
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.875150203704834
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.964871883392334
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.183822631835938
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.21363162994385
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 39.25044560432434
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 43.42759847640991
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 47.55874300003052
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 51.62836670875549
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "G-E1",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 82.37085318565369,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.998590469360352
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 53.83836221694946
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 56.68714952468872
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 59.54164743423462
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 62.39159059524536
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 65.25567412376404
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 68.10221600532532
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 70.95766067504883
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 73.80538058280945
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 76.65804386138916
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 79.47511458396912
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 82.31986999511719
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "G-E2",
+    "category": "G_phone",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 51.589322328567505,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.4686057567596436
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 9.679928302764893
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 13.943161964416504
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 18.36540985107422
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 22.44299864768982
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.529051065444946
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 30.772716283798218
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 34.89476561546326
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 38.78308939933777
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 42.97355246543884
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 47.347289085388184
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 51.50227499008179
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "G-M1",
+    "category": "G_phone",
+    "difficulty": "medium",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 81.9168872833252,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 4.617291450500488
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 52.66340661048889
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 56.19705677032471
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 59.04631733894348
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 61.89031767845154
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 64.73571228981018
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 67.58627009391785
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 70.45151543617249
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 73.32899785041809
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 76.17507767677307
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 79.0248372554779
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "(none)",
+        "result_val": "incorrect",
+        "elapsed_s": 81.8681960105896
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "H-E1",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 1,
+    "total_time_s": 5.4117271900177,
+    "steps": [
+      {
+        "step": 1,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 5.35467529296875
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "H-E2",
+    "category": "H_interview",
+    "difficulty": "easy",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 12,
+    "total_time_s": 57.69433903694153,
+    "steps": [
+      {
+        "step": 1,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.247883081436157
+      },
+      {
+        "step": 2,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 11.447306156158447
+      },
+      {
+        "step": 3,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 16.640634775161743
+      },
+      {
+        "step": 4,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 21.56250786781311
+      },
+      {
+        "step": 5,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 26.709011793136597
+      },
+      {
+        "step": 6,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 31.322916746139526
+      },
+      {
+        "step": 7,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 35.612213373184204
+      },
+      {
+        "step": 8,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 40.22831177711487
+      },
+      {
+        "step": 9,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 44.876150369644165
+      },
+      {
+        "step": 10,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 49.14474439620972
+      },
+      {
+        "step": 11,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 53.543936252593994
+      },
+      {
+        "step": 12,
+        "action": "wait()",
+        "tool_call": "wait({})",
+        "result_val": "incorrect",
+        "elapsed_s": 57.63981056213379
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  },
+  {
+    "task_id": "H-M1",
+    "category": "H_interview",
+    "difficulty": "medium",
+    "model_name": "grok-voice-latest",
+    "observation_mode": "openai_realtime_ws",
+    "success": false,
+    "result_val": "incorrect",
+    "steps_taken": 2,
+    "total_time_s": 10.7069673538208,
+    "steps": [
+      {
+        "step": 1,
+        "action": "speak(\"The total revenue shown in the report is 2,450,000.\")",
+        "tool_call": "speak({\"text\": \"The total revenue shown in the report is 2,450,000.\"})",
+        "result_val": "incorrect",
+        "elapsed_s": 6.782470941543579
+      },
+      {
+        "step": 2,
+        "action": "done",
+        "tool_call": "done({})",
+        "result_val": "incorrect",
+        "elapsed_s": 10.648107290267944
+      }
+    ],
+    "error": null,
+    "final_score": 0.0,
+    "heard_audio": ""
+  }
+]

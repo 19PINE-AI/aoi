@@ -35,7 +35,7 @@ import sys
 import time
 from pathlib import Path
 
-ROOT = Path("/home/ubuntu/adaptive-observation-paper")
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from experiments.browser_eval import BrowserEvaluator  # noqa: E402
