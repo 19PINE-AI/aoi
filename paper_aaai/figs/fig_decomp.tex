@@ -1,0 +1,45 @@
+\documentclass[tikz,border=2pt]{standalone}
+
+\usepackage{amsmath}
+\usepackage{xcolor}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc,decorations.pathreplacing,patterns,shapes.geometric}
+\usepackage{pgfplots}
+\pgfplotsset{compat=1.18}
+\usepgfplotslibrary{groupplots,fillbetween}
+
+\definecolor{bestcolor}{HTML}{E8F5E9}
+\definecolor{gaincolor}{HTML}{1B5E20}
+\definecolor{cStandard}{HTML}{BF616A}
+\definecolor{cAOI}{HTML}{5E81AC}
+\definecolor{cDelta}{HTML}{A3BE8C}
+\definecolor{cVisual}{HTML}{D08770}
+\definecolor{cASR}{HTML}{B48EAD}
+\definecolor{cNarr}{HTML}{88C0D0}
+\definecolor{cAccent}{HTML}{EBCB8B}
+\definecolor{cGray}{HTML}{4C566A}
+\definecolor{cLightGray}{HTML}{D8DEE9}
+
+\begin{document}
+\begin{tikzpicture}
+\begin{axis}[
+    width=10.8cm, height=5.6cm, ybar stacked, bar width=20pt,
+    ymin=0, ymax=92, ylabel={Task success (\%)}, ylabel style={font=\small},
+    symbolic x coords={Claude, Gemini 2.5, GPT-5.4, EvoCUA, Fara},
+    xtick=data, xticklabel style={font=\scriptsize},
+    ytick={0,20,40,60,80}, yticklabel style={font=\small},
+    legend style={at={(0.5,1.18)}, anchor=north, legend columns=3, font=\scriptsize,
+                  draw=cGray!30, /tikz/every even column/.append style={column sep=8pt}},
+    grid=major, major grid style={cLightGray!60}, axis line style={cGray}, tick style={cGray},
+    enlarge x limits=0.12,
+]
+\addplot[fill=cLightGray!75, draw=cGray!60] coordinates
+   {(Claude,38) (Gemini 2.5,21) (GPT-5.4,37) (EvoCUA,18) (Fara,17)};
+\addplot[fill=cAccent!75, draw=cAccent!90] coordinates
+   {(Claude,19) (Gemini 2.5,25) (GPT-5.4,11) (EvoCUA,16) (Fara,4)};
+\addplot[fill=cAOI!70, draw=cAOI!90] coordinates
+   {(Claude,25) (Gemini 2.5,23) (GPT-5.4,9) (EvoCUA,21) (Fara,13)};
+\legend{Standard (screenshot), $+$prompt format, $+$perception}
+\end{axis}
+\end{tikzpicture}
+\end{document}

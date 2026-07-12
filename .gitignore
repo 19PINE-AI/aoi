@@ -9,3 +9,7 @@ build/
 venv/
 node_modules/
 logs/
+*.aux
+*.bbl
+*.blg
+*.log
