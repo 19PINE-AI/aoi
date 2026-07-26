@@ -220,7 +220,7 @@ narration, and that the best channel combination is model-dependent.
   and a 50-task static control.
   \item Across eight CU models and two streaming baselines, we identify
   narration and model-specific channel selection as key factors
-  (Sections~\ref{sec:eval}--\ref{sec:newer}).
+  (Sections~\ref{sec:eval}--\ref{sec:model_sensitivity}).
 \end{enumerate}
 
 % ════════════════════════════════════════════════════════════
@@ -569,18 +569,22 @@ A narration-discarded control (Figure~\ref{fig:analysis}a) attributes most of na
 The keyframe channel is the most model-dependent: strongly positive with narration on Claude and Gemini~2.5, but regressing on Gemini~3 due to image-token dilution. Overall, AOI components must be tuned per model.
 
 % ════════════════════════════════════════════════════════════
-\section{Model Case Studies: Later-Released Models}
-\label{sec:newer}
+\section{Model Sensitivity Study}
+\label{sec:model_sensitivity}
 % ════════════════════════════════════════════════════════════
 
-We evaluated AOI on three additional models released after the main experiments (Table~\ref{tab:newer}).
+To characterize sensitivity to the underlying model and its inference latency,
+we evaluate AOI on three additional model configurations
+(Table~\ref{tab:model_sensitivity}).
 
 \label{sec:grok}\label{sec:why_g3}\label{sec:keyframe_probe}\label{sec:diagmap}
 
 \begin{table}[t]
 \centering
-\caption{Results on later-released models (100 tasks each). Gemini~3~Flash tests whether AOI gains transfer to the next generation, while the Grok rows isolate inference latency.}
-\label{tab:newer}
+\caption{Model-sensitivity results on DynaCU-Bench (100 tasks per
+configuration). Gemini~3~Flash probes sensitivity to observation composition,
+while the Grok configurations probe sensitivity to inference latency.}
+\label{tab:model_sensitivity}
 \small
 \setlength{\tabcolsep}{4pt}
 \begin{tabular}{@{}lccc@{}}
@@ -596,7 +600,10 @@ Grok-4-fast-reasoning        & 19 & 47 & $+$28 \\
 \end{table}
 
 \textbf{Grok models} are primarily limited by high inference latency rather than perception.
-The original Grok-4 achieves only +21\,pp with AOI due to frequent timeouts. A lower-latency variant and the newer Grok-4.3 show substantially stronger performance (+28\,pp and +40\,pp respectively), indicating that reducing latency unlocks much of AOI's potential.
+Grok-4 achieves only +21\,pp with AOI due to frequent timeouts. The
+Grok-4-fast-reasoning and Grok-4.3 configurations achieve larger gains
+(+28\,pp and +40\,pp, respectively), indicating that reduced latency allows
+more of AOI's perceptual benefit to be realized within the task budget.
 
 \textbf{Gemini~3~Flash} achieves only a modest +9\,pp net gain. A four-way decomposition (Figure~\ref{fig:gemini3}) reveals a cancellation of effects: audio and the structured scaffold help as usual, but the keyframe stream regresses by $-12$\,pp due to image-token dilution. Dropping keyframes alone recovers +21\,pp over the standard baseline, showing the default AOI bundle is mis-tuned for this model.
 
