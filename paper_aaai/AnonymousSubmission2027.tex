@@ -132,11 +132,29 @@
 \maketitle
 
 \begin{abstract}
-SWE-agent~\citep{sweagent} established the \emph{action} interface as an underexplored design axis for software-engineering agents. We make the analogous case for the \emph{observation} interface in computer-use (CU) agents. Current CU agents observe the world through periodic screenshots (every 3--5\,s) with no audio, leaving them blind to dynamic content and deaf to speech.
+Computer-use (CU) agents commonly condition each decision on one screenshot and
+receive no audio input. This action-coupled observation scheme omits transient
+visual content and speech that occur between decisions. We treat the
+\emph{observation interface}---when the environment is sampled, which
+modalities are captured, and how observations are represented and retained---as
+a system design dimension distinct from the underlying model and action space.
 
-We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a lightweight, model-agnostic perception layer that decouples continuous, adaptive observation from discrete actions. It has three gated components---inter-step keyframe capture, volume-gated audio transcription, and persistent model-generated visual narration---with almost zero overhead on static tasks.
+We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a
+perception layer that monitors the screen and system audio between decisions.
+AOI constructs a structured observation record from gated keyframes,
+volume-gated speech transcription, and model-generated visual narration that
+persists as text. It augments image-and-text CU models without retraining or
+changing their action spaces.
 
-On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static control), eight CU models from 7B to frontier scale gain $+17$ to $+48$\,pp with zero retraining (paired McNemar $p<10^{-3}$ for all); Claude Sonnet~4.6 reaches 78.7\% (3-seed mean). AOI also outperforms production streaming baselines on audio tasks (12/12 vs.\ 3/12 and 0/12). Three findings reframe CU perception: keyframe value emerges primarily through narration; narration mainly helps models articulate what they see; and the observation interface is not a fixed bundle---its optimal composition is model-specific.
+We evaluate AOI on \textbf{DynaCU-Bench}: 100 dynamic browser tasks across 10
+families, plus a 50-task static control. Across eight CU models from 7B
+open-source models to frontier systems, AOI improves task success by 17--48
+percentage points; Claude Sonnet~4.6 achieves a three-seed mean of 78.7\%
+(3.1\,pp standard deviation). On a 12-task audio subset, AOI-equipped Claude
+completes 12 tasks, compared with 3 for OpenAI Realtime and 0 for Gemini Live.
+Component analyses show that keyframes provide most of their value through
+visual narration and that the preferred observation channels depend on the
+underlying model.
 \end{abstract}
 
 % Uncomment the following to link to your code, datasets, an extended version or similar.
@@ -152,32 +170,57 @@ On \textbf{DynaCU-Bench} (100 dynamic browser tasks plus a 50-task static contro
 \label{sec:intro}
 % ════════════════════════════════════════════════════════════
 
-\textbf{Computer-use agents are blind between screenshots and deaf to audio.}
-Current CU agents perceive the world through static screenshots every 3--5 seconds with no audio channel.
-Between snapshots they miss videos, animations, and transient UI events. Furthermore, they have zero perception of meeting speeches, spoken instructions, or notification chimes.
-Therefore, an entire class of everyday tasks---watching screencasts, following meetings, and responding to voice prompts---remains out of reach.
+Most computer-use (CU) agents operate through a discrete observation--action
+loop: the model receives a screenshot, predicts an action, and receives another
+screenshot after execution~\citep{osworld,webarena,webvoyager}. Because
+observation occurs only at these action boundaries, transient content that
+disappears before the next screenshot never enters the trajectory.
+Screenshot-based agents also lack access to spoken instructions and dialogue.
+Such failures can therefore reflect missing input rather than insufficient
+reasoning or an inadequate action space.
 
-\textbf{The gap is real and unaddressed.}
-While screenshot-based agents have reached over 50\% on static benchmarks like OSWorld~\citep{osworld,surfer2,uitars2}, dynamic and audio-heavy tasks lag far behind. Video models struggle on temporal reasoning~\citep{guiworld,videowebarena,videogamebench,cuasuite}, and even recent surveys overlook the observation modality itself~\citep{cusurvey}.
+Prior work enriches individual screenshots~\citep{webarena,mind2web,setofmark,seeact},
+evaluates temporal reasoning in video
+environments~\citep{guiworld,videowebarena,videogamebench,cuasuite}, or processes continuous
+streams~\citep{geminilive,openairealtime}. These directions leave a distinct
+question: can an existing screenshot-based CU agent acquire and retain
+multimodal information between actions without retraining? We use
+\emph{observation interface} for the sampling time, modalities, representation,
+and retention of information supplied to an agent. Following work on action
+interfaces~\citep{sweagent}, we treat observation as independently configurable
+from the model.
 
-\textbf{The observation interface is a separable design axis.}
-Improving perception via model retraining is expensive and model-specific. Inspired by SWE-agent~\citep{sweagent}, which advanced the field by redesigning the \emph{action} interface rather than the model, we argue that the \emph{observation} interface is the analogous lever. Prior work enriches \emph{what} a single screenshot contains, but leaves \emph{when} the agent looks and through which senses largely untouched.
+We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a layer
+between the environment and an image-and-text CU agent. Between decisions, a
+pixel-change gate retains informative keyframes and a volume gate triggers
+speech transcription. The CU model also narrates new visual information, which
+persists as text after older images are removed. AOI supplies these channels
+with the current screenshot in a structured record without changing the model
+parameters or action space.
 
-Our core principle is \emph{decoupling continuous, adaptive, multimodal observation from discrete actions}.
+We evaluate AOI using \textbf{DynaCU-Bench}, which contains 100 dynamic browser
+tasks across 10 families, together with a 50-task static control. The main
+evaluation covers six closed- and open-source CU models, with
+two Qwen3-VL models as an independent replication. AOI improves all eight by
+17--48 percentage points without retraining. It completes 50/50 static-control
+tasks versus 43/50 for the screenshot baseline. On a 12-task audio subset,
+AOI-equipped Claude completes all tasks, versus 3 for OpenAI Realtime and 0 for
+Gemini Live.
 
-\textbf{Our approach.}
-We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a lightweight
-perception layer placed between the environment and any image-based CU model.
-AOI uses three gated components:
-inter-step keyframe capture, volume-gated audio transcription, and
-model-generated visual narration that persists as text. It has near-zero overhead on static tasks and no retraining is required. However, the optimal component mix is model-specific.
+Ablations show that both the structured record and new perceptual input
+contribute to the gains, that keyframes provide most of their value through
+narration, and that the best channel combination is model-dependent.
 
 \textbf{Contributions.}
 \begin{enumerate}
-  \item We identify the \textbf{observation interface} as a separable CU design axis, complementary to SWE-agent's action interface, with \emph{decoupling observation from action} as the core principle.
-  \item We introduce the \textbf{Agent-Computer Observation Interface (AOI)}, a model-agnostic perception layer with three gated components. We release AOI together with \textbf{DynaCU-Bench}, a benchmark of 100 dynamic tasks and a static task control set.
-  \item AOI delivers significant gains across eight CU modelson dynamic tasks with zero retraining (Section~\ref{sec:eval}), without harming static work.
-  \item We decompose the gains: keyframe value emerges mainly through narration, and the optimal component mix is model-specific (Sections~\ref{sec:analysis}--\ref{sec:newer}).
+  \item We formulate the observation interface through sampling time, modality,
+  representation, and retention, and develop AOI to decouple observation from
+  action.
+  \item We introduce DynaCU-Bench: 100 dynamic browser tasks across 10 families
+  and a 50-task static control.
+  \item Across eight CU models and two streaming baselines, we identify
+  narration and model-specific channel selection as key factors
+  (Sections~\ref{sec:eval}--\ref{sec:newer}).
 \end{enumerate}
 
 % ════════════════════════════════════════════════════════════
@@ -217,7 +260,7 @@ The AOI is a lightweight, model-agnostic perception layer inserted between the e
 AOI has three gated components (Figure~\ref{fig:architecture}), each preceded by a fast (sub-millisecond) gate that skips processing on static or silent content. Additional cost when gates fire is dominated by CLIP-ViT-B/16 ($\sim$7\,ms) for visuals and Whisper large-v3 for audio.
 
 \begin{enumerate}[label=(\arabic*)]
-  \item \textbf{Inter-step keyframe capture}: Samples the screen at $\sim$3\,Hz and selects up to 5 keyframes per step using simple pixel-change gating (CLIP-based semantic filtering is optional and statistically equivalent).
+  \item \textbf{Inter-step keyframe capture}: Samples the screen at $\sim$3\,Hz and selects up to 5 keyframes per step using simple pixel-change gating (CLIP-based semantic filtering is optional).
   \item \textbf{Volume-gated audio observer}: RMS energy gate followed by Whisper large-v3 transcription, active only when speech is detected.
   \item \textbf{Visual narration context}: The CU model itself generates a brief description of new visual content as a side-output of each inference call. Narrations persist as text after images are pruned.
 \end{enumerate}
@@ -237,15 +280,13 @@ AOI has three gated components (Figure~\ref{fig:architecture}), each preceded by
 \label{sec:keyframes}
 
 Multiple selection strategies are possible---uniform fixed-rate sampling, pixel-level differencing, random sampling, or semantic filtering via CLIP embeddings~\citep{clip}.
-We use simple pixel-change gating since the methods are not statistically different (Table~\ref{tab:ablation_stats}): if fewer than 1\% of pixels changed since the last captured frame, the sample is skipped (cost: ${<}1$\,ms on CPU).
+We use simple pixel-change gating for its low overhead: if fewer than 1\% of pixels changed since the last captured frame, the sample is skipped (cost: ${<}1$\,ms on CPU).
 Algorithm~\ref{alg:keyframe} formalises the two-stage CLIP variant; the default selector drops the CLIP stage (lines~5--10) and uses only Stage~1.
 
 \begin{algorithm}[t]
 \caption{Two-stage adaptive keyframe extraction (CLIP variant).
-This algorithm is shown for completeness; the selection-method ablation in
-Section~\ref{sec:ablation} finds it statistically indistinguishable from
-the simpler pixel-only gate (Stage~1) and uniform / random sampling, so the
-default selector in every main result is Stage~1 alone.}
+This algorithm is shown for completeness; the default selector in every main
+result is the simpler pixel-only gate (Stage~1).}
 \label{alg:keyframe}
 \begin{algorithmic}[1]
 \REQUIRE Screen sample $x_t$, anchor embedding $e_\text{anchor}$, pixel threshold $\alpha$, CLIP threshold $\theta$
@@ -421,13 +462,13 @@ Both Qwen3-VL models reproduce the same trend: the 235B model improves by +42\,p
 \caption{Open-source replication on DynaCU-Bench (100 tasks) using Qwen3-VL models. Results use the same evaluation protocol as Figure~\ref{fig:mainresults}.}
 \label{tab:b1_oss}
 \small
-\begin{tabular}{@{}l cc cc c@{}}
+\begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Model} & \textbf{Standard} & \textbf{AOI full}
-& \textbf{$\Delta$}  & \textbf{$p$ (McNemar)} \\
+& \textbf{$\Delta$} \\
 \midrule
-235B-A22B & 22 & \textbf{64} & $+$42 & $4.5\times10^{-10}$ \\
-30B-A3B   & 18 & \textbf{42} & $+$24 & $1.8\times10^{-4}$ \\
+235B-A22B & 22 & \textbf{64} & $+$42 \\
+30B-A3B   & 18 & \textbf{42} & $+$24 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -491,25 +532,25 @@ On dynamic tasks, a control using only AOI's structured observation record (no k
 \label{fig:ablation}
 \end{figure}
 
-Figure~\ref{fig:ablation} shows incremental gains. Keyframe images add only +1\,pp as raw input but +10\,pp once narrated (Figure~\ref{fig:analysis}b), with benefits concentrated on Transient and Carousel tasks. Keyframe selection strategy has negligible impact (Table~\ref{tab:ablation_stats}). Audio transcription adds directional gains on audio families, while visual narration is the largest single component (+18\,pp).
+Figure~\ref{fig:ablation} shows incremental gains. Keyframe images add only +1\,pp as raw input but +10\,pp once narrated (Figure~\ref{fig:analysis}b), with benefits concentrated on Transient and Carousel tasks. Table~\ref{tab:ablation_results} reports results across keyframe selection strategies. Audio transcription adds directional gains on audio families, while visual narration is the largest single component (+18\,pp).
 
 \begin{table}[!h]
 \centering
-\caption{Pairwise McNemar exact mid-$p$ tests between successive ablation tiers
-on Claude Sonnet~4.6. The selection-method group is statistically indistinguishable, only the between-tier transitions are significant.}
-\label{tab:ablation_stats}
+\caption{Results for successive ablation configurations on Claude Sonnet~4.6.
+Total reports successful tasks out of 100.}
+\label{tab:ablation_results}
 \small
-\begin{tabular}{@{}l r l@{}}
+\begin{tabular}{@{}l r@{}}
 \toprule
-\textbf{Comparison} & \textbf{Total}  & \textbf{$p$} (McNemar) \\
+\textbf{Comparison} & \textbf{Total} \\
 \midrule
-Standard $\to$ Uniform 1\,FPS         & 38 / 58 &  $8.8 \times 10^{-5}$ \\
-Uniform 1\,FPS $\to$ Uniform 3\,FPS   & 58 / 56 &  $0.77$ \\
-Uniform 3\,FPS $\to$ Pixel-diff       & 56 / 58 &  $0.75$ \\
-Pixel-diff $\to$ Random keyframes      & 58 / 56 &  $0.69$ \\
-Random keyframes $\to$ CLIP adaptive   & 56 / 58 &  $0.75$ \\
-CLIP adaptive $\to$ AOI visual+ASR     & 58 / 64 &  $0.18$ \\
-AOI visual+ASR $\to$ AOI full          & 64 / 82 &  $5.3 \times 10^{-4}$ \\
+Standard $\to$ Uniform 1\,FPS         & 38 / 58 \\
+Uniform 1\,FPS $\to$ Uniform 3\,FPS   & 58 / 56 \\
+Uniform 3\,FPS $\to$ Pixel-diff       & 56 / 58 \\
+Pixel-diff $\to$ Random keyframes      & 58 / 56 \\
+Random keyframes $\to$ CLIP adaptive   & 56 / 58 \\
+CLIP adaptive $\to$ AOI visual+ASR     & 58 / 64 \\
+AOI visual+ASR $\to$ AOI full          & 64 / 82 \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -542,14 +583,14 @@ We evaluated AOI on three additional models released after the main experiments 
 \label{tab:newer}
 \small
 \setlength{\tabcolsep}{4pt}
-\begin{tabular}{@{}lcccc@{}}
+\begin{tabular}{@{}lccc@{}}
 \toprule
 \textbf{Model} & \textbf{Standard} & \textbf{AOI-full}
-& \textbf{$\Delta$} & \textbf{$p$ (McNemar)} \\
+& \textbf{$\Delta$} \\
 \midrule
-Gemini 3 Flash               & 36     & 45     & $+$9     & 0.18 \\
-Grok-4.3                     & 25  & 65  & $+$40  & $8.2\times10^{-10}$ \\
-Grok-4-fast-reasoning        & 19  & 47  & $+$28  & $4.9\times10^{-6}$ \\
+Gemini 3 Flash               & 36 & 45 & $+$9 \\
+Grok-4.3                     & 25 & 65 & $+$40 \\
+Grok-4-fast-reasoning        & 19 & 47 & $+$28 \\
 \bottomrule
 \end{tabular}
 \end{table}
