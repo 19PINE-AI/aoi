@@ -260,14 +260,6 @@ AOI is a model-agnostic perception layer between the environment and an existing
 \subsection{Architecture Overview}
 \label{sec:architecture}
 
-AOI has three components (Figure~\ref{fig:architecture}). A sub-millisecond pixel-change gate skips visual processing on static content, and an RMS energy gate skips transcription during silence. For changed frames, CLIP-ViT-B/16 adds approximately 7\,ms; audio processing is dominated by Whisper large-v3. The CU model generates visual narration when new visual observations are supplied.
-
-\begin{enumerate}[label=(\arabic*)]
-  \item \textbf{Inter-step keyframe capture}: Samples at $\sim$3\,Hz and selects up to five frames per step using pixel-change and CLIP-semantic gates.
-  \item \textbf{Volume-gated audio observer}: RMS energy gate followed by Whisper large-v3 transcription, active only when speech is detected.
-  \item \textbf{Visual narration context}: The CU model itself generates a brief description of new visual content as a side-output of each inference call. Narrations persist as text after images are pruned.
-\end{enumerate}
-
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_aoi_diagram.pdf}
@@ -276,6 +268,14 @@ AOI has three components (Figure~\ref{fig:architecture}). A sub-millisecond pixe
 \emph{Right:} AOI continuously monitors screen and audio streams, selects informative observations, and supplies them to the underlying CU model in a structured record. Textual narrations and transcripts persist after older images are removed.}
 \label{fig:architecture}
 \end{figure*}
+
+AOI has three components (Figure~\ref{fig:architecture}). A sub-millisecond pixel-change gate skips visual processing on static content, and an RMS energy gate skips transcription during silence. For changed frames, CLIP-ViT-B/16 adds approximately 7\,ms; audio processing is dominated by Whisper large-v3. The CU model generates visual narration when new visual observations are supplied.
+
+\begin{enumerate}[label=(\arabic*)]
+  \item \textbf{Inter-step keyframe capture}: Samples at $\sim$3\,Hz and selects up to five frames per step using pixel-change and CLIP-semantic gates.
+  \item \textbf{Volume-gated audio observer}: RMS energy gate followed by Whisper large-v3 transcription, active only when speech is detected.
+  \item \textbf{Visual narration context}: The CU model itself generates a brief description of new visual content as a side-output of each inference call. Narrations persist as text after images are pruned.
+\end{enumerate}
 
 \subsection{Inter-Step Keyframe Capture}
 \label{sec:keyframes}
@@ -318,9 +318,7 @@ Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations a
 \subsection{Observation Record}
 \label{sec:obsrecord}
 
-Before decision $t$, the model receives a structured record combining persistent text context (prior transcripts, narrations, and actions) with observations collected after action $t-1$ (new audio transcription, keyframes if any, and the latest screenshot). The structured scaffold also includes a compact list of DOM elements available for interaction. On static tasks, the perceptual input reduces to the latest screenshot. Figure~\ref{fig:obsrecord} shows an example.
-
-\begin{figure}[t]
+\begin{figure}[htbp]
 \centering
 \begin{tcolorbox}[
   colback=gray!3, colframe=black!40,
@@ -354,6 +352,8 @@ Prior observations persist as text, while the current step contributes a fresh a
 \label{fig:obsrecord}
 \end{figure}
 
+Before decision $t$, the model receives a structured record combining persistent text context (prior transcripts, narrations, and actions) with observations collected after action $t-1$ (new audio transcription, keyframes if any, and the latest screenshot). The structured scaffold also includes a compact list of DOM elements available for interaction. On static tasks, the perceptual input reduces to the latest screenshot. Figure~\ref{fig:obsrecord} shows an example.
+
 \subsection{Implementation}
 \label{sec:implementation}
 
@@ -370,8 +370,6 @@ We ran experiments on one Linux host with an NVIDIA RTX PRO 6000 Blackwell GPU (
 Existing CU benchmarks~\citep{osworld,webarena,webvoyager} focus almost exclusively on static tasks. We introduce \textbf{DynaCU-Bench}, a 100-task benchmark of realistic browser-based tasks that require dynamic visual or audio perception.
 
 The benchmark follows five design principles: tasks must be unsolvable from static screenshots, reflect real computer use, run reproducibly in a headless browser, cover audio, visual-temporal, and interaction axes, and include difficulty stratification.
-
-It spans 10 task families (Table~\ref{tab:categories}). Each family contains 10 tasks with balanced difficulty (3 easy, 4 medium, 3 hard).
 
 \begin{table*}[t]
 \centering
@@ -397,6 +395,8 @@ Each family has 3 easy, 4 medium, and 3 hard tasks.}
 \label{tab:categories}
 \end{table*}
 
+It spans 10 task families (Table~\ref{tab:categories}). Each family contains 10 tasks with balanced difficulty (3 easy, 4 medium, 3 hard).
+
 \subsection{Evaluation Protocol}
 \label{sec:evaluation-protocol}
 
@@ -419,19 +419,6 @@ These budgets bind only for the slowest models
 \subsection{Setup}
 \label{sec:setup}
 
-\textbf{CU models.}
-We evaluate Claude Sonnet 4.6 (\path{claude-sonnet-4-6})~\citep{anthropic2024claude}, GPT-5.4 (\path{gpt-5.4})~\citep{openai2026gpt54}, Gemini 2.5 Flash (\path{gemini-2.5-flash})~\citep{gemini25cu}, Grok-4 (\path{grok-4})~\citep{xai2026grok4}, EvoCUA-32B (\path{meituan/EvoCUA-32B-20260105})~\citep{evocua}, and Fara-7B (\path{microsoft/Fara-7B})~\citep{fara7b}. For the OpenRouter replications, we use \path{qwen/qwen3-vl-235b-a22b-instruct} and \path{qwen/qwen3-vl-30b-a3b-instruct}~\citep{qwen3vl} (Table~\ref{tab:b1_oss}). We cap every non-streaming response at 1,024 tokens and omit temperature, top-$p$, and API seeds, using provider/runtime defaults. We use a 4,096-token context for local vLLM models and float16 for Fara. We did not record EvoCUA dtype/quantization consistently, and we did not retain hosted snapshot revisions or OpenRouter's routed provider.
-
-\textbf{Observation configurations.}
-The primary contrast is between \textbf{Standard} (one screenshot per step, no audio---the
-current paradigm) and \textbf{AOI~full} (inter-step keyframes + audio
-transcription + visual narration). We evaluate both modes across all six models.
-All remaining modes are ablations and diagnostic controls run on Claude Sonnet~4.6
-(unless otherwise noted).
-
-\subsection{Main Results}
-\label{sec:main-results}
-
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_dynacu_bench_results.pdf}
@@ -439,16 +426,6 @@ All remaining modes are ablations and diagnostic controls run on Claude Sonnet~4
 AOI substantially improves task success across all evaluated CU models without retraining. Green labels indicate the absolute improvement over the standard screenshot baseline.}
 \label{fig:mainresults}
 \end{figure*}
-
-For example, on meeting tasks the standard agent often fails because it cannot hear spoken answers, while AOI transcribes the audio and completes the task in far fewer steps. On video and carousel tasks, narration often enables correct answers in a single step.
-
-\emph{Statistical protocol.}
-Unless stated otherwise, each configuration is one run over 100 binary tasks. For a success count $k$ among $n$ tasks, we use a 95\% Wilson interval with $z=1.96$: center $(\hat p+z^2/2n)/(1+z^2/n)$ and half-width $z\sqrt{\hat p(1-\hat p)/n+z^2/(4n^2)}/(1+z^2/n)$. For paired configurations, let $b,c$ be their discordant success counts, $N=b+c$, and $K=\min(b,c)$. We report the two-sided exact McNemar value $p=\min\{1,2\sum_{i=0}^{K}\binom{N}{i}2^{-N}\}$. For the six planned Standard--AOI comparisons in Figure~\ref{fig:mainresults}, we control family-wise error at $\alpha=0.05$ with Holm's step-down correction. All six remain significant (raw $p=2.9\!\times\!10^{-12}$--$4.9\!\times\!10^{-4}$; maximum Holm-adjusted $p=4.9\!\times\!10^{-4}$). Component and per-family tests are exploratory and uncorrected.
-
-AOI improves every model by 17--48 points (Figure~\ref{fig:mainresults}). Claude Sonnet~4.6 reaches 82\%; Gemini~2.5 Flash gains 48 points; EvoCUA-32B rises from 18\% to 55\%; and Fara-7B from 17\% to 34\%. Magnitude and optimal channels remain model-dependent.
-
-\textbf{Additional open-source replication (Qwen3-VL family).}
-Both Qwen3-VL models reproduce the same trend: the 235B model improves by +42\,pp (22\%$\rightarrow$64\%) and the 30B model by +24\,pp (18\%$\rightarrow$42\%), reinforcing that AOI's gains are model-agnostic.
 
 \begin{table}[t]
 \centering
@@ -465,6 +442,29 @@ Both Qwen3-VL models reproduce the same trend: the 235B model improves by +42\,p
 \label{tab:b1_oss}
 \end{table}
 
+\textbf{CU models.}
+We evaluate Claude Sonnet 4.6 (\path{claude-sonnet-4-6})~\citep{anthropic2024claude}, GPT-5.4 (\path{gpt-5.4})~\citep{openai2026gpt54}, Gemini 2.5 Flash (\path{gemini-2.5-flash})~\citep{gemini25cu}, Grok-4 (\path{grok-4})~\citep{xai2026grok4}, EvoCUA-32B (\path{meituan/EvoCUA-32B-20260105})~\citep{evocua}, and Fara-7B (\path{microsoft/Fara-7B})~\citep{fara7b}. For the OpenRouter replications, we use \path{qwen/qwen3-vl-235b-a22b-instruct} and \path{qwen/qwen3-vl-30b-a3b-instruct}~\citep{qwen3vl} (Table~\ref{tab:b1_oss}). We cap every non-streaming response at 1,024 tokens and omit temperature, top-$p$, and API seeds, using provider/runtime defaults. We use a 4,096-token context for local vLLM models and float16 for Fara. We did not record EvoCUA dtype/quantization consistently, and we did not retain hosted snapshot revisions or OpenRouter's routed provider.
+
+\textbf{Observation configurations.}
+The primary contrast is between \textbf{Standard} (one screenshot per step, no audio---the
+current paradigm) and \textbf{AOI~full} (inter-step keyframes + audio
+transcription + visual narration). We evaluate both modes across all six models.
+All remaining modes are ablations and diagnostic controls run on Claude Sonnet~4.6
+(unless otherwise noted).
+
+\subsection{Main Results}
+\label{sec:main-results}
+
+For example, on meeting tasks the standard agent often fails because it cannot hear spoken answers, while AOI transcribes the audio and completes the task in far fewer steps. On video and carousel tasks, narration often enables correct answers in a single step.
+
+\emph{Statistical protocol.}
+Unless stated otherwise, each configuration is one run over 100 binary tasks. For a success count $k$ among $n$ tasks, we use a 95\% Wilson interval with $z=1.96$: center $(\hat p+z^2/2n)/(1+z^2/n)$ and half-width $z\sqrt{\hat p(1-\hat p)/n+z^2/(4n^2)}/(1+z^2/n)$. For paired configurations, let $b,c$ be their discordant success counts, $N=b+c$, and $K=\min(b,c)$. We report the two-sided exact McNemar value $p=\min\{1,2\sum_{i=0}^{K}\binom{N}{i}2^{-N}\}$. For the six planned Standard--AOI comparisons in Figure~\ref{fig:mainresults}, we control family-wise error at $\alpha=0.05$ with Holm's step-down correction. All six remain significant (raw $p=2.9\!\times\!10^{-12}$--$4.9\!\times\!10^{-4}$; maximum Holm-adjusted $p=4.9\!\times\!10^{-4}$). Component and per-family tests are exploratory and uncorrected.
+
+AOI improves every model by 17--48 points (Figure~\ref{fig:mainresults}). Claude Sonnet~4.6 reaches 82\%; Gemini~2.5 Flash gains 48 points; EvoCUA-32B rises from 18\% to 55\%; and Fara-7B from 17\% to 34\%. Magnitude and optimal channels remain model-dependent.
+
+\textbf{Additional open-source replication (Qwen3-VL family).}
+Both Qwen3-VL models reproduce the same trend: the 235B model improves by +42\,pp (22\%$\rightarrow$64\%) and the 30B model by +24\,pp (18\%$\rightarrow$42\%), reinforcing that AOI's gains are model-agnostic.
+
 \textbf{Variance.}
 Repeating the headline configuration (Claude~+~AOI~full) across three seeds yields
 82\%, 78\%, 76\% (mean 78.7\%, std 3.1\,pp). The reported 82\% thus sits at the upper end of a $\sim$3\,pp decoding variability band.
@@ -472,7 +472,7 @@ This quantifies absolute score variance and is complementary to the paired McNem
 
 \subsection{Per-Family Analysis}
 
-\begin{figure}[t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_heatmap.pdf}
 \caption{Per-family AOI gain (AOI full $-$ Standard, tasks per 10) across five models. Families are grouped by modality. Green indicates improvement; red indicates regression.}
@@ -503,7 +503,7 @@ We decompose AOI's gains in two stages: separating the structured prompt-format 
 We first rule out the possibility that AOI helps only through prompt reformatting.
 \label{sec:static50}\label{sec:structured}\label{sec:promptsub}
 
-\begin{figure}[t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_decomp.pdf}
 \caption{Bars stack the standard screenshot baseline, the gain from the structured observation record alone, and the additional gain from perception (keyframes, audio, and narration).}
@@ -517,16 +517,14 @@ On dynamic tasks, a control using only AOI's structured observation record (no k
 \subsection{Perception Channel Contributions}
 \label{sec:analysis}\label{sec:ablation}\label{sec:narration_discard}\label{sec:keyframe_context}
 
-\begin{figure}[t]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_component_contribution.pdf}
 \caption{Progressive contribution of AOI components on Claude Sonnet~4.6.}
 \label{fig:ablation}
 \end{figure}
 
-Figure~\ref{fig:ablation} shows incremental gains. Keyframe images add only +1\,pp as raw input but +10\,pp once narrated (Figure~\ref{fig:analysis}b), with benefits concentrated on Transient and Carousel tasks. Table~\ref{tab:ablation_results} reports results across keyframe selection strategies. Audio transcription adds directional gains on audio families, while visual narration is the largest single component (+18\,pp).
-
-\begin{table}[!h]
+\begin{table}[htbp]
 \centering
 \begin{tabular}{@{}l r@{}}
 \toprule
@@ -546,14 +544,16 @@ Total reports successful tasks out of 100.}
 \label{tab:ablation_results}
 \end{table}
 
-\begin{figure}[t]
+\begin{figure*}[t]
 \centering
-\includegraphics[width=\columnwidth]{figs/fig_analysis.pdf}
-\caption{Contribution of narration and keyframes.
-(a) Visual narration improves performance, with most of the gain arising from inference-time articulation rather than persistent memory.
-(b) The value of keyframes is model-dependent: positive for Claude and Gemini~2.5, neutral for GPT-5.4, and negative for Gemini~3.}
+\includegraphics[width=\textwidth]{figs/fig_analysis.pdf}
+\caption{Abalation study that shows the contribution of narration and keyframes.
+(a) Visual narration improves performance.
+(b) The value of keyframes is model-dependent.}
 \label{fig:analysis}
-\end{figure}
+\end{figure*}
+
+Figure~\ref{fig:ablation} shows incremental gains. Keyframe images add only +1\,pp as raw input but +10\,pp once narrated (Figure~\ref{fig:analysis}b), with benefits concentrated on Transient and Carousel tasks. Table~\ref{tab:ablation_results} reports results across keyframe selection strategies. Audio transcription adds directional gains on audio families, while visual narration is the largest single component (+18\,pp).
 
 A narration-discarded control (Figure~\ref{fig:analysis}a) attributes most of narration's benefit to inference-time articulation, with persistence mattering mainly on multi-step tasks.
 
@@ -563,14 +563,6 @@ The keyframe channel is the most model-dependent: strongly positive with narrati
 \section{Model Sensitivity Study}
 \label{sec:model_sensitivity}
 % ════════════════════════════════════════════════════════════
-
-To characterize sensitivity to the underlying model and its inference latency,
-we evaluate AOI on three additional model configurations
-(Table~\ref{tab:model_sensitivity}).
-Their identifiers are \path{gemini-3-flash-preview}, \path{grok-4.3}, and
-\path{grok-4-fast-reasoning}; they use the same 1,024-token cap and default sampling.
-
-\label{sec:grok}\label{sec:why_g3}\label{sec:keyframe_probe}\label{sec:diagmap}
 
 \begin{table}[t]
 \centering
@@ -588,20 +580,28 @@ Grok-4-fast                  & 19 & 47 & $+$28 \\
 \label{tab:model_sensitivity}
 \end{table}
 
+To characterize sensitivity to the underlying model and its inference latency,
+we evaluate AOI on three additional model configurations
+(Table~\ref{tab:model_sensitivity}).
+Their identifiers are \path{gemini-3-flash-preview}, \path{grok-4.3}, and
+\path{grok-4-fast-reasoning}; they use the same 1,024-token cap and default sampling.
+
+\label{sec:grok}\label{sec:why_g3}\label{sec:keyframe_probe}\label{sec:diagmap}
+
 \textbf{Grok models} are primarily limited by high inference latency rather than perception.
 Grok-4 achieves only +21\,pp with AOI due to frequent timeouts. The
 Grok-4-fast-reasoning and Grok-4.3 configurations achieve larger gains
 (+28\,pp and +40\,pp, respectively), indicating that reduced latency allows
 more of AOI's perceptual benefit to be realized within the task budget.
 
-\textbf{Gemini~3~Flash} achieves only a modest +9\,pp net gain. A four-way decomposition (Figure~\ref{fig:gemini3}) reveals a cancellation of effects: audio and the structured scaffold help as usual, but the keyframe stream regresses by $-12$\,pp due to image-token dilution. Dropping keyframes alone recovers +21\,pp over the standard baseline, showing the default AOI bundle is mis-tuned for this model.
-
-\begin{figure}[!b]
+\begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_gemini3.pdf}
 \caption{Gemini~3~Flash component decomposition: audio and the scaffold help, while keyframes cost $12$\,pp.}
 \label{fig:gemini3}
 \end{figure}
+
+\textbf{Gemini~3~Flash} achieves only a modest +9\,pp net gain. A four-way decomposition (Figure~\ref{fig:gemini3}) reveals a cancellation of effects: audio and the structured scaffold help as usual, but the keyframe stream regresses by $-12$\,pp due to image-token dilution. Dropping keyframes alone recovers +21\,pp over the standard baseline, showing the default AOI bundle is mis-tuned for this model.
 
 These cases illustrate that AOI gains are robust but model-specific: the optimal component mix must be chosen per model rather than applied as a fixed bundle.
 
@@ -612,7 +612,7 @@ These cases illustrate that AOI gains are robust but model-specific: the optimal
 
 We compare AOI with Gemini Live (\path{gemini-2.5-flash-native-audio-latest})~\citep{geminilive} and OpenAI Realtime (\path{gpt-realtime-2})~\citep{openairealtime}. Neither is a CU agent; we stream page audio and screenshots into one session and execute returned tool calls. On AOI's 12-task audio subset, we use each model's highest vision- and function-calling-capable tier, supply no seeds or sampling parameters, and did not retain the output cap.
 
-\begin{table}[!h]
+\begin{table}[htbp]
 \centering
 \setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lcc@{}}
