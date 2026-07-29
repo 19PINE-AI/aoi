@@ -91,6 +91,11 @@
 \usepackage{tcolorbox}
 \tcbuselibrary{skins,breakable}
 
+% Keep the body text close to figures and tables.
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+
 % ── Color palette (NeurIPS-style, colorblind-friendly) ──
 \definecolor{bestcolor}{HTML}{E8F5E9}
 \definecolor{gaincolor}{HTML}{1B5E20}
@@ -590,7 +595,7 @@ more of AOI's perceptual benefit to be realized within the task budget.
 
 \textbf{Gemini~3~Flash} achieves only a modest +9\,pp net gain. A four-way decomposition (Figure~\ref{fig:gemini3}) reveals a cancellation of effects: audio and the structured scaffold help as usual, but the keyframe stream regresses by $-12$\,pp due to image-token dilution. Dropping keyframes alone recovers +21\,pp over the standard baseline, showing the default AOI bundle is mis-tuned for this model.
 
-\begin{figure}[t]
+\begin{figure}[!b]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_gemini3.pdf}
 \caption{Gemini~3~Flash component decomposition: audio and the scaffold help, while keyframes cost $12$\,pp.}
