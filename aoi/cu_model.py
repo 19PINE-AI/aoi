@@ -1,6 +1,10 @@
 """
 CU Model Interface — wraps various computer-use LLMs with a unified API.
 
+Implements the inputs in
+“Visual Narration for Long-Term Context” (sec:narration) and “Observation Record” (sec:obsrecord) for the model
+configurations in “Setup” (sec:setup).
+
 Each model receives:
   - Text context (trajectory narrations + audio)
   - Images (keyframes + post-action screenshot)

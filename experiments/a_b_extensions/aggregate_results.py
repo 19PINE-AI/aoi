@@ -117,7 +117,7 @@ def aggregate_a1() -> dict:
         }
         # also use aoi_audio reference (no keyframes)
         # v12_g3flash_aoi_audio.json contains the full 100-task aoi_audio run
-        # already used in the paper's Section 5.5 4-way decomposition.
+        # used in “Model Sensitivity Study” (sec:model_sensitivity).
         aoi_audio = load_run(ROOT / "results/v12_g3flash_aoi_audio.json")
         if not aoi_audio:
             aoi_audio = load_run(ROOT / "results/v10c_gemini3flash_aoi_audio.json")

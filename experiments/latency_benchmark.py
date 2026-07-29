@@ -1,7 +1,7 @@
 """
 AOI Latency Benchmark — measures actual per-sample processing times.
 
-Validates the paper's claims in §3.2:
+Validates the claims in “Inter-Step Keyframe Capture” (sec:keyframes):
 - Pixel gate: <1ms per sample
 - CLIP encode: 5-10ms per sample (GPU)
 - Amortized cost: ~1-2ms (CLIP runs only when pixels changed ~10% of samples)

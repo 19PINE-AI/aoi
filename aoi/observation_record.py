@@ -1,6 +1,10 @@
 """
 Observation Record and Trajectory Store.
 
+Implements “Visual Narration for Long-Term Context” (sec:narration) and
+“Observation Record” (sec:obsrecord):
+ObservationRecord builds each input and TrajectoryStore retains five text steps.
+
 The ObservationRecord assembles the structured input for the CU model at each step:
   [CONTEXT] — text from recent prior steps (narrations + audio + actions)
   [NEW]     — current audio (two-layer) + keyframe images + post-action screenshot

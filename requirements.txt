@@ -21,5 +21,8 @@ anthropic
 openai                                           # also used for OpenRouter / xAI OpenAI-compatible endpoints
 google-genai
 
+# Tests
+pytest
+
 # Local model serving (optional; only for EvoCUA / Fara / Qwen local runs)
 # vllm

@@ -1,6 +1,10 @@
 """
 LLM-based Evaluator for DynaCU-Bench v3.
 
+Implements the DOM, LLM, and conjunctive hybrid rules in “Evaluation Protocol”
+(sec:evaluation-protocol);
+`evaluate_task` combines their outputs into the reported binary outcome.
+
 For tasks with eval_type LLM or HYBRID, a judge model evaluates the
 agent's response against a rubric.  DOM-based checks are handled
 directly by the harness; this module only handles the "soft" evaluation.

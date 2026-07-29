@@ -7,7 +7,7 @@ would also lift OSWorld scores).
 
 ## Existing evidence in the paper
 
-Static-50 (Section 5.10) already addresses this question on 50 pure-HTML static
+Static-50 in “Prompt Format vs. Perception” (sec:promptperc) already addresses this question on 50 pure-HTML static
 tasks:
   - Standard:   43/50  (86.0%)
   - AOI full:   50/50  (100.0%)
@@ -15,7 +15,7 @@ tasks:
   - Total audio segments produced by AOI:  0
 
 The +14pp Static-50 gain is explicitly attributed in the paper to the
-structured-prompt component (`standard_structured` decomposition, Section 5.10
+structured-prompt component (`standard_structured` decomposition in “Prompt Format vs. Perception” (sec:promptperc)
 and Table 6), not to between-step perception.
 
 ## Why a full OSWorld run isn't pursued in this revision
@@ -48,6 +48,6 @@ exactly the no-op behaviour an OSWorld-style benchmark would test.
 
 ## What this means for the paper
 
-No new experiment is run for B2.  The existing Static-50 result (Section 5.10)
+No new experiment is run for B2. The existing Static-50 result
 already answers the no-op question more directly than OSWorld would.
 The revision adds one paragraph explicitly framing this.

@@ -1,6 +1,9 @@
 """
 Persistent Whisper ASR Service — runs on GPU, serves transcriptions via HTTP.
 
+Implements the Whisper model, decoding, VAD, and persistent service in
+“Volume-Gated Audio Observation” (sec:audio).
+
 This service keeps Whisper large-v3 loaded on GPU permanently and accepts
 audio data via HTTP POST. This avoids:
   1. Model loading delay (~5-10s cold start per process)

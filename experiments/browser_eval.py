@@ -1,6 +1,10 @@
 """
 End-to-end Browser Evaluation Harness for DynaCU-Bench v3.
 
+Implements the scoring and budgets in
+“Evaluation Protocol” (sec:evaluation-protocol) and the model and observation configurations in
+“Setup” (sec:setup). `BrowserEvaluator` is the submitted path.
+
 Runs real CU model inference against real HTML task pages in headless Chromium.
 Supports 5 observation modes for ablation studies.
 

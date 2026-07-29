@@ -6,7 +6,7 @@ not just on edge-TTS speech and HTML-CSS animations.
 
 ## Existing infrastructure
 
-DynaCU-Real-Local (Section 5.11 / Appendix C of the paper) covers 12 tasks
+DynaCU-Real-Local covers 12 tasks
 across 4 sub-domains (podcast / meeting / screencast / voice) using:
   - LibriVox Aesop's-Fables audiobooks (PD)
   - asciinema community screencasts (BSD-2-Clause)
@@ -43,7 +43,7 @@ A complete real-content pilot meeting the above criteria is left to the
 benchmark-design follow-up acknowledged in the limitations section.
 
 Within this revision, we add:
-  - An explicit one-paragraph note in Section 5.11 / Appendix C stating
+- An explicit one-paragraph note accompanying the DynaCU-Real-Local results stating
     *why* DynaCU-Real-Local does not function as a perception comparison
     and what the three strategies above would look like.
   - A pointer to `experiments/a_b_extensions/b3_real_recording_design.md`

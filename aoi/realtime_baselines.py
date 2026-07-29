@@ -1,6 +1,9 @@
 """
 Realtime/Live API baselines for DynaCU-Bench.
 
+Implements the 12-task audio subset in
+“Comparison with Streaming Multimodal Baselines” (sec:streaming).
+
 We compare the AOI (model-agnostic perception layer over a batch CU model)
 against monolithic streaming multimodal models that bundle perception with
 reasoning into a single end-to-end model:

@@ -1,7 +1,11 @@
 """
 Adaptive Keyframe Extractor — Stage 1: pixel gate, Stage 2: CLIP semantic distance.
 
-Design goals (from paper §3.2):
+Implements the adaptive keyframe procedure in
+“Inter-Step Keyframe Capture” (sec:keyframes) and Algorithm 1;
+`on_sample` applies the pixel skip gate and semantic/large-change capture rule.
+
+Design goals from “Inter-Step Keyframe Capture” (sec:keyframes):
 - Sub-1ms cost when screen is static (pixel gate short-circuits)
 - ~5-10ms amortized per sample with CLIP on GPU when screen changes
 - Suppress periodic noise (spinners, cursors, looping ads) via CLIP semantic stability
@@ -32,7 +36,7 @@ class Keyframe:
 
 class KeyframeExtractor:
     """
-    Two-stage adaptive keyframe extractor.
+    Two-stage extractor from “Inter-Step Keyframe Capture” (sec:keyframes) and Algorithm 1.
 
     Stage 1 — Pixel gate: if < pixel_threshold fraction of pixels changed,
                skip entirely (< 1 ms CPU cost).

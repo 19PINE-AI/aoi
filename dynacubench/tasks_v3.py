@@ -1,6 +1,9 @@
 """
 DynaCU-Bench v3 — 11 Categories (10 dynamic + 1 static baseline) = 110 Total
 
+Defines the benchmark families, perception axes, and difficulty balance in
+“Design Principles” (sec:design-principles).
+
 Redesigned benchmark grounded in realistic browser activities.
 Every task passes the test: "Would a human actually do this in a browser?"
 

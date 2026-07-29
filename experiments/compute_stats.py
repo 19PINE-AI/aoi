@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compute McNemar tests + 95% Wilson CIs on v9 results."""
+"""Compute the intervals and tests in “Main Results” (sec:main-results)."""
 import json, math, os, sys
 from pathlib import Path
 

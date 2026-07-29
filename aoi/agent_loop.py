@@ -1,6 +1,10 @@
 """
 AOI-Augmented Agent Loop.
 
+Implements the reusable loop from “Architecture Overview” (sec:architecture)
+through “Observation Record” (sec:obsrecord). Submitted runs add benchmark
+timing and scoring in `browser_eval.py`.
+
 Replaces the standard CU agent loop:
   repeat: screenshot -> CU_model -> execute -> wait
 

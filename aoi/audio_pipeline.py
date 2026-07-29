@@ -1,6 +1,10 @@
 """
 Real Audio Pipeline for DynaCU-Bench v3.
 
+Implements the capture, RMS gate, 5/60-second transcript layers, and Whisper ASR
+in “Volume-Gated Audio Observation” (sec:audio); record fields follow
+“Observation Record” (sec:obsrecord).
+
 Replaces all DOM-based audio proxies (window._spokenContent) with a real
 PulseAudio capture → Whisper ASR pipeline, and provides TTS → mic injection
 for the agent's `speak` action.

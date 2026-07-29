@@ -1,7 +1,12 @@
 """
 Volume-Gated Audio Observer — RMS energy gate + multimodal audio scene understanding.
 
-Design goals (from paper §3.3):
+This module is an earlier backend abstraction. The submitted speech-only path
+described in “Volume-Gated Audio Observation” (sec:audio) is implemented by
+`aoi/audio_pipeline.py` and
+`aoi/whisper_service.py`.
+
+Design goals from “Volume-Gated Audio Observation” (sec:audio):
 - ~0ms overhead when silent (>90% of typical desktop work)
 - Full audio scene understanding (speech + non-speech) via Gemini/Claude multimodal API
 - Overlapping window for boundary continuity across agent step boundaries
