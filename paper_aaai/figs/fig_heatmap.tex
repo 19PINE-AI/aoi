@@ -2,6 +2,7 @@
 
 \usepackage{amsmath}
 \usepackage{xcolor}
+\usepackage{newtxtext}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc,decorations.pathreplacing,patterns,shapes.geometric}
 \usepackage{pgfplots}
@@ -45,7 +46,7 @@
         {Claude\\4.6}
     },
     xticklabel style={
-        font=\scriptsize,
+        font=\normalsize,
         align=center
     },
     ytick={0,1,2,3,4,5,6,7,8,9},
@@ -62,7 +63,7 @@
         Games
     },
     yticklabel style={
-        font=\scriptsize,
+        font=\normalsize,
         anchor=east
     },
     xtick style={draw=none},
@@ -72,14 +73,14 @@
         \pgfmathprintnumber[print sign]\pgfplotspointmeta
     },
     nodes near coords style={
-        font=\scriptsize\bfseries,
+        font=\normalsize\bfseries,
         anchor=center,
         text=black
     },
     colorbar,
     colorbar style={
         width=7pt,
-        font=\scriptsize,
+        font=\normalsize,
         ytick={-8,-4,0,4,8},
         yticklabel={
             \pgfmathprintnumber[print sign]\tick

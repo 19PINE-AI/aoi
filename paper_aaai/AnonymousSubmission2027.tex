@@ -265,7 +265,7 @@ AOI has three components (Figure~\ref{fig:architecture}). A sub-millisecond pixe
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_aoi_diagram.pdf}
-\caption{\textbf{Standard CU agents vs.\ AOI-equipped agents.}
+\caption{Standard CU agents vs.\ AOI-equipped agents.
 \emph{Left:} Standard agents observe only periodic screenshots and therefore miss audio and inter-step visual events.
 \emph{Right:} AOI continuously monitors screen and audio streams, selects informative observations, and supplies them to the underlying CU model in a structured record. Textual narrations and transcripts persist after older images are removed.}
 \label{fig:architecture}
@@ -343,7 +343,7 @@ Before decision $t$, the model receives a structured record combining persistent
 \quad discussion. What is the new launch date?\\
 \quad Enter it in the Launch Date field.
 \end{tcolorbox}
-\caption{\textbf{Example observation record at step $N$ of a meeting task.}
+\caption{Example observation record at step $N$ of a meeting task.
 Prior observations persist as text, while the current step contributes a fresh audio transcription and screenshot. In this example, no keyframes are included because the slide does not change.}
 \label{fig:obsrecord}
 \end{figure}
@@ -429,7 +429,7 @@ All remaining modes are ablations and diagnostic controls run on Claude Sonnet~4
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_dynacu_bench_results.pdf}
-\caption{\textbf{Main results on DynaCU-Bench (100 tasks).}
+\caption{Main results on DynaCU-Bench (100 tasks).
 AOI substantially improves task success across all evaluated CU models without retraining. Green labels indicate the absolute improvement over the standard screenshot baseline.}
 \label{fig:mainresults}
 \end{figure*}
@@ -469,7 +469,7 @@ This quantifies absolute score variance and is complementary to the paired McNem
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_heatmap.pdf}
-\caption{\textbf{Per-family AOI gain} (AOI full $-$ Standard, tasks per 10) across five models. Families are grouped by modality. Green indicates improvement; red indicates regression.}
+\caption{Per-family AOI gain (AOI full $-$ Standard, tasks per 10) across five models. Families are grouped by modality. Green indicates improvement; red indicates regression.}
 \label{fig:heatmap}
 \end{figure}
 
@@ -543,9 +543,9 @@ Total reports successful tasks out of 100.}
 \begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_analysis.pdf}
-\caption{\textbf{Contribution of narration and keyframes.}
-\textbf{(a)} Visual narration improves performance, with most of the gain arising from inference-time articulation rather than persistent memory.
-\textbf{(b)} The value of keyframes is model-dependent: positive for Claude and Gemini~2.5, neutral for GPT-5.4, and negative for Gemini~3.}
+\caption{Contribution of narration and keyframes.
+(a) Visual narration improves performance, with most of the gain arising from inference-time articulation rather than persistent memory.
+(b) The value of keyframes is model-dependent: positive for Claude and Gemini~2.5, neutral for GPT-5.4, and negative for Gemini~3.}
 \label{fig:analysis}
 \end{figure}
 
@@ -608,6 +608,7 @@ We compare AOI with Gemini Live (\path{gemini-2.5-flash-native-audio-latest})~\c
 
 \begin{table}[!h]
 \centering
+\setlength{\tabcolsep}{5pt}
 \begin{tabular}{@{}lcc@{}}
 \toprule
 \textbf{Configuration} & \textbf{Pod/Meet/Phone/Intv} & \textbf{Total / 12} \\

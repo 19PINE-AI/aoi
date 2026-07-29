@@ -1,6 +1,7 @@
 \documentclass[tikz,border=2pt]{standalone}
 
 \usepackage{amsmath}
+\usepackage{newtxtext}
 \usepackage{xcolor}
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,fit,backgrounds,calc,decorations.pathreplacing,patterns,shapes.geometric}
@@ -24,11 +25,11 @@
 \begin{tikzpicture}
 \begin{axis}[
     width=10.8cm, height=5.6cm, ybar stacked, bar width=20pt,
-    ymin=0, ymax=92, ylabel={Task success (\%)}, ylabel style={font=\small},
+    ymin=0, ymax=92, ylabel={Task success (\%)}, ylabel style={font=\Large},
     symbolic x coords={Claude, Gemini 2.5, GPT-5.4, EvoCUA, Fara},
-    xtick=data, xticklabel style={font=\scriptsize},
-    ytick={0,20,40,60,80}, yticklabel style={font=\small},
-    legend style={at={(0.5,1.18)}, anchor=north, legend columns=3, font=\scriptsize,
+    xtick=data, xticklabel style={font=\Large, rotate=25, anchor=north east},
+    ytick={0,20,40,60,80}, yticklabel style={font=\Large},
+    legend style={at={(0.5,1.18)}, anchor=north, legend columns=3, font=\Large,
                   draw=cGray!30, /tikz/every even column/.append style={column sep=8pt}},
     grid=major, major grid style={cLightGray!60}, axis line style={cGray}, tick style={cGray},
     enlarge x limits=0.12,

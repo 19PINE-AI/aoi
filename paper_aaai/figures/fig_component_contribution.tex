@@ -1,6 +1,7 @@
 \documentclass[tikz,border=2pt]{standalone}
 
 \usepackage{amsmath}
+\usepackage{newtxtext}
 \usepackage{pifont}  % for \ding symbols
 \usepackage{xcolor}
 \usepackage{tikz}
@@ -23,22 +24,23 @@
 \definecolor{cLightGray}{HTML}{D8DEE9}  % light gray
 
 \begin{document}
+\renewcommand{\large}{\fontsize{11}{13}\selectfont}
 
 \begin{tikzpicture}
 \begin{axis}[
     width=0.85\columnwidth,
-    height=5.2cm,
+    height=5.4cm,
     ybar,
     bar width=20pt,
     ymin=0, ymax=98,
     ylabel={Task Success (\%)},
-    ylabel style={font=\small},
+    ylabel style={font=\large},
     symbolic x coords={Screenshot, {+Keyframes}, {+ASR}, {+Narration}},
     xtick={Screenshot, {+Keyframes}, {+ASR}, {+Narration}},
     xticklabels={Screenshot, {+Scaffold/KF}, +ASR, +Narration},
-    xticklabel style={font=\small},
+    xticklabel style={font=\large, rotate=20, anchor=north east},
     ytick={0,20,40,60,80},
-    yticklabel style={font=\small},
+    yticklabel style={font=\large},
     grid=major,
     major grid style={cLightGray!60},
     axis line style={cGray},
@@ -59,27 +61,27 @@
 
 % Named value labels above the bars
 \node (v38) at (axis cs:Screenshot,38)
-  [above=2pt, font=\small\bfseries] {38};
+  [above=2pt, font=\large\bfseries] {38};
 
 \node (v58) at (axis cs:{+Keyframes},58)
-  [above=2pt, font=\small\bfseries] {58};
+  [above=2pt, font=\large\bfseries] {58};
 
 \node (v64) at (axis cs:{+ASR},64)
-  [above=2pt, font=\small\bfseries] {64};
+  [above=2pt, font=\large\bfseries] {64};
 
 \node (v82) at (axis cs:{+Narration},82)
-  [above=2pt, font=\small\bfseries] {82};
+  [above=2pt, font=\large\bfseries] {82};
 
 % Delta annotations inside the axis using axis cs
 \draw[->, thick, cDelta!70!black]
   ([xshift=2pt]v38.east) -- ([xshift=-2pt]v58.west)
-  node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black, sloped] {+20\,pp};
+  node[midway, above=2pt, font=\large\bfseries, text=cDelta!60!black, sloped] {+20\,pp};
 \draw[->, thick, cDelta!70!black]
   ([xshift=2pt]v58.east) -- ([xshift=-2pt]v64.west)
-  node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black] {+6\,pp};
+  node[midway, above=2pt, font=\large\bfseries, text=cDelta!60!black] {+6\,pp};
 \draw[->, thick, cDelta!70!black]
   ([xshift=2pt]v64.east) -- ([xshift=-2pt]v82.west)
-  node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black, sloped] {+18\,pp};
+  node[midway, above=2pt, font=\large\bfseries, text=cDelta!60!black, sloped] {+18\,pp};
 \end{axis}
 \end{tikzpicture}
 
