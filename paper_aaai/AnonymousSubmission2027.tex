@@ -92,9 +92,6 @@
 \tcbuselibrary{skins,breakable}
 
 % Keep the body text close to figures and tables.
-\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\dbltextfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\intextsep}{8pt plus 2pt minus 2pt}
 
 % ── Color palette (NeurIPS-style, colorblind-friendly) ──
 \definecolor{bestcolor}{HTML}{E8F5E9}
@@ -263,9 +260,7 @@ AOI is a model-agnostic perception layer between the environment and an existing
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_aoi_diagram.pdf}
-\caption{Standard CU agents vs.\ AOI-equipped agents.
-\emph{Left:} Standard agents observe only periodic screenshots and therefore miss audio and inter-step visual events.
-\emph{Right:} AOI continuously monitors screen and audio streams, selects informative observations, and supplies them to the underlying CU model in a structured record. Textual narrations and transcripts persist after older images are removed.}
+\caption{Standard and AOI-equipped CU agents. AOI adds selected inter-step visual and audio observations to periodic screenshots and retains them as text.}
 \label{fig:architecture}
 \end{figure*}
 
@@ -347,8 +342,7 @@ Following the caption-then-reason principle of LLoVi~\citep{llovi}, narrations a
 \quad discussion. What is the new launch date?\\
 \quad Enter it in the Launch Date field.
 \end{tcolorbox}
-\caption{Example observation record at step $N$ of a meeting task.
-Prior observations persist as text, while the current step contributes a fresh audio transcription and screenshot. In this example, no keyframes are included because the slide does not change.}
+\caption{Meeting-task observation record at step $N$. Prior observations persist as text; no keyframe appears because the slide is unchanged.}
 \label{fig:obsrecord}
 \end{figure}
 
@@ -422,8 +416,7 @@ These budgets bind only for the slowest models
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figures/fig_dynacu_bench_results.pdf}
-\caption{Main results on DynaCU-Bench (100 tasks).
-AOI substantially improves task success across all evaluated CU models without retraining. Green labels indicate the absolute improvement over the standard screenshot baseline.}
+\caption{DynaCU-Bench success over 100 tasks; green labels show AOI's absolute gain over standard screenshots.}
 \label{fig:mainresults}
 \end{figure*}
 
@@ -438,7 +431,7 @@ AOI substantially improves task success across all evaluated CU models without r
 30B-A3B   & 18 & \textbf{42} & $+$24 \\
 \bottomrule
 \end{tabular}
-\caption{Open-source replication on DynaCU-Bench (100 tasks) using Qwen3-VL models. Results use the same evaluation protocol as Figure~\ref{fig:mainresults}.}
+\caption{Qwen3-VL replication on 100 DynaCU-Bench tasks using the Figure~\ref{fig:mainresults} protocol.}
 \label{tab:b1_oss}
 \end{table}
 
@@ -503,10 +496,10 @@ We decompose AOI's gains in two stages: separating the structured prompt-format 
 We first rule out the possibility that AOI helps only through prompt reformatting.
 \label{sec:static50}\label{sec:structured}\label{sec:promptsub}
 
-\begin{figure}[htbp]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_decomp.pdf}
-\caption{Bars stack the standard screenshot baseline, the gain from the structured observation record alone, and the additional gain from perception (keyframes, audio, and narration).}
+\caption{Success decomposed into standard screenshots, the structured record, and added perception.}
 \label{fig:decomp}
 \end{figure}
 
@@ -517,14 +510,14 @@ On dynamic tasks, a control using only AOI's structured observation record (no k
 \subsection{Perception Channel Contributions}
 \label{sec:analysis}\label{sec:ablation}\label{sec:narration_discard}\label{sec:keyframe_context}
 
-\begin{figure}[htbp]
+\begin{figure}[t]
 \centering
 \includegraphics[width=\columnwidth]{figures/fig_component_contribution.pdf}
 \caption{Progressive contribution of AOI components on Claude Sonnet~4.6.}
 \label{fig:ablation}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[t]
 \centering
 \begin{tabular}{@{}l r@{}}
 \toprule
@@ -539,17 +532,14 @@ CLIP adaptive $\to$ AOI visual+ASR     & 58 / 64 \\
 AOI visual+ASR $\to$ AOI full          & 64 / 82 \\
 \bottomrule
 \end{tabular}
-\caption{Results for successive ablation configurations on Claude Sonnet~4.6.
-Total reports successful tasks out of 100.}
+\caption{Successive Claude Sonnet~4.6 ablations; totals are successes out of 100.}
 \label{tab:ablation_results}
 \end{table}
 
 \begin{figure*}[t]
 \centering
 \includegraphics[width=\textwidth]{figs/fig_analysis.pdf}
-\caption{Abalation study that shows the contribution of narration and keyframes.
-(a) Visual narration improves performance.
-(b) The value of keyframes is model-dependent.}
+\caption{Narration and keyframe ablations: (a) visual narration improves performance; (b) keyframe value is model-dependent.}
 \label{fig:analysis}
 \end{figure*}
 
@@ -597,7 +587,7 @@ more of AOI's perceptual benefit to be realized within the task budget.
 \begin{figure}[htbp]
 \centering
 \includegraphics[width=\columnwidth]{figs/fig_gemini3.pdf}
-\caption{Gemini~3~Flash component decomposition: audio and the scaffold help, while keyframes cost $12$\,pp.}
+\caption{Gemini~3~Flash component decomposition.}
 \label{fig:gemini3}
 \end{figure}
 
@@ -629,7 +619,7 @@ AOI~full (Claude 4.6)    & 3/3/3/3 & \textbf{12} \\
 \label{tab:streaming}
 \end{table}
 
-Both underperform AOI by a wide margin (Table~\ref{tab:streaming}). OpenAI Realtime succeeds only on interview questions answerable from one audio chunk; Gemini Live rarely emits usable tool calls. On five visual controls, both adapters perceive the page and issue valid browser actions (5/5) but complete no tasks; AOI-equipped Claude solves 4/5. Thus, streaming alone is insufficient, and persistent text for transient observations may be important for later actions.
+Both underperform AOI (Table~\ref{tab:streaming}). OpenAI Realtime succeeds only on interview questions answerable from one audio chunk, while Gemini Live rarely emits usable tool calls. On five visual controls, both perceive the page and issue valid browser actions (5/5) but complete no tasks; AOI-equipped Claude solves 4/5. Thus, streaming alone is insufficient, and persistent text may preserve transient observations for later actions.
 
 % ════════════════════════════════════════════════════════════
 \section{Related Work}
@@ -673,7 +663,7 @@ few-point differences warrant caution.
 \label{sec:conclusion}
 % ════════════════════════════════════════════════════════════
 
-We treat observation as a separable interface and introduce AOI, an adaptive perception layer compatible with existing CU models. On DynaCU-Bench, AOI raises success by 17--48 percentage points across eight models in the main and open-source replications, making many audio and temporal tasks solvable without retraining. Controls show that the gains arise from both the structured observation record and added perception, rather than prompt formatting alone. Audio unlocks speech-dependent tasks, while visual narration is the largest component and converts transient visual evidence into persistent context. Raw keyframes remain model-dependent and can hurt through image-token dilution, so the channel mix should be tuned for each model. AOI also reduces interaction steps and cloud-model token costs, although observation processing adds latency for faster models. Together, these findings establish observation design as a separate lever for improving CU agents.
+We introduce AOI, an adaptive observation interface compatible with existing CU models. On DynaCU-Bench, it raises success by 17--48 percentage points across eight models in the main and open-source replications, making many audio and temporal tasks solvable without retraining. Controls attribute gains to both the structured record and added perception, not prompt formatting alone. Audio unlocks speech-dependent tasks; visual narration is the largest component and preserves transient evidence as text. Raw keyframes are model-dependent and can hurt through image-token dilution, so each model requires a tuned channel mix. AOI also reduces interaction steps and cloud-model token costs, although processing adds latency for faster models. These findings establish observation design as a separate lever for improving CU agents.
 
 \noindent\textbf{AI disclosure.} We used generative AI for language, code, and formatting; we verified all outputs.
 

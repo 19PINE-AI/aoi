@@ -22,18 +22,18 @@
 \definecolor{cLightGray}{HTML}{D8DEE9}
 
 \begin{document}
-\newcommand{\figfont}{\fontsize{7.5}{9}\selectfont}
+\newcommand{\figfont}{\fontsize{8}{9.6}\selectfont}
 \begin{tikzpicture}
 \begin{scope}[yshift=0cm]
 \node[font=\figfont\bfseries, anchor=north] at (2.75,3.75) {(a) Narration Mechanism (Claude)};
 \begin{axis}[
     width=7.2cm, height=4.7cm, ybar, bar width=15pt,
-    ymin=55, ymax=88, ylabel={Success (\%)}, ylabel style={font=\figfont},
+    ymin=0, ymax=100, ylabel={Success (\%)}, ylabel style={font=\figfont},
     xmin=0.5, xmax=3.5,
     xtick={1,2,3},
     xticklabels={Vis+ASR, Narr.\ disc., Full},
     xticklabel style={font=\figfont},
-    ytick={60,70,80}, yticklabel style={font=\figfont},
+    ytick={0,20,40,60,80,100}, yticklabel style={font=\figfont},
     grid=major, major grid style={cLightGray!60},
     axis line style={cGray}, tick style={cGray},
     every axis plot/.append style={bar shift=0pt},

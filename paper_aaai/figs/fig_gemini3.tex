@@ -24,13 +24,13 @@
 \begin{document}
 \renewcommand{\normalsize}{\fontsize{10.5}{12.5}\selectfont}
 \begin{tikzpicture}[font=\normalsize]
-  \def\yb{30}\def\ys{0.13}\def\bw{0.62}
-  \draw[cGray!50,->] (0.2,0) -- (0.2,{(62-\yb)*\ys+0.3});
-  \foreach \v in {30,40,50,60} {
+  \def\yb{0}\def\ys{0.051}\def\bw{0.62}
+  \draw[cGray!50,->] (0.2,0) -- (0.2,{(80-\yb)*\ys+0.3});
+  \foreach \v in {0,20,40,60,80} {
     \draw[cGray!40] (0.1,{(\v-\yb)*\ys}) -- (8.6,{(\v-\yb)*\ys});
     \node[font=\normalsize,text=cGray,anchor=east] at (0.1,{(\v-\yb)*\ys}) {\v};
   }
-  \node[font=\normalsize,text=cGray,rotate=90,anchor=south] at (-0.45,{(46-\yb)*\ys}) {Success (\%)};
+  \node[font=\normalsize,text=cGray,rotate=90,anchor=south] at (-0.45,{(40-\yb)*\ys}) {Success (\%)};
   \draw[fill=cLightGray!70,draw=cGray!60] (1-\bw,0) rectangle (1+\bw,{(36-\yb)*\ys});
   \node[font=\normalsize,anchor=south] at (1,{(36-\yb)*\ys}) {36};
   \node[font=\normalsize,text=cGray,align=center,rotate=25,anchor=north east] at (1,-0.05) {Standard};
@@ -52,6 +52,6 @@
   \draw[cGray!55,dashed] (5.8+\bw,{(45-\yb)*\ys}) -- (7.4-\bw,{(45-\yb)*\ys});
   \draw[gaincolor!80,thick,dotted] (3.6,{(57-\yb)*\ys}) -- (8.5,{(57-\yb)*\ys});
   \node[font=\normalsize,text=gaincolor!70!black,anchor=east,fill=white,inner sep=1pt]
-     at (8.5,{(59.4-\yb)*\ys}) {best mix (drop keyframes): 57};
+     at (8.5,{(66-\yb)*\ys}) {best mix (drop keyframes): 57};
 \end{tikzpicture}
 \end{document}
