@@ -178,7 +178,8 @@ loop: the model receives a screenshot, predicts an action, and receives another
 screenshot after execution~\citep{osworld,webarena,webvoyager}. Because
 observation occurs only at these action boundaries, transient content that
 disappears before the next screenshot never enters the trajectory.
-Screenshot-based agents also lack access to spoken instructions and dialogue.
+Such agents also miss voice reminders, meeting audio, podcasts, and spoken
+video content.
 Such failures can therefore reflect missing input rather than insufficient
 reasoning or an inadequate action space.
 
@@ -672,7 +673,7 @@ few-point differences warrant caution.
 \label{sec:conclusion}
 % ════════════════════════════════════════════════════════════
 
-We treat observation as a separable interface and introduce AOI, an adaptive perception layer compatible with existing CU models. Across eight models, it makes many dynamic tasks solvable while reducing token cost. Keyframes matter chiefly when converted into persistent text, and the best channel mix is model-dependent. We release AOI and DynaCU-Bench to support research on observation interfaces.
+We treat observation as a separable interface and introduce AOI, an adaptive perception layer compatible with existing CU models. On DynaCU-Bench, AOI raises success by 17--48 percentage points across eight models in the main and open-source replications, making many audio and temporal tasks solvable without retraining. Controls show that the gains arise from both the structured observation record and added perception, rather than prompt formatting alone. Audio unlocks speech-dependent tasks, while visual narration is the largest component and converts transient visual evidence into persistent context. Raw keyframes remain model-dependent and can hurt through image-token dilution, so the channel mix should be tuned for each model. AOI also reduces interaction steps and cloud-model token costs, although observation processing adds latency for faster models. Together, these findings establish observation design as a separate lever for improving CU agents.
 
 \noindent\textbf{AI disclosure.} We used generative AI for language, code, and formatting; we verified all outputs.
 
