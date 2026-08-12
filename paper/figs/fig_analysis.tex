@@ -5,21 +5,24 @@
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    width=\textwidth, height=4.7cm, ybar, bar width=15pt,
-    ymin=55, ymax=88, ylabel={Success (\%)}, ylabel style={font=\scriptsize},
-    symbolic x coords={Vis+ASR, Narr.\ disc., Full},
-    xtick=data, xticklabel style={font=\scriptsize},
-    ytick={60,70,80}, yticklabel style={font=\scriptsize},
+    width=\textwidth, height=4.9cm, ybar, bar width=15pt,
+    ymin=0, ymax=100, ylabel={Success (\%)}, ylabel style={font=\scriptsize},
+    xmin=0.5, xmax=3.5,
+    xtick={1,2,3},
+    xticklabels={Vis+ASR, Narr.\ disc., Full},
+    xticklabel style={font=\scriptsize},
+    ytick={0,20,40,60,80,100}, yticklabel style={font=\scriptsize},
     grid=major, major grid style={cLightGray!60},
-    axis line style={cGray}, tick style={cGray}, enlarge x limits=0.28,
+    axis line style={cGray}, tick style={cGray},
+    every axis plot/.append style={bar shift=0pt},
     nodes near coords, nodes near coords style={font=\scriptsize\bfseries},
 ]
-\addplot[fill=cASR!55,draw=cASR!80] coordinates {(Vis+ASR,64)};
-\addplot[fill=cNarr!60,draw=cNarr!90] coordinates {(Narr.\ disc.,74)};
-\addplot[fill=cAOI!70,draw=cAOI!90] coordinates {(Full,82)};
-\draw[->,thick,cGray] (axis cs:Vis+ASR,66) -- (axis cs:Narr.\ disc.,72)
+\addplot[fill=cASR!55,draw=cASR!80] coordinates {(1,64)};
+\addplot[fill=cNarr!60,draw=cNarr!90] coordinates {(2,74)};
+\addplot[fill=cAOI!70,draw=cAOI!90] coordinates {(3,82)};
+\draw[->,thick,cGray] (axis cs:1.12,72) -- (axis cs:1.88,82)
   node[midway,above,font=\tiny\bfseries,text=cGray,sloped]{+10 CoT$^\dagger$};
-\draw[->,thick,gaincolor] (axis cs:Narr.\ disc.,76) -- (axis cs:Full,80)
+\draw[->,thick,gaincolor] (axis cs:2.12,82) -- (axis cs:2.88,90)
   node[midway,above,font=\tiny\bfseries,text=gaincolor,sloped]{+8 persist};
 \end{axis}
 \end{tikzpicture}
@@ -30,8 +33,8 @@
 \centering
 \begin{tikzpicture}
 \begin{axis}[
-    width=\textwidth, height=4.7cm, ybar, bar width=13pt,
-    ymin=-15, ymax=13, ylabel={$\Delta$ keyframe images (pp)}, ylabel style={font=\scriptsize},
+    width=\textwidth, height=4.9cm, ybar, bar width=13pt,
+    ymin=-16, ymax=14, ylabel={$\Delta$ keyframe images (pp)}, ylabel style={font=\scriptsize},
     symbolic x coords={Claude, Gemini 2.5, GPT-5.4, Gemini 3},
     xtick={Claude, Gemini 2.5, GPT-5.4, Gemini 3},
     xticklabels={Claude, Gem 2.5, GPT-5.4, Gem 3},

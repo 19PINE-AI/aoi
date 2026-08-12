@@ -290,115 +290,7 @@ touching the model or $\mathcal{A}$.
 
 \begin{figure}[t]
 \centering
-\resizebox{\textwidth}{!}{%
-\begin{tikzpicture}[
-    >=Stealth,
-    box/.style={draw, rounded corners=3pt, minimum height=0.95cm, align=center, font=\footnotesize},
-    env/.style={box, fill=cLightGray!50, draw=cGray!70, minimum width=1.6cm},
-    gate/.style={box, fill=cAccent!30, draw=cAccent!80, minimum width=1.55cm},
-    proc/.style={box, fill=cAOI!12, draw=cAOI!70, minimum width=1.85cm},
-    obs/.style={box, fill=white, draw=cAOI!60, minimum width=4.5cm, minimum height=2.4cm},
-    mdl/.style={box, fill=cDelta!18, draw=cDelta!80!black, minimum width=2.6cm, minimum height=1cm},
-    arr/.style={->, thick, cGray!80},
-    harr/.style={->, very thick, cAOI!80},
-    lbl/.style={font=\scriptsize, text=cGray},
-  ]
-  % ── Left: Standard CU Agent ──
-  \node[font=\small\bfseries, text=cStandard] at (1.6, 4.2) {Standard CU Agent};
-
-  % Timeline with screenshots
-  \draw[thick, cGray!40] (0, 2.4) -- (3.2, 2.4);
-  \foreach \x in {0, 1.07, 2.13, 3.2} {
-    \draw[thick, cStandard!80] (\x, 2.25) -- (\x, 2.55);
-    \draw[cGray!50, fill=cLightGray!60] (\x-0.2, 2.65) rectangle (\x+0.2, 3.1);
-  }
-  \node[font=\scriptsize, text=cGray] at (1.6, 2.0) {screenshots, $\sim$3--5\,s apart};
-
-  % Blind gaps with X marks
-  \foreach \x/\t in {0.53/video, 1.6/audio, 2.66/toast} {
-    \node[font=\scriptsize, text=cStandard] at (\x, 3.30) {\ding{55}};
-    \node[font=\scriptsize, text=cStandard] at (\x, 3.62) {\t};
-  }
-
-  % Model
-  \node[mdl, minimum width=2.0cm] (sm) at (1.6, 0.6) {CU Model};
-  \draw[arr] (1.6, 1.7) -- (sm.north) node[midway, right, lbl] {1 image/step};
-  \draw[arr, cDelta!70!black, very thick] (sm.south) -- ++(0,-0.5)
-    node[below, font=\scriptsize\bfseries, text=cDelta!70!black] {action};
-
-  % ── Divider ──
-  \draw[very thick, cLightGray] (3.9, -1.3) -- (3.9, 4.6);
-
-  % ── Right: AOI Pipeline ──
-
-  % Input streams
-  \node[env] (scr) at (5.0, 2.9) {Screen {\scriptsize($\sim$3\,Hz)}};
-  \node[env, fill=cASR!10, draw=cASR!50] (aud) at (5.0, 1.1) {Audio {\scriptsize(16\,kHz)}};
-
-  % Gates
-  \node[gate] (pg) at (7.35, 2.9) {Pixel Gate};
-  \node[gate, fill=cASR!15, draw=cASR!60] (rg) at (7.35, 1.1) {RMS Gate};
-
-  \draw[arr] (scr) -- (pg);
-  \draw[arr] (aud) -- (rg);
-
-  % Gate sublabels (between rows; tight to box)
-  \node[font=\scriptsize, text=cGray, anchor=north, yshift=-1pt] at (pg.south) {$\Delta_\text{px}\!<\!1\%$? skip};
-  \node[font=\scriptsize, text=cGray, anchor=north, yshift=-1pt] at (rg.south) {silence? skip};
-
-  % Processors
-  \node[proc] (clip) at (10.0, 2.9) {CLIP-ViT-B/16};
-  \node[proc, fill=cASR!8, draw=cASR!60] (wh) at (10.0, 1.1) {Whisper v3};
-
-  \draw[arr] (pg) -- (clip);
-  \draw[arr] (rg) -- (wh);
-
-  % Processor sublabels (between rows; tight to box)
-  \node[font=\scriptsize, text=cGray, anchor=north, yshift=-1pt] at (clip.south) {$d\!>\!\theta$? capture};
-  \node[font=\scriptsize, text=cGray, anchor=north, yshift=-1pt] at (wh.south) {transcribe};
-
-  % Observation Record (further right; title above box, below AOI banner)
-  \node[obs] (orec) at (14.7, 2.0) {};
-  \node[font=\footnotesize\bfseries, text=cAOI!80!black, anchor=south, yshift=2pt] at (orec.north) {Observation Record};
-  \node[font=\scriptsize, text=cGray, align=left, anchor=west] at (12.55, 2.00) {%
-    \textcolor{cAOI}{\rule{4pt}{4pt}} keyframe images (0--5)\\[2pt]
-    \textcolor{cASR}{\rule{4pt}{4pt}} audio transcript\\[2pt]
-    \textcolor{cNarr}{\rule{4pt}{4pt}} narrations (prior steps)\\[2pt]
-    \textcolor{cGray}{\rule{4pt}{4pt}} post-action screenshot};
-
-  \draw[harr] (clip.east) -- ++(0.4,0) |- ([yshift=6pt]orec.west);
-  \draw[harr, cASR!70] (wh.east) -- ++(0.4,0) |- ([yshift=-6pt]orec.west);
-
-  % CU Model (placed below the Observation Record)
-  \node[mdl] (cm) at (14.7, -0.7) {CU Model {\scriptsize(any existing)}};
-  \draw[harr, very thick] (orec.south) -- (cm.north)
-    node[midway, right=3pt, lbl] {images + text};
-
-  % Narration feedback loop (routed around the right side)
-  \draw[harr, cNarr, thick, rounded corners=4pt]
-    (cm.east) -- ++(0.55,0) coordinate (narrcorner) |- ([yshift=-14pt]orec.east);
-  \node[font=\scriptsize, text=cNarr!70!black, anchor=west, xshift=2pt] at (narrcorner) {narration};
-
-  % Action output
-  \draw[arr, very thick, cDelta!70!black] (cm.south) -- ++(0, -0.5)
-    node[below, font=\scriptsize\bfseries, text=cDelta!70!black] {action};
-
-  % Brace annotation for gates (kept to gate+processor band, two-line label)
-  \draw[thick, decorate, decoration={brace, amplitude=3pt, mirror}]
-    (6.30, -0.20) -- (11.05, -0.20);
-  \node[font=\scriptsize, text=cGray, align=center, anchor=north] at (8.675, -0.30) {%
-    gate $<$1\,ms, CLIP $\sim$7\,ms, Whisper on demand\\
-    $\to$ near-zero cost on static, silent content};
-
-  % ── AOI bounding box ──
-  \begin{scope}[on background layer]
-    \node[draw=cAOI!40, line width=1.2pt, dashed, rounded corners=6pt, fill=cAOI!2,
-          inner xsep=10pt, inner ysep=14pt,
-          fit=(scr)(aud)(pg)(rg)(clip)(wh)(orec)(cm),
-          label={[font=\footnotesize\bfseries, text=cAOI!70!black, anchor=south, yshift=4pt]above:Agent-Computer Observation Interface (AOI)}] {};
-  \end{scope}
-
-\end{tikzpicture}}
+\includegraphics[width=\textwidth]{figs/fig_aoi_diagram.pdf}
 \caption{\textbf{Standard CU agents vs.\ AOI-equipped agents.}
 \emph{Left:} Current agents observe through periodic screenshots (${\sim}$3--5\,s apart) and are blind and deaf between observations, missing video, audio, and transient UI events (\ding{55}).
 \emph{Right:} The AOI continuously monitors screen and audio streams through fast gates ($<$1\,ms) that skip processing for static, silent content.
@@ -846,28 +738,41 @@ how.
     axis line style={cGray},
     tick style={cGray},
     enlarge x limits=0.22,
-    nodes near coords,
-    nodes near coords style={font=\small\bfseries, /pgf/number format/fixed},
-    every node near coord/.append style={above=1pt},
+    % nodes near coords,
+    % nodes near coords style={font=\small\bfseries, /pgf/number format/fixed},
+    % every node near coord/.append style={above=1pt},
 ]
-\addplot[fill=cStandard!60, draw=cStandard!80]
+\addplot[ybar, bar shift=0pt,fill=cStandard!60, draw=cStandard!80]
     coordinates {(Screenshot, 38)};
-\addplot[fill=cVisual!60, draw=cVisual!80]
+\addplot[ybar, bar shift=0pt,fill=cVisual!60, draw=cVisual!80]
     coordinates {({+Keyframes}, 58)};
-\addplot[fill=cASR!60, draw=cASR!80]
+\addplot[ybar, bar shift=0pt,fill=cASR!60, draw=cASR!80]
     coordinates {({+ASR}, 64)};
-\addplot[fill=cAOI!70, draw=cAOI!90]
+\addplot[ybar, bar shift=0pt,fill=cAOI!70, draw=cAOI!90]
     coordinates {({+Narration}, 82)};
+
+% Named value labels above the bars
+\node (v38) at (axis cs:Screenshot,38)
+  [above=2pt, font=\scriptsize\bfseries] {38};
+
+\node (v58) at (axis cs:{+Keyframes},58)
+  [above=2pt, font=\scriptsize\bfseries] {58};
+
+\node (v64) at (axis cs:{+ASR},64)
+  [above=2pt, font=\scriptsize\bfseries] {64};
+
+\node (v82) at (axis cs:{+Narration},82)
+  [above=2pt, font=\scriptsize\bfseries] {82};
 
 % Delta annotations inside the axis using axis cs
 \draw[->, thick, cDelta!70!black]
-  (axis cs:Screenshot, 42) -- (axis cs:{+Keyframes}, 54)
+  ([xshift=2pt]v38.east) -- ([xshift=-2pt]v58.west)
   node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black, sloped] {+20\,pp};
 \draw[->, thick, cDelta!70!black]
-  (axis cs:{+Keyframes}, 62) -- (axis cs:{+ASR}, 61)
+  ([xshift=2pt]v58.east) -- ([xshift=-2pt]v64.west)
   node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black] {+6\,pp};
 \draw[->, thick, cDelta!70!black]
-  (axis cs:{+ASR}, 68) -- (axis cs:{+Narration}, 78)
+  ([xshift=2pt]v64.east) -- ([xshift=-2pt]v82.west)
   node[midway, above=2pt, font=\scriptsize\bfseries, text=cDelta!60!black, sloped] {+18\,pp};
 \end{axis}
 \end{tikzpicture}
@@ -910,7 +815,7 @@ Speech transcription improves performance from 58\% to 64\% (directional at $N{=
 and confirmed at scale by the audio-family gains of Figure~\ref{fig:heatmap} and the
 Gemini~3 decomposition of Section~\ref{sec:why_g3}), with gains concentrated on the Phone
 and Interview families.
-Visual narration is the largest single content component, yielding an $+18$\,pp improvement
+Visual narration is the largest single content component, yielding a $+18$\,pp improvement
 ($64\%\,{\to}\,82\%$, $p=5.3\times10^{-4}$). Whether this benefit arises due to persistent memory
 or as inference-time articulation is the question of the next subsection.
 
@@ -951,7 +856,7 @@ marginal value of the inter-step keyframe \emph{images} swings from $+10$\,pp on
 Claude and $+6$\,pp on Gemini~2.5 (both realised only through narration, since the same
 images add $+1$\,pp without it), through a neutral $-2$\,pp on GPT-5.4, to a
 $-12$\,pp \emph{penalty} on Gemini~3 (Figure~\ref{fig:analysis}b).
-The positive gains concentrates on the families where frames carry novel
+The positive gains concentrate on the families where frames carry novel
 between-step content (Transient, Carousel) and is near-zero on audio and static
 families, pinning it to narration rather than audio.
 The observation generalises into the operative rule of Section~\ref{sec:diagmap}:
@@ -1058,10 +963,10 @@ The older baselines fail outright: Gemini~Live returns few tool calls and clicks
 non-actionable coordinates, and the gpt-4o-backed Realtime succeeds only on the
 simplest interview questions.
 \texttt{gpt-realtime-2} still fails on its own despite near-perfect transcription
-(the logs show it hears every name and figure): the failure is \emph{action grounding},
-not perception, as it hears ``Dr.\ Sarah Chen'' yet cannot target the right form field
-from a screenshot. Handed AOI's scaffold, the same model recovers most of the gap and
-ties the AOI, localising the deficit precisely: a frontier streaming model already
+(the logs show it hears every name and figure). The failure is \emph{action grounding},
+not perception: it hears ``Dr.\ Sarah Chen'' correctly but cannot target the right form field
+from a screenshot. When handed AOI's scaffold, the same model closes most of the gap between
+it and the AOI. This localises the deficit precisely: a frontier streaming model already
 perceives the page but needs AOI's structured grounding to act on it.
 Grok Voice makes the same point from the opposite direction: it hears accurately but,
 lacking vision, fails with or without the text scaffold, and unlike \texttt{gpt-realtime-2}
